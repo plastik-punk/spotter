@@ -1,7 +1,5 @@
 # User Story #[Number]
 
----
-
 ## Description:
 As a [type of user], I want to [perform an action] so that [achieve a goal].
 
