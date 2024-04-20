@@ -26,19 +26,16 @@
 
 - Issue #[Number]: Description (Resolved by: @Person)
 - Issue #[Number]: Description (Resolved by: @Person)
-- ...
 
 ### New Issues Opened 
 
 - Issue #[Number]: Description (Opened by: @Person)
 - Issue #[Number]: Description (Opened by: @Person)
-- ...
 
 ### Ongoing Issues
 
 - Issue #[Number]: Description (Assigned to: @Person)
 - Issue #[Number]: Description (Assigned to: @Person)
-- ...
 
 ---
 
@@ -58,5 +55,3 @@
 ##  Notes
 
 - Notes can be added here.
-
-/label ~jour-fixe
