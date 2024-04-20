@@ -1,41 +1,43 @@
-# Jour Fixe Meeting - [Date]
+# Jour Fixe - [Date]
 
 ## Agenda
 
-1. 
+1. Previous Jour Fixe
+2. Issues
+3. AOB
+4. Action Items
 
 ---
 
 ## 1. Review of Previous Jour Fixe
 
-- [Link to Previous Jour Fixe](link)
+- [Previous Jour Fixe](link)
 
 ### Action Items Review:
 
-- [ ] Action item 1 from previous meeting - (Person responsible)
-- [ ] Action item 2 from previous meeting - (Person responsible)
-- [ ] ...
+- [ ] Item #[Number]: Description (Assigned to: @Person)
+- [ ] Item #[Number]: Description (Assigned to: @Person)
 
 ---
 
-## 2. Current Issues
+## 2. Issues
 
-### Issues Resolved Since Last Meeting
+### Issues Resolved 
 
-- Issue #[Number]: Description (Resolved by: Person)
-- Issue #[Number]: Description (Resolved by: Person)
+- Issue #[Number]: Description (Resolved by: @Person)
+- Issue #[Number]: Description (Resolved by: @Person)
 - ...
 
-### New Issues Opened Since Last Meeting
+### New Issues Opened 
 
-- Issue #[Number]: Description (Opened by: Person)
-- Issue #[Number]: Description (Opened by: Person)
+- Issue #[Number]: Description (Opened by: @Person)
+- Issue #[Number]: Description (Opened by: @Person)
 - ...
 
 ### Ongoing Issues
 
-- Issue #[Number]: Description (Assigned to: Person)
-- Issue #[Number]: Description (Assigned to: Person)
+- Issue #[Number]: Description (Assigned to: @Person)
+- Issue #[Number]: Description (Assigned to: @Person)
 - ...
 
 ---
@@ -46,6 +48,15 @@
 
 ---
 
+##  Action Items
+
+- [ ] Item #[Number]: Description (Assigned to: @Person)
+- [ ] Item #[Number]: Description (Assigned to: @Person)
+
+---
+
 ##  Notes
 
 - Notes can be added here.
+
+/label ~jour-fixe
