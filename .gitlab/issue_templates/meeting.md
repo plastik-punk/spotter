@@ -18,7 +18,6 @@
 - Discussion Points:
     - Point 1
     - Point 2
-    - ...
 - Decision/Resolution: [Summary of decisions made or actions to be taken]
 
 ### Topic 2: [Issue/Topic Name]
@@ -27,7 +26,6 @@
 - Discussion Points:
     - Point 1
     - Point 2
-    - ...
 - Decision/Resolution: [Summary of decisions made or actions to be taken]
 
 ---
@@ -42,7 +40,6 @@
 
 - [ ] Action Item 1: Description (Assigned to: @Person)
 - [ ] Action Item 2: Description (Assigned to: @Person)
-- ...
 
 ---
 
