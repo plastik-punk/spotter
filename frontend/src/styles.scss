@@ -1,4 +1,111 @@
 /* You can add global styles to this file, and also import other style files */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: visible;  // Prevents horizontal scrollbars
+}
 body {
-  background-color: whitesmoke;
+  background-image: url('assets/images/loginBackground.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+// Global settings
+$primary-font-family: 'Lexend Giga', sans-serif;
+$secondary-font-family: 'Inter', sans-serif;
+$accent-font-family: "Leckerli One", cursive;
+
+$primary-color: white;
+$secondary-color: black;
+$accent-color: #f0f0f0; // Adjust as needed
+
+// Reusable Mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Body & Defaults
+body {
+  font-family: $secondary-font-family;
+  color: $secondary-color;
+  background-color: $accent-color;
+}
+
+// Card Styles
+.card-custom {
+  border-radius: 15px;
+  background: $primary-color;
+  width: 100%;
+  max-width: 600px;
+
+  &.full-height {
+    height: 100vh;
+  }
+}
+
+// Headings
+h1, h2, h3, .font-heading {
+  font-family: $primary-font-family;
+  font-size: 2vw; // Consider using rem for better scalability across devices
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  padding: 0 10px;
+}
+
+// Special Fonts
+.font-text {
+  font-family: $secondary-font-family;
+}
+
+.leckerli-one-regular {
+  font-family: $accent-font-family;
+  font-size: 8vw;
+}
+
+// Logo Style
+.logo {
+  height: 8vw;
+  width: auto;
+  margin-right: 2em;
+}
+
+// Button Styles
+.btn-outline-custom {
+  color: $primary-color;
+  border-color: $primary-color;
+  background-color: transparent;
+  font-size: 1.5vw;
+
+  &:hover {
+    background-color: $primary-color;
+    color: $secondary-color;
+  }
+}
+
+// Layout Adjustments
+.left-col, .right-col {
+  @include flex-center;
+
+  &.left-col {
+    margin-left: -8vw;
+  }
+
+  &.right-col {
+    margin-left: 2vw;
+  }
+}
+
+// Separator Styles
+.separator {
+  @include flex-center;
+  margin: 2rem 0;
+
+  .line {
+    flex: 1;
+    height: 1px;
+    background-color: $secondary-color;
+  }
 }
