@@ -11,8 +11,8 @@
 <body>
 <div *ngIf="error" class="alert alert-warning alert-dismissible fade show" role="alert">
   <strong>Authentication problems!</strong> {{ errorMessage }}
-  <button type="button" class="close" (click)="vanishError()" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
+  <button type="button" class="btn-close" (click)="vanishError()" aria-label="Close">
+    <span aria-hidden="true"></span>
   </button>
 </div>
 <div class="container-fluid">
@@ -45,7 +45,7 @@
           </form>
           <div class="separator">
             <div class="line"></div>
-            <h3 class="mb-0 text-center font-heading">OR</h3>
+            <h3 class="mb-0 text-center font-heading" style="margin-top: 0">OR</h3>
             <div class="line"></div>
           </div>
           <h3 class="mb-0 text-center font-heading" style="font-size: 1.5vw">Commercial Login</h3>
