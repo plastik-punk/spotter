@@ -1,3 +1,35 @@
 .jumbotron {
   background: none
 }
+.custom-card {
+  border-radius: 20px 20px 0 0;
+  background: white;
+  margin-top: 2vh;
+  margin-bottom: -1vh;
+  height: 97vh;
+  padding: 2vh;
+}
+.font-heading {
+  font-family: 'Lexend Giga', sans-serif;
+  font-size: 2vw;
+}
+.top-left-logo {
+  position: absolute;
+  margin-top: 3vh;
+  margin-left: 3vw;
+  top: 0;
+  left: 0;
+  height: 6em;
+  width: auto;
+  z-index: 1000;
+}
+
+.top-left-logo img {
+  height: 100%;
+  width: auto;
+}
+@media (max-width: 1000px) {
+  .top-left-logo {
+    display: none; /* This hides the logo on screens with width 768px or less */
+  }
+}

@@ -6,11 +6,18 @@ html, body {
   overflow-x: visible;  // Prevents horizontal scrollbars
 }
 body {
-  background-image: url('assets/images/loginBackground.png');
+  background-image: url('assets/images/background.png');
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
+.login-background {
+  background-image: url('assets/images/loginBackground.png') !important;
+}
+app-root {
+  background: none; /* Clear any background styles */
+}
+
 // Global settings
 $primary-font-family: 'Lexend Giga', sans-serif;
 $secondary-font-family: 'Inter', sans-serif;
@@ -40,10 +47,6 @@ body {
   background: $primary-color;
   width: 100%;
   max-width: 600px;
-
-  &.full-height {
-    height: 100vh;
-  }
 }
 
 // Headings
@@ -109,3 +112,4 @@ h1, h2, h3, .font-heading {
     background-color: $secondary-color;
   }
 }
+

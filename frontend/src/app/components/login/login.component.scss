@@ -1,7 +1,14 @@
+body {
+  background: none;
+}
 .custom-card {
   border-radius: 15px;
   background: white;
 }
+.card-width {
+   width: 100%;
+   max-width: 600px;
+ }
 .font-heading {
   font-family: 'Lexend Giga', sans-serif;
   font-size: 2vw;
@@ -15,10 +22,7 @@
 .full-height {
   height: 100vh;
 }
-.card-width {
-  width: 100%;
-  max-width: 600px;
-}
+
 .leckerli-one-regular {
   font-family: "Leckerli One", cursive;
   font-size: 8vw;
@@ -39,10 +43,8 @@
   color: black;
 }
 .left-col {
-  margin-left: -8vw;
 }
 .right-col {
-  margin-left: 2vw;
 }
 .separator {
   display: flex;

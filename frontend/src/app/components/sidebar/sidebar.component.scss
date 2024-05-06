@@ -2,6 +2,7 @@ $sidebar-width: 15vw;
 
 .sidebar {
   position: fixed;
+  z-index: 1010;
   left: 0;
   top: 0;
   height: 100vh;
@@ -9,17 +10,27 @@ $sidebar-width: 15vw;
   background-color: #ffff;
   overflow-x: hidden;
   transition: transform 0.3s ease;
-  z-index: 1000;
-  padding: 1rem; /
-  box-shadow: 2px 0 5px rgba(0,0,0,0.1); // Optional: adds shadow for depth
+  padding: 1rem;
 
   .navbar-brand {
     font-family: "Leckerli One", cursive;
     font-size: 2rem;
     margin-bottom: 2rem;
     display: block;
-    padding: 0.5rem 0; /
+    padding: 0.5rem 0;
   }
+  .nav-link {
+    color: #555; /* Darker grey color instead of blue */
+    text-decoration: none; /* Removes underline */
+    transition: color 0.3s ease;
+    text-align: center;
+
+    &:hover, &:focus {
+      color: #000; /* Changes color on hover/focus to black */
+      text-decoration: underline; /* Adds underline on hover/focus */
+    }
+  }
+
 
   ul.nav {
     list-style: none;
@@ -30,26 +41,47 @@ $sidebar-width: 15vw;
       padding: 0.5rem 0;
       position: relative;
 
-      // Using Angular's structural directive *ngIf or handling via CSS
+      // Ensure the line is only added if the next sibling is not hidden
       &:not(:last-child):after {
         content: "";
         position: absolute;
         bottom: 0;
-        left: 10%;
-        right: 10%;
+        left: 0;
+        right: 0;
         height: 1px;
-        background-color: #ccc;
+        background-color: #000; // Change the color to black
         display: block;
+      }
+
+      // Remove the line if the next sibling is hidden
+      &:not(:last-child):nth-last-child(2):after {
+        display: none;
       }
 
       &:last-child {
         border-bottom: none;
       }
+
+      // Add a rule to specifically target hidden nav items
+      &.hidden {
+        display: none;
+      }
+
+      // Ensure that no line appears below a nav item if it is followed by a hidden nav item
+      &.hidden + .nav-item {
+        border-top: none;
+      }
+
+      // Ensure no line is generated if the nav-item itself is hidden
+      &.hidden + .nav-item:not(:last-child):after {
+        display: none;
+      }
     }
   }
 }
 
-.hidden {
+
+    .hidden {
   transform: translateX(-100%);
 }
 
@@ -108,9 +140,7 @@ $sidebar-width: 15vw;
   background-color: rgba(0,0,0,0.5);
   z-index: 999;
 }
-.nav-item + .nav-item {
-  border-top: 1px solid #ccc;
-}
+
 
 .nav-item.hidden {
   display: none;
