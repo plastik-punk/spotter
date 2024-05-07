@@ -1,6 +1,9 @@
 body {
   background: none;
 }
+#form-login-section {
+  min-height: 40%;
+}
 .custom-card {
   border-radius: 15px;
   background: white;
@@ -59,3 +62,25 @@ body {
   height: 1px;
   background-color: black;
 }
+.custom-btn {
+  background-color: transparent;
+  border: 3px solid black;
+  color: black;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 1.5rem;
+  line-height: 2;
+  cursor: pointer;
+  border-radius: 0.75rem;
+  margin: 1rem 0;
+  transition: background-color 0.3s ease;
+}
+
+.custom-btn:hover {
+  background-color: black;
+  color: white;
+}
+
+

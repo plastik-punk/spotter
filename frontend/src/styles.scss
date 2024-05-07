@@ -75,19 +75,6 @@ h1, h2, h3, .font-heading {
   margin-right: 2em;
 }
 
-// Button Styles
-.btn-outline-custom {
-  color: $primary-color;
-  border-color: $primary-color;
-  background-color: transparent;
-  font-size: 1.5vw;
-
-  &:hover {
-    background-color: $primary-color;
-    color: $secondary-color;
-  }
-}
-
 // Layout Adjustments
 .left-col, .right-col {
   @include flex-center;
