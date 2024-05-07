@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit {
       const authRequest = new AuthRequest(this.loginForm.value.username, this.loginForm.value.password);
       this.authService.loginUser(authRequest).subscribe({
         next: () => {
-          this.router.navigate(['/message']);
+          this.router.navigate(['/home']);
         },
         error: error => {
           this.errorMessage = typeof error.error === 'object' ? error.error.error : error.error;
@@ -43,9 +43,7 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  loginCommercialUser(): void {
-    // Implementation for commercial login will go here
-  }
+
 
   vanishError(): void {
     this.error = false;

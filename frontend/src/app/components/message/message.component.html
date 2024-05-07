@@ -10,7 +10,7 @@
 <div *ngIf="error" class="alert alert-danger alert-dismissible fade show" role="alert">
   <strong>Error! </strong> {{ errorMessage }}
   <button type="button" (click)="vanishError()" class="btn-close" data-dismiss="alert" aria-label="Close">
-    <span aria-hidden="true">&times;</span>
+    <span aria-hidden="true"></span>
   </button>
 </div>
 
@@ -33,7 +33,7 @@
             <div class="modal-header">
               <h5 class="modal-title">Message</h5>
               <button type="button" class="btn-close" (click)="modal.dismiss('X')" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
+                <span aria-hidden="true"></span>
               </button>
             </div>
             <div class="modal-body">
