@@ -105,16 +105,20 @@ public class Reservation {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Reservation reservation)) return false;
-        return Objects.equals(id, reservation.id) &&
-            Objects.equals(user, reservation.user) &&
-            Objects.equals(date, reservation.date) &&
-            Objects.equals(startTime, reservation.startTime) &&
-            Objects.equals(endTime, reservation.endTime) &&
-            Objects.equals(pax, reservation.pax) &&
-            Objects.equals(notes, reservation.notes) &&
-            Objects.equals(place, reservation.place);
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Reservation reservation)) {
+            return false;
+        }
+        return Objects.equals(id, reservation.id)
+            && Objects.equals(user, reservation.user)
+            && Objects.equals(date, reservation.date)
+            && Objects.equals(startTime, reservation.startTime)
+            && Objects.equals(endTime, reservation.endTime)
+            && Objects.equals(pax, reservation.pax)
+            && Objects.equals(notes, reservation.notes)
+            && Objects.equals(place, reservation.place);
     }
 
     @Override
@@ -124,16 +128,16 @@ public class Reservation {
 
     @Override
     public String toString() {
-        return "Reservation{" +
-            "id=" + id +
-            ", user=" + user +
-            ", date=" + date +
-            ", startTime=" + startTime +
-            ", endTime=" + endTime +
-            ", pax=" + pax +
-            ", notes='" + notes + '\'' +
-            ", place=" + place +
-            '}';
+        return "Reservation{"
+            + "id=" + id
+            + ", user=" + user
+            + ", date=" + date
+            + ", startTime=" + startTime
+            + ", endTime=" + endTime
+            + ", pax=" + pax
+            + ", notes='" + notes + '\''
+            + ", place=" + place
+            + '}';
     }
 
     public static final class ReservationBuilder {

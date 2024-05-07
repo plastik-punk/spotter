@@ -71,13 +71,17 @@ public class OpeningHours {
     // Equals, hashCode, and toString methods
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof OpeningHours that)) return false;
-        return Objects.equals(id, that.id) &&
-            dayOfWeek == that.dayOfWeek &&
-            Objects.equals(openingTime, that.openingTime) &&
-            Objects.equals(closingTime, that.closingTime) &&
-            Objects.equals(restaurant, that.restaurant);
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof OpeningHours that)) {
+            return false;
+        }
+        return Objects.equals(id, that.id)
+            && dayOfWeek == that.dayOfWeek
+            && Objects.equals(openingTime, that.openingTime)
+            && Objects.equals(closingTime, that.closingTime)
+            && Objects.equals(restaurant, that.restaurant);
     }
 
     @Override
@@ -87,13 +91,13 @@ public class OpeningHours {
 
     @Override
     public String toString() {
-        return "OpeningHour{" +
-            "id=" + id +
-            ", dayOfWeek=" + dayOfWeek +
-            ", openingTime=" + openingTime +
-            ", closingTime=" + closingTime +
-            ", restaurant=" + restaurant +
-            '}';
+        return "OpeningHour{"
+            + "id=" + id
+            + ", dayOfWeek=" + dayOfWeek
+            + ", openingTime=" + openingTime
+            + ", closingTime=" + closingTime
+            + ", restaurant=" + restaurant
+            + '}';
     }
 
     // Builder pattern

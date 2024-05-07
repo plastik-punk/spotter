@@ -90,14 +90,18 @@ public class User {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof User user)) return false;
-        return Objects.equals(id, user.id) &&
-            Objects.equals(firstName, user.firstName) &&
-            Objects.equals(lastName, user.lastName) &&
-            Objects.equals(eMail, user.eMail) &&
-            Objects.equals(mobileNumber, user.mobileNumber) &&
-            Objects.equals(password, user.password);
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof User user)) {
+            return false;
+        }
+        return Objects.equals(id, user.id)
+            && Objects.equals(firstName, user.firstName)
+            && Objects.equals(lastName, user.lastName)
+            && Objects.equals(eMail, user.eMail)
+            && Objects.equals(mobileNumber, user.mobileNumber)
+            && Objects.equals(password, user.password);
     }
 
     @Override
@@ -107,14 +111,14 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
-            "id=" + id +
-            ", firstName='" + firstName + '\'' +
-            ", lastName='" + lastName + '\'' +
-            ", eMail='" + eMail + '\'' +
-            ", mobileNumber=" + mobileNumber +
-            ", password='" + password + '\'' +
-            '}';
+        return "User{"
+            + "id=" + id
+            + ", firstName='" + firstName + '\''
+            + ", lastName='" + lastName + '\''
+            + ", eMail='" + eMail + '\''
+            + ", mobileNumber=" + mobileNumber
+            + ", password='" + password + '\''
+            + '}';
     }
 
 

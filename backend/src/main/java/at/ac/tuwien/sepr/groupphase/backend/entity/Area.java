@@ -68,14 +68,18 @@ public class Area {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Area)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Area)) {
+            return false;
+        }
         Area area = (Area) o;
-        return isOpen == area.isOpen &&
-            Objects.equals(id, area.id) &&
-            Objects.equals(name, area.name) &&
-            Objects.equals(openingTime, area.openingTime) &&
-            Objects.equals(closingTime, area.closingTime);
+        return isOpen == area.isOpen
+            && Objects.equals(id, area.id)
+            && Objects.equals(name, area.name)
+            && Objects.equals(openingTime, area.openingTime)
+            && Objects.equals(closingTime, area.closingTime);
     }
 
     @Override

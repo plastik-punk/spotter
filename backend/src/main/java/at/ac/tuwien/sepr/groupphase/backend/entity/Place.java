@@ -43,11 +43,15 @@ public class Place {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Place place)) return false;
-        return Objects.equals(id, place.id) &&
-            Objects.equals(pax, place.pax) &&
-            status == place.status;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Place place)) {
+            return false;
+        }
+        return Objects.equals(id, place.id)
+            && Objects.equals(pax, place.pax)
+            && status == place.status;
     }
 
     @Override
@@ -57,11 +61,11 @@ public class Place {
 
     @Override
     public String toString() {
-        return "Place{" +
-            "id=" + id +
-            ", pax=" + pax +
-            ", status=" + status +
-            '}';
+        return "Place{"
+            + "id=" + id
+            + ", pax=" + pax
+            + ", status=" + status
+            + '}';
     }
 
     public static final class PlaceBuilder {

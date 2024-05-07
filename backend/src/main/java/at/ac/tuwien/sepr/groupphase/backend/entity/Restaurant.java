@@ -56,13 +56,17 @@ public class Restaurant {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Restaurant)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Restaurant)) {
+            return false;
+        }
         Restaurant restaurant = (Restaurant) o;
-        return Objects.equals(id, restaurant.id) &&
-            Objects.equals(name, restaurant.name) &&
-            Objects.equals(openingHours, restaurant.openingHours) &&
-            Objects.equals(address, restaurant.address);
+        return Objects.equals(id, restaurant.id)
+            && Objects.equals(name, restaurant.name)
+            && Objects.equals(openingHours, restaurant.openingHours)
+            && Objects.equals(address, restaurant.address);
     }
 
     @Override
@@ -72,12 +76,12 @@ public class Restaurant {
 
     @Override
     public String toString() {
-        return "Restaurant{" +
-            "id=" + id +
-            ", name='" + name + '\'' +
-            ", openingHours=" + openingHours +
-            ", address='" + address + '\'' +
-            '}';
+        return "Restaurant{"
+            + "id=" + id
+            + ", name='" + name + '\''
+            + ", openingHours=" + openingHours
+            + ", address='" + address + '\''
+            + '}';
     }
 
     public static final class RestaurantBuilder {
