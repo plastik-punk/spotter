@@ -1,9 +1,13 @@
 context('add message', () => {
     let msgText = 'msg' + new Date().getTime();
 
-    it('create message', () => {
-        cy.loginAdmin();
-        cy.createMessage(msgText);
-    })
+    describe('Basic Suite', () => {
+        it('login', () => {
+            cy.fixture('settings').then(settings => {
+                cy.visit(settings.baseUrl);
+                cy.loginAdmin();
+            });
+        });
+    });
 
 });
