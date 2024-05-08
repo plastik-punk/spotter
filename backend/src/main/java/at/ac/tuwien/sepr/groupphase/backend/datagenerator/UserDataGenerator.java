@@ -2,7 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.datagenerator;
 
 import at.ac.tuwien.sepr.groupphase.backend.entity.User;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
-import at.ac.tuwien.sepr.groupphase.backend.repository.IUserRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.IuserRepository;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,15 +25,15 @@ public class UserDataGenerator {
 
     private static final RoleEnum[] ROLES = {RoleEnum.ADMIN, RoleEnum.EMPLOYEE, RoleEnum.CUSTOMER, RoleEnum.GUEST};
 
-    private final IUserRepository IuserRepository;
+    private final IuserRepository iuserRepository;
 
-    public UserDataGenerator(IUserRepository userRepository) {
-        this.IuserRepository = userRepository;
+    public UserDataGenerator(IuserRepository userRepository) {
+        this.iuserRepository = userRepository;
     }
 
     @PostConstruct
     private void generateUsers() {
-        if (!IuserRepository.findAll().isEmpty()) {
+        if (!iuserRepository.findAll().isEmpty()) {
             LOGGER.debug("Users already generated");
         } else {
             LOGGER.debug("Generating {} user entries", NUMBER_OF_USERS_TO_GENERATE);
@@ -47,7 +47,7 @@ public class UserDataGenerator {
                     .withRole(ROLES[i % ROLES.length])
                     .build();
                 LOGGER.debug("Saving user {}", user);
-                IuserRepository.save(user);
+                iuserRepository.save(user);
             }
         }
     }

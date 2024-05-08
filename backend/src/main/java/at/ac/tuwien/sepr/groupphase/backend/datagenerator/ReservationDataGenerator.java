@@ -3,7 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.datagenerator;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.entity.User;
-import at.ac.tuwien.sepr.groupphase.backend.repository.IUserRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.IuserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import jakarta.annotation.PostConstruct;
@@ -26,9 +26,9 @@ public class ReservationDataGenerator {
 
     private final ReservationRepository reservationRepository;
     private final PlaceRepository placeRepository;
-    private final IUserRepository userRepository;
+    private final IuserRepository userRepository;
 
-    public ReservationDataGenerator(ReservationRepository reservationRepository, PlaceRepository placeRepository, IUserRepository userRepository) {
+    public ReservationDataGenerator(ReservationRepository reservationRepository, PlaceRepository placeRepository, IuserRepository userRepository) {
         this.reservationRepository = reservationRepository;
         this.placeRepository = placeRepository;
         this.userRepository = userRepository;

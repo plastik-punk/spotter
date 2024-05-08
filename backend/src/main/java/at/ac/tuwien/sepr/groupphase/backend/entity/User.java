@@ -1,7 +1,12 @@
 package at.ac.tuwien.sepr.groupphase.backend.entity;
 
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import java.util.Objects;
 
@@ -20,7 +25,7 @@ public class User {
     private String lastName;
 
     @Column(nullable = false, length = 255)
-    private String eMail;
+    private String email;
 
     @Column(nullable = true, length = 15)
     private Long mobileNumber;
@@ -56,12 +61,12 @@ public class User {
         this.lastName = lastName;
     }
 
-    public String geteMail() {
-        return eMail;
+    public String geteEmail() {
+        return email;
     }
 
-    public void seteMail(String eMail) {
-        this.eMail = eMail;
+    public void seteEmail(String email) {
+        this.email = email;
     }
 
     public Long getMobileNumber() {
@@ -99,14 +104,14 @@ public class User {
         return Objects.equals(id, user.id)
             && Objects.equals(firstName, user.firstName)
             && Objects.equals(lastName, user.lastName)
-            && Objects.equals(eMail, user.eMail)
+            && Objects.equals(email, user.email)
             && Objects.equals(mobileNumber, user.mobileNumber)
             && Objects.equals(password, user.password);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastName, eMail, mobileNumber, password);
+        return Objects.hash(id, firstName, lastName, email, mobileNumber, password);
     }
 
     @Override
@@ -115,7 +120,7 @@ public class User {
             + "id=" + id
             + ", firstName='" + firstName + '\''
             + ", lastName='" + lastName + '\''
-            + ", eMail='" + eMail + '\''
+            + ", eMail='" + email + '\''
             + ", mobileNumber=" + mobileNumber
             + ", password='" + password + '\''
             + '}';
@@ -126,7 +131,7 @@ public class User {
         private Long id;
         private String firstName;
         private String lastName;
-        private String eMail;
+        private String email;
         private Long mobileNumber;
         private String password;
 
@@ -154,8 +159,8 @@ public class User {
             return this;
         }
 
-        public UserBuilder witheMail(String eMail) {
-            this.eMail = eMail;
+        public UserBuilder witheMail(String email) {
+            this.email = email;
             return this;
         }
 
@@ -179,7 +184,7 @@ public class User {
             user.setId(id);
             user.setFirstName(firstName);
             user.setLastName(lastName);
-            user.seteMail(eMail);
+            user.seteEmail(email);
             user.setMobileNumber(mobileNumber);
             user.setPassword(password);
             user.setRole(role);
