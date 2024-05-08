@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -51,7 +50,6 @@ public class ReservationDataGenerator {
 
                 Reservation reservation = Reservation.ReservationBuilder.aReservation()
                     .withUser(user)
-                    .withDate(LocalDate.now().plusDays(i))
                     .withStartTime(LocalTime.of(19, 0))
                     .withEndTime(LocalTime.of(21, 0))
                     .withPax(4L)
