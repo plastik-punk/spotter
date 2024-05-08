@@ -24,9 +24,6 @@ public class Reservation {
     private User user;
 
     @Column(nullable = false)
-    private LocalDate date;
-
-    @Column(nullable = false)
     private LocalTime startTime;
 
     @Column
@@ -58,14 +55,6 @@ public class Reservation {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
     }
 
     public LocalTime getStartTime() {
@@ -119,7 +108,6 @@ public class Reservation {
         }
         return Objects.equals(id, reservation.id)
             && Objects.equals(user, reservation.user)
-            && Objects.equals(date, reservation.date)
             && Objects.equals(startTime, reservation.startTime)
             && Objects.equals(endTime, reservation.endTime)
             && Objects.equals(pax, reservation.pax)
@@ -129,7 +117,7 @@ public class Reservation {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user, date, startTime, endTime, pax, notes, place);
+        return Objects.hash(id, user, startTime, endTime, pax, notes, place);
     }
 
     @Override
@@ -137,7 +125,6 @@ public class Reservation {
         return "Reservation{"
             + "id=" + id
             + ", user=" + user
-            + ", date=" + date
             + ", startTime=" + startTime
             + ", endTime=" + endTime
             + ", pax=" + pax
@@ -207,7 +194,6 @@ public class Reservation {
             Reservation reservation = new Reservation();
             reservation.setId(id);
             reservation.setUser(user);
-            reservation.setDate(date);
             reservation.setStartTime(startTime);
             reservation.setEndTime(endTime);
             reservation.setPax(pax);
