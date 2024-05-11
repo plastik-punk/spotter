@@ -7,3 +7,13 @@ export interface Reservation {
   placeId: number;
   userId: number;
 }
+
+export interface GuestReservation {
+  startTime: Date;
+  date: Date;
+  pax: number;
+  name: string;
+  notes: string;
+  email: string;
+  mobileNumber: number;
+}
