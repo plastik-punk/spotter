@@ -117,7 +117,7 @@ public class ReservationListDto {
         private ReservationListDtoBuilder() {
         }
 
-        public static ReservationListDtoBuilder ReservationListDto() {
+        public static ReservationListDtoBuilder aReservationListDto() {
             return new ReservationListDtoBuilder();
         }
 
