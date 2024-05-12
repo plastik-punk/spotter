@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from '../../services/auth.service';
 import {NgForm} from "@angular/forms";
-import {GuestReservation, Reservation} from "../../dtos/reservation";
+import {Reservation, ReservationCreateDto} from "../../dtos/reservation";
 import {Observable} from "rxjs";
 import {ReservationService} from "../../services/reservation.service";
 
@@ -12,11 +12,14 @@ import {ReservationService} from "../../services/reservation.service";
 })
 export class HomeComponent implements OnInit {
 
-  guestReservation: GuestReservation = {
+  reservationCreateDto: ReservationCreateDto = {
+    user: undefined,
     startTime: undefined,
+    endTime: undefined,
     date: undefined,
     pax: undefined,
-    name: undefined,
+    firstName: undefined,
+    lastName: undefined,
     notes: undefined,
     email: undefined,
     mobileNumber: undefined
@@ -25,24 +28,22 @@ export class HomeComponent implements OnInit {
   constructor(
     public authService: AuthService,
     private service: ReservationService
-
     ) { }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
   onSubmit(form: NgForm) {
-    console.log(form);
+    console.log(form); // TODO: remove after testing
     if (form.valid) {
       let observable: Observable<Reservation>;
-      observable = this.service.createGuestReservation(this.guestReservation);
+      observable = this.service.createReservation(this.reservationCreateDto);
       observable.subscribe({
         next: (data) => {
-          // todo: handle success (notification, redirect etc.)
+          // TODO: handle success (notification, redirect etc.)
           console.log("Reservation Processed Successfully", data); // todo: remove after testing
         },
         error: (error) => {
-          // todo: handle error and notifications
+          // TODO: handle error and notifications
           console.error("Error Processing Reservation", error);
         }, // error
       }); // observable.subscribe

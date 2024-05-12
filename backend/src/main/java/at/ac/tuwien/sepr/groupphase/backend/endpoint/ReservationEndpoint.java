@@ -1,9 +1,10 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ReservationMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
+import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,26 +18,27 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.invoke.MethodHandles;
 
-@RestController
-@RequestMapping(value = "/api/v1/reservations")
-public class ReservationEndpoint {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+// todo: use correct endpoint path, activate LoginEndpoint, fix authentication
 
-    //private final ReservationService reservationService;
-    private final ReservationMapper reservationMapper;
+@RestController
+@RequestMapping(value = "/api/v1/authentication")
+public class ReservationEndpoint {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private final ReservationService service;
 
     @Autowired
-    public ReservationEndpoint(ReservationMapper reservationMapper) {
-        // this.reservationService = reservationService;
-        this.reservationMapper = reservationMapper;
+    public ReservationEndpoint(ReservationService service) {
+        this.service = service;
     }
 
-    // todo: implement the create method
+    // todo: authentication
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping
     @Operation(summary = "Create a new reservation")
+    @PermitAll
+    @PostMapping
     public Reservation create(@Valid @RequestBody ReservationCreateDto reservationCreateDto) {
-        LOGGER.info("POST /api/v1/reservations body: {}", reservationCreateDto);
-        return null;
+        LOGGER.info("POST /api/v1/reservations body: {}", reservationCreateDto.toString());
+        return service.create(reservationCreateDto);
     }
 }

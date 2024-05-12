@@ -5,7 +5,6 @@ import java.util.Objects;
 
 public class ReservationListDto {
 
-
     private Long id;
 
     private String user;

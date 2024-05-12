@@ -22,32 +22,32 @@
           </div>
 
           <div class="col-lg-4 d-flex align-items-center justify-content-center flex-column">
-            <label for="guestReservationStartTime" class="col-form-label text-md-end text-muted">
+            <label for="reservationStartTime" class="col-form-label text-md-end text-muted">
             </label>
             <input
               type="time"
-              id="guestReservationStartTime"
-              name="guestReservationStartTime"
+              id="reservationStartTime"
+              name="reservationStartTime"
               placeholder="hh:mm"
               class="form-control"
-              [(ngModel)]="guestReservation.startTime"
-              #guestReservationStartTimeModel="ngModel"
+              [(ngModel)]="reservationCreateDto.startTime"
+              #reservationStartTimeModel="ngModel"
               required
             />
           </div>
 
           <div class="col-lg-4 d-flex align-items-center justify-content-center flex-column">
-            <label for="guestReservationDate" class="col-form-label text-md-end text-muted">
+            <label for="reservationDate" class="col-form-label text-md-end text-muted">
             </label>
             <input
               type="date"
-              id="guestReservationDate"
-              name="guestReservationDate"
+              id="reservationDate"
+              name="reservationDate"
               pattern="\d{4}-\d{2}-\d{2}"
               placeholder="dd-mm-yyyy"
               class="form-control"
-              [(ngModel)]="guestReservation.date"
-              #guestReservationDateModel="ngModel"
+              [(ngModel)]="reservationCreateDto.date"
+              #reservationDateModel="ngModel"
               required
             />
           </div>
@@ -72,23 +72,25 @@
         </div>
         <!-- End row with notification -->
 
+        <hr class="my-4">
+
         <!-- Start row with pax -->
         <div class="row">
           <div class="row align-items-center">
             <div class="col-lg-2 d-flex justify-content-end">
-              <label for="guestReservationPax" class="col-form-label text-md-end text-muted">
+              <label for="reservationPax" class="col-form-label text-md-end text-muted">
                 Table for
               </label>
             </div>
             <div class="col-lg-2">
               <input
                 type="number"
-                id="guestReservationPax"
-                name="guestReservationPax"
+                id="reservationPax"
+                name="reservationPax"
                 placeholder="pax"
                 class="form-control"
-                [(ngModel)]="guestReservation.pax"
-                #guestReservationPax="ngModel"
+                [(ngModel)]="reservationCreateDto.pax"
+                #reservationPax="ngModel"
                 required
               />
             </div>
@@ -96,69 +98,84 @@
         </div>
         <!-- End row with pax -->
 
-        <!-- Start row with (name, Mail, Phone), Notes -->
+        <!-- Start row with (firstName, lastName, Mail, Phone), Notes -->
         <div class="row">
           <div class="col-lg-6 d-flex flex-column">
             <div class="d-flex align-items-center justify-content-center flex-column mb-3">
-              <label for="guestReservationName" class="col-form-label text-md-end text-muted">
+              <label for="reservationFirstName" class="col-form-label text-md-end text-muted">
               </label>
               <input
                 type="text"
-                id="guestReservationName"
-                name="guestReservationName"
-                placeholder="Name"
+                id="reservationFirstName"
+                name="reservationFirstName"
+                placeholder="First Name"
                 class="form-control"
-                [(ngModel)]="guestReservation.name"
-                #guestReservationName="ngModel"
+                [(ngModel)]="reservationCreateDto.firstName"
+                #reservationFirstName="ngModel"
                 required
               />
             </div>
 
             <div class="d-flex align-items-center justify-content-center flex-column mb-3">
-              <label for="guestReservationEmail" class="col-form-label text-md-end text-muted">
+              <label for="reservationLastName" class="col-form-label text-md-end text-muted">
               </label>
               <input
                 type="text"
-                id="guestReservationEmail"
-                name="guestReservationEmail"
+                id="reservationLastName"
+                name="reservationLastName"
+                placeholder="Last Name"
+                class="form-control"
+                [(ngModel)]="reservationCreateDto.lastName"
+                #reservationLastName="ngModel"
+                required
+              />
+            </div>
+
+            <div class="d-flex align-items-center justify-content-center flex-column mb-3">
+              <label for="reservationEmail" class="col-form-label text-md-end text-muted">
+              </label>
+              <input
+                type="text"
+                id="reservationEmail"
+                name="reservationEmail"
                 placeholder="Email"
                 class="form-control"
-                [(ngModel)]="guestReservation.email"
-                #guestReservationEmail="ngModel"
+                [(ngModel)]="reservationCreateDto.email"
+                #reservationEmail="ngModel"
                 required
               />
             </div>
 
             <div class="d-flex align-items-center justify-content-center flex-column mb-3">
-              <label for="guestReservationMobileNumber" class="col-form-label text-md-end text-muted">
+              <label for="reservationMobileNumber" class="col-form-label text-md-end text-muted">
               </label>
               <input
                 type="tel"
-                id="guestReservationMobileNumber"
-                name="guestReservationMobileNumber"
+                id="reservationMobileNumber"
+                name="reservationMobileNumber"
                 placeholder="Phone (optional)"
                 class="form-control"
-                [(ngModel)]="guestReservation.mobileNumber"
-                #guestReservationMobileNumber="ngModel"
+                [(ngModel)]="reservationCreateDto.mobileNumber"
+                #reservationMobileNumber="ngModel"
               />
             </div>
           </div>
 
           <div class="col-lg-6 d-flex align-items-center justify-content-center flex-column flex-grow-1 h-100">
-            <label for="guestReservationNotes" class="col-form-label text-md-end text-muted">
+            <label for="reservationNotes" class="col-form-label text-md-end text-muted">
             </label>
             <input
               type="text"
-              id="guestReservationNotes"
-              name="guestReservationNotes"
+              id="reservationNotes"
+              name="reservationNotes"
               placeholder="Notes (optional)"
               class="form-control h-100"
-              [(ngModel)]="guestReservation.notes"
-              #guestReservationNotes="ngModel"
+              [(ngModel)]="reservationCreateDto.notes"
+              #reservationNotes="ngModel"
             />
           </div>
         </div>
-        <!-- End row with (Name, Mail, Phone), Notes -->
+        <!-- End row with (firstName, lastName, Mail, Phone), Notes -->
 
         <div class="mt-4 d-flex flex-row">
           <button type="submit" class="btn btn-primary" [disabled]="!form.valid">

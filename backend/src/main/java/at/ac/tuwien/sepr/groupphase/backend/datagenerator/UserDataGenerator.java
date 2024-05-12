@@ -1,8 +1,8 @@
 package at.ac.tuwien.sepr.groupphase.backend.datagenerator;
 
-import at.ac.tuwien.sepr.groupphase.backend.entity.User;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
-import at.ac.tuwien.sepr.groupphase.backend.repository.IuserRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,31 +25,31 @@ public class UserDataGenerator {
 
     private static final RoleEnum[] ROLES = {RoleEnum.ADMIN, RoleEnum.EMPLOYEE, RoleEnum.CUSTOMER, RoleEnum.GUEST};
 
-    private final IuserRepository iuserRepository;
+    private final ApplicationUserRepository applicationUserRepository;
 
-    public UserDataGenerator(IuserRepository userRepository) {
-        this.iuserRepository = userRepository;
+    public UserDataGenerator(ApplicationUserRepository applicationUserRepository) {
+        this.applicationUserRepository = applicationUserRepository;
     }
 
     @PostConstruct
     private void generateUsers() {
-        if (!iuserRepository.findAll().isEmpty()) {
+        if (!applicationUserRepository.findAll().isEmpty()) {
             LOGGER.debug("Users already generated");
         } else {
             LOGGER.debug("Generating {} user entries", NUMBER_OF_USERS_TO_GENERATE);
             for (int i = 0; i < NUMBER_OF_USERS_TO_GENERATE; i++) {
-                User user = User.UserBuilder.anUser()
+                ApplicationUser applicationUser = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
                     .withFirstName(FIRST_NAMES[i % FIRST_NAMES.length])
                     .withLastName(LAST_NAMES[i % LAST_NAMES.length])
-                    .witheMail(FIRST_NAMES[i % FIRST_NAMES.length].toLowerCase() + EMAIL_DOMAIN)
+                    .withEmail(FIRST_NAMES[i % FIRST_NAMES.length].toLowerCase() + EMAIL_DOMAIN)
                     .withMobileNumber(MOBILE_NUMBERS[i % MOBILE_NUMBERS.length])
-                    .withPassword(DEFAULT_PASSWORD)
                     .withRole(ROLES[i % ROLES.length])
+                    .withPassword(DEFAULT_PASSWORD)
                     .build();
-                LOGGER.debug("Saving user {}", user);
-                iuserRepository.save(user);
+
+                LOGGER.debug("Saving applicationUser {}", applicationUser);
+                applicationUserRepository.save(applicationUser);
             }
         }
     }
-
 }
