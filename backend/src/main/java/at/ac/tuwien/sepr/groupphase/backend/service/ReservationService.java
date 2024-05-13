@@ -5,6 +5,10 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import jakarta.mail.MessagingException;
 
 
+/**
+ * Service for operations on reservations (e.g. creating a new Reservation).
+ */
+public interface ReservationService {
 
     /**
      * Create a reservation.
