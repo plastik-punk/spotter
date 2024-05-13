@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,8 +47,9 @@ public class ReservationEndpoint {
         return service.create(reservationCreateDto);
     }
 
+    @Secured("ROLE_USER")
     @GetMapping
-    public List<ReservationListDto> searchHorses(ReservationSearchDto searchParameters) {
+    public List<ReservationListDto> searchReservations(ReservationSearchDto searchParameters) {
         LOGGER.info("POST /api/v1/reservations");
         LOGGER.debug("request parameters: {}", searchParameters);
         return service.search(searchParameters);

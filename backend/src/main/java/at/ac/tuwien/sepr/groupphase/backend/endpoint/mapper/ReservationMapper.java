@@ -12,14 +12,6 @@ import java.util.List;
 
 @Mapper
 public interface ReservationMapper {
-    /*
-    @Named("reservationList")
-    ReservationListDto reservationToReservationListDto(Reservation reservation);
-
-    @IterableMapping(qualifiedByName = "reservationList")
-    List<ReservationListDto> reservationToReservationListDto(List<Reservation> reservation);
-
-     */
     Reservation reservationCreateDtoToReservation(ReservationCreateDto reservationCreateDto);
 
     @Mapping(source = "applicationUser.firstName", target = "userFirstName")
