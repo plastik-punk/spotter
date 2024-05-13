@@ -21,10 +21,13 @@ public class Reservation {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")
-    private User user;
+    private ApplicationUser applicationUser;
 
     @Column(nullable = false)
     private LocalTime startTime;
+
+    @Column(nullable = false)
+    private LocalDate date;
 
     @Column
     private LocalTime endTime;
@@ -39,8 +42,6 @@ public class Reservation {
     @JoinColumn(name = "place_id", nullable = false, referencedColumnName = "id")
     private Place place;
 
-    // Getters and Setters
-
     public Long getId() {
         return id;
     }
@@ -49,12 +50,12 @@ public class Reservation {
         this.id = id;
     }
 
-    public User getUser() {
-        return user;
+    public ApplicationUser getUser() {
+        return applicationUser;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUser(ApplicationUser user) {
+        this.applicationUser = user;
     }
 
     public LocalTime getStartTime() {
@@ -63,6 +64,14 @@ public class Reservation {
 
     public void setStartTime(LocalTime startTime) {
         this.startTime = startTime;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
     public LocalTime getEndTime() {
@@ -107,8 +116,9 @@ public class Reservation {
             return false;
         }
         return Objects.equals(id, reservation.id)
-            && Objects.equals(user, reservation.user)
+            && Objects.equals(applicationUser, reservation.applicationUser)
             && Objects.equals(startTime, reservation.startTime)
+            && Objects.equals(date, reservation.date)
             && Objects.equals(endTime, reservation.endTime)
             && Objects.equals(pax, reservation.pax)
             && Objects.equals(notes, reservation.notes)
@@ -117,15 +127,16 @@ public class Reservation {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user, startTime, endTime, pax, notes, place);
+        return Objects.hash(id, applicationUser, startTime, date, endTime, pax, notes, place);
     }
 
     @Override
     public String toString() {
         return "Reservation{"
             + "id=" + id
-            + ", user=" + user
+            + ", applicationUser=" + applicationUser
             + ", startTime=" + startTime
+            + ", date=" + date
             + ", endTime=" + endTime
             + ", pax=" + pax
             + ", notes='" + notes + '\''
@@ -135,9 +146,9 @@ public class Reservation {
 
     public static final class ReservationBuilder {
         private Long id;
-        private User user;
-        private LocalDate date;
+        private ApplicationUser applicationUser;
         private LocalTime startTime;
+        private LocalDate date;
         private LocalTime endTime;
         private Long pax;
         private String notes;
@@ -155,18 +166,18 @@ public class Reservation {
             return this;
         }
 
-        public ReservationBuilder withUser(User user) {
-            this.user = user;
-            return this;
-        }
-
-        public ReservationBuilder withDate(LocalDate date) {
-            this.date = date;
+        public ReservationBuilder withUser(ApplicationUser applicationUser) {
+            this.applicationUser = applicationUser;
             return this;
         }
 
         public ReservationBuilder withStartTime(LocalTime startTime) {
             this.startTime = startTime;
+            return this;
+        }
+
+        public ReservationBuilder withDate(LocalDate date) {
+            this.date = date;
             return this;
         }
 
@@ -193,8 +204,9 @@ public class Reservation {
         public Reservation build() {
             Reservation reservation = new Reservation();
             reservation.setId(id);
-            reservation.setUser(user);
+            reservation.setUser(applicationUser);
             reservation.setStartTime(startTime);
+            reservation.setDate(date);
             reservation.setEndTime(endTime);
             reservation.setPax(pax);
             reservation.setNotes(notes);
