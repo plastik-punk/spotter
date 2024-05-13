@@ -13,33 +13,38 @@ import {ReservationService} from "../../services/reservation.service";
   templateUrl: './reservations-overview.component.html',
   styleUrl: './reservations-overview.component.scss'
 })
-export class ReservationsOverviewComponent implements OnInit{
+export class ReservationsOverviewComponent implements OnInit {
   error = false;
   errorMessage = '';
   reservations: ReservationListDto[] = [];
   displayedReservations: ReservationListDto[] = [];
   searchParams: ReservationSearch = {};
-  searchLatest: string | null = null;
-  searchEarliest: string | null = null;
+  searchLatestEndTime: string | null = null;
+  searchEarliestStartTime: string | null = null;
+  searchEarliestDate: string | null = null;
+  searchLatestDate: string | null = null;
   searchChangedObservable = new Subject<void>();
 
   constructor(
-              private authService: AuthService,
-              private modalService: NgbModal,
-              private reservationService: ReservationService) {
+    private authService: AuthService,
+    private modalService: NgbModal,
+    private reservationService: ReservationService) {
   }
+
   ngOnInit(): void {
     this.loadReservations();
     this.searchChangedObservable
       .pipe(debounceTime(300))
       .subscribe({next: () => this.loadReservations()});
   }
+
   /**
    * Error flag will be deactivated, which clears the error message
    */
   vanishError() {
     this.error = false;
   }
+
   showMore() {
     let newLength = this.displayedReservations.length + 5;
     if (newLength > this.reservations.length) {
@@ -47,6 +52,7 @@ export class ReservationsOverviewComponent implements OnInit{
     }
     this.displayedReservations = this.reservations.slice(0, newLength);
   }
+
   /**
    * Returns true if the authenticated user is an admin
    */
@@ -55,16 +61,27 @@ export class ReservationsOverviewComponent implements OnInit{
   }
 
   private loadReservations() {
-    if (this.searchEarliest == null || this.searchEarliest === "") {
-      delete this.searchParams.earliestStartDate;
+    if (this.searchEarliestDate == null || this.searchEarliestDate === "") {
+      delete this.searchParams.earliestDate;
     } else {
-      this.searchParams.earliestStartDate = new Date(this.searchEarliest);
+      this.searchParams.earliestDate = new Date(this.searchEarliestDate);
     }
-    if (this.searchLatest == null || this.searchLatest === "") {
-      delete this.searchParams.latestStartDate;
+    if (this.searchLatestDate == null || this.searchLatestDate === "") {
+      delete this.searchParams.latestDate;
     } else {
-      this.searchParams.latestStartDate = new Date(this.searchLatest);
+      this.searchParams.latestDate = new Date(this.searchLatestDate);
     }
+    if (this.searchEarliestStartTime == null || this.searchEarliestStartTime === "") {
+      delete this.searchParams.earliestStartTime;
+    } else {
+      this.searchParams.earliestStartTime = new Date(this.searchEarliestStartTime);
+    }
+    if (this.searchLatestEndTime == null || this.searchLatestEndTime === "") {
+      delete this.searchParams.latestEndTime;
+    } else {
+      this.searchParams.latestEndTime = new Date(this.searchLatestEndTime);
+    }
+
     this.reservationService.search(this.searchParams)
       .subscribe({
         next: (reservation: ReservationListDto[]) => {
@@ -75,6 +92,7 @@ export class ReservationsOverviewComponent implements OnInit{
         }
       });
   }
+
   private defaultServiceErrorHandling(error: any) {
     console.log(error);
     this.error = true;

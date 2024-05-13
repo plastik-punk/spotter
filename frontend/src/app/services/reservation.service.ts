@@ -10,7 +10,7 @@ import {ReservationSearch,ReservationListDto} from "../dtos/reservation";
 })
 export class ReservationService {
 
-  private reservationBaseUri : string = this.globals.backendUri + "/authentication"; // todo: change to reservation after auth is implemented
+  private reservationBaseUri : string = this.globals.backendUri + "/authentication"; // todo: change to reservations after auth is implemented
 
   constructor(private httpClient: HttpClient, private globals: Globals) {}
 
@@ -25,16 +25,23 @@ export class ReservationService {
   }
   search(searchParams: ReservationSearch): Observable<ReservationListDto[]> {
     let params = new HttpParams();
-    if (searchParams.earliestStartDate) {
-      params = params.append('earliestStartDate', formatIsoDate(searchParams.earliestStartDate));
+    if (searchParams.earliestDate) {
+      params = params.append('earliestDate', formatIsoDate(searchParams.earliestDate));
     }
-    if (searchParams.latestStartDate) {
-      params = params.append('latestStartDate', formatIsoDate(searchParams.latestStartDate));
+    if (searchParams.latestDate) {
+      params = params.append('latestDate', formatIsoDate(searchParams.latestDate));
     }
-    return this.httpClient.get<ReservationListDto[]>(this.baseUri, { params })
+    if (searchParams.earliestStartTime) {
+      params = params.append('earliestStartTime', formatIsoDate(searchParams.earliestStartTime));
+    }
+    if (searchParams.latestEndTime) {
+      params = params.append('latestEndTime', formatIsoDate(searchParams.latestEndTime));
+    }
+    return this.httpClient.get<ReservationListDto[]>(this.reservationBaseUri, { params })
       .pipe(tap(reservations => reservations.map(r => {
-        r.startDate = new Date(r.startDate);
-        r.endDate = new Date(r.endDate);// Parse date string
+        r.startTime = new Date(r.startTime);
+        r.date = new Date(r.date);
+        r.endTime = new Date(r.endTime);
       })));
   }
 }

@@ -27,13 +27,16 @@ export interface ReservationCreateDto {
 export interface ReservationListDto {
   id: number,
   user: string,
-  startDate: Date,
-  endDate: Date;
+  startTime: Date;
+  date: Date;
+  endTime: Date;
   pax: number;
   placeId: number;
 }
 
 export interface ReservationSearch {
-  earliestStartDate?: Date;
-  latestStartDate?: Date;
+  earliestDate?: Date;
+  latestDate?: Date;
+  earliestStartTime?: Date;
+  latestEndTime?: Date;
 }
