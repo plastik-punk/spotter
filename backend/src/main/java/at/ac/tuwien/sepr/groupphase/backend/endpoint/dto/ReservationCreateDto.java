@@ -2,8 +2,8 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 
-import java.time.LocalTime;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Objects;
 
 public class ReservationCreateDto {
@@ -26,7 +26,7 @@ public class ReservationCreateDto {
 
     private String email;
 
-    private Long mobileNumber;
+    private String mobileNumber;
 
     public ApplicationUser getUser() {
         return applicationUser;
@@ -100,11 +100,11 @@ public class ReservationCreateDto {
         this.email = email;
     }
 
-    public Long getMobileNumber() {
+    public String getMobileNumber() {
         return mobileNumber;
     }
 
-    public void setMobileNumber(Long mobileNumber) {
+    public void setMobileNumber(String mobileNumber) {
         this.mobileNumber = mobileNumber;
     }
 
@@ -159,7 +159,7 @@ public class ReservationCreateDto {
         private int pax;
         private String notes;
         private String email;
-        private Long mobileNumber;
+        private String mobileNumber;
 
         private ReservationCreateDtoBuilder() {
         }
@@ -213,7 +213,7 @@ public class ReservationCreateDto {
             return this;
         }
 
-        public ReservationCreateDtoBuilder withMobileNumber(Long mobileNumber) {
+        public ReservationCreateDtoBuilder withMobileNumber(String mobileNumber) {
             this.mobileNumber = mobileNumber;
             return this;
         }

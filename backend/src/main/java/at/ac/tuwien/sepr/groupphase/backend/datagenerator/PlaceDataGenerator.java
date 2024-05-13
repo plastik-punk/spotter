@@ -7,12 +7,14 @@ import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
 
 @Profile("generateData")
 @Component
+@Order(11)
 public class PlaceDataGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -26,6 +28,8 @@ public class PlaceDataGenerator {
 
     @PostConstruct
     private void generatePlaces() {
+        LOGGER.warn("generate Places"); // TODO: remove after testing
+
         if (placeRepository.findAll().size() > 0) {
             LOGGER.debug("Places already generated");
         } else {

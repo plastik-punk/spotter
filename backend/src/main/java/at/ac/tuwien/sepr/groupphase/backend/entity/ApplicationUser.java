@@ -28,16 +28,13 @@ public class ApplicationUser {
     private String email;
 
     @Column(nullable = true, length = 15)
-    private Long mobileNumber;
+    private String mobileNumber;
 
     @Column(nullable = false, length = 255)
     private String password;
 
     @Column(nullable = false)
     private RoleEnum role;
-
-    @Column(nullable = false)
-    private Boolean admin;
 
     public Long getId() {
         return id;
@@ -71,11 +68,11 @@ public class ApplicationUser {
         this.email = email;
     }
 
-    public Long getMobileNumber() {
+    public String getMobileNumber() {
         return mobileNumber;
     }
 
-    public void setMobileNumber(Long mobileNumber) {
+    public void setMobileNumber(String mobileNumber) {
         this.mobileNumber = mobileNumber;
     }
 
@@ -95,14 +92,6 @@ public class ApplicationUser {
         this.role = role;
     }
 
-    public Boolean getAdmin() {
-        return admin;
-    }
-
-    public void setAdmin(Boolean admin) {
-        this.admin = admin;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -117,13 +106,12 @@ public class ApplicationUser {
             && Objects.equals(email, applicationUser.email)
             && Objects.equals(mobileNumber, applicationUser.mobileNumber)
             && Objects.equals(password, applicationUser.password)
-            && Objects.equals(role, applicationUser.role)
-            && Objects.equals(admin, applicationUser.admin);
+            && Objects.equals(role, applicationUser.role);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, firstName, lastName, email, mobileNumber, password, role, admin);
+        return Objects.hash(id, firstName, lastName, email, mobileNumber, password, role);
     }
 
     @Override
@@ -136,7 +124,6 @@ public class ApplicationUser {
             + ", mobileNumber=" + mobileNumber
             + ", password='" + password + '\''
             + ", role='" + role + '\''
-            + ", admin='" + admin
             + '}';
     }
 
@@ -145,12 +132,12 @@ public class ApplicationUser {
         private String firstName;
         private String lastName;
         private String email;
-        private Long mobileNumber;
+        private String mobileNumber;
         private String password;
         private RoleEnum role;
-        private Boolean admin;
 
-        private ApplicationUserBuilder() {}
+        private ApplicationUserBuilder() {
+        }
 
         public static ApplicationUserBuilder anApplicationUser() {
             return new ApplicationUserBuilder();
@@ -176,7 +163,7 @@ public class ApplicationUser {
             return this;
         }
 
-        public ApplicationUserBuilder withMobileNumber(Long mobileNumber) {
+        public ApplicationUserBuilder withMobileNumber(String mobileNumber) {
             this.mobileNumber = mobileNumber;
             return this;
         }
@@ -191,11 +178,6 @@ public class ApplicationUser {
             return this;
         }
 
-        public ApplicationUserBuilder withAdmin(Boolean admin) {
-            this.admin = admin;
-            return this;
-        }
-
         public ApplicationUser build() {
             ApplicationUser applicationUser = new ApplicationUser();
             applicationUser.setId(id);
@@ -205,7 +187,6 @@ public class ApplicationUser {
             applicationUser.setMobileNumber(mobileNumber);
             applicationUser.setPassword(password);
             applicationUser.setRole(role);
-            applicationUser.setAdmin(admin);
             return applicationUser;
         }
     }

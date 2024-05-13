@@ -6,6 +6,7 @@ import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 
 @Profile("generateData")
 @Component
+@Order(10)
 public class MessageDataGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -29,6 +31,8 @@ public class MessageDataGenerator {
 
     @PostConstruct
     private void generateMessage() {
+        LOGGER.warn("generate Messages"); // TODO: remove after testing
+
         if (messageRepository.findAll().size() > 0) {
             LOGGER.debug("message already generated");
         } else {

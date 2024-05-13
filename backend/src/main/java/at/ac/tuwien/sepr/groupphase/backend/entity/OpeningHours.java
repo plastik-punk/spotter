@@ -7,8 +7,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 import java.time.DayOfWeek;
@@ -31,10 +29,6 @@ public class OpeningHours {
 
     @Column(name = "closing_time", nullable = false)
     private LocalTime closingTime;
-
-    @ManyToOne
-    @JoinColumn(name = "restaurant_id", nullable = false)
-    private Restaurant restaurant;
 
     // Getters and setters
     public Long getId() {
@@ -69,14 +63,6 @@ public class OpeningHours {
         this.closingTime = closingTime;
     }
 
-    public Restaurant getRestaurant() {
-        return restaurant;
-    }
-
-    public void setRestaurant(Restaurant restaurant) {
-        this.restaurant = restaurant;
-    }
-
     // Equals, hashCode, and toString methods
     @Override
     public boolean equals(Object o) {
@@ -89,13 +75,12 @@ public class OpeningHours {
         return Objects.equals(id, that.id)
             && dayOfWeek == that.dayOfWeek
             && Objects.equals(openingTime, that.openingTime)
-            && Objects.equals(closingTime, that.closingTime)
-            && Objects.equals(restaurant, that.restaurant);
+            && Objects.equals(closingTime, that.closingTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, dayOfWeek, openingTime, closingTime, restaurant);
+        return Objects.hash(id, dayOfWeek, openingTime, closingTime);
     }
 
     @Override
@@ -105,7 +90,6 @@ public class OpeningHours {
             + ", dayOfWeek=" + dayOfWeek
             + ", openingTime=" + openingTime
             + ", closingTime=" + closingTime
-            + ", restaurant=" + restaurant
             + '}';
     }
 
@@ -115,7 +99,6 @@ public class OpeningHours {
         private DayOfWeek dayOfWeek;
         private LocalTime openingTime;
         private LocalTime closingTime;
-        private Restaurant restaurant;
 
         private OpeningHourBuilder() {
         }
@@ -144,18 +127,12 @@ public class OpeningHours {
             return this;
         }
 
-        public OpeningHourBuilder withRestaurant(Restaurant restaurant) {
-            this.restaurant = restaurant;
-            return this;
-        }
-
         public OpeningHours build() {
             OpeningHours openingHour = new OpeningHours();
             openingHour.setId(id);
             openingHour.setDayOfWeek(dayOfWeek);
             openingHour.setOpeningTime(openingTime);
             openingHour.setClosingTime(closingTime);
-            openingHour.setRestaurant(restaurant);
             return openingHour;
         }
     }

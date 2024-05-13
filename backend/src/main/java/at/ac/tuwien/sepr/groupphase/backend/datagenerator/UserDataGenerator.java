@@ -7,12 +7,14 @@ import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
 
 @Profile("generateData")
 @Component
+@Order(12)
 public class UserDataGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -20,7 +22,7 @@ public class UserDataGenerator {
     private static final String[] FIRST_NAMES = {"Alice", "Bob", "Charlie", "Diana", "Eve"};
     private static final String[] LAST_NAMES = {"Smith", "Johnson", "Williams", "Brown", "Jones"};
     private static final String EMAIL_DOMAIN = "@example.com";
-    private static final long[] MOBILE_NUMBERS = {123456789L, 987654321L, 112233445L, 556677889L, 998877665L};
+    private static final String[] MOBILE_NUMBERS = {"123456789", "987654321", "112233445", "556677889", "998877665"};
     private static final String DEFAULT_PASSWORD = "password123";
 
     private static final RoleEnum[] ROLES = {RoleEnum.ADMIN, RoleEnum.EMPLOYEE, RoleEnum.CUSTOMER, RoleEnum.GUEST};
@@ -33,6 +35,8 @@ public class UserDataGenerator {
 
     @PostConstruct
     private void generateUsers() {
+        LOGGER.warn("generate Users"); // TODO: remove after testing
+
         if (!applicationUserRepository.findAll().isEmpty()) {
             LOGGER.debug("Users already generated");
         } else {

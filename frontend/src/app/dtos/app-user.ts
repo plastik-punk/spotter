@@ -4,7 +4,7 @@ export interface AppUser {
   firstName: string;
   lastName: string;
   username: string;
-  mobileNumber: number;
+  mobileNumber: string;
   password: string;
   role: number;
 }

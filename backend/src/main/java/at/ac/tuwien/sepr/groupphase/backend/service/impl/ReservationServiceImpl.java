@@ -2,9 +2,9 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ReservationMapper;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
@@ -28,7 +28,8 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationMapper mapper;
 
     @Autowired
-    public ReservationServiceImpl(ReservationMapper mapper, ReservationRepository reservationRepository, ApplicationUserRepository applicationUserRepository, PlaceRepository placeRepository) {
+    public ReservationServiceImpl(ReservationMapper mapper, ReservationRepository reservationRepository, ApplicationUserRepository applicationUserRepository,
+                                  PlaceRepository placeRepository) {
         this.mapper = mapper;
         this.reservationRepository = reservationRepository;
         this.applicationUserRepository = applicationUserRepository;
@@ -48,7 +49,6 @@ public class ReservationServiceImpl implements ReservationService {
                 .withMobileNumber(reservationCreateDto.getMobileNumber())
                 .withPassword("guest")
                 .withRole(RoleEnum.GUEST)
-                .withAdmin(false)
                 .build();
             reservationCreateDto.setUser(applicationUserRepository.save(guestUser));
         }
