@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserRegistrationDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
@@ -83,4 +84,21 @@ public class CustomUserDetailService implements UserService {
         }
         throw new BadCredentialsException("Username or password is incorrect or account is locked");
     }
+
+    @Override
+    public void register(UserRegistrationDto userRegistrationDto) {
+        //Validate Data.
+        //ApplicationUser newUser = UserMapper.INSTANCE.userRegistrationDtoToApplicationUser(userRegistrationDTO);
+        ApplicationUser newUser = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
+            .withFirstName(userRegistrationDto.getFirstName())
+            .withLastName(userRegistrationDto.getLastName())
+            .withEmail(userRegistrationDto.getEmail())
+            .withMobileNumber(userRegistrationDto.getMobileNumber())
+            .withRole(userRegistrationDto.getRole())
+            .withPassword(userRegistrationDto.getPassword())
+            .build();
+        applicationUserRepository.save(newUser);
+    }
+
+
 }
