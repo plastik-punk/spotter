@@ -1,12 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -50,11 +44,11 @@ public class Reservation {
         this.id = id;
     }
 
-    public ApplicationUser getUser() {
+    public ApplicationUser getApplicationUser() {
         return applicationUser;
     }
 
-    public void setUser(ApplicationUser user) {
+    public void setApplicationUser(ApplicationUser user) {
         this.applicationUser = user;
     }
 
@@ -204,7 +198,7 @@ public class Reservation {
         public Reservation build() {
             Reservation reservation = new Reservation();
             reservation.setId(id);
-            reservation.setUser(applicationUser);
+            reservation.setApplicationUser(applicationUser);
             reservation.setStartTime(startTime);
             reservation.setDate(date);
             reservation.setEndTime(endTime);

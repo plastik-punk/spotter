@@ -1,7 +1,8 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ReservationMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,13 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 
 // todo: use correct endpoint path, activate LoginEndpoint, fix authentication
 
@@ -27,12 +25,10 @@ public class ReservationEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final ReservationService service;
-    private final ReservationMapper reservationMapper;
 
     @Autowired
-    public ReservationEndpoint(ReservationService service, ReservationMapper reservationMapper) {
+    public ReservationEndpoint(ReservationService service) {
         this.service = service;
-        this.reservationMapper = reservationMapper;
     }
 
     // todo: authentication
@@ -43,5 +39,12 @@ public class ReservationEndpoint {
     public Reservation create(@Valid @RequestBody ReservationCreateDto reservationCreateDto) {
         LOGGER.info("POST /api/v1/reservations body: {}", reservationCreateDto.toString());
         return service.create(reservationCreateDto);
+    }
+
+    @GetMapping
+    public List<ReservationListDto> searchHorses(ReservationSearchDto searchParameters) {
+        LOGGER.info("POST /api/v1/reservations");
+        LOGGER.debug("request parameters: {}", searchParameters);
+        return service.search(searchParameters);
     }
 }

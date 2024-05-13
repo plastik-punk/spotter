@@ -1,6 +1,8 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ReservationMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -62,5 +65,13 @@ public class ReservationServiceImpl implements ReservationService {
 
         // 3. save Reservation in database and return the new entity
         return reservationRepository.save(reservation);
+    }
+
+    @Override
+    public List<ReservationListDto> search(ReservationSearchDto reservationSearchDto) {
+        LOGGER.trace("search ({})", reservationSearchDto.toString());
+        List<Reservation> reservations = reservationRepository.findReservationsByDate(reservationSearchDto.getEarliestDate(),
+            reservationSearchDto.getLatestDate(), reservationSearchDto.getEarliestStartTime(), reservationSearchDto.getLatestEndTime());
+        return mapper.reservationToReservationListDto(reservations);
     }
 }

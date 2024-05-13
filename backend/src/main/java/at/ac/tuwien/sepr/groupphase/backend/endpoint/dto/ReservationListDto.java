@@ -1,17 +1,22 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Objects;
 
 public class ReservationListDto {
 
     private Long id;
 
-    private String user;
+    private String userFirstName;
 
-    private LocalDateTime startDate;
+    private String userLastName;
 
-    private LocalDateTime endDate;
+    private LocalTime startTime;
+
+    private LocalDate date;
+
+    private LocalTime endTime;
 
     private Long pax;
 
@@ -26,30 +31,48 @@ public class ReservationListDto {
         return this;
     }
 
-    public String getUser() {
-        return user;
+    public String getUserFirstName() {
+        return userFirstName;
     }
 
-    public ReservationListDto setUser(String user) {
-        this.user = user;
+    public ReservationListDto setUserFirstName(String userFirstName) {
+        this.userFirstName = userFirstName;
         return this;
     }
 
-    public LocalDateTime getStartDate() {
-        return startDate;
+    public String getUserLastName() {
+        return userLastName;
     }
 
-    public ReservationListDto setStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
+    public ReservationListDto setUserLastName(String userLastName) {
+        this.userLastName = userLastName;
         return this;
     }
 
-    public LocalDateTime getEndDate() {
-        return endDate;
+    public LocalTime getStartTime() {
+        return startTime;
     }
 
-    public ReservationListDto setEndDate(LocalDateTime endDate) {
-        this.endDate = endDate;
+    public ReservationListDto setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+        return this;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public ReservationListDto setDate(LocalDate date) {
+        this.date = date;
+        return this;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public ReservationListDto setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
         return this;
     }
 
@@ -80,25 +103,29 @@ public class ReservationListDto {
             return false;
         }
         return Objects.equals(id, that.id)
-            && Objects.equals(user, that.user)
-            && Objects.equals(startDate, that.startDate)
-            && Objects.equals(endDate, that.endDate)
+            && Objects.equals(userFirstName, that.userFirstName)
+            && Objects.equals(userLastName, that.userLastName)
+            && Objects.equals(startTime, that.startTime)
+            && Objects.equals(date, that.date)
+            && Objects.equals(endTime, that.endTime)
             && Objects.equals(pax, that.pax)
             && Objects.equals(placeId, that.placeId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user, startDate, endDate, pax, placeId);
+        return Objects.hash(id, userFirstName, userLastName, startTime, date, endTime, pax, placeId);
     }
 
     @Override
     public String toString() {
         return "reservationListDto{"
             + "id=" + id
-            + ", user='" + user + '\''
-            + ", startDate=" + startDate + '\''
-            + ", endDate=" + endDate + '\''
+            + ", userFirstName='" + userFirstName + '\''
+            + ", userLastName='" + userLastName + '\''
+            + ", startTime=" + startTime
+            + ", date=" + date
+            + ", endTime=" + endTime
             + ", pax=" + pax + '\''
             + ", placeId=" + placeId
             + '}';
@@ -107,9 +134,13 @@ public class ReservationListDto {
 
     public static final class ReservationListDtoBuilder {
         private Long id;
-        private String user;
-        private LocalDateTime startDate;
-        private LocalDateTime endDate;
+        private String userFirstName;
+        private String userLastName;
+        private LocalTime startTime;
+
+        private LocalDate date;
+
+        private LocalTime endTime;
         private Long pax;
         private Long placeId;
 
@@ -125,18 +156,28 @@ public class ReservationListDto {
             return this;
         }
 
-        public ReservationListDtoBuilder withUser(String user) {
-            this.user = user;
+        public ReservationListDtoBuilder withUserFirstName(String userFirstName) {
+            this.userFirstName = userFirstName;
             return this;
         }
 
-        public ReservationListDtoBuilder withStartDate(LocalDateTime startDate) {
-            this.startDate = startDate;
+        public ReservationListDtoBuilder withUserLastName(String userLastName) {
+            this.userLastName = userLastName;
             return this;
         }
 
-        public ReservationListDtoBuilder withEndDate(LocalDateTime endDate) {
-            this.endDate = endDate;
+        public ReservationListDtoBuilder withStartTime(LocalTime startTime) {
+            this.startTime = startTime;
+            return this;
+        }
+
+        public ReservationListDtoBuilder withDate(LocalDate date) {
+            this.date = date;
+            return this;
+        }
+
+        public ReservationListDtoBuilder withEndTime(LocalTime endTime) {
+            this.endTime = endTime;
             return this;
         }
 
@@ -153,9 +194,11 @@ public class ReservationListDto {
         public ReservationListDto build() {
             ReservationListDto reservationListDto = new ReservationListDto();
             reservationListDto.setId(id);
-            reservationListDto.setUser(user);
-            reservationListDto.setStartDate(startDate);
-            reservationListDto.setEndDate(endDate);
+            reservationListDto.setUserFirstName(userFirstName);
+            reservationListDto.setUserLastName(userLastName);
+            reservationListDto.setStartTime(startTime);
+            reservationListDto.setDate(date);
+            reservationListDto.setEndTime(endTime);
             reservationListDto.setPax(pax);
             reservationListDto.setPlaceId(placeId);
             return reservationListDto;
