@@ -24,7 +24,7 @@ public class EmailSenderImpl implements EmailService {
     private SimpleMailMessage template;
     @Autowired
     private SpringTemplateEngine thymeleafTemplateEngine;
-    @Value("classpath:images/logo.png")
+    @Value("../resources/images/logo.png")
     private Resource resourceFile;
 
     @Override
@@ -53,7 +53,7 @@ public class EmailSenderImpl implements EmailService {
         templateModel.put("reservationDate", "-Reservation date-"); //TODO: change to reservation date
         templateModel.put("reservationTime", "-Reservation time-"); //TODO: change to reservation time
         templateModel.put("link", "-link here-"); //TODO: change to the link
-        templateModel.put("SpotterLogo", resourceFile); //TODO: fix logo insertion
+        templateModel.put("spotterLogo", "../resources/images/logo.png"); //TODO: fix logo insertion
 
 
         Context thymeleafContext = new Context();
