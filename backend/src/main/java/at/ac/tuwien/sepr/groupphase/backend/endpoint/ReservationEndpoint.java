@@ -21,7 +21,7 @@ import java.lang.invoke.MethodHandles;
 // todo: use correct endpoint path, activate LoginEndpoint, fix authentication
 
 @RestController
-@RequestMapping(value = "/api/v1/authentication")
+@RequestMapping(value = "/api/v1/reservations")
 public class ReservationEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

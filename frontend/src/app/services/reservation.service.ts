@@ -10,7 +10,7 @@ import {Observable} from "rxjs";
 
 export class ReservationService {
 
-  private reservationBaseUri : string = this.globals.backendUri + "/authentication"; // todo: change to reservation after auth is implemented
+  private reservationBaseUri : string = this.globals.backendUri + "/reservations"; // todo: change to reservation after auth is implemented
 
   constructor(private httpClient: HttpClient, private globals: Globals) {}
 
