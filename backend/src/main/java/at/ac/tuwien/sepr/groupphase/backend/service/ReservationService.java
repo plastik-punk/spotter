@@ -4,8 +4,13 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import jakarta.mail.MessagingException;
 
-// TODO: JavaDoc
 
-public interface ReservationService {
+
+    /**
+     * Create a reservation.
+     *
+     * @param reservationCreateDto the reservation data
+     * @return the reservation as provided from the Repository layer after creation in the database
+     */
     Reservation create(ReservationCreateDto reservationCreateDto) throws MessagingException;
 }
