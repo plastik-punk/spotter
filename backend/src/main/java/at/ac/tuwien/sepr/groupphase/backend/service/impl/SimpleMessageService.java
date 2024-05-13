@@ -4,6 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Message;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.MessageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.MessageService;
+import at.ac.tuwien.sepr.groupphase.backend.service.mail.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,9 +19,11 @@ public class SimpleMessageService implements MessageService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final MessageRepository messageRepository;
+    private final EmailService emailService;
 
-    public SimpleMessageService(MessageRepository messageRepository) {
+    public SimpleMessageService(MessageRepository messageRepository, EmailService emailService) {
         this.messageRepository = messageRepository;
+        this.emailService = emailService;
     }
 
     @Override
@@ -44,6 +47,12 @@ public class SimpleMessageService implements MessageService {
     public Message publishMessage(Message message) {
         LOGGER.debug("Publish new message {}", message);
         message.setPublishedAt(LocalDateTime.now());
+        /* just for testing purposes
+        try {
+            emailService.sendMessageUsingThymeleafTemplate("leon.stempfer@outlook.com", "New message", message.getText());
+        } catch (IOException | MessagingException e) {
+            throw new RuntimeException(e);
+        }*/
         return messageRepository.save(message);
     }
 

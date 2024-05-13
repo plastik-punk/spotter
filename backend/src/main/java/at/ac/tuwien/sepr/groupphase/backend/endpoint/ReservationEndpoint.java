@@ -8,6 +8,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.annotation.security.PermitAll;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,7 @@ import java.util.List;
 // todo: use correct endpoint path, activate LoginEndpoint, fix authentication
 
 @RestController
-@RequestMapping(value = "/api/v1/authentication")
+@RequestMapping(value = "/api/v1/reservations")
 public class ReservationEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -43,7 +44,7 @@ public class ReservationEndpoint {
     @Operation(summary = "Create a new reservation")
     @PermitAll
     @PostMapping
-    public Reservation create(@Valid @RequestBody ReservationCreateDto reservationCreateDto) {
+    public Reservation create(@Valid @RequestBody ReservationCreateDto reservationCreateDto) throws MessagingException {
         LOGGER.info("POST /api/v1/reservations body: {}", reservationCreateDto.toString());
         return service.create(reservationCreateDto);
     }

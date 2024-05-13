@@ -10,8 +10,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-// TODO: JavaDoc
-
+/**
+ * Repository for the entity Reservation.
+ * Extends JpaRepository to have basic CRUD operations.
+ */
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     @Query(value = "SELECT r.* FROM reservation r WHERE "

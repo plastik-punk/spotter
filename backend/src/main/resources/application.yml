@@ -71,3 +71,22 @@ spring:
     timeout-per-shutdown-phase: 30s
 server:
   shutdown: graceful
+---
+spring:
+  mail:
+    host: smtp-mail.outlook.com
+    port: 587
+    username: leon.stempfer@outlook.com
+    password: qgaqkidxqzwnstlz
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+---
+spring:
+  mail:
+    templates:
+      path: mail-templates
+---
