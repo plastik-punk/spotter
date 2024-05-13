@@ -1,4 +1,4 @@
-package at.ac.tuwien.sepr.groupphase.backend.service.Mail;
+package at.ac.tuwien.sepr.groupphase.backend.service.mail;
 
 import jakarta.mail.MessagingException;
 

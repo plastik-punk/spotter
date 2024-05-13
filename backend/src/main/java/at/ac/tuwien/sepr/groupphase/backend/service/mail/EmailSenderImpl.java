@@ -1,4 +1,4 @@
-package at.ac.tuwien.sepr.groupphase.backend.service.Mail;
+package at.ac.tuwien.sepr.groupphase.backend.service.mail;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -53,7 +53,7 @@ public class EmailSenderImpl implements EmailService {
         templateModel.put("reservationDate", "-Reservation date-"); //TODO: change to reservation date
         templateModel.put("reservationTime", "-Reservation time-"); //TODO: change to reservation time
         templateModel.put("link", "-link here-"); //TODO: change to the link
-        templateModel.put("SpotterLogo", resourceFile);
+        templateModel.put("SpotterLogo", resourceFile); //TODO: fix logo insertion
 
 
         Context thymeleafContext = new Context();
