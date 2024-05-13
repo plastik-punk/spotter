@@ -37,11 +37,6 @@ export class ReservationService {
     if (searchParams.latestEndTime) {
       params = params.append('latestEndTime', formatIsoDate(searchParams.latestEndTime));
     }
-    return this.httpClient.get<ReservationListDto[]>(this.reservationBaseUri, { params })
-      .pipe(tap(reservations => reservations.map(r => {
-        r.startTime = new Date(r.startTime);
-        r.date = new Date(r.date);
-        r.endTime = new Date(r.endTime);
-      })));
+    return this.httpClient.get<ReservationListDto[]>(this.reservationBaseUri, { params });
   }
 }
