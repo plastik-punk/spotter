@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.annotation.security.PermitAll;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,7 @@ public class ReservationEndpoint {
     @Operation(summary = "Create a new reservation")
     @PermitAll
     @PostMapping
-    public Reservation create(@Valid @RequestBody ReservationCreateDto reservationCreateDto) {
+    public Reservation create(@Valid @RequestBody ReservationCreateDto reservationCreateDto) throws MessagingException {
         LOGGER.info("POST /api/v1/reservations body: {}", reservationCreateDto.toString());
         return service.create(reservationCreateDto);
     }

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Reservation Conformation</title>
+</head>
+<body>
+<p>Thank you for reserving at <span th:text="${restaurantName}"></span></p>
+
+<p><b>Here are the details of your reservation:</b></p>
+<p>Your reservation is confirmed for <span th:text="${reservationDate}"></span> at
+    <span th:text="${reservationTime}"></span></p>
+<p th:text="${recipientName}"></p>
+<p th:text="${text}"></p>
+<p><span th:text="${persons}"></span> Persons</p>
+<br/>
+<p>For the details follow this link: <br/>
+    <link th:text="${link}">
+</p>
+<p>
+    Regards, <br/>
+    <em>The Spotter Team</em>
+</p>
+
+</body>
+</html>
