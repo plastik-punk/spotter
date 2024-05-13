@@ -14,7 +14,7 @@ import java.lang.invoke.MethodHandles;
 
 @Profile("generateData")
 @Component
-@Order(11)
+@Order(1)
 public class PlaceDataGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -28,7 +28,7 @@ public class PlaceDataGenerator {
 
     @PostConstruct
     private void generatePlaces() {
-        LOGGER.warn("generate Places"); // TODO: remove after testing
+        LOGGER.trace("generatePlaces");
 
         if (placeRepository.findAll().size() > 0) {
             LOGGER.debug("Places already generated");

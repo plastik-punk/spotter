@@ -20,7 +20,7 @@ import java.util.List;
 
 @Profile("generateData")
 @Component
-@Order(13)
+@Order(3)
 public class ReservationDataGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -45,7 +45,7 @@ public class ReservationDataGenerator {
 
     @PostConstruct
     private void generateReservations() {
-        LOGGER.warn("generate Reservations"); // TODO: remove after testing
+        LOGGER.trace("generateReservations");
 
         List<Place> places = placeRepository.findAll();
         List<ApplicationUser> applicationUsers = applicationUserRepository.findAll();

@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 @Profile("generateData")
 @Component
-@Order(10)
+@Order(0)
 public class MessageDataGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -31,7 +31,7 @@ public class MessageDataGenerator {
 
     @PostConstruct
     private void generateMessage() {
-        LOGGER.warn("generate Messages"); // TODO: remove after testing
+        LOGGER.trace("generateMessages");
 
         if (messageRepository.findAll().size() > 0) {
             LOGGER.debug("message already generated");

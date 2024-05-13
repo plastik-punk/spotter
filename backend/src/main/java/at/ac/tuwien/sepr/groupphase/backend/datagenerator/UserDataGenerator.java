@@ -14,7 +14,7 @@ import java.lang.invoke.MethodHandles;
 
 @Profile("generateData")
 @Component
-@Order(12)
+@Order(2)
 public class UserDataGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -35,7 +35,7 @@ public class UserDataGenerator {
 
     @PostConstruct
     private void generateUsers() {
-        LOGGER.warn("generate Users"); // TODO: remove after testing
+        LOGGER.trace("generateUsers");
 
         if (!applicationUserRepository.findAll().isEmpty()) {
             LOGGER.debug("Users already generated");
