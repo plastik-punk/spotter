@@ -19,8 +19,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -84,6 +85,8 @@ public class ReservationEndpointTest implements TestData {
 
     @Test
     public void givenReservationCreateDto_whenCreateForCustomer_thenReservationIsCreated() throws Exception {
+        // given: s. TestData
+
         // when
         String body = objectMapper.writeValueAsString(customerReservationCreateDto);
         MvcResult mvcResult = this.mockMvc.perform(post(RESERVATION_BASE_URI)
@@ -96,14 +99,17 @@ public class ReservationEndpointTest implements TestData {
         // then
         ReservationCreateDto response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ReservationCreateDto.class);
         assertNotNull(response);
-        assertEquals(TEST_RESERVATION_APPLICATION_USER_CUSTOMER.getFirstName(), response.getFirstName());
-        assertEquals(TEST_RESERVATION_APPLICATION_USER_CUSTOMER.getLastName(), response.getLastName());
-        assertEquals(TEST_RESERVATION_APPLICATION_USER_CUSTOMER.getEmail(), response.getEmail());
-        assertEquals(TEST_RESERVATION_APPLICATION_USER_CUSTOMER.getMobileNumber(), response.getMobileNumber());
-        assertEquals(TEST_RESERVATION_START_TIME, response.getStartTime());
-        assertEquals(TEST_RESERVATION_DATE, response.getDate());
-        assertEquals(TEST_RESERVATION_END_TIME, response.getEndTime());
-        assertEquals(TEST_RESERVATION_PAX, response.getPax());
-        assertEquals(TEST_RESERVATION_NOTES, response.getNotes());
+
+        assertAll(
+            () -> assertEquals(TEST_RESERVATION_APPLICATION_USER_CUSTOMER.getFirstName(), response.getFirstName()),
+            () -> assertEquals(TEST_RESERVATION_APPLICATION_USER_CUSTOMER.getLastName(), response.getLastName()),
+            () -> assertEquals(TEST_RESERVATION_APPLICATION_USER_CUSTOMER.getEmail(), response.getEmail()),
+            () -> assertEquals(TEST_RESERVATION_APPLICATION_USER_CUSTOMER.getMobileNumber(), response.getMobileNumber()),
+            () -> assertEquals(TEST_RESERVATION_START_TIME, response.getStartTime()),
+            () -> assertEquals(TEST_RESERVATION_DATE, response.getDate()),
+            () -> assertEquals(TEST_RESERVATION_END_TIME, response.getEndTime()),
+            () -> assertEquals(TEST_RESERVATION_PAX, response.getPax()),
+            () -> assertEquals(TEST_RESERVATION_NOTES, response.getNotes())
+        );
     }
 }
