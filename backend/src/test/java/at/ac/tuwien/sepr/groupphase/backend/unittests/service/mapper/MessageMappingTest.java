@@ -2,7 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.unittests.service.mapper;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DetailedMessageDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SimpleMessageDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.MessageDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Message;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.MessageMapper;
 import org.junit.jupiter.api.Test;
@@ -51,14 +51,14 @@ public class MessageMappingTest implements TestData {
         messages.add(message);
         messages.add(message);
 
-        List<SimpleMessageDto> simpleMessageDtos = messageMapper.messageToSimpleMessageDto(messages);
-        assertEquals(2, simpleMessageDtos.size());
-        SimpleMessageDto simpleMessageDto = simpleMessageDtos.get(0);
+        List<MessageDto> messageDtos = messageMapper.messageToSimpleMessageDto(messages);
+        assertEquals(2, messageDtos.size());
+        MessageDto messageDto = messageDtos.get(0);
         assertAll(
-            () -> assertEquals(ID, simpleMessageDto.getId()),
-            () -> assertEquals(TEST_NEWS_TITLE, simpleMessageDto.getTitle()),
-            () -> assertEquals(TEST_NEWS_SUMMARY, simpleMessageDto.getSummary()),
-            () -> assertEquals(TEST_NEWS_PUBLISHED_AT, simpleMessageDto.getPublishedAt())
+            () -> assertEquals(ID, messageDto.getId()),
+            () -> assertEquals(TEST_NEWS_TITLE, messageDto.getTitle()),
+            () -> assertEquals(TEST_NEWS_SUMMARY, messageDto.getSummary()),
+            () -> assertEquals(TEST_NEWS_PUBLISHED_AT, messageDto.getPublishedAt())
         );
     }
 

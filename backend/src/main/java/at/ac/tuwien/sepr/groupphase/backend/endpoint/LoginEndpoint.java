@@ -1,7 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
-import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ApplicationUserLoginDto;
+import at.ac.tuwien.sepr.groupphase.backend.service.ApplicationUserService;
 import jakarta.annotation.security.PermitAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,17 +18,17 @@ public class LoginEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final UserService userService;
+    private final ApplicationUserService applicationUserService;
 
-    public LoginEndpoint(UserService userService) {
-        this.userService = userService;
+    public LoginEndpoint(ApplicationUserService applicationUserService) {
+        this.applicationUserService = applicationUserService;
     }
 
     @PermitAll
     @PostMapping
-    public String login(@RequestBody UserLoginDto userLoginDto) {
-        LOGGER.info("POST /api/v1/authentication body: {}", userLoginDto);
-        return userService.login(userLoginDto);
+    public String login(@RequestBody ApplicationUserLoginDto applicationUserLoginDto) {
+        LOGGER.info("POST /api/v1/authentication body: {}", applicationUserLoginDto);
+        return applicationUserService.login(applicationUserLoginDto);
     }
 }
 

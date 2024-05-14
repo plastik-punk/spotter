@@ -16,5 +16,5 @@ public interface ReservationService {
      * @param reservationCreateDto the reservation data
      * @return the reservation as provided from the Repository layer after creation in the database
      */
-    Reservation create(ReservationCreateDto reservationCreateDto) throws MessagingException;
+    ReservationCreateDto create(ReservationCreateDto reservationCreateDto) throws MessagingException;
 }

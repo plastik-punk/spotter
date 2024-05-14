@@ -8,6 +8,8 @@ import java.util.Objects;
 
 public class ReservationCreateDto {
 
+    private Long id;
+
     private ApplicationUser applicationUser;
 
     private String firstName;
@@ -28,11 +30,19 @@ public class ReservationCreateDto {
 
     private String mobileNumber;
 
-    public ApplicationUser getUser() {
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public ApplicationUser getApplicationUser() {
         return applicationUser;
     }
 
-    public void setUser(ApplicationUser applicationUser) {
+    public void setApplicationUser(ApplicationUser applicationUser) {
         this.applicationUser = applicationUser;
     }
 
@@ -116,7 +126,8 @@ public class ReservationCreateDto {
         if (!(o instanceof ReservationCreateDto that)) {
             return false;
         }
-        return Objects.equals(applicationUser, that.applicationUser)
+        return Objects.equals(id, that.id)
+            && Objects.equals(applicationUser, that.applicationUser)
             && Objects.equals(firstName, that.firstName)
             && Objects.equals(lastName, that.lastName)
             && Objects.equals(startTime, that.startTime)
@@ -130,13 +141,14 @@ public class ReservationCreateDto {
 
     @Override
     public int hashCode() {
-        return Objects.hash(applicationUser, firstName, lastName, startTime, endTime, date, pax, notes, email, mobileNumber);
+        return Objects.hash(id, applicationUser, firstName, lastName, startTime, endTime, date, pax, notes, email, mobileNumber);
     }
 
     @Override
     public String toString() {
         return "ReservationCreateDto{"
-            + "user='" + applicationUser + '\''
+            + "id=" + id
+            + ", applicationUser='" + applicationUser + '\''
             + ", firstName='" + firstName + '\''
             + ", lastName='" + lastName + '\''
             + ", startTime=" + startTime
@@ -150,6 +162,7 @@ public class ReservationCreateDto {
     }
 
     public static final class ReservationCreateDtoBuilder {
+        private Long id;
         private ApplicationUser applicationUser;
         private String firstName;
         private String lastName;
@@ -168,7 +181,12 @@ public class ReservationCreateDto {
             return new ReservationCreateDtoBuilder();
         }
 
-        public ReservationCreateDtoBuilder withUserId(ApplicationUser applicationUser) {
+        public ReservationCreateDtoBuilder withId(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public ReservationCreateDtoBuilder withApplicationUser(ApplicationUser applicationUser) {
             this.applicationUser = applicationUser;
             return this;
         }
@@ -220,7 +238,8 @@ public class ReservationCreateDto {
 
         public ReservationCreateDto build() {
             ReservationCreateDto reservationCreateDto = new ReservationCreateDto();
-            reservationCreateDto.setUser(applicationUser);
+            reservationCreateDto.setId(id);
+            reservationCreateDto.setApplicationUser(applicationUser);
             reservationCreateDto.setFirstName(firstName);
             reservationCreateDto.setLastName(lastName);
             reservationCreateDto.setStartTime(startTime);

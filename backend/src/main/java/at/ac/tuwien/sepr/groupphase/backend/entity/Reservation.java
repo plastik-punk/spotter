@@ -50,12 +50,12 @@ public class Reservation {
         this.id = id;
     }
 
-    public ApplicationUser getUser() {
+    public ApplicationUser getApplicationUser() {
         return applicationUser;
     }
 
-    public void setUser(ApplicationUser user) {
-        this.applicationUser = user;
+    public void setApplicationUser(ApplicationUser applicationUser) {
+        this.applicationUser = applicationUser;
     }
 
     public LocalTime getStartTime() {
@@ -166,7 +166,7 @@ public class Reservation {
             return this;
         }
 
-        public ReservationBuilder withUser(ApplicationUser applicationUser) {
+        public ReservationBuilder withApplicationUser(ApplicationUser applicationUser) {
             this.applicationUser = applicationUser;
             return this;
         }
@@ -204,7 +204,7 @@ public class Reservation {
         public Reservation build() {
             Reservation reservation = new Reservation();
             reservation.setId(id);
-            reservation.setUser(applicationUser);
+            reservation.setApplicationUser(applicationUser);
             reservation.setStartTime(startTime);
             reservation.setDate(date);
             reservation.setEndTime(endTime);

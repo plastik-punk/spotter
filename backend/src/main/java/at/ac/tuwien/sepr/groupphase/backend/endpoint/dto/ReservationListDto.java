@@ -7,7 +7,7 @@ public class ReservationListDto {
 
     private Long id;
 
-    private String user;
+    private String applicationUser;
 
     private LocalDateTime startDate;
 
@@ -26,12 +26,12 @@ public class ReservationListDto {
         return this;
     }
 
-    public String getUser() {
-        return user;
+    public String getApplicationUser() {
+        return applicationUser;
     }
 
-    public ReservationListDto setUser(String user) {
-        this.user = user;
+    public ReservationListDto setApplicationUser(String applicationUser) {
+        this.applicationUser = applicationUser;
         return this;
     }
 
@@ -80,7 +80,7 @@ public class ReservationListDto {
             return false;
         }
         return Objects.equals(id, that.id)
-            && Objects.equals(user, that.user)
+            && Objects.equals(applicationUser, that.applicationUser)
             && Objects.equals(startDate, that.startDate)
             && Objects.equals(endDate, that.endDate)
             && Objects.equals(pax, that.pax)
@@ -89,14 +89,14 @@ public class ReservationListDto {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, user, startDate, endDate, pax, placeId);
+        return Objects.hash(id, applicationUser, startDate, endDate, pax, placeId);
     }
 
     @Override
     public String toString() {
         return "reservationListDto{"
             + "id=" + id
-            + ", user='" + user + '\''
+            + ", applicationUser='" + applicationUser + '\''
             + ", startDate=" + startDate + '\''
             + ", endDate=" + endDate + '\''
             + ", pax=" + pax + '\''
@@ -107,7 +107,7 @@ public class ReservationListDto {
 
     public static final class ReservationListDtoBuilder {
         private Long id;
-        private String user;
+        private String applicationUser;
         private LocalDateTime startDate;
         private LocalDateTime endDate;
         private Long pax;
@@ -125,8 +125,8 @@ public class ReservationListDto {
             return this;
         }
 
-        public ReservationListDtoBuilder withUser(String user) {
-            this.user = user;
+        public ReservationListDtoBuilder withApplicationUser(String applicationUser) {
+            this.applicationUser = applicationUser;
             return this;
         }
 
@@ -153,7 +153,7 @@ public class ReservationListDto {
         public ReservationListDto build() {
             ReservationListDto reservationListDto = new ReservationListDto();
             reservationListDto.setId(id);
-            reservationListDto.setUser(user);
+            reservationListDto.setApplicationUser(applicationUser);
             reservationListDto.setStartDate(startDate);
             reservationListDto.setEndDate(endDate);
             reservationListDto.setPax(pax);

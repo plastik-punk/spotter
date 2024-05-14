@@ -15,7 +15,7 @@ import java.lang.invoke.MethodHandles;
 @Profile("generateData")
 @Component
 @Order(2)
-public class UserDataGenerator {
+public class ApplicationUserDataGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final int NUMBER_OF_USERS_TO_GENERATE = 5;
@@ -29,18 +29,18 @@ public class UserDataGenerator {
 
     private final ApplicationUserRepository applicationUserRepository;
 
-    public UserDataGenerator(ApplicationUserRepository applicationUserRepository) {
+    public ApplicationUserDataGenerator(ApplicationUserRepository applicationUserRepository) {
         this.applicationUserRepository = applicationUserRepository;
     }
 
     @PostConstruct
-    private void generateUsers() {
+    private void generateApplicationUsers() {
         LOGGER.trace("generateUsers");
 
         if (!applicationUserRepository.findAll().isEmpty()) {
             LOGGER.debug("Users already generated");
         } else {
-            LOGGER.debug("Generating {} user entries", NUMBER_OF_USERS_TO_GENERATE);
+            LOGGER.debug("Generating {} applicationUser entries", NUMBER_OF_USERS_TO_GENERATE);
             for (int i = 0; i < NUMBER_OF_USERS_TO_GENERATE; i++) {
                 ApplicationUser applicationUser = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
                     .withFirstName(FIRST_NAMES[i % FIRST_NAMES.length])

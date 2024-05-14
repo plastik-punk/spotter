@@ -9,7 +9,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository
 import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
-import at.ac.tuwien.sepr.groupphase.backend.service.mail.EmailService;
+import at.ac.tuwien.sepr.groupphase.backend.service.EmailService;
 import jakarta.mail.MessagingException;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ReservationMapper;
 import org.slf4j.Logger;
@@ -44,13 +44,13 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public Reservation create(ReservationCreateDto reservationCreateDto) throws MessagingException {
+    public ReservationCreateDto create(ReservationCreateDto reservationCreateDto) throws MessagingException {
         LOGGER.trace("create ({})", reservationCreateDto.toString());
 
         // TODO: validation of incoming user and reservation data
 
         // 1. if guest user, create a new guest user, save it in DB and set returned user to reservationCreateDto
-        if (reservationCreateDto.getUser() == null) {
+        if (reservationCreateDto.getApplicationUser() == null) {
             ApplicationUser guestUser = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
                 .withFirstName(reservationCreateDto.getFirstName())
                 .withLastName(reservationCreateDto.getLastName())
@@ -59,7 +59,9 @@ public class ReservationServiceImpl implements ReservationService {
                 .withPassword("guest")
                 .withRole(RoleEnum.GUEST)
                 .build();
-            reservationCreateDto.setUser(applicationUserRepository.save(guestUser));
+
+            ApplicationUser savedGuestUser = applicationUserRepository.save(guestUser);
+            reservationCreateDto.setApplicationUser(savedGuestUser);
         }
 
         // 2. map to Reservation entity
@@ -79,10 +81,10 @@ public class ReservationServiceImpl implements ReservationService {
         templateModel.put("reservationDate", reservationCreateDto.getDate());
         templateModel.put("reservationTime", reservationCreateDto.getStartTime());
         templateModel.put("link", "--link here--"); //TODO: change to the link
-        emailService.sendMessageUsingThymeleafTemplate(reservationCreateDto.getUser().getEmail(),
+        emailService.sendMessageUsingThymeleafTemplate(reservationCreateDto.getApplicationUser().getEmail(),
             "Reservation Confirmation", templateModel);
 
-        // 4. save Reservation in database and return the new entity
-        return reservationRepository.save(reservation);
+        // 4. save Reservation in database and return it mapped to a DTO
+        return mapper.reservationToReservationCreateDto(reservationRepository.save(reservation));
     }
 }

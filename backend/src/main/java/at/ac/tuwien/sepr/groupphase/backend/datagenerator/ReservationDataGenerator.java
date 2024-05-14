@@ -27,7 +27,7 @@ public class ReservationDataGenerator {
     private static final int NUMBER_OF_RESERVATIONS_TO_GENERATE = 5;
 
     private final PlaceDataGenerator placeDataGenerator;
-    private final UserDataGenerator userDataGenerator;
+    private final ApplicationUserDataGenerator applicationUserDataGenerator;
 
     private final ReservationRepository reservationRepository;
     private final PlaceRepository placeRepository;
@@ -35,12 +35,12 @@ public class ReservationDataGenerator {
 
     public ReservationDataGenerator(ReservationRepository reservationRepository, PlaceRepository placeRepository,
                                     ApplicationUserRepository applicationUserRepository, PlaceDataGenerator placeDataGenerator,
-                                    UserDataGenerator userDataGenerator) {
+                                    ApplicationUserDataGenerator applicationUserDataGenerator) {
         this.reservationRepository = reservationRepository;
         this.placeRepository = placeRepository;
         this.applicationUserRepository = applicationUserRepository;
         this.placeDataGenerator = placeDataGenerator;
-        this.userDataGenerator = userDataGenerator;
+        this.applicationUserDataGenerator = applicationUserDataGenerator;
     }
 
     @PostConstruct
@@ -53,7 +53,7 @@ public class ReservationDataGenerator {
         if (reservationRepository.count() > 0) {
             LOGGER.debug("Reservations have already been generated");
         } else if (places.isEmpty() || applicationUsers.isEmpty()) {
-            LOGGER.warn("Cannot generate reservations: No places or users found");
+            LOGGER.warn("Cannot generate reservations: No places or applicationUsers found");
         } else {
             LOGGER.debug("Generating {} reservation entries", NUMBER_OF_RESERVATIONS_TO_GENERATE);
             for (int i = 0; i < NUMBER_OF_RESERVATIONS_TO_GENERATE; i++) {
@@ -61,7 +61,7 @@ public class ReservationDataGenerator {
                 ApplicationUser applicationUser = applicationUsers.get(i % applicationUsers.size());
 
                 Reservation reservation = Reservation.ReservationBuilder.aReservation()
-                    .withUser(applicationUser)
+                    .withApplicationUser(applicationUser)
                     .withStartTime(LocalTime.of(19, 0))
                     .withDate(LocalDate.of(2022, 1, 1))
                     .withEndTime(LocalTime.of(21, 0))
