@@ -5,5 +5,6 @@ public enum RoleEnum {
     EMPLOYEE,
     CUSTOMER,
     GUEST,
-    UNCONFIRMED_ADMIN
+    UNCONFIRMED_ADMIN,
+    UNCONFIRMED_EMPLOYEE
 }

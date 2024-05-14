@@ -1,21 +1,29 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import { RegistrationService } from '../../services/registration.service';
-import { UserRegistrationDTO, UserRole } from '../../dtos/app-user';
+import {RegistrationService} from '../../services/registration.service';
+import {UserRegistrationDTO, UserRole} from '../../dtos/app-user';
+import {NgIf} from "@angular/common";
+import {CommonModule} from "@angular/common";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-register',
   templateUrl: './registration.component.html',
   standalone: true,
   imports: [
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgIf,
+    CommonModule
   ],
   styleUrls: ['./registration.component.scss']
 })
 export class RegistrationComponent {
   registrationForm: FormGroup;
+  error = false;
+  errorMessage = '';
+  errorMessages: string[] = [];
 
-  constructor(private fb: FormBuilder, private registrationService: RegistrationService) {
+  constructor(private fb: FormBuilder, private registrationService: RegistrationService, private router: Router) {
     this.registrationForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
@@ -37,18 +45,22 @@ export class RegistrationComponent {
         password: this.registrationForm.get('password').value,
         role: this.registrationForm.get('ownerCheck').value ? UserRole.UNCONFIRMED_ADMIN : UserRole.CUSTOMER
       };
-
-      // Call the registration service to send the user data
       this.registrationService.registerUser(userData).subscribe({
-        next: (response) => {
+        next: () => {
           console.log('Registration successful!');
-          // Possibly redirect the user or clear the form
+          this.router.navigate(['/login']);
         },
         error: (error) => {
-          console.error('Registration failed with status: ', error.status);
-          // Handle errors, perhaps show user feedback
+          console.error('Registration failed with status:', error.status);
+          this.errorMessages = error.error.errors;
+          this.error = true;
         }
       });
     }
+  }
+
+  vanishError(): void {
+    this.error = false;
+    this.errorMessages = [];
   }
 }

@@ -5,9 +5,11 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserRegistrationDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
+import at.ac.tuwien.sepr.groupphase.backend.service.mapper.UserMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,12 +32,17 @@ public class CustomUserDetailService implements UserService {
     private final ApplicationUserRepository applicationUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenizer jwtTokenizer;
+    private final UserDataValidator userDataValidator;
+    private final UserMapper userMapper;
 
     @Autowired
-    public CustomUserDetailService(ApplicationUserRepository applicationUserRepository, PasswordEncoder passwordEncoder, JwtTokenizer jwtTokenizer) {
+    public CustomUserDetailService(ApplicationUserRepository applicationUserRepository, PasswordEncoder passwordEncoder,
+                                   JwtTokenizer jwtTokenizer, UserDataValidator userDataValidator, UserMapper userMapper) {
         this.applicationUserRepository = applicationUserRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenizer = jwtTokenizer;
+        this.userDataValidator = userDataValidator;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -86,18 +93,12 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
-    public void register(UserRegistrationDto userRegistrationDto) {
-        //Validate Data.
-        //ApplicationUser newUser = UserMapper.INSTANCE.userRegistrationDtoToApplicationUser(userRegistrationDTO);
-        ApplicationUser newUser = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
-            .withFirstName(userRegistrationDto.getFirstName())
-            .withLastName(userRegistrationDto.getLastName())
-            .withEmail(userRegistrationDto.getEmail())
-            .withMobileNumber(userRegistrationDto.getMobileNumber())
-            .withRole(userRegistrationDto.getRole())
-            .withPassword(userRegistrationDto.getPassword())
-            .build();
-        applicationUserRepository.save(newUser);
+    public void register(UserRegistrationDto userRegistrationDto) throws ValidationException {
+        LOGGER.trace("register ({})", userRegistrationDto);
+        userDataValidator.validateRegistration(userRegistrationDto);
+        ApplicationUser applicationUser = userMapper.userRegistrationDtoToApplicationUser(userRegistrationDto);
+        applicationUser.setPassword(passwordEncoder.encode(userRegistrationDto.getPassword()));
+        applicationUserRepository.save(applicationUser);
     }
 
 
