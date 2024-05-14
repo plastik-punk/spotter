@@ -12,10 +12,10 @@ import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
 
-@Profile("generateData")
+@Profile({"generateData", "test"})
 @Component
 @Order(2)
-public class ApplicationUserDataGenerator {
+public class UserDataGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final int NUMBER_OF_USERS_TO_GENERATE = 5;
@@ -29,18 +29,18 @@ public class ApplicationUserDataGenerator {
 
     private final ApplicationUserRepository applicationUserRepository;
 
-    public ApplicationUserDataGenerator(ApplicationUserRepository applicationUserRepository) {
+    public UserDataGenerator(ApplicationUserRepository applicationUserRepository) {
         this.applicationUserRepository = applicationUserRepository;
     }
 
     @PostConstruct
-    private void generateApplicationUsers() {
+    private void generateUsers() {
         LOGGER.trace("generateUsers");
 
         if (!applicationUserRepository.findAll().isEmpty()) {
             LOGGER.debug("Users already generated");
         } else {
-            LOGGER.debug("Generating {} applicationUser entries", NUMBER_OF_USERS_TO_GENERATE);
+            LOGGER.debug("Generating {} user entries", NUMBER_OF_USERS_TO_GENERATE);
             for (int i = 0; i < NUMBER_OF_USERS_TO_GENERATE; i++) {
                 ApplicationUser applicationUser = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
                     .withFirstName(FIRST_NAMES[i % FIRST_NAMES.length])

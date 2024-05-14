@@ -1,12 +1,12 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ApplicationUserLoginDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-public interface ApplicationUserService extends UserDetailsService {
+public interface UserService extends UserDetailsService {
 
     /**
      * Find a user in the context of Spring Security based on the email address
@@ -32,9 +32,9 @@ public interface ApplicationUserService extends UserDetailsService {
     /**
      * Log in a user.
      *
-     * @param applicationUserLoginDto login credentials
+     * @param userLoginDto login credentials
      * @return the JWT, if successful
      * @throws org.springframework.security.authentication.BadCredentialsException if credentials are bad
      */
-    String login(ApplicationUserLoginDto applicationUserLoginDto);
+    String login(UserLoginDto userLoginDto);
 }

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDateTime;
 
-@Profile("generateData")
+@Profile({"generateData", "test"})
 @Component
 @Order(0)
 public class MessageDataGenerator {

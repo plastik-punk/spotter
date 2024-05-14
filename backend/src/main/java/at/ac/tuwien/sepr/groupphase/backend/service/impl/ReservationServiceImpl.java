@@ -9,7 +9,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository
 import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
-import at.ac.tuwien.sepr.groupphase.backend.service.EmailService;
+import at.ac.tuwien.sepr.groupphase.backend.service.mail.EmailService;
 import jakarta.mail.MessagingException;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ReservationMapper;
 import org.slf4j.Logger;
@@ -50,7 +50,7 @@ public class ReservationServiceImpl implements ReservationService {
         // TODO: validation of incoming user and reservation data
 
         // 1. if guest user, create a new guest user, save it in DB and set returned user to reservationCreateDto
-        if (reservationCreateDto.getApplicationUser() == null) {
+        if (reservationCreateDto.getUser() == null) {
             ApplicationUser guestUser = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
                 .withFirstName(reservationCreateDto.getFirstName())
                 .withLastName(reservationCreateDto.getLastName())
@@ -61,7 +61,7 @@ public class ReservationServiceImpl implements ReservationService {
                 .build();
 
             ApplicationUser savedGuestUser = applicationUserRepository.save(guestUser);
-            reservationCreateDto.setApplicationUser(savedGuestUser);
+            reservationCreateDto.setUser(savedGuestUser);
         }
 
         // 2. map to Reservation entity
@@ -69,10 +69,16 @@ public class ReservationServiceImpl implements ReservationService {
 
         // TODO: remove this after implementing place selection in frontend
         Optional<Place> testPlace = placeRepository.findById(1L);
-        reservation.setPlace(testPlace.get());
+        if (testPlace.isPresent()) {
+            reservation.setPlace(testPlace.get());
+        } else {
+            // Handle the case where no Place with id 1L was found
+            throw new IllegalArgumentException("No Place with id 1L was found");
+        }
         // TODO: add Restaurant name to DTO
 
         // 3. send conformation Mail
+        // TODO: activate mail sending for production
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("recipientName", reservationCreateDto.getFirstName() + " " + reservationCreateDto.getLastName());
         templateModel.put("text", reservationCreateDto.getNotes());
@@ -81,8 +87,8 @@ public class ReservationServiceImpl implements ReservationService {
         templateModel.put("reservationDate", reservationCreateDto.getDate());
         templateModel.put("reservationTime", reservationCreateDto.getStartTime());
         templateModel.put("link", "--link here--"); //TODO: change to the link
-        emailService.sendMessageUsingThymeleafTemplate(reservationCreateDto.getApplicationUser().getEmail(),
-            "Reservation Confirmation", templateModel);
+        // emailService.sendMessageUsingThymeleafTemplate(reservationCreateDto.getUser().getEmail(),
+        //     "Reservation Confirmation", templateModel);
 
         // 4. save Reservation in database and return it mapped to a DTO
         return mapper.reservationToReservationCreateDto(reservationRepository.save(reservation));

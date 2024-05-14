@@ -1,7 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DetailedMessageDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.MessageDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SimpleMessageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.MessageInquiryDto;
 import at.ac.tuwien.sepr.groupphase.backend.service.MessageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.MessageMapper;
@@ -41,7 +41,7 @@ public class MessageEndpoint {
     @Secured("ROLE_USER")
     @GetMapping
     @Operation(summary = "Get list of messages without details", security = @SecurityRequirement(name = "apiKey"))
-    public List<MessageDto> findAll() {
+    public List<SimpleMessageDto> findAll() {
         LOGGER.info("GET /api/v1/messages");
         return messageMapper.messageToSimpleMessageDto(messageService.findAll());
     }

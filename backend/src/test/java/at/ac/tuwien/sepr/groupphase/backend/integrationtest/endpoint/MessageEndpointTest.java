@@ -3,7 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.integrationtest.endpoint;
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DetailedMessageDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.MessageDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SimpleMessageDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.MessageInquiryDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Message;
 import at.ac.tuwien.sepr.groupphase.backend.repository.MessageRepository;
@@ -89,10 +89,10 @@ public class MessageEndpointTest implements TestData {
         assertEquals(HttpStatus.OK.value(), response.getStatus());
         assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType());
 
-        List<MessageDto> messageDtos = Arrays.asList(objectMapper.readValue(response.getContentAsString(),
-            MessageDto[].class));
+        List<SimpleMessageDto> simpleMessageDtos = Arrays.asList(objectMapper.readValue(response.getContentAsString(),
+            SimpleMessageDto[].class));
 
-        assertEquals(0, messageDtos.size());
+        assertEquals(0, simpleMessageDtos.size());
     }
 
     @Test
@@ -109,16 +109,16 @@ public class MessageEndpointTest implements TestData {
         assertEquals(HttpStatus.OK.value(), response.getStatus());
         assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType());
 
-        List<MessageDto> messageDtos = Arrays.asList(objectMapper.readValue(response.getContentAsString(),
-            MessageDto[].class));
+        List<SimpleMessageDto> simpleMessageDtos = Arrays.asList(objectMapper.readValue(response.getContentAsString(),
+            SimpleMessageDto[].class));
 
-        assertEquals(1, messageDtos.size());
-        MessageDto messageDto = messageDtos.get(0);
+        assertEquals(1, simpleMessageDtos.size());
+        SimpleMessageDto simpleMessageDto = simpleMessageDtos.get(0);
         assertAll(
-            () -> assertEquals(message.getId(), messageDto.getId()),
-            () -> assertEquals(TEST_NEWS_TITLE, messageDto.getTitle()),
-            () -> assertEquals(TEST_NEWS_SUMMARY, messageDto.getSummary()),
-            () -> assertEquals(TEST_NEWS_PUBLISHED_AT, messageDto.getPublishedAt())
+            () -> assertEquals(message.getId(), simpleMessageDto.getId()),
+            () -> assertEquals(TEST_NEWS_TITLE, simpleMessageDto.getTitle()),
+            () -> assertEquals(TEST_NEWS_SUMMARY, simpleMessageDto.getSummary()),
+            () -> assertEquals(TEST_NEWS_PUBLISHED_AT, simpleMessageDto.getPublishedAt())
         );
     }
 

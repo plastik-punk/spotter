@@ -8,8 +8,6 @@ import java.util.Objects;
 
 public class ReservationCreateDto {
 
-    private Long id;
-
     private ApplicationUser applicationUser;
 
     private String firstName;
@@ -22,7 +20,7 @@ public class ReservationCreateDto {
 
     private LocalDate date;
 
-    private int pax;
+    private Long pax;
 
     private String notes;
 
@@ -30,19 +28,11 @@ public class ReservationCreateDto {
 
     private String mobileNumber;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public ApplicationUser getApplicationUser() {
+    public ApplicationUser getUser() {
         return applicationUser;
     }
 
-    public void setApplicationUser(ApplicationUser applicationUser) {
+    public void setUser(ApplicationUser applicationUser) {
         this.applicationUser = applicationUser;
     }
 
@@ -86,11 +76,11 @@ public class ReservationCreateDto {
         this.date = date;
     }
 
-    public int getPax() {
+    public Long getPax() {
         return pax;
     }
 
-    public void setPax(int pax) {
+    public void setPax(Long pax) {
         this.pax = pax;
     }
 
@@ -126,8 +116,7 @@ public class ReservationCreateDto {
         if (!(o instanceof ReservationCreateDto that)) {
             return false;
         }
-        return Objects.equals(id, that.id)
-            && Objects.equals(applicationUser, that.applicationUser)
+        return Objects.equals(applicationUser, that.applicationUser)
             && Objects.equals(firstName, that.firstName)
             && Objects.equals(lastName, that.lastName)
             && Objects.equals(startTime, that.startTime)
@@ -141,14 +130,13 @@ public class ReservationCreateDto {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, applicationUser, firstName, lastName, startTime, endTime, date, pax, notes, email, mobileNumber);
+        return Objects.hash(applicationUser, firstName, lastName, startTime, endTime, date, pax, notes, email, mobileNumber);
     }
 
     @Override
     public String toString() {
         return "ReservationCreateDto{"
-            + "id=" + id
-            + ", applicationUser='" + applicationUser + '\''
+            + "user='" + applicationUser + '\''
             + ", firstName='" + firstName + '\''
             + ", lastName='" + lastName + '\''
             + ", startTime=" + startTime
@@ -162,14 +150,13 @@ public class ReservationCreateDto {
     }
 
     public static final class ReservationCreateDtoBuilder {
-        private Long id;
         private ApplicationUser applicationUser;
         private String firstName;
         private String lastName;
         private LocalTime startTime;
         private LocalTime endTime;
         private LocalDate date;
-        private int pax;
+        private Long pax;
         private String notes;
         private String email;
         private String mobileNumber;
@@ -179,11 +166,6 @@ public class ReservationCreateDto {
 
         public static ReservationCreateDtoBuilder aReservationCreateDto() {
             return new ReservationCreateDtoBuilder();
-        }
-
-        public ReservationCreateDtoBuilder withId(Long id) {
-            this.id = id;
-            return this;
         }
 
         public ReservationCreateDtoBuilder withApplicationUser(ApplicationUser applicationUser) {
@@ -216,7 +198,7 @@ public class ReservationCreateDto {
             return this;
         }
 
-        public ReservationCreateDtoBuilder withPax(int pax) {
+        public ReservationCreateDtoBuilder withPax(Long pax) {
             this.pax = pax;
             return this;
         }
@@ -238,8 +220,7 @@ public class ReservationCreateDto {
 
         public ReservationCreateDto build() {
             ReservationCreateDto reservationCreateDto = new ReservationCreateDto();
-            reservationCreateDto.setId(id);
-            reservationCreateDto.setApplicationUser(applicationUser);
+            reservationCreateDto.setUser(applicationUser);
             reservationCreateDto.setFirstName(firstName);
             reservationCreateDto.setLastName(lastName);
             reservationCreateDto.setStartTime(startTime);

@@ -1,6 +1,5 @@
-package at.ac.tuwien.sepr.groupphase.backend.service.impl;
+package at.ac.tuwien.sepr.groupphase.backend.service.mail;
 
-import at.ac.tuwien.sepr.groupphase.backend.service.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,7 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 import java.util.Map;
 
 @Service("EmailService")
-public class EmailServiceImpl implements EmailService {
+public class EmailSenderImpl implements EmailService {
 
     @Autowired
     private org.springframework.mail.javamail.JavaMailSender emailSender;

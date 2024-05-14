@@ -116,7 +116,7 @@ public class ApplicationUser {
 
     @Override
     public String toString() {
-        return "ApplicationUser{"
+        return "User{"
             + "id=" + id
             + ", firstName='" + firstName + '\''
             + ", lastName='" + lastName + '\''

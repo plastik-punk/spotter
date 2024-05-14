@@ -18,14 +18,14 @@ public class JwtTokenizer {
         this.securityProperties = securityProperties;
     }
 
-    public String getAuthToken(String applicationUser, List<String> roles) {
+    public String getAuthToken(String user, List<String> roles) {
         byte[] signingKey = securityProperties.getJwtSecret().getBytes();
         String token = Jwts.builder()
             .signWith(Keys.hmacShaKeyFor(signingKey), SignatureAlgorithm.HS512)
             .setHeaderParam("typ", securityProperties.getJwtType())
             .setIssuer(securityProperties.getJwtIssuer())
             .setAudience(securityProperties.getJwtAudience())
-            .setSubject(applicationUser)
+            .setSubject(user)
             .setExpiration(new Date(System.currentTimeMillis() + securityProperties.getJwtExpirationTime()))
             .claim("rol", roles)
             .compact();

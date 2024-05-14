@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.Objects;
 
-public class ApplicationUserLoginDto {
+public class UserLoginDto {
 
     @NotNull(message = "Email must not be null")
     @Email
@@ -35,11 +35,11 @@ public class ApplicationUserLoginDto {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof ApplicationUserLoginDto applicationUserLoginDto)) {
+        if (!(o instanceof UserLoginDto userLoginDto)) {
             return false;
         }
-        return Objects.equals(email, applicationUserLoginDto.email)
-            && Objects.equals(password, applicationUserLoginDto.password);
+        return Objects.equals(email, userLoginDto.email)
+            && Objects.equals(password, userLoginDto.password);
     }
 
     @Override
@@ -49,39 +49,39 @@ public class ApplicationUserLoginDto {
 
     @Override
     public String toString() {
-        return "ApplicationUserLoginDto{"
+        return "UserLoginDto{"
             + "email='" + email + '\''
             + ", password='" + password + '\''
             + '}';
     }
 
 
-    public static final class ApplicationUserLoginDtoBuilder {
+    public static final class UserLoginDtoBuilder {
         private String email;
         private String password;
 
-        private ApplicationUserLoginDtoBuilder() {
+        private UserLoginDtoBuilder() {
         }
 
-        public static ApplicationUserLoginDtoBuilder anUserLoginDto() {
-            return new ApplicationUserLoginDtoBuilder();
+        public static UserLoginDtoBuilder anUserLoginDto() {
+            return new UserLoginDtoBuilder();
         }
 
-        public ApplicationUserLoginDtoBuilder withEmail(String email) {
+        public UserLoginDtoBuilder withEmail(String email) {
             this.email = email;
             return this;
         }
 
-        public ApplicationUserLoginDtoBuilder withPassword(String password) {
+        public UserLoginDtoBuilder withPassword(String password) {
             this.password = password;
             return this;
         }
 
-        public ApplicationUserLoginDto build() {
-            ApplicationUserLoginDto applicationUserLoginDto = new ApplicationUserLoginDto();
-            applicationUserLoginDto.setEmail(email);
-            applicationUserLoginDto.setPassword(password);
-            return applicationUserLoginDto;
+        public UserLoginDto build() {
+            UserLoginDto userLoginDto = new UserLoginDto();
+            userLoginDto.setEmail(email);
+            userLoginDto.setPassword(password);
+            return userLoginDto;
         }
     }
 }
