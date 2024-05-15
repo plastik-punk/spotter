@@ -144,6 +144,19 @@ public class Reservation {
             + '}';
     }
 
+    public Reservation copy() {
+        return ReservationBuilder.aReservation()
+            .withId(this.id)
+            .withUser(this.applicationUser)
+            .withStartTime(this.startTime)
+            .withDate(this.date)
+            .withEndTime(this.endTime)
+            .withPax(this.pax)
+            .withNotes(this.notes)
+            .withPlace(this.place)
+            .build();
+    }
+
     public static final class ReservationBuilder {
         private Long id;
         private ApplicationUser applicationUser;

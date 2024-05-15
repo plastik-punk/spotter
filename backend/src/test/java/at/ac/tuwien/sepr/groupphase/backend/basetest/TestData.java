@@ -106,7 +106,7 @@ public interface TestData {
     String TEST_APPLICATION_USER_LAST_NAME = "McOtterface";
     String TEST_APPLICATION_USER_EMAIL = "otter@spotter.at";
     String TEST_APPLICATION_USER_MOBILE_NUMBER = "06501234567";
-    String TEST_APPLICATION_USER_PASSWORD = "sparklyotter";
+    String TEST_APPLICATION_USER_PASSWORD = "naughtyotter";
     RoleEnum TEST_APPLICATION_USER_ROLE = RoleEnum.CUSTOMER;
 
     ApplicationUser TEST_APPLICATION_USER_CUSTOMER_1 = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
@@ -150,9 +150,9 @@ public interface TestData {
     // RESERVATION TEST DATA
     // ---------------------------------------------
 
-    LocalTime TEST_RESERVATION_START_TIME = LocalDateTime.of(2021, 1, 1, 12, 0, 0, 0).toLocalTime();
-    LocalTime TEST_RESERVATION_END_TIME = LocalDateTime.of(2021, 1, 1, 14, 0, 0, 0).toLocalTime();
-    LocalDate TEST_RESERVATION_DATE = LocalDate.of(2021, 1, 1);
+    LocalTime TEST_RESERVATION_START_TIME = LocalDateTime.of(2025, 1, 1, 12, 0, 0, 0).toLocalTime();
+    LocalTime TEST_RESERVATION_END_TIME = LocalDateTime.of(2025, 1, 1, 14, 0, 0, 0).toLocalTime();
+    LocalDate TEST_RESERVATION_DATE = LocalDate.of(2025, 1, 1);
     Long TEST_RESERVATION_PAX = 4L;
     String TEST_RESERVATION_NOTES = "Test Notes";
 

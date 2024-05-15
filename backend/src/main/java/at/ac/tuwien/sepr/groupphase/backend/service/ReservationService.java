@@ -1,7 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import jakarta.mail.MessagingException;
 
 
@@ -16,5 +16,5 @@ public interface ReservationService {
      * @param reservationCreateDto the reservation data
      * @return the reservation as provided from the Repository layer after creation in the database
      */
-    ReservationCreateDto create(ReservationCreateDto reservationCreateDto) throws MessagingException;
+    ReservationCreateDto create(ReservationCreateDto reservationCreateDto) throws MessagingException, ValidationException;
 }

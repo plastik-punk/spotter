@@ -149,6 +149,21 @@ public class ReservationCreateDto {
             + '}';
     }
 
+    public ReservationCreateDto copy() {
+        return ReservationCreateDtoBuilder.aReservationCreateDto()
+            .withApplicationUser(this.applicationUser) // assuming ApplicationUser is immutable or has its own copy method
+            .withFirstName(this.firstName)
+            .withLastName(this.lastName)
+            .withStartTime(this.startTime)
+            .withEndTime(this.endTime)
+            .withDate(this.date)
+            .withPax(this.pax)
+            .withNotes(this.notes)
+            .withEmail(this.email)
+            .withMobileNumber(this.mobileNumber)
+            .build();
+    }
+
     public static final class ReservationCreateDtoBuilder {
         private ApplicationUser applicationUser;
         private String firstName;

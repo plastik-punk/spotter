@@ -2,8 +2,6 @@ package at.ac.tuwien.sepr.groupphase.backend.unittests.repository;
 
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;

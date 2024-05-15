@@ -11,6 +11,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mail.EmailService;
 import jakarta.mail.MessagingException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ReservationMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,22 +33,23 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationMapper mapper;
 
     private final EmailService emailService;
+    private final ReservationValidator reservationValidator;
 
     @Autowired
     public ReservationServiceImpl(ReservationMapper mapper, ReservationRepository reservationRepository, ApplicationUserRepository applicationUserRepository,
-                                  PlaceRepository placeRepository, EmailService emailService) {
+                                  PlaceRepository placeRepository, EmailService emailService, ReservationValidator reservationValidator) {
         this.mapper = mapper;
         this.reservationRepository = reservationRepository;
         this.applicationUserRepository = applicationUserRepository;
         this.placeRepository = placeRepository;
         this.emailService = emailService;
+        this.reservationValidator = reservationValidator;
     }
 
     @Override
-    public ReservationCreateDto create(ReservationCreateDto reservationCreateDto) throws MessagingException {
+    public ReservationCreateDto create(ReservationCreateDto reservationCreateDto) throws MessagingException, ValidationException {
         LOGGER.trace("create ({})", reservationCreateDto.toString());
-
-        // TODO: validation of incoming user and reservation data
+        reservationValidator.validateReservationCreateDto(reservationCreateDto);
 
         // 1. if guest user, create a new guest user, save it in DB and set returned user to reservationCreateDto
         if (reservationCreateDto.getUser() == null) {
@@ -91,6 +93,9 @@ public class ReservationServiceImpl implements ReservationService {
         //     "Reservation Confirmation", templateModel);
 
         // 4. save Reservation in database and return it mapped to a DTO
-        return mapper.reservationToReservationCreateDto(reservationRepository.save(reservation));
+        Reservation savedReservation = reservationRepository.save(reservation);
+        reservationValidator.validateReservation(savedReservation);
+
+        return mapper.reservationToReservationCreateDto(savedReservation);
     }
 }
