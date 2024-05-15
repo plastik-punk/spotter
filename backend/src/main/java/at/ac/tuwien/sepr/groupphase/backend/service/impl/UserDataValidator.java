@@ -48,33 +48,33 @@ public class UserDataValidator {
     public void validateFirstName(List<String> validationErrors, String firstName) {
         LOG.trace("validateFirstName({})", firstName);
         if (firstName == null) {
-            validationErrors.add("No first name given.");
+            validationErrors.add("No first name given");
         } else if (firstName.trim().isEmpty()) {
-            validationErrors.add("First name should not be empty.");
+            validationErrors.add("First name should not be empty");
         } else if (firstName.length() > 255) {
-            validationErrors.add("First name shouldn't be longer than 255 characters.");
+            validationErrors.add("First name shouldn't be longer than 255 characters");
         } else if (!firstName.matches("^[A-Za-z ]+$")) {
-            validationErrors.add("First name must consist of letters and spaces only.");
+            validationErrors.add("First name must consist of letters and spaces only");
         }
     }
 
     public void validateLastName(List<String> validationErrors, String lastName) {
         LOG.trace("validateLastName({})", lastName);
         if (lastName == null) {
-            validationErrors.add("No last name given.");
+            validationErrors.add("No last name given");
         } else if (lastName.trim().isEmpty()) {
-            validationErrors.add("Last name should not be empty.");
+            validationErrors.add("Last name should not be empty");
         } else if (lastName.length() > 255) {
-            validationErrors.add("Last name shouldn't be longer than 255 characters.");
+            validationErrors.add("Last name shouldn't be longer than 255 characters");
         } else if (!lastName.matches("^[A-Za-z ]+$")) {
-            validationErrors.add("Last name must consist of letters and spaces only.");
+            validationErrors.add("Last name must consist of letters and spaces only");
         }
     }
 
     private void validateRole(List<String> validationErrors, RoleEnum role) {
         LOG.trace("validateRole({})", role);
         if (role == null) {
-            validationErrors.add("User role is required.");
+            validationErrors.add("User role is required");
         } else if (!role.equals(RoleEnum.CUSTOMER) && !role.equals(RoleEnum.UNCONFIRMED_ADMIN)
             && !role.equals(RoleEnum.UNCONFIRMED_EMPLOYEE)) {
             validationErrors.add("Unexpected user role");
@@ -84,7 +84,7 @@ public class UserDataValidator {
     private void validateRoleForReservation(List<String> validationErrors, RoleEnum role) {
         LOG.trace("validateRole({})", role);
         if (role == null) {
-            validationErrors.add("User role is required.");
+            validationErrors.add("User role is required");
         } else if (!role.equals(RoleEnum.CUSTOMER) && !role.equals(RoleEnum.GUEST)) {
             validationErrors.add("Unexpected user role");
         }
@@ -97,7 +97,10 @@ public class UserDataValidator {
 
         final Pattern pattern = Pattern.compile(emailPattern);
         Matcher matcher = pattern.matcher(email);
-        if (!matcher.matches()) {
+
+        if (email.trim().isEmpty()) {
+            validationErrors.add("Email should not be empty");
+        } else if (!matcher.matches()) {
             validationErrors.add("Invalid eMail");
         }
     }
@@ -111,7 +114,7 @@ public class UserDataValidator {
         if (phoneNumber != null) {
             Matcher matcher = pattern.matcher(phoneNumber);
             if (!matcher.matches()) {
-                validationErrors.add("Invalid mobile number. It must start with '+' followed by up to 14 digits.");
+                validationErrors.add("Invalid mobile number. It must start with '+' followed by up to 14 digits");
             }
 
         }
@@ -120,11 +123,11 @@ public class UserDataValidator {
     private void validatePassword(List<String> validationErrors, String pw) {
         LOG.trace("validatePassowrd({})", pw);
         if (pw == null) {
-            validationErrors.add("No password given.");
+            validationErrors.add("No password given");
         } else if (pw.trim().isEmpty()) {
-            validationErrors.add("Password should not be empty.");
+            validationErrors.add("Password should not be empty");
         } else if (pw.length() < 8) {
-            validationErrors.add("Password has to be longer than 8 characters.");
+            validationErrors.add("Password has to be longer than 8 characters");
         }
     }
 }

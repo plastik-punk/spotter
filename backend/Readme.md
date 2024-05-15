@@ -54,7 +54,7 @@ Interfaces are always at the top level of their package and the implementation i
 - Each validator has a test class in the corresponding package of "unittests"
 - test each validator method with:
   - a positive test
-  - full test coverage of all validation rules
+  - full test coverage of all validation rules (a negative test for each if-branch adding a validation error)
 
 ### test entities
 - Each entity has a test class in the corresponding package of "unittests"

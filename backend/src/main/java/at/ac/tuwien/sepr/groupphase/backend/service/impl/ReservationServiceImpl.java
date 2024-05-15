@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
+import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
@@ -54,10 +55,10 @@ public class ReservationServiceImpl implements ReservationService {
         // 1. if guest user, create a new guest user, save it in DB and set returned user to reservationCreateDto
         if (reservationCreateDto.getUser() == null) {
             ApplicationUser guestUser = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
-                .withFirstName(reservationCreateDto.getFirstName())
-                .withLastName(reservationCreateDto.getLastName())
-                .withEmail(reservationCreateDto.getEmail())
-                .withMobileNumber(reservationCreateDto.getMobileNumber())
+                .withFirstName(reservationCreateDto.getFirstName().trim())
+                .withLastName(reservationCreateDto.getLastName().trim())
+                .withEmail(reservationCreateDto.getEmail().trim())
+                .withMobileNumber(reservationCreateDto.getMobileNumber().trim())
                 .withoutPassword()
                 .withRole(RoleEnum.GUEST)
                 .build();
@@ -66,19 +67,25 @@ public class ReservationServiceImpl implements ReservationService {
             reservationCreateDto.setUser(savedGuestUser);
         }
 
-        // 2. map to Reservation entity
+        // 2. map to Reservation entity and trim strings
         Reservation reservation = mapper.reservationCreateDtoToReservation(reservationCreateDto);
+        reservation.setNotes(reservation.getNotes().trim());
 
-        // TODO: remove this after implementing place selection in frontend
+        // TODO: change this after implementing place selection in frontend
         Optional<Place> testPlace = placeRepository.findById(1L);
         if (testPlace.isPresent()) {
             reservation.setPlace(testPlace.get());
         } else {
-            // Handle the case where no Place with id 1L was found
-            throw new IllegalArgumentException("No Place with id 1L was found");
+            Place dummyPlace = Place.PlaceBuilder.aPlace()
+                .withId(1L)
+                .withPax(4L)
+                .withStatus(StatusEnum.AVAILABLE)
+                .build();
+            placeRepository.save(dummyPlace);
+            reservation.setPlace(dummyPlace);
         }
-        // TODO: add Restaurant name to DTO
 
+        // TODO: add Restaurant name to DTO
         // 3. send conformation Mail
         // TODO: activate mail sending for production
         Map<String, Object> templateModel = new HashMap<>();

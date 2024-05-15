@@ -69,44 +69,42 @@ public class ReservationValidator {
         LOGGER.trace("validateStartTime({})", startTime);
 
         if (startTime == null) {
-            validationErrors.add("No start time given.");
+            validationErrors.add("No start time given");
         }
     }
 
     private void validateEndTime(List<String> validationErrors, LocalTime endTime, LocalTime startTime) {
         LOGGER.trace("validateEndTime({})", endTime);
         if (endTime == null) {
-            validationErrors.add("No end time given.");
+            validationErrors.add("No end time given");
         } else if (startTime != null && endTime.isBefore(startTime)) {
-            validationErrors.add("End time cannot be before start time.");
+            validationErrors.add("End time cannot be before start time");
         }
     }
 
     private void validateDate(List<String> validationErrors, LocalDate date) {
         LOGGER.trace("validateDate({})", date);
         if (date == null) {
-            validationErrors.add("No date given.");
+            validationErrors.add("No date given");
         } else if (date.isBefore(LocalDate.now())) {
-            validationErrors.add("Date cannot be in the past.");
+            validationErrors.add("Date cannot be in the past");
         }
     }
 
     private void validatePax(List<String> validationErrors, Long pax) {
         LOGGER.trace("validatePax({})", pax);
         if (pax == null) {
-            validationErrors.add("No pax given.");
-        } else if (pax < 0) {
-            validationErrors.add("Pax should be greater than 0.");
+            validationErrors.add("No pax given");
+        } else if (pax <= 0) {
+            validationErrors.add("Pax should be greater than 0");
         }
     }
 
     private void validateNotes(List<String> validationErrors, String notes) {
         LOGGER.trace("validateNotes({})", notes);
         if (notes != null) {
-            if (notes.trim().isEmpty()) {
-                validationErrors.add("Notes should not be empty.");
-            } else if (notes.length() > 100000) {
-                validationErrors.add("Notes shouldn't be longer than 100000 characters.");
+            if (notes.length() > 100000) {
+                validationErrors.add("Notes shouldn't be longer than 100000 characters");
             }
         }
     }
@@ -114,7 +112,7 @@ public class ReservationValidator {
     private void validatePlace(List<String> validationErrors, Place place) {
         LOGGER.trace("validatePlace({})", place);
         if (place == null) {
-            validationErrors.add("No place given.");
+            validationErrors.add("No place given");
         }
     }
 }

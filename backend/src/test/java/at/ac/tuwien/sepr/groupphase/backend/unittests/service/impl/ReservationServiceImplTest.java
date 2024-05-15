@@ -3,7 +3,6 @@ package at.ac.tuwien.sepr.groupphase.backend.unittests.service.impl;
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
-import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
 import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.Test;
@@ -14,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -25,14 +25,9 @@ public class ReservationServiceImplTest implements TestData {
     @Autowired
     private ReservationService service;
 
-    @Autowired
-    private PlaceRepository placeRepository;
-
     @Test
     @Transactional
     public void givenValidData_whenCreateGuestReservation_thenReturnDto() throws MessagingException, ValidationException {
-        placeRepository.deleteAll();
-        placeRepository.save(TEST_PLACE_AVAILABLE_1);
         ReservationCreateDto response = service.create(TEST_RESERVATION_CREATE_DTO_GUEST);
 
         assertAll(
@@ -49,5 +44,12 @@ public class ReservationServiceImplTest implements TestData {
         );
     }
 
-    // TODO: negative tests for exceptions
+    @Test
+    @Transactional
+    public void givenInvalidData_whenCreateGuestReservation_thenThrowValidationException() throws ValidationException, MessagingException {
+        ReservationCreateDto dto = TEST_RESERVATION_CREATE_DTO_GUEST.copy();
+        dto.setStartTime(null);
+
+        assertThrows(ValidationException.class, () -> service.create(dto));
+    }
 }
