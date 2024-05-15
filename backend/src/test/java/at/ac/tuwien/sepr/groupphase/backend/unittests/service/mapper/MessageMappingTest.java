@@ -62,5 +62,6 @@ public class MessageMappingTest implements TestData {
         );
     }
 
+    // TODO: test remaining methods
 
 }

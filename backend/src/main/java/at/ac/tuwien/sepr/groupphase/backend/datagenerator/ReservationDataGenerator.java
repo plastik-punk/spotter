@@ -19,7 +19,7 @@ import java.time.LocalTime;
 import java.time.LocalDate;
 import java.util.List;
 
-@Profile({"generateData", "test"})
+@Profile({"generateData"})
 @Component
 @Order(3)
 public class ReservationDataGenerator {

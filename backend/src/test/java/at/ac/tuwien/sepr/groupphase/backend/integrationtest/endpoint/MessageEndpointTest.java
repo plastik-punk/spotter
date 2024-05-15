@@ -23,6 +23,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -79,9 +80,10 @@ public class MessageEndpointTest implements TestData {
     }
 
     @Test
+    @Transactional
     public void givenNothing_whenFindAll_thenEmptyList() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(get(MESSAGE_BASE_URI)
-                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(TEST_USER_ADMIN, TEST_ROLES_ADMIN)))
             .andDo(print())
             .andReturn();
         MockHttpServletResponse response = mvcResult.getResponse();
@@ -96,12 +98,13 @@ public class MessageEndpointTest implements TestData {
     }
 
     @Test
+    @Transactional
     public void givenOneMessage_whenFindAll_thenListWithSizeOneAndMessageWithAllPropertiesExceptSummary()
         throws Exception {
         messageRepository.save(message);
 
         MvcResult mvcResult = this.mockMvc.perform(get(MESSAGE_BASE_URI)
-                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(TEST_USER_ADMIN, TEST_ROLES_ADMIN)))
             .andDo(print())
             .andReturn();
         MockHttpServletResponse response = mvcResult.getResponse();
@@ -123,11 +126,12 @@ public class MessageEndpointTest implements TestData {
     }
 
     @Test
+    @Transactional
     public void givenOneMessage_whenFindById_thenMessageWithAllProperties() throws Exception {
         messageRepository.save(message);
 
         MvcResult mvcResult = this.mockMvc.perform(get(MESSAGE_BASE_URI + "/{id}", message.getId())
-                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(TEST_USER_ADMIN, TEST_ROLES_ADMIN)))
             .andDo(print())
             .andReturn();
         MockHttpServletResponse response = mvcResult.getResponse();
@@ -144,11 +148,12 @@ public class MessageEndpointTest implements TestData {
     }
 
     @Test
+    @Transactional
     public void givenOneMessage_whenFindByNonExistingId_then404() throws Exception {
         messageRepository.save(message);
 
         MvcResult mvcResult = this.mockMvc.perform(get(MESSAGE_BASE_URI + "/{id}", -1)
-                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(TEST_USER_ADMIN, TEST_ROLES_ADMIN)))
             .andDo(print())
             .andReturn();
         MockHttpServletResponse response = mvcResult.getResponse();
@@ -156,6 +161,7 @@ public class MessageEndpointTest implements TestData {
     }
 
     @Test
+    @Transactional
     public void givenNothing_whenPost_thenMessageWithAllSetPropertiesPlusIdAndPublishedDate() throws Exception {
         message.setPublishedAt(null);
         MessageInquiryDto messageInquiryDto = messageMapper.messageToMessageInquiryDto(message);
@@ -164,7 +170,7 @@ public class MessageEndpointTest implements TestData {
         MvcResult mvcResult = this.mockMvc.perform(post(MESSAGE_BASE_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body)
-                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(TEST_USER_ADMIN, TEST_ROLES_ADMIN)))
             .andDo(print())
             .andReturn();
         MockHttpServletResponse response = mvcResult.getResponse();
@@ -185,6 +191,7 @@ public class MessageEndpointTest implements TestData {
     }
 
     @Test
+    @Transactional
     public void givenNothing_whenPostInvalid_then400() throws Exception {
         message.setTitle(null);
         message.setSummary(null);
@@ -195,7 +202,7 @@ public class MessageEndpointTest implements TestData {
         MvcResult mvcResult = this.mockMvc.perform(post(MESSAGE_BASE_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body)
-                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(TEST_USER_ADMIN, TEST_ROLES_ADMIN)))
             .andDo(print())
             .andReturn();
         MockHttpServletResponse response = mvcResult.getResponse();

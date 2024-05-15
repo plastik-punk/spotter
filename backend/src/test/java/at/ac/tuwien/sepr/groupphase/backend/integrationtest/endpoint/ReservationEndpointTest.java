@@ -3,9 +3,10 @@ package at.ac.tuwien.sepr.groupphase.backend.integrationtest.endpoint;
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
-import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ReservationMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,6 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,10 +40,13 @@ public class ReservationEndpointTest implements TestData {
     private ReservationRepository reservationRepository;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private PlaceRepository placeRepository;
 
     @Autowired
-    private ReservationMapper reservationMapper;
+    private ApplicationUserRepository applicationUserRepository;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private JwtTokenizer jwtTokenizer;
@@ -49,62 +54,39 @@ public class ReservationEndpointTest implements TestData {
     @Autowired
     private SecurityProperties securityProperties;
 
-    private ReservationCreateDto customerReservationCreateDto;
-    private ReservationCreateDto guestReservationCreateDto;
-
     @BeforeEach
-    public void setup() {
+    public void beforeEach() {
         reservationRepository.deleteAll();
-
-        customerReservationCreateDto = ReservationCreateDto.ReservationCreateDtoBuilder.aReservationCreateDto()
-            .withApplicationUser(TEST_RESERVATION_APPLICATION_USER_CUSTOMER)
-            .withFirstName(TEST_RESERVATION_APPLICATION_USER_CUSTOMER.getFirstName())
-            .withLastName(TEST_RESERVATION_APPLICATION_USER_CUSTOMER.getLastName())
-            .withStartTime(TEST_RESERVATION_START_TIME)
-            .withEndTime(TEST_RESERVATION_END_TIME)
-            .withDate(TEST_RESERVATION_DATE)
-            .withPax(TEST_RESERVATION_PAX)
-            .withNotes(TEST_RESERVATION_NOTES)
-            .withEmail(TEST_RESERVATION_APPLICATION_USER_CUSTOMER.getEmail())
-            .withMobileNumber(TEST_RESERVATION_APPLICATION_USER_CUSTOMER.getMobileNumber())
-            .build();
-
-        guestReservationCreateDto = ReservationCreateDto.ReservationCreateDtoBuilder.aReservationCreateDto()
-            .withApplicationUser(TEST_RESERVATION_APPLICATION_USER_GUEST)
-            .withFirstName(TEST_RESERVATION_APPLICATION_USER_GUEST.getFirstName())
-            .withLastName(TEST_RESERVATION_APPLICATION_USER_GUEST.getLastName())
-            .withStartTime(TEST_RESERVATION_START_TIME)
-            .withEndTime(TEST_RESERVATION_END_TIME)
-            .withDate(TEST_RESERVATION_DATE)
-            .withPax(TEST_RESERVATION_PAX)
-            .withNotes(TEST_RESERVATION_NOTES)
-            .withEmail(TEST_RESERVATION_APPLICATION_USER_GUEST.getEmail())
-            .withMobileNumber(TEST_RESERVATION_APPLICATION_USER_GUEST.getMobileNumber())
-            .build();
+        placeRepository.deleteAll();
+        applicationUserRepository.deleteAll();
     }
 
     @Test
+    @Transactional
     public void givenReservationCreateDto_whenCreateForCustomer_thenReservationIsCreated() throws Exception {
-        // given: s. TestData
+        placeRepository.save(TEST_PLACE_AVAILABLE_1);
+        applicationUserRepository.save(TEST_APPLICATION_USER_CUSTOMER_1);
 
         // when
-        String body = objectMapper.writeValueAsString(customerReservationCreateDto);
+        String body = objectMapper.writeValueAsString(TEST_RESERVATION_CREATE_DTO_CUSTOMER);
         MvcResult mvcResult = this.mockMvc.perform(post(RESERVATION_BASE_URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body)
-                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(ADMIN_USER, ADMIN_ROLES)))
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(TEST_USER_CUSTOMER, TEST_ROLES_CUSTOMER)))
             .andDo(print())
             .andReturn();
 
         // then
+        int statusCode = mvcResult.getResponse().getStatus();
         ReservationCreateDto response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ReservationCreateDto.class);
         assertNotNull(response);
 
         assertAll(
-            () -> assertEquals(TEST_RESERVATION_APPLICATION_USER_CUSTOMER.getFirstName(), response.getFirstName()),
-            () -> assertEquals(TEST_RESERVATION_APPLICATION_USER_CUSTOMER.getLastName(), response.getLastName()),
-            () -> assertEquals(TEST_RESERVATION_APPLICATION_USER_CUSTOMER.getEmail(), response.getEmail()),
-            () -> assertEquals(TEST_RESERVATION_APPLICATION_USER_CUSTOMER.getMobileNumber(), response.getMobileNumber()),
+            () -> assertEquals(201, statusCode),
+            () -> assertEquals(TEST_APPLICATION_USER_CUSTOMER_1.getFirstName(), response.getFirstName()),
+            () -> assertEquals(TEST_APPLICATION_USER_CUSTOMER_1.getLastName(), response.getLastName()),
+            () -> assertEquals(TEST_APPLICATION_USER_CUSTOMER_1.getEmail(), response.getEmail()),
+            () -> assertEquals(TEST_APPLICATION_USER_CUSTOMER_1.getMobileNumber(), response.getMobileNumber()),
             () -> assertEquals(TEST_RESERVATION_START_TIME, response.getStartTime()),
             () -> assertEquals(TEST_RESERVATION_DATE, response.getDate()),
             () -> assertEquals(TEST_RESERVATION_END_TIME, response.getEndTime()),

@@ -56,7 +56,7 @@ public class ReservationServiceImpl implements ReservationService {
                 .withLastName(reservationCreateDto.getLastName())
                 .withEmail(reservationCreateDto.getEmail())
                 .withMobileNumber(reservationCreateDto.getMobileNumber())
-                .withPassword("guest")
+                .withoutPassword()
                 .withRole(RoleEnum.GUEST)
                 .build();
 
