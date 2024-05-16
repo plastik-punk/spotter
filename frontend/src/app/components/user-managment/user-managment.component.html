@@ -1,0 +1,178 @@
+<div class="container mt-4">
+
+  <div class="row justify-content-center">
+
+    <div class="card">
+      <div class="card-header">
+        <h3 class="text-center">Staff Accounts</h3>
+      </div>
+      <div class="card-body">
+
+        <!-- Card for Unconfirmed Admins -->
+        <div *ngIf="unconfirmedAdmins.length > 0" class="col-md-8 mb-4">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="text-center">Admins to Confirm</h3>
+            </div>
+            <div class="card-body">
+              <table class="table">
+                <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Lastname</th>
+                  <th>Email</th>
+                  <th>Phone Number</th>
+                  <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let user of unconfirmedAdmins">
+
+                  <td>{{ user.firstName }}</td>
+                  <td>{{ user.lastName }}</td>
+                  <td>{{ user.email }}</td>
+                  <td>{{ user.mobileNumber }}</td>
+                  <td>
+                    <button class="btn btn-primary btn-sm" class="btn btn-secondary" data-bs-toggle="modal"
+                            data-bs-target="#confirm-dialog" (click)="setChangeWhat(user)" (click)="setDoWhat(2)">
+                      <i class="bi bi-approve"></i> Confirm
+                    </button>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                            data-bs-target="#confirm-dialog" (click)="setChangeWhat(user)" (click)="setDoWhat(0)">
+                      <i class="bi bi-trash"></i>
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card for Unconfirmed Employees -->
+        <div *ngIf="unconfirmedEmployees.length > 0" class="col-md-8 mb-4">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="text-center">Employees to Confirm</h3>
+            </div>
+            <div class="card-body">
+              <table class="table">
+                <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Lastname</th>
+                  <th>Email</th>
+                  <th>Phone Number</th>
+                  <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let user of unconfirmedEmployees">
+                  <td>{{ user.firstName }}</td>
+                  <td>{{ user.lastName }}</td>
+                  <td>{{ user.email }}</td>
+                  <td>{{ user.mobileNumber }}</td>
+                  <td>
+                    <button class="btn btn-primary btn-sm" (click)="confirmUser(user.id)">Confirm</button>
+                    <button class="btn btn-danger btn-sm" (click)="deleteUser(user.id)">Delete</button>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card for Confirmed Admins -->
+        <div class="col-md-8 mb-4">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="text-center">Admins</h3>
+            </div>
+            <div class="card-body">
+              <table class="table">
+                <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Lastname</th>
+                  <th>Email</th>
+                  <th>Phone Number</th>
+                  <th>Actions</th>
+                  <th>Change Role</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let user of confirmedAdmins">
+                  <td>{{ user.firstName }}</td>
+                  <td>{{ user.lastName }}</td>
+                  <td>{{ user.email }}</td>
+                  <td>{{ user.mobileNumber }}</td>
+                  <td>
+                    <button class="btn btn-danger btn-sm" (click)="deleteUser(user.id)">Delete</button>
+                  </td>
+                  <td>
+                    <select class="form-control" (change)="changeUserRole(user.id, $event.target.value)">
+                      <option [selected]="user.role === 'ADMIN'" value="ADMIN">ADMIN</option>
+                      <option [selected]="user.role === 'EMPLOYEE'" value="EMPLOYEE">EMPLOYEE</option>
+                    </select>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card for Confirmed Employees -->
+        <div class="col-md-8 mb-4">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="text-center">Employees</h3>
+            </div>
+            <div class="card-body">
+              <table class="table">
+                <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Lastname</th>
+                  <th>Email</th>
+                  <th>Phone Number</th>
+                  <th>Actions</th>
+                  <th>Change Role</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let user of confirmedEmployees">
+                  <td>{{ user.firstName }}</td>
+                  <td>{{ user.lastName }}</td>
+                  <td>{{ user.email }}</td>
+                  <td>{{ user.mobileNumber }}</td>
+                  <td>
+                    <button class="btn btn-danger btn-sm" (click)="deleteUser(user.id)">Delete</button>
+                  </td>
+                  <td>
+                    <select class="form-control" (change)="changeUserRole(user.id, $event.target.value)">
+                      <option [selected]="user.role === 'ADMIN'" value="ADMIN">ADMIN</option>
+                      <option [selected]="user.role === 'EMPLOYEE'" value="EMPLOYEE">EMPLOYEE</option>
+                    </select>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<app-confirm-dialog id="confirm-dialog" [changeWhatFirstName]="changeWhat?.firstName"
+                    [changeWhatLastName]="changeWhat?.lastName"
+                    [makeWhat]="doWhat"
+                    [whatRole]="whatRole"
+
+                    (confirm)="deleteUser(null)"></app-confirm-dialog>
