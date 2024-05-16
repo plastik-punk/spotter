@@ -32,13 +32,11 @@ public class SecurityConfig {
         return http
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeRequests(authorize -> authorize
-                .requestMatchers("/api/v1/reservations/**").permitAll()  // Allow all accesses to /reservations
-                .anyRequest().authenticated())  // Require authentication for all other requests
             .headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
             .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
     }
+
 
     @Configuration
     public static class CorsConfig implements WebMvcConfigurer {

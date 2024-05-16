@@ -5,6 +5,7 @@ import {LoginComponent} from './components/login/login.component';
 import {AuthGuard} from './guards/auth.guard';
 import {MessageComponent} from './components/message/message.component';
 import {ReservationsOverviewComponent} from './components/reservations-overview/reservations-overview.component';
+import {RegistrationComponent} from "./components/registration/registration.component";
 
 const routes: Routes = [
   {path: '', redirectTo: 'login', pathMatch: 'full'},
@@ -12,6 +13,8 @@ const routes: Routes = [
   {path: 'home', component: HomeComponent},
   {path: 'message', canActivate: mapToCanActivate([AuthGuard]), component: MessageComponent},
   {path: 'reservations-overview', canActivate: mapToCanActivate([AuthGuard]), component: ReservationsOverviewComponent}
+  {path: 'message', canActivate: mapToCanActivate([AuthGuard]), component: MessageComponent},
+  {path: 'registration', component:RegistrationComponent}
 ];
 
 @NgModule({
