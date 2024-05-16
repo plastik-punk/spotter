@@ -9,7 +9,11 @@ export enum StatusEnum {
 // depending on time, date and pax specified by the user (and obviously the status of tables at that time)
 // checking is used to indicate that user is still selecting the time, date and pax
 export enum SimpleViewReservationStatusEnum {
-  occupied = 'OCCUPIED',
+  allOccupied = 'ALL_OCCUPIED',
   available = 'AVAILABLE',
   checking = 'CHECKING',
+  closed = 'CLOSED',
+  outsideOpeningHours = 'OUTSIDE_OPENING_HOURS',
+  respectClosingHour = 'RESPECT_CLOSING_HOUR',
+  tooManyPax = 'TOO_MANY_PAX',
 }

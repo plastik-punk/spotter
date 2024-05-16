@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import jakarta.mail.MessagingException;
 
@@ -23,7 +24,7 @@ public interface ReservationService {
      * Check if any tables are available for requested time and pax.
      *
      * @param reservationCheckAvailabilityDto the reservation data
-     * @return true if tables are available, false otherwise
+     * @return the availability status
      */
-    Boolean getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto);
+    ReservationResponseEnum getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto);
 }

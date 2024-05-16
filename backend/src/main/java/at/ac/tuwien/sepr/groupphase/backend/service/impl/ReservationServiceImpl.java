@@ -5,20 +5,20 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
+import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mail.EmailService;
-import jakarta.mail.MessagingException;
-import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ReservationMapper;
+import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
@@ -110,19 +110,31 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public Boolean getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) {
+    public ReservationResponseEnum getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) {
         LOGGER.trace("getAvailability ({})", reservationCheckAvailabilityDto.toString());
+        ReservationResponseEnum response;
 
         // 1. fetch all places from DB that have a pax of greater or equal to the requested pax
         List<Place> places = placeRepository.findPlacesWithSufficientPax(reservationCheckAvailabilityDto.getPax());
+        if (places.isEmpty()) {
+            return ReservationResponseEnum.TOO_MANY_PAX;
+        }
 
         // 2. fetch all occupied places for the requested time
-        List<Place> occupiedPlaces = reservationRepository.findOccupiedPlaces(reservationCheckAvailabilityDto.getDate(), reservationCheckAvailabilityDto.getStartTime(), reservationCheckAvailabilityDto.getStartTime().plusHours(2));
+        List<Place> occupiedPlaces =
+            reservationRepository.findOccupiedPlaces(reservationCheckAvailabilityDto.getDate(), reservationCheckAvailabilityDto.getStartTime(),
+                reservationCheckAvailabilityDto.getStartTime().plusHours(2));
 
         // 3. remove occupied places from all places
         places.removeAll(occupiedPlaces);
 
-        // 4. return true if there are any available places
-        return !places.isEmpty();
+        // 4. generate response
+        // TODO: implement checks for CLOSED, OUTSIDE_OPENING_HOURS, RESPECT_CLOSING_HOUR
+        if (places.isEmpty()) {
+            response = ReservationResponseEnum.ALL_OCCUPIED;
+        } else {
+            response = ReservationResponseEnum.AVAILABLE;
+        }
+        return response;
     }
 }

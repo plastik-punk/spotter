@@ -3,6 +3,7 @@ import {HttpClient, HttpParams} from "@angular/common/http";
 import {Globals} from '../global/globals';
 import {Reservation, ReservationCheckAvailabilityDto, ReservationCreateDto} from "../dtos/reservation";
 import {Observable} from "rxjs";
+import {SimpleViewReservationStatusEnum} from "../dtos/status-enum";
 
 @Injectable({
   providedIn: 'root'
@@ -28,13 +29,13 @@ export class ReservationService {
    * Check the availability for a reservation
    *
    * @param reservationCheckAvailabilityDto the reservation to check the availability for
-   * @return an Observable for the availability of the reservation which is a boolean
+   * @return an Observable for the availability of the reservation
    */
-  getAvailability(reservationCheckAvailabilityDto: ReservationCheckAvailabilityDto) : Observable<boolean> {
+  getAvailability(reservationCheckAvailabilityDto: ReservationCheckAvailabilityDto) : Observable<SimpleViewReservationStatusEnum> {
     let params = new HttpParams();
     Object.keys(reservationCheckAvailabilityDto).forEach((key) => {
       params = params.append(key, reservationCheckAvailabilityDto[key]);
     });
-    return this.httpClient.get<boolean>(this.reservationBaseUri, { params });
+    return this.httpClient.get<SimpleViewReservationStatusEnum>(this.reservationBaseUri, { params });
   }
 }

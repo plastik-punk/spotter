@@ -28,52 +28,53 @@ export class HomeComponent implements OnInit {
 
   reservationCheckAvailabilityDto: ReservationCheckAvailabilityDto = {
     startTime: undefined,
-    endTime: undefined,
     date: undefined,
     pax: undefined
   }
 
-  enumReservationTableStatus = SimpleViewReservationStatusEnum;
+  enumReservationTableStatus = SimpleViewReservationStatusEnum; // needed to make enum available in html
   reservationTableStatus: SimpleViewReservationStatusEnum = SimpleViewReservationStatusEnum.checking;
 
   constructor(
     public authService: AuthService,
     private service: ReservationService
-    ) { }
+    ) { } // constructor
 
   ngOnInit() { }
 
   onFieldChange() {
-    // 1. update reservationCheckAvailabilityDto based on the information in reservationCreateDto
+    // 1. update DTO with current content of form
     this.reservationCheckAvailabilityDto.startTime = this.reservationCreateDto.startTime;
     this.reservationCheckAvailabilityDto.date = this.reservationCreateDto.date;
     this.reservationCheckAvailabilityDto.pax = this.reservationCreateDto.pax;
 
     // 2. check if all required fields are filled
-    if (this.reservationCheckAvailabilityDto.startTime && this.reservationCheckAvailabilityDto.date && this.reservationCheckAvailabilityDto.pax) {
+    if (this.reservationCheckAvailabilityDto.startTime
+          && this.reservationCheckAvailabilityDto.date
+          && this.reservationCheckAvailabilityDto.pax) {
+
       // TODO: remove after testing
       console.log("checking availability for: ", this.reservationCheckAvailabilityDto)
 
-      // a. send request to backend
+      // 3. send request to backend
       this.service.getAvailability(this.reservationCheckAvailabilityDto).subscribe({
         next: (data) => {
           // b. update reservationTableStatus based on the data received from the backend
-          if (data.valueOf() === true) {
+          if (data.valueOf() === this.enumReservationTableStatus.available.valueOf()) {
             this.reservationTableStatus = SimpleViewReservationStatusEnum.available;
           } else {
-            this.reservationTableStatus = SimpleViewReservationStatusEnum.occupied;
+            this.reservationTableStatus = SimpleViewReservationStatusEnum.allOccupied;
           }
         },
         error: (error) => {
-          // c. error handling
+          // TODO: error and notification handling
           console.error("Error Processing Reservation", error);
         },
       });
     } else {
-      // d. set to checking of not all required fields are filled
       this.reservationTableStatus = SimpleViewReservationStatusEnum.checking;
     }
-  }
+  } // onFieldChange
 
   onSubmit(form: NgForm) {
     console.log(form); // TODO: remove after testing
@@ -92,4 +93,5 @@ export class HomeComponent implements OnInit {
       }); // observable.subscribe
     }
   } // onSubmit
+
 }

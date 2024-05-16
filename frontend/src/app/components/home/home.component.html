@@ -62,10 +62,10 @@
         <div class="row d-flex justify-content-center align-items-center">
           <div class="col-lg-12"
                [class.reservation-table-available]="reservationTableStatus === enumReservationTableStatus.available"
-               [class.reservation-table-occupied]="reservationTableStatus === enumReservationTableStatus.occupied"
+               [class.reservation-table-occupied]="reservationTableStatus === enumReservationTableStatus.allOccupied"
                [class.reservation-table-checking]="reservationTableStatus === enumReservationTableStatus.checking">
             {{reservationTableStatus === enumReservationTableStatus.available ? 'Tables available' :
-            reservationTableStatus === enumReservationTableStatus.occupied ? 'No tables available' : 'Select time, date and pax'}}
+            reservationTableStatus === enumReservationTableStatus.allOccupied ? 'No tables available' : 'Select time, date and pax'}}
           </div>
         </div>
         <!-- End row with notification -->

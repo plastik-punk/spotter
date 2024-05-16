@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,7 +49,7 @@ public class ReservationEndpoint {
     @PermitAll
     @GetMapping
     @Operation(summary = "Check if any tables are available for requested time and pax")
-    public boolean getAvailability(@ModelAttribute ReservationCheckAvailabilityDto reservationCheckAvailabilityDtoDto) {
+    public ReservationResponseEnum getAvailability(@ModelAttribute ReservationCheckAvailabilityDto reservationCheckAvailabilityDtoDto) {
         LOGGER.info("GET /api/v1/reservations body: {}", reservationCheckAvailabilityDtoDto.toString());
         return service.getAvailability(reservationCheckAvailabilityDtoDto);
     }
