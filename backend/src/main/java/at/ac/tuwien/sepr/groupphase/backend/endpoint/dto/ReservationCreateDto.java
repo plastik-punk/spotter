@@ -20,7 +20,7 @@ public class ReservationCreateDto {
 
     private LocalDate date;
 
-    private int pax;
+    private Long pax;
 
     private String notes;
 
@@ -76,11 +76,11 @@ public class ReservationCreateDto {
         this.date = date;
     }
 
-    public int getPax() {
+    public Long getPax() {
         return pax;
     }
 
-    public void setPax(int pax) {
+    public void setPax(Long pax) {
         this.pax = pax;
     }
 
@@ -149,6 +149,21 @@ public class ReservationCreateDto {
             + '}';
     }
 
+    public ReservationCreateDto copy() {
+        return ReservationCreateDtoBuilder.aReservationCreateDto()
+            .withApplicationUser(this.applicationUser) // assuming ApplicationUser is immutable or has its own copy method
+            .withFirstName(this.firstName)
+            .withLastName(this.lastName)
+            .withStartTime(this.startTime)
+            .withEndTime(this.endTime)
+            .withDate(this.date)
+            .withPax(this.pax)
+            .withNotes(this.notes)
+            .withEmail(this.email)
+            .withMobileNumber(this.mobileNumber)
+            .build();
+    }
+
     public static final class ReservationCreateDtoBuilder {
         private ApplicationUser applicationUser;
         private String firstName;
@@ -156,7 +171,7 @@ public class ReservationCreateDto {
         private LocalTime startTime;
         private LocalTime endTime;
         private LocalDate date;
-        private int pax;
+        private Long pax;
         private String notes;
         private String email;
         private String mobileNumber;
@@ -168,7 +183,7 @@ public class ReservationCreateDto {
             return new ReservationCreateDtoBuilder();
         }
 
-        public ReservationCreateDtoBuilder withUserId(ApplicationUser applicationUser) {
+        public ReservationCreateDtoBuilder withApplicationUser(ApplicationUser applicationUser) {
             this.applicationUser = applicationUser;
             return this;
         }
@@ -198,7 +213,7 @@ public class ReservationCreateDto {
             return this;
         }
 
-        public ReservationCreateDtoBuilder withPax(int pax) {
+        public ReservationCreateDtoBuilder withPax(Long pax) {
             this.pax = pax;
             return this;
         }

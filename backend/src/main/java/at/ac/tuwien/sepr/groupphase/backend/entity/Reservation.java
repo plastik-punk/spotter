@@ -50,7 +50,7 @@ public class Reservation {
         this.id = id;
     }
 
-    public ApplicationUser getUser() {
+    public ApplicationUser getApplicationUser() {
         return applicationUser;
     }
 
@@ -142,6 +142,19 @@ public class Reservation {
             + ", notes='" + notes + '\''
             + ", place=" + place
             + '}';
+    }
+
+    public Reservation copy() {
+        return ReservationBuilder.aReservation()
+            .withId(this.id)
+            .withUser(this.applicationUser)
+            .withStartTime(this.startTime)
+            .withDate(this.date)
+            .withEndTime(this.endTime)
+            .withPax(this.pax)
+            .withNotes(this.notes)
+            .withPlace(this.place)
+            .build();
     }
 
     public static final class ReservationBuilder {

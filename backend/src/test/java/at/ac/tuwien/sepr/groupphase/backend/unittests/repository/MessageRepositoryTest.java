@@ -9,13 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(SpringExtension.class)
-// This test slice annotation is used instead of @SpringBootTest to load only repository beans instead of
+// This test slice annotation is used instead of @SpringBootTest to load only entity beans instead of
 // the entire application context
 @DataJpaTest
 @ActiveProfiles("test")
@@ -25,6 +26,7 @@ public class MessageRepositoryTest implements TestData {
     private MessageRepository messageRepository;
 
     @Test
+    @Transactional
     public void givenNothing_whenSaveMessage_thenFindListWithOneElementAndFindMessageById() {
         Message message = Message.MessageBuilder.aMessage()
             .withTitle(TEST_NEWS_TITLE)
@@ -40,5 +42,4 @@ public class MessageRepositoryTest implements TestData {
             () -> assertNotNull(messageRepository.findById(message.getId()))
         );
     }
-
 }
