@@ -48,8 +48,8 @@ public class OpeningHours {
         this.id = id;
     }
 
-    public void getRestaurant(Restaurant restaurant) {
-        this.restaurant = restaurant;
+    public Restaurant getRestaurant() {
+        return restaurant;
     }
 
     public void setRestaurant(Restaurant restaurant) {

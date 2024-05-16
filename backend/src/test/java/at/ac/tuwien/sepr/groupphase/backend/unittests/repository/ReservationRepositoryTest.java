@@ -1,17 +1,23 @@
 package at.ac.tuwien.sepr.groupphase.backend.unittests.repository;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.lang.invoke.MethodHandles;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,6 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @DataJpaTest
 @ActiveProfiles("test")
 public class ReservationRepositoryTest implements TestData {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Autowired
     private ReservationRepository reservationRepository;
@@ -35,7 +43,6 @@ public class ReservationRepositoryTest implements TestData {
     @Transactional
     public void givenLegalData_whenSaveReservation_thenFindListWithOneElementAndFindReservationById() {
         Reservation reservation = Reservation.ReservationBuilder.aReservation()
-            .withId(1L)
             .withUser(applicationUserRepository.save(TEST_APPLICATION_USER_CUSTOMER_1))
             .withStartTime(TEST_RESERVATION_START_TIME)
             .withDate(TEST_RESERVATION_DATE)
@@ -51,4 +58,30 @@ public class ReservationRepositoryTest implements TestData {
             () -> assertNotNull(reservationRepository.findById(reservation.getId()))
         );
     }
+
+    // TODO: fix the method and then activate test again
+    /*
+    @Test
+    @Transactional
+    public void givenDateAndTime_whenFindOccupiedPlaces_thenFindOccupiedPlaces() {
+            Reservation reservation = Reservation.ReservationBuilder.aReservation()
+            .withId(1L)
+            .withUser(applicationUserRepository.save(TEST_APPLICATION_USER_CUSTOMER_1))
+            .withStartTime(TEST_RESERVATION_START_TIME)
+            .withDate(TEST_RESERVATION_DATE)
+            .withEndTime(TEST_RESERVATION_END_TIME)
+            .withPax(TEST_RESERVATION_PAX)
+            .withNotes(TEST_RESERVATION_NOTES)
+            .withPlace(placeRepository.save(TEST_PLACE_OCCUPIED))
+            .build();
+        reservationRepository.save(reservation);
+        List<Place> occupiedPlaces = reservationRepository.findOccupiedPlaces(TEST_RESERVATION_DATE, TEST_RESERVATION_START_TIME, TEST_RESERVATION_END_TIME);
+        LOGGER.info("Occupied places: " + occupiedPlaces);
+
+
+        assertAll(
+            () -> assertEquals(1, reservationRepository.findOccupiedPlaces(TEST_RESERVATION_DATE, TEST_RESERVATION_START_TIME.minusHours(1), TEST_RESERVATION_END_TIME.plusHours(1)).size())
+        );
+    }
+     */
 }

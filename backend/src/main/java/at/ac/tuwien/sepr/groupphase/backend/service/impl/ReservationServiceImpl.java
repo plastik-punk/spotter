@@ -156,6 +156,7 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         // 4. check if any places are available for specified time
+        // TODO: findOccupiedPlaces seems not to work as expected
         List<Place> places = placeRepository.findAll();
         List<Place> occupiedPlaces = reservationRepository.findOccupiedPlaces(reservationCheckAvailabilityDto.getDate(),
                 reservationCheckAvailabilityDto.getStartTime(),
