@@ -1,7 +1,7 @@
 import {Injectable} from "@angular/core";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpParams} from "@angular/common/http";
 import {Globals} from '../global/globals';
-import {Reservation, ReservationCreateDto} from "../dtos/reservation";
+import {Reservation, ReservationCheckAvailabilityDto, ReservationCreateDto} from "../dtos/reservation";
 import {Observable} from "rxjs";
 
 @Injectable({
@@ -22,5 +22,19 @@ export class ReservationService {
    */
   createReservation(reservationCreateDto: ReservationCreateDto) : Observable<Reservation> {
     return this.httpClient.post<Reservation>(this.reservationBaseUri, reservationCreateDto);
+  }
+
+  /**
+   * Check the availability for a reservation
+   *
+   * @param reservationCheckAvailabilityDto the reservation to check the availability for
+   * @return an Observable for the availability of the reservation which is a boolean
+   */
+  getAvailability(reservationCheckAvailabilityDto: ReservationCheckAvailabilityDto) : Observable<boolean> {
+    let params = new HttpParams();
+    Object.keys(reservationCheckAvailabilityDto).forEach((key) => {
+      params = params.append(key, reservationCheckAvailabilityDto[key]);
+    });
+    return this.httpClient.get<boolean>(this.reservationBaseUri, { params });
   }
 }

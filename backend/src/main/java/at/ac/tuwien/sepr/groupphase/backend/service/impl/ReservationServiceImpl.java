@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
@@ -17,10 +18,12 @@ import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ReservationMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -104,5 +107,22 @@ public class ReservationServiceImpl implements ReservationService {
         reservationValidator.validateReservation(savedReservation);
 
         return mapper.reservationToReservationCreateDto(savedReservation);
+    }
+
+    @Override
+    public Boolean getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) {
+        LOGGER.trace("getAvailability ({})", reservationCheckAvailabilityDto.toString());
+
+        // 1. fetch all places from DB that have a pax of greater or equal to the requested pax
+        List<Place> places = placeRepository.findPlacesWithSufficientPax(reservationCheckAvailabilityDto.getPax());
+
+        // 2. fetch all occupied places for the requested time
+        List<Place> occupiedPlaces = reservationRepository.findOccupiedPlaces(reservationCheckAvailabilityDto.getDate(), reservationCheckAvailabilityDto.getStartTime(), reservationCheckAvailabilityDto.getStartTime().plusHours(2));
+
+        // 3. remove occupied places from all places
+        places.removeAll(occupiedPlaces);
+
+        // 4. return true if there are any available places
+        return !places.isEmpty();
     }
 }
