@@ -7,18 +7,27 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import java.time.DayOfWeek;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "opening_hours")
 public class OpeningHours {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "restaurant_id", nullable = false, referencedColumnName = "id")
+    private Restaurant restaurant;
 
     @Column(name = "day_of_week", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -37,6 +46,14 @@ public class OpeningHours {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public void getRestaurant(Restaurant restaurant) {
+        this.restaurant = restaurant;
+    }
+
+    public void setRestaurant(Restaurant restaurant) {
+        this.restaurant = restaurant;
     }
 
     public DayOfWeek getDayOfWeek() {
@@ -73,6 +90,7 @@ public class OpeningHours {
             return false;
         }
         return Objects.equals(id, that.id)
+            && Objects.equals(restaurant, that.restaurant)
             && dayOfWeek == that.dayOfWeek
             && Objects.equals(openingTime, that.openingTime)
             && Objects.equals(closingTime, that.closingTime);
@@ -80,13 +98,14 @@ public class OpeningHours {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, dayOfWeek, openingTime, closingTime);
+        return Objects.hash(id, restaurant, dayOfWeek, openingTime, closingTime);
     }
 
     @Override
     public String toString() {
         return "OpeningHour{"
             + "id=" + id
+            + ", restaurant=" + restaurant
             + ", dayOfWeek=" + dayOfWeek
             + ", openingTime=" + openingTime
             + ", closingTime=" + closingTime
@@ -96,6 +115,7 @@ public class OpeningHours {
     // Builder pattern
     public static final class OpeningHourBuilder {
         private Long id;
+        private Restaurant restaurant;
         private DayOfWeek dayOfWeek;
         private LocalTime openingTime;
         private LocalTime closingTime;
@@ -109,6 +129,11 @@ public class OpeningHours {
 
         public OpeningHourBuilder withId(Long id) {
             this.id = id;
+            return this;
+        }
+
+        public OpeningHourBuilder withRestaurant(Restaurant restaurant) {
+            this.restaurant = restaurant;
             return this;
         }
 
@@ -130,6 +155,7 @@ public class OpeningHours {
         public OpeningHours build() {
             OpeningHours openingHour = new OpeningHours();
             openingHour.setId(id);
+            openingHour.setRestaurant(restaurant);
             openingHour.setDayOfWeek(dayOfWeek);
             openingHour.setOpeningTime(openingTime);
             openingHour.setClosingTime(closingTime);

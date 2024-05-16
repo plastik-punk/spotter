@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.basetest;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
@@ -212,6 +213,15 @@ public interface TestData {
         + ", pax=" + TEST_RESERVATION_PAX
         + ", notes='" + TEST_RESERVATION_NOTES
         + "', place=" +  TEST_PLACE_AVAILABLE_1.toString() + "}";
+
+    LocalTime TEST_RESERVATION_AVAILABILITY_START_TIME = LocalDateTime.of(2024, 7, 1, 18, 0, 0, 0).toLocalTime();
+    LocalDate TEST_RESERVATION_AVAILABILITY_DATE = LocalDate.of(2024, 7, 1);
+
+    ReservationCheckAvailabilityDto TEST_RESERVATION_AVAILABILITY = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+        .withStartTime(TEST_RESERVATION_AVAILABILITY_START_TIME)
+        .withDate(TEST_RESERVATION_AVAILABILITY_DATE)
+        .withPax(4L)
+        .build();
 
     // ---------------------------------------------
     // ... TEST DATA

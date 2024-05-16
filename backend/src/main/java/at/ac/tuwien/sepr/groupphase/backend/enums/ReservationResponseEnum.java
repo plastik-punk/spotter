@@ -10,4 +10,5 @@ public enum ReservationResponseEnum {
     OUTSIDE_OPENING_HOURS,
     RESPECT_CLOSING_HOUR,
     TOO_MANY_PAX,
+    DATE_IN_PAST,
 }

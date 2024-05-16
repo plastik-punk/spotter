@@ -32,8 +32,9 @@ export class HomeComponent implements OnInit {
     pax: undefined
   }
 
-  enumReservationTableStatus = SimpleViewReservationStatusEnum; // needed to make enum available in html
-  reservationTableStatus: SimpleViewReservationStatusEnum = SimpleViewReservationStatusEnum.checking;
+  enumReservationTableStatus = SimpleViewReservationStatusEnum;
+  reservationStatusText: string = 'Provide Time, Date and Pax';
+  reservationStatusClass: string = 'reservation-table-incomplete';
 
   constructor(
     public authService: AuthService,
@@ -48,22 +49,37 @@ export class HomeComponent implements OnInit {
     this.reservationCheckAvailabilityDto.date = this.reservationCreateDto.date;
     this.reservationCheckAvailabilityDto.pax = this.reservationCreateDto.pax;
 
-    // 2. check if all required fields are filled
-    if (this.reservationCheckAvailabilityDto.startTime
-          && this.reservationCheckAvailabilityDto.date
-          && this.reservationCheckAvailabilityDto.pax) {
+    if (this.reservationCheckAvailabilityDto.startTime == null || this.reservationCheckAvailabilityDto.pax == null || this.reservationCheckAvailabilityDto.date == null) {
+      this.reservationStatusText = 'Provide Time, Date and Pax';
+      this.reservationStatusClass = 'reservation-table-incomplete';
+      return;
+    }
 
-      // TODO: remove after testing
-      console.log("checking availability for: ", this.reservationCheckAvailabilityDto)
-
-      // 3. send request to backend
+      // 2. send request to backend
       this.service.getAvailability(this.reservationCheckAvailabilityDto).subscribe({
         next: (data) => {
           // b. update reservationTableStatus based on the data received from the backend
           if (data.valueOf() === this.enumReservationTableStatus.available.valueOf()) {
-            this.reservationTableStatus = SimpleViewReservationStatusEnum.available;
-          } else {
-            this.reservationTableStatus = SimpleViewReservationStatusEnum.allOccupied;
+            this.reservationStatusText = 'Tables available';
+            this.reservationStatusClass = 'reservation-table-available';
+          } else if (data.valueOf() === this.enumReservationTableStatus.closed.valueOf()) {
+            this.reservationStatusText = 'Location Closed This Day';
+            this.reservationStatusClass = 'reservation-table-conflict';
+          } else if (data.valueOf() === this.enumReservationTableStatus.outsideOpeningHours.valueOf()) {
+            this.reservationStatusText = 'Outside Of Opening Hours';
+            this.reservationStatusClass = 'reservation-table-conflict';
+          } else if (data.valueOf() === this.enumReservationTableStatus.respectClosingHour.valueOf()) {
+            this.reservationStatusText = 'Respect Closing Hour';
+            this.reservationStatusClass = 'reservation-table-conflict';
+          } else if (data.valueOf() === this.enumReservationTableStatus.tooManyPax.valueOf()) {
+            this.reservationStatusText = 'Too Many Pax for available tables (try advanced reservation)';
+            this.reservationStatusClass = 'reservation-table-conflict';
+          } else if (data.valueOf() === this.enumReservationTableStatus.allOccupied.valueOf()) {
+            this.reservationStatusText = 'All Tables Occupied';
+            this.reservationStatusClass = 'reservation-table-conflict';
+          } else if (data.valueOf() === this.enumReservationTableStatus.dateInPast.valueOf()) {
+            this.reservationStatusText = 'Date In The Past';
+            this.reservationStatusClass = 'reservation-table-conflict';
           }
         },
         error: (error) => {
@@ -71,9 +87,6 @@ export class HomeComponent implements OnInit {
           console.error("Error Processing Reservation", error);
         },
       });
-    } else {
-      this.reservationTableStatus = SimpleViewReservationStatusEnum.checking;
-    }
   } // onFieldChange
 
   onSubmit(form: NgForm) {

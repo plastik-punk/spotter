@@ -58,54 +58,54 @@ public class ReservationCheckAvailabilityDto {
 
     @Override
     public String toString() {
-        return "ReservationCreateDto{"
+        return "ReservationCheckAvailabilityDto{"
             + "startTime=" + startTime
             + ", date=" + date
             + ", pax=" + pax
             + '}';
     }
 
-    public ReservationCreateDto copy() {
-        return ReservationCreateDtoBuilder.aReservationCreateDto()
+    public ReservationCheckAvailabilityDto copy() {
+        return ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
             .withStartTime(this.startTime)
             .withDate(this.date)
             .withPax(this.pax)
             .build();
     }
 
-    public static final class ReservationCreateDtoBuilder {
+    public static final class ReservationCheckAvailabilityDtoBuilder {
         private LocalTime startTime;
         private LocalDate date;
         private Long pax;
 
-        private ReservationCreateDtoBuilder() {
+        private ReservationCheckAvailabilityDtoBuilder() {
         }
 
-        public static ReservationCreateDtoBuilder aReservationCreateDto() {
-            return new ReservationCreateDtoBuilder();
+        public static ReservationCheckAvailabilityDtoBuilder aReservationCheckAvailabilityDto() {
+            return new ReservationCheckAvailabilityDtoBuilder();
         }
 
-        public ReservationCreateDtoBuilder withStartTime(LocalTime startTime) {
+        public ReservationCheckAvailabilityDtoBuilder withStartTime(LocalTime startTime) {
             this.startTime = startTime;
             return this;
         }
 
-        public ReservationCreateDtoBuilder withDate(LocalDate date) {
+        public ReservationCheckAvailabilityDtoBuilder withDate(LocalDate date) {
             this.date = date;
             return this;
         }
 
-        public ReservationCreateDtoBuilder withPax(Long pax) {
+        public ReservationCheckAvailabilityDtoBuilder withPax(Long pax) {
             this.pax = pax;
             return this;
         }
 
-        public ReservationCreateDto build() {
-            ReservationCreateDto reservationCreateDto = new ReservationCreateDto();
-            reservationCreateDto.setStartTime(startTime);
-            reservationCreateDto.setDate(date);
-            reservationCreateDto.setPax(pax);
-            return reservationCreateDto;
+        public ReservationCheckAvailabilityDto build() {
+            ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = new ReservationCheckAvailabilityDto();
+            reservationCheckAvailabilityDto.setStartTime(startTime);
+            reservationCheckAvailabilityDto.setDate(date);
+            reservationCheckAvailabilityDto.setPax(pax);
+            return reservationCheckAvailabilityDto;
         }
     }
 }

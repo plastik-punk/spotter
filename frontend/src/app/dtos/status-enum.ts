@@ -11,9 +11,9 @@ export enum StatusEnum {
 export enum SimpleViewReservationStatusEnum {
   allOccupied = 'ALL_OCCUPIED',
   available = 'AVAILABLE',
-  checking = 'CHECKING',
   closed = 'CLOSED',
   outsideOpeningHours = 'OUTSIDE_OPENING_HOURS',
   respectClosingHour = 'RESPECT_CLOSING_HOUR',
   tooManyPax = 'TOO_MANY_PAX',
+  dateInPast = 'DATE_IN_PAST',
 }

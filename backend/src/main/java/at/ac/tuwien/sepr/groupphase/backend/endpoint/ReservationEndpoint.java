@@ -18,10 +18,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.invoke.MethodHandles;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @RestController
 @RequestMapping(value = "/api/v1/reservations")
@@ -49,8 +52,18 @@ public class ReservationEndpoint {
     @PermitAll
     @GetMapping
     @Operation(summary = "Check if any tables are available for requested time and pax")
-    public ReservationResponseEnum getAvailability(@ModelAttribute ReservationCheckAvailabilityDto reservationCheckAvailabilityDtoDto) {
-        LOGGER.info("GET /api/v1/reservations body: {}", reservationCheckAvailabilityDtoDto.toString());
-        return service.getAvailability(reservationCheckAvailabilityDtoDto);
+    public ReservationResponseEnum getAvailability(@RequestParam("startTime") String startTime,
+                                                    @RequestParam("date") String date,
+                                                    @RequestParam("pax") Long pax)
+        throws ValidationException {
+
+        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+            .withStartTime(LocalTime.parse(startTime))
+            .withDate(LocalDate.parse(date))
+            .withPax(pax)
+            .build();
+
+        LOGGER.info("GET /api/v1/reservations body: {}", reservationCheckAvailabilityDto.toString());
+        return service.getAvailability(reservationCheckAvailabilityDto);
     }
 }

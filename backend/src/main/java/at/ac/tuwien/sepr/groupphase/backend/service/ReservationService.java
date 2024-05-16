@@ -26,5 +26,5 @@ public interface ReservationService {
      * @param reservationCheckAvailabilityDto the reservation data
      * @return the availability status
      */
-    ReservationResponseEnum getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto);
+    ReservationResponseEnum getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) throws ValidationException;
 }

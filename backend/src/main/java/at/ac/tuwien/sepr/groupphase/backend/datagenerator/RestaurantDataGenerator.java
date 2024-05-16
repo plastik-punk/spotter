@@ -11,9 +11,9 @@ import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
 
-@Profile({"generateData"})
+@Profile({"generateData", "test"})
 @Component
-@Order(5)
+@Order(4)
 public class RestaurantDataGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -36,9 +36,8 @@ public class RestaurantDataGenerator {
             // TODO
             Restaurant restaurant = Restaurant.RestaurantBuilder.aRestaurant()
                 .withId(1L)
-                .withName("Casual Otters")
+                .withName("The Wet Otter")
                 .withAddress("Karlsplatz 13, 1040 Vienna")
-                .withOpeningHours(null)
                 .build();
 
             restaurantRepository.save(restaurant);
