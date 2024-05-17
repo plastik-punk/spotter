@@ -26,7 +26,8 @@ export interface ReservationCreateDto {
 }
 export interface ReservationListDto {
   id: number,
-  user: string,
+  userFirstName: string,
+  userLastName: string,
   startTime: Date;
   date: Date;
   endTime: Date;

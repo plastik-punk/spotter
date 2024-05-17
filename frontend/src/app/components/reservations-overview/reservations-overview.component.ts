@@ -86,6 +86,7 @@ export class ReservationsOverviewComponent implements OnInit {
       .subscribe({
         next: (reservation: ReservationListDto[]) => {
           this.reservations = reservation;
+          this.displayedReservations = this.reservations.slice(0, 10);
         },
         error: error => {
           this.defaultServiceErrorHandling(error);

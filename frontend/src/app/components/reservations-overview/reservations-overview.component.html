@@ -23,8 +23,9 @@
       <table class="table table-hover">
         <thead>
         <tr>
-          <th>Start Date</th>
-          <th>End Date</th>
+          <th>Date</th>
+          <th>Start Time</th>
+          <th>End Time</th>
           <th>Name</th>
           <th>Seats</th>
           <th>Table Number</th>
@@ -33,9 +34,10 @@
         </thead>
         <tbody>
         <tr *ngFor="let reservation of displayedReservations">
-          <td>{{ reservation.startDate }}</td>
-          <td>{{ reservation.endDate }}</td>
-          <td>{{ reservation.user }}</td>
+          <td>{{ reservation.date }}</td>
+          <td>{{ reservation.startTime }}</td>
+          <td>{{ reservation.endTime }}</td>
+          <td>{{ reservation.userFirstName }} {{reservation.userLastName}}</td>
           <td>{{ reservation.pax }}</td>
           <td>{{ reservation.placeId }}</td>
           <div class="btn-group">

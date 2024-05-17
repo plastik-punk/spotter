@@ -12,7 +12,7 @@ const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'home', component: HomeComponent},
   {path: 'message', canActivate: mapToCanActivate([AuthGuard]), component: MessageComponent},
-  {path: 'reservations-overview', canActivate: mapToCanActivate([AuthGuard]), component: ReservationsOverviewComponent}
+  {path: 'reservations-overview', canActivate: mapToCanActivate([AuthGuard]), component: ReservationsOverviewComponent},
   {path: 'message', canActivate: mapToCanActivate([AuthGuard]), component: MessageComponent},
   {path: 'registration', component:RegistrationComponent}
 ];
