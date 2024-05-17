@@ -89,7 +89,7 @@ public class ReservationServiceImpl implements ReservationService {
                 .withFirstName(reservationCreateDto.getFirstName().trim())
                 .withLastName(reservationCreateDto.getLastName().trim())
                 .withEmail(reservationCreateDto.getEmail().trim())
-                .withMobileNumber(reservationCreateDto.getMobileNumber().trim())
+                .withMobileNumber(reservationCreateDto.getMobileNumber() != null ? reservationCreateDto.getMobileNumber().trim() : reservationCreateDto.getMobileNumber())
                 .withoutPassword()
                 .withRole(RoleEnum.GUEST)
                 .build();
@@ -99,7 +99,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         // 4. map to Reservation entity
         Reservation reservation = mapper.reservationCreateDtoToReservation(reservationCreateDto);
-        reservation.setNotes(reservation.getNotes().trim());
+        reservation.setNotes(reservation.getNotes() != null ? reservation.getNotes().trim() : reservation.getNotes());
 
         // 5. chose first available place for reservation
         List<Place> places = placeRepository.findAll();
