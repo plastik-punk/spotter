@@ -1,8 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,8 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
-// todo: use correct endpoint path, activate LoginEndpoint, fix authentication
-
 @RestController
 @RequestMapping(value = "/api/v1/reservations")
 public class ReservationEndpoint {
@@ -39,12 +35,12 @@ public class ReservationEndpoint {
         this.service = service;
     }
 
-    // todo: authentication
+    // TODO: exception handling through all layers
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a new reservation")
     @PermitAll
     @PostMapping
-    public Reservation create(@Valid @RequestBody ReservationCreateDto reservationCreateDto) throws MessagingException {
+    public ReservationCreateDto create(@Valid @RequestBody ReservationCreateDto reservationCreateDto) throws MessagingException, ValidationException {
         LOGGER.info("POST /api/v1/reservations body: {}", reservationCreateDto.toString());
         return service.create(reservationCreateDto);
     }

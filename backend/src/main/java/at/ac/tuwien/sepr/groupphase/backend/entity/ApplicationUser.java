@@ -121,7 +121,7 @@ public class ApplicationUser {
             + ", firstName='" + firstName + '\''
             + ", lastName='" + lastName + '\''
             + ", eMail='" + email + '\''
-            + ", mobileNumber=" + mobileNumber
+            + ", mobileNumber='" + mobileNumber + '\''
             + ", password='" + password + '\''
             + ", role='" + role + '\''
             + '}';
@@ -170,6 +170,11 @@ public class ApplicationUser {
 
         public ApplicationUserBuilder withPassword(String password) {
             this.password = password;
+            return this;
+        }
+
+        public ApplicationUserBuilder withoutPassword() {
+            this.password = "guest";
             return this;
         }
 

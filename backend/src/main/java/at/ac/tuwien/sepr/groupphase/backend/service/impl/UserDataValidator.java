@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserRegistrationDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import org.slf4j.Logger;
@@ -22,93 +23,111 @@ public class UserDataValidator {
         LOG.trace("validateRegistration({})", registrationDto);
         List<String> validationErrors = new ArrayList<>();
 
-        validateFirstName(validationErrors, registrationDto);
-        validateLastName(validationErrors, registrationDto);
-        validateEmail(validationErrors, registrationDto);
-        validatePhoneNumber(validationErrors, registrationDto);
-        validateRole(validationErrors, registrationDto);
-        validatePassword(validationErrors, registrationDto);
+        validateFirstName(validationErrors, registrationDto.getFirstName());
+        validateLastName(validationErrors, registrationDto.getLastName());
+        validateEmail(validationErrors, registrationDto.getEmail());
+        validatePhoneNumber(validationErrors, registrationDto.getMobileNumber());
+        validateRole(validationErrors, registrationDto.getRole());
+        validatePassword(validationErrors, registrationDto.getPassword());
 
         if (!validationErrors.isEmpty()) {
             throw new ValidationException("Validation of registration data failed", validationErrors);
         }
     }
 
-    private void validateFirstName(List<String> validationErrors, UserRegistrationDto registrationDto) {
-        LOG.trace("validateFirstName({})", registrationDto);
-        if (registrationDto.getFirstName() == null) {
-            validationErrors.add("No first name given.");
-        } else if (registrationDto.getFirstName().trim().isEmpty()) {
-            validationErrors.add("First name should not be empty.");
-        } else if (registrationDto.getFirstName().length() > 255) {
-            validationErrors.add("First name shouldn't be longer than 255 characters.");
-        } else if (!registrationDto.getFirstName().matches("^[A-Za-z ]+$")) {
-            validationErrors.add("First name must consist of letters and spaces only.");
+    public void validateApplicationUser(List<String> validationErrors, ApplicationUser applicationUser) {
+        LOG.trace("validateRegistration({})", applicationUser);
+
+        validateFirstName(validationErrors, applicationUser.getFirstName());
+        validateLastName(validationErrors, applicationUser.getLastName());
+        validateEmail(validationErrors, applicationUser.getEmail());
+        validatePhoneNumber(validationErrors, applicationUser.getMobileNumber());
+        validateRoleForReservation(validationErrors, applicationUser.getRole());
+    }
+
+    public void validateFirstName(List<String> validationErrors, String firstName) {
+        LOG.trace("validateFirstName({})", firstName);
+        if (firstName == null) {
+            validationErrors.add("No first name given");
+        } else if (firstName.trim().isEmpty()) {
+            validationErrors.add("First name should not be empty");
+        } else if (firstName.length() > 255) {
+            validationErrors.add("First name shouldn't be longer than 255 characters");
+        } else if (!firstName.matches("^[A-Za-z ]+$")) {
+            validationErrors.add("First name must consist of letters and spaces only");
         }
     }
 
-    private void validateLastName(List<String> validationErrors, UserRegistrationDto registrationDto) {
-        LOG.trace("validateLastName({})", registrationDto);
-        if (registrationDto.getLastName() == null) {
-            validationErrors.add("No last name given.");
-        } else if (registrationDto.getLastName().trim().isEmpty()) {
-            validationErrors.add("Last name should not be empty.");
-        } else if (registrationDto.getLastName().length() > 255) {
-            validationErrors.add("Last name shouldn't be longer than 255 characters.");
-        } else if (!registrationDto.getLastName().matches("^[A-Za-z ]+$")) {
-            validationErrors.add("Last name must consist of letters and spaces only.");
+    public void validateLastName(List<String> validationErrors, String lastName) {
+        LOG.trace("validateLastName({})", lastName);
+        if (lastName == null) {
+            validationErrors.add("No last name given");
+        } else if (lastName.trim().isEmpty()) {
+            validationErrors.add("Last name should not be empty");
+        } else if (lastName.length() > 255) {
+            validationErrors.add("Last name shouldn't be longer than 255 characters");
+        } else if (!lastName.matches("^[A-Za-z ]+$")) {
+            validationErrors.add("Last name must consist of letters and spaces only");
         }
     }
 
-
-    private void validateRole(List<String> validationErrors, UserRegistrationDto registrationDto) {
-        LOG.trace("validateRole({})", registrationDto);
-        if (registrationDto.getRole() == null) {
-            validationErrors.add("User role is required.");
-        } else if (!registrationDto.getRole().equals(RoleEnum.CUSTOMER) && !registrationDto.getRole().equals(RoleEnum.UNCONFIRMED_ADMIN)
-            && !registrationDto.getRole().equals(RoleEnum.UNCONFIRMED_EMPLOYEE)) {
+    private void validateRole(List<String> validationErrors, RoleEnum role) {
+        LOG.trace("validateRole({})", role);
+        if (role == null) {
+            validationErrors.add("User role is required");
+        } else if (!role.equals(RoleEnum.CUSTOMER) && !role.equals(RoleEnum.UNCONFIRMED_ADMIN)
+            && !role.equals(RoleEnum.UNCONFIRMED_EMPLOYEE)) {
             validationErrors.add("Unexpected user role");
-
         }
     }
 
-    private void validateEmail(List<String> validationErrors, UserRegistrationDto registrationDto) {
-        LOG.trace("validateEmail({})", registrationDto);
+    private void validateRoleForReservation(List<String> validationErrors, RoleEnum role) {
+        LOG.trace("validateRole({})", role);
+        if (role == null) {
+            validationErrors.add("User role is required");
+        } else if (!role.equals(RoleEnum.CUSTOMER) && !role.equals(RoleEnum.GUEST)) {
+            validationErrors.add("Unexpected user role");
+        }
+    }
+
+    public void validateEmail(List<String> validationErrors, String email) {
+        LOG.trace("validateEmail({})", email);
         final String emailPattern =
             "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
 
         final Pattern pattern = Pattern.compile(emailPattern);
-        Matcher matcher = pattern.matcher(registrationDto.getEmail());
-        if (!matcher.matches()) {
+        Matcher matcher = pattern.matcher(email);
+
+        if (email.trim().isEmpty()) {
+            validationErrors.add("Email should not be empty");
+        } else if (!matcher.matches()) {
             validationErrors.add("Invalid eMail");
         }
     }
 
-
-    private void validatePhoneNumber(List<String> validationErrors, UserRegistrationDto registrationDto) {
-        LOG.trace("validatePhoneNumber({})", registrationDto);
+    public void validatePhoneNumber(List<String> validationErrors, String phoneNumber) {
+        LOG.trace("validatePhoneNumber({})", phoneNumber);
         final String phonePattern = "^[0-9]{1,15}$";
 
         final Pattern pattern = Pattern.compile(phonePattern);
-        String phoneNumber = registrationDto.getMobileNumber();
 
         if (phoneNumber != null) {
             Matcher matcher = pattern.matcher(phoneNumber);
             if (!matcher.matches()) {
-                validationErrors.add("Invalid mobile number. It must start with '+' followed by up to 14 digits.");
+                validationErrors.add("Invalid mobile number. It must start with '+' followed by up to 14 digits");
             }
 
         }
     }
 
-    private void validatePassword(List<String> validationErrors, UserRegistrationDto registrationDto) {
-        LOG.trace("validatePassowrd({})", registrationDto);
-        if (registrationDto.getPassword() == null) {
-            validationErrors.add("No password given.");
-        } else if (registrationDto.getPassword().trim().isEmpty()) {
-            validationErrors.add("Password should not be empty.");
-        } else if (registrationDto.getPassword().length() < 8) {
-            validationErrors.add("Password has to be longer than 8 characters.");
+    private void validatePassword(List<String> validationErrors, String pw) {
+        LOG.trace("validatePassowrd({})", pw);
+        if (pw == null) {
+            validationErrors.add("No password given");
+        } else if (pw.trim().isEmpty()) {
+            validationErrors.add("Password should not be empty");
+        } else if (pw.length() < 8) {
+            validationErrors.add("Password has to be longer than 8 characters");
         }
     }
 }
