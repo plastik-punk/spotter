@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
@@ -62,6 +63,22 @@ public class ReservationValidator {
 
         if (!validationErrors.isEmpty()) {
             throw new ValidationException("Validation of reservationCreateDto failed", validationErrors);
+        }
+    }
+
+    public void validateReservationCheckAvailabilityDto(ReservationCheckAvailabilityDto dto) throws ValidationException {
+        LOGGER.trace("validateReservationCheckAvailabilityDto({})", dto);
+        List<String> validationErrors = new ArrayList<>();
+
+        validateStartTime(validationErrors, dto.getStartTime());
+        // validateEndTime(validationErrors, dto.getEndTime(), dto.getStartTime()); // TODO: activate after end time was implemented in frontend
+        validatePax(validationErrors, dto.getPax());
+        if (dto.getDate() == null) {
+            validationErrors.add("No date given");
+        }
+
+        if (!validationErrors.isEmpty()) {
+            throw new ValidationException("Validation of reservationCheckAvailabilityDto failed", validationErrors);
         }
     }
 
