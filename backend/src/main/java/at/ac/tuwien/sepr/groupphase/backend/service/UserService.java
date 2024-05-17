@@ -1,9 +1,11 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserOverviewDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserRegistrationDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Message;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -61,4 +63,13 @@ public interface UserService extends UserDetailsService {
      * @throws ValidationException if data used for the registration is invalid
      */
     void register(UserRegistrationDto userRegistrationDto) throws ValidationException;
+
+    /**
+     * Updates a user.
+     *
+     * @param toUpdate Data to update the user with
+     * @throws NotFoundException if the user doesn't exist
+     */
+    void update(UserOverviewDto toUpdate) throws NotFoundException;
+
 }

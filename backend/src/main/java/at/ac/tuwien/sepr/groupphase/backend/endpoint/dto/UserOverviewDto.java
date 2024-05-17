@@ -64,7 +64,7 @@ public class UserOverviewDto {
         return id;
     }
 
-    public void setPassword(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

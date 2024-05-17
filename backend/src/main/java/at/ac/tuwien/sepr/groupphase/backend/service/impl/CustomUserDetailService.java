@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserOverviewDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserRegistrationDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
@@ -60,7 +61,7 @@ public class CustomUserDetailService implements UserService {
 
     @Override
     public List<ApplicationUser> findAll() {
-        LOGGER.debug("Find all staff accounts");
+        LOGGER.trace("Find all staff accounts");
         String currentUserEmail = getCurrentUser().getName();
         List<RoleEnum> roles = Arrays.asList(RoleEnum.ADMIN, RoleEnum.UNCONFIRMED_ADMIN, RoleEnum.EMPLOYEE, RoleEnum.UNCONFIRMED_EMPLOYEE);
         List<ApplicationUser> userList = applicationUserRepository.findByRoleInOrderByFirstNameAsc(roles);
@@ -125,6 +126,21 @@ public class CustomUserDetailService implements UserService {
         ApplicationUser applicationUser = userMapper.userRegistrationDtoToApplicationUser(userRegistrationDto);
         applicationUser.setPassword(passwordEncoder.encode(userRegistrationDto.getPassword()));
         applicationUserRepository.save(applicationUser);
+    }
+
+    @Override
+    public void update(UserOverviewDto toUpdate) throws NotFoundException {
+        LOGGER.trace("update ({})", toUpdate);
+        ApplicationUser existingUser = applicationUserRepository.findById(toUpdate.getId())
+            .orElseThrow(() -> new NotFoundException("User not found with id: " + toUpdate.getId()));
+
+        existingUser.setFirstName(toUpdate.getFirstName());
+        existingUser.setLastName(toUpdate.getLastName());
+        existingUser.setEmail(toUpdate.getEmail());
+        existingUser.setMobileNumber(toUpdate.getMobileNumber());
+        existingUser.setRole(toUpdate.getRole());
+
+        applicationUserRepository.save(existingUser);
     }
 
 

@@ -11,6 +11,7 @@ export class ConfirmDialogComponent implements OnInit {
   @Input() changeWhatFirstName = '?';
   @Input() changeWhatLastName = '?';
   @Input() makeWhat = '?';
+  @Input() yesWhat='?';
   @Input() whatRole='?';
   @Output() confirm = new EventEmitter<void>();
 

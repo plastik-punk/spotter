@@ -11,9 +11,10 @@ import {UserOverviewDto} from "../dtos/app-user";
 
 export class UserService {
 
-  private employeesBaseUri : string = this.globals.backendUri + "/employees";
+  private employeesBaseUri: string = this.globals.backendUri + "/employees";
 
-  constructor(private httpClient: HttpClient, private globals: Globals) {}
+  constructor(private httpClient: HttpClient, private globals: Globals) {
+  }
 
   /**
    * Fetch all user overviews.
@@ -22,5 +23,15 @@ export class UserService {
    */
   getUsers(): Observable<UserOverviewDto[]> {
     return this.httpClient.get<UserOverviewDto[]>(this.employeesBaseUri);
+  }
+
+  /**
+   * Update the user based upon its id
+   *
+   * @param user the info to update which user and with which data
+   */
+  updateUser(user: UserOverviewDto): Observable<UserOverviewDto> {
+    let userId = user.id
+    return this.httpClient.put<UserOverviewDto>(this.employeesBaseUri + `/${userId}`, user)
   }
 }

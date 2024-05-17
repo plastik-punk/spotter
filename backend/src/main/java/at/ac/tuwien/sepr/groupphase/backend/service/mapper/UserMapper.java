@@ -16,10 +16,10 @@ public interface UserMapper {
     @Mapping(target = "password", ignore = true)
     ApplicationUser userRegistrationDtoToApplicationUser(UserRegistrationDto userRegistrationDto);
 
+    @Mapping(target = "password", ignore = true)
     UserRegistrationDto applicationUserToUserRegistrationDto(ApplicationUser applicationUser);
 
     @Named("userOverview")
-    @Mapping(target = "password", ignore = true)
     UserOverviewDto applicationUserToUserOverviewDto(ApplicationUser applicationUser);
 
     @IterableMapping(qualifiedByName = "userOverview")
