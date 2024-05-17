@@ -2,7 +2,6 @@ package at.ac.tuwien.sepr.groupphase.backend.integrationtest.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
@@ -107,6 +106,7 @@ public class ReservationEndpointTest implements TestData {
         // when
         MvcResult mvcResult = this.mockMvc.perform(get(RESERVATION_BASE_URI)
                 .param("startTime", TEST_RESERVATION_AVAILABILITY.getStartTime().toString())
+                .param("endTime", TEST_RESERVATION_AVAILABILITY.getEndTime().toString())
                 .param("date", TEST_RESERVATION_AVAILABILITY.getDate().toString())
                 .param("pax", TEST_RESERVATION_AVAILABILITY.getPax().toString())
                 .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(TEST_USER_CUSTOMER, TEST_ROLES_CUSTOMER)))

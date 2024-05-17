@@ -59,6 +59,7 @@ public class ReservationEndpoint {
 
         ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
             .withStartTime(LocalTime.parse(startTime))
+            .withEndTime(LocalTime.parse(startTime).plusHours(2))
             .withDate(LocalDate.parse(date))
             .withPax(pax)
             .build();

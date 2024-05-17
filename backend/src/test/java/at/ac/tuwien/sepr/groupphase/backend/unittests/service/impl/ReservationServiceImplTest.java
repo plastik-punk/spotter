@@ -62,6 +62,7 @@ public class ReservationServiceImplTest implements TestData {
     @Transactional
     public void givenValidData_whenGetAvailability_thenReturnAvailable() throws ValidationException {
         ReservationResponseEnum response = service.getAvailability(TEST_RESERVATION_AVAILABILITY);
+
         assertEquals(ReservationResponseEnum.AVAILABLE, response);
     }
 
@@ -71,6 +72,7 @@ public class ReservationServiceImplTest implements TestData {
         ReservationCheckAvailabilityDto dto = TEST_RESERVATION_AVAILABILITY.copy();
         dto.setDate(LocalDate.of(2024, 6, 12));
         ReservationResponseEnum response = service.getAvailability(dto);
+
         assertEquals(ReservationResponseEnum.CLOSED, response);
     }
 
@@ -80,6 +82,7 @@ public class ReservationServiceImplTest implements TestData {
         ReservationCheckAvailabilityDto dto = TEST_RESERVATION_AVAILABILITY.copy();
         dto.setStartTime(LocalDateTime.of(2024, 7, 1, 23, 0, 0, 0).toLocalTime());
         ReservationResponseEnum response = service.getAvailability(dto);
+
         assertEquals(ReservationResponseEnum.OUTSIDE_OPENING_HOURS, response);
     }
 
@@ -89,6 +92,7 @@ public class ReservationServiceImplTest implements TestData {
         ReservationCheckAvailabilityDto dto = TEST_RESERVATION_AVAILABILITY.copy();
         dto.setPax(20L);
         ReservationResponseEnum response = service.getAvailability(dto);
+
         assertEquals(ReservationResponseEnum.TOO_MANY_PAX, response);
     }
 
@@ -98,6 +102,27 @@ public class ReservationServiceImplTest implements TestData {
         ReservationCheckAvailabilityDto dto = TEST_RESERVATION_AVAILABILITY.copy();
         dto.setDate(LocalDate.of(2023, 1, 1));
         ReservationResponseEnum response = service.getAvailability(dto);
+
         assertEquals(ReservationResponseEnum.DATE_IN_PAST, response);
+    }
+
+    @Test
+    @Transactional
+    public void givenValidData_whenGetAvailability_thenReturnRespectClosingHour() throws ValidationException {
+        ReservationCheckAvailabilityDto dto = TEST_RESERVATION_AVAILABILITY.copy();
+        dto.setStartTime(LocalDateTime.of(2024, 7, 1, 21, 30, 0, 0).toLocalTime());
+        ReservationResponseEnum response = service.getAvailability(dto);
+
+        assertEquals(ReservationResponseEnum.RESPECT_CLOSING_HOUR, response);
+    }
+
+    @Test
+    @Transactional
+    public void givenStartTime1HBeforeClosing_whenGetAvailability_thenReturnAvailable() throws ValidationException {
+        ReservationCheckAvailabilityDto dto = TEST_RESERVATION_AVAILABILITY.copy();
+        dto.setStartTime(LocalDateTime.of(2024, 7, 1, 21, 0, 0, 0).toLocalTime());
+        ReservationResponseEnum response = service.getAvailability(dto);
+
+        assertEquals(ReservationResponseEnum.AVAILABLE, response);
     }
 }

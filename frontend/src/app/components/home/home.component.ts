@@ -49,6 +49,8 @@ export class HomeComponent implements OnInit {
     this.reservationCheckAvailabilityDto.date = this.reservationCreateDto.date;
     this.reservationCheckAvailabilityDto.pax = this.reservationCreateDto.pax;
 
+    console.log(this.reservationCheckAvailabilityDto); // TODO: remove after testing
+
     if (this.reservationCheckAvailabilityDto.startTime == null || this.reservationCheckAvailabilityDto.pax == null || this.reservationCheckAvailabilityDto.date == null) {
       this.reservationStatusText = 'Provide Time, Date and Pax';
       this.reservationStatusClass = 'reservation-table-incomplete';
@@ -96,8 +98,13 @@ export class HomeComponent implements OnInit {
       observable = this.service.createReservation(this.reservationCreateDto);
       observable.subscribe({
         next: (data) => {
-          // TODO: handle success (notification, redirect etc.)
-          console.log("Reservation Processed Successfully", data); // todo: remove after testing
+          if (data == null) {
+            // table was booked in the meantime
+            // TODO: show meaningful notification
+          } else {
+            console.log("Reservation Processed Successfully", data); // todo: remove after testing
+            // TODO: handle success (notification, redirect etc.)
+          }
         },
         error: (error) => {
           // TODO: handle error and notifications
@@ -106,5 +113,4 @@ export class HomeComponent implements OnInit {
       }); // observable.subscribe
     }
   } // onSubmit
-
 }

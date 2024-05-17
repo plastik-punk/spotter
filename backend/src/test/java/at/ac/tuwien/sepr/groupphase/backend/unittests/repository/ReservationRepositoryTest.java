@@ -21,7 +21,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
@@ -59,11 +61,9 @@ public class ReservationRepositoryTest implements TestData {
         );
     }
 
-    // TODO: fix the method and then activate test again
-    /*
     @Test
     @Transactional
-    public void givenDateAndTime_whenFindOccupiedPlaces_thenFindOccupiedPlaces() {
+    public void givenLongerReservation_whenFindOccupiedPlacesAtSpecifiedTime_thenFindOccupiedPlaces() {
             Reservation reservation = Reservation.ReservationBuilder.aReservation()
             .withId(1L)
             .withUser(applicationUserRepository.save(TEST_APPLICATION_USER_CUSTOMER_1))
@@ -75,13 +75,97 @@ public class ReservationRepositoryTest implements TestData {
             .withPlace(placeRepository.save(TEST_PLACE_OCCUPIED))
             .build();
         reservationRepository.save(reservation);
-        List<Place> occupiedPlaces = reservationRepository.findOccupiedPlaces(TEST_RESERVATION_DATE, TEST_RESERVATION_START_TIME, TEST_RESERVATION_END_TIME);
-        LOGGER.info("Occupied places: " + occupiedPlaces);
-
-
-        assertAll(
-            () -> assertEquals(1, reservationRepository.findOccupiedPlaces(TEST_RESERVATION_DATE, TEST_RESERVATION_START_TIME.minusHours(1), TEST_RESERVATION_END_TIME.plusHours(1)).size())
-        );
+        List<Place> occupiedPlaces = reservationRepository.findOccupiedPlacesAtSpecifiedTime(TEST_RESERVATION_DATE, TEST_RESERVATION_START_TIME, TEST_RESERVATION_END_TIME);
+        assertFalse(occupiedPlaces.isEmpty(), "The list of occupied places should not be empty");
     }
-     */
+
+    @Test
+    @Transactional
+    public void givenShorterReservation_whenFindOccupiedPlacesAtSpecifiedTime_thenFindOccupiedPlaces() {
+        Reservation reservation = Reservation.ReservationBuilder.aReservation()
+            .withId(1L)
+            .withUser(applicationUserRepository.save(TEST_APPLICATION_USER_CUSTOMER_1))
+            .withStartTime(TEST_RESERVATION_START_TIME)
+            .withDate(TEST_RESERVATION_DATE)
+            .withEndTime(TEST_RESERVATION_END_TIME)
+            .withPax(TEST_RESERVATION_PAX)
+            .withNotes(TEST_RESERVATION_NOTES)
+            .withPlace(placeRepository.save(TEST_PLACE_OCCUPIED))
+            .build();
+        reservationRepository.save(reservation);
+        List<Place> occupiedPlaces = reservationRepository.findOccupiedPlacesAtSpecifiedTime(TEST_RESERVATION_DATE, TEST_RESERVATION_START_TIME, TEST_RESERVATION_END_TIME);
+        assertFalse(occupiedPlaces.isEmpty(), "The list of occupied places should not be empty");
+    }
+
+    @Test
+    @Transactional
+    public void givenEndOnStartTime_whenFindOccupiedPlacesAtSpecifiedTime_thenFindNone() {
+        Reservation reservation = Reservation.ReservationBuilder.aReservation()
+            .withId(1L)
+            .withUser(applicationUserRepository.save(TEST_APPLICATION_USER_CUSTOMER_1))
+            .withStartTime(TEST_RESERVATION_START_TIME)
+            .withDate(TEST_RESERVATION_DATE)
+            .withEndTime(TEST_RESERVATION_END_TIME)
+            .withPax(TEST_RESERVATION_PAX)
+            .withNotes(TEST_RESERVATION_NOTES)
+            .withPlace(placeRepository.save(TEST_PLACE_OCCUPIED))
+            .build();
+        reservationRepository.save(reservation);
+        List<Place> occupiedPlaces = reservationRepository.findOccupiedPlacesAtSpecifiedTime(TEST_RESERVATION_DATE, TEST_RESERVATION_START_TIME.minusHours(2), TEST_RESERVATION_START_TIME);
+        assertTrue(occupiedPlaces.isEmpty(), "The list of occupied places should be empty");
+    }
+
+    @Test
+    @Transactional
+    public void givenStartOnEndTime_whenFindOccupiedPlacesAtSpecifiedTime_thenFindNone() {
+        Reservation reservation = Reservation.ReservationBuilder.aReservation()
+            .withId(1L)
+            .withUser(applicationUserRepository.save(TEST_APPLICATION_USER_CUSTOMER_1))
+            .withStartTime(TEST_RESERVATION_START_TIME)
+            .withDate(TEST_RESERVATION_DATE)
+            .withEndTime(TEST_RESERVATION_END_TIME)
+            .withPax(TEST_RESERVATION_PAX)
+            .withNotes(TEST_RESERVATION_NOTES)
+            .withPlace(placeRepository.save(TEST_PLACE_OCCUPIED))
+            .build();
+        reservationRepository.save(reservation);
+        List<Place> occupiedPlaces = reservationRepository.findOccupiedPlacesAtSpecifiedTime(TEST_RESERVATION_DATE, TEST_RESERVATION_END_TIME, TEST_RESERVATION_END_TIME.plusHours(2));
+        assertTrue(occupiedPlaces.isEmpty(), "The list of occupied places should be empty");
+    }
+
+    @Test
+    @Transactional
+    public void givenStartBeforeAndEndAfterStartTime_whenFindOccupiedPlacesAtSpecifiedTime_thenFindOccupiedPlaces() {
+        Reservation reservation = Reservation.ReservationBuilder.aReservation()
+            .withId(1L)
+            .withUser(applicationUserRepository.save(TEST_APPLICATION_USER_CUSTOMER_1))
+            .withStartTime(TEST_RESERVATION_START_TIME)
+            .withDate(TEST_RESERVATION_DATE)
+            .withEndTime(TEST_RESERVATION_END_TIME)
+            .withPax(TEST_RESERVATION_PAX)
+            .withNotes(TEST_RESERVATION_NOTES)
+            .withPlace(placeRepository.save(TEST_PLACE_OCCUPIED))
+            .build();
+        reservationRepository.save(reservation);
+        List<Place> occupiedPlaces = reservationRepository.findOccupiedPlacesAtSpecifiedTime(TEST_RESERVATION_DATE, TEST_RESERVATION_START_TIME.minusHours(1), TEST_RESERVATION_END_TIME.minusHours(1));
+        assertFalse(occupiedPlaces.isEmpty(), "The list of occupied places should not be empty");
+    }
+
+    @Test
+    @Transactional
+    public void givenStartBeforeAndEndAfterEndTime_whenFindOccupiedPlacesAtSpecifiedTime_thenFindOccupiedPlaces() {
+        Reservation reservation = Reservation.ReservationBuilder.aReservation()
+            .withId(1L)
+            .withUser(applicationUserRepository.save(TEST_APPLICATION_USER_CUSTOMER_1))
+            .withStartTime(TEST_RESERVATION_START_TIME)
+            .withDate(TEST_RESERVATION_DATE)
+            .withEndTime(TEST_RESERVATION_END_TIME)
+            .withPax(TEST_RESERVATION_PAX)
+            .withNotes(TEST_RESERVATION_NOTES)
+            .withPlace(placeRepository.save(TEST_PLACE_OCCUPIED))
+            .build();
+        reservationRepository.save(reservation);
+        List<Place> occupiedPlaces = reservationRepository.findOccupiedPlacesAtSpecifiedTime(TEST_RESERVATION_DATE, TEST_RESERVATION_START_TIME.plusHours(1), TEST_RESERVATION_END_TIME.plusHours(1));
+        assertFalse(occupiedPlaces.isEmpty(), "The list of occupied places should not be empty");
+    }
 }

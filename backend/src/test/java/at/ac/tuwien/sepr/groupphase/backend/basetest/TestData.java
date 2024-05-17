@@ -127,7 +127,7 @@ public interface TestData {
 
     Place TEST_PLACE_OCCUPIED = Place.PlaceBuilder.aPlace()
         .withId(4L)
-        .withPax(2L)
+        .withPax(6L)
         .withStatus(StatusEnum.OCCUPIED)
         .build();
 
@@ -183,9 +183,9 @@ public interface TestData {
     // RESERVATION TEST DATA
     // ---------------------------------------------
 
-    LocalTime TEST_RESERVATION_START_TIME = LocalDateTime.of(2025, 1, 1, 12, 0, 0, 0).toLocalTime();
-    LocalTime TEST_RESERVATION_END_TIME = LocalDateTime.of(2025, 1, 1, 14, 0, 0, 0).toLocalTime();
-    LocalDate TEST_RESERVATION_DATE = LocalDate.of(2025, 1, 1);
+    LocalTime TEST_RESERVATION_START_TIME = LocalDateTime.of(2025, 1, 2, 12, 0, 0, 0).toLocalTime();
+    LocalTime TEST_RESERVATION_END_TIME = LocalDateTime.of(2025, 1, 2, 14, 0, 0, 0).toLocalTime();
+    LocalDate TEST_RESERVATION_DATE = LocalDate.of(2025, 1, 2);
     Long TEST_RESERVATION_PAX = 4L;
     String TEST_RESERVATION_NOTES = "Test Notes";
 
@@ -251,6 +251,7 @@ public interface TestData {
 
     ReservationCheckAvailabilityDto TEST_RESERVATION_AVAILABILITY = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
         .withStartTime(TEST_RESERVATION_AVAILABILITY_START_TIME)
+        .withEndTime(TEST_RESERVATION_AVAILABILITY_START_TIME.plusHours(2))
         .withDate(TEST_RESERVATION_AVAILABILITY_DATE)
         .withPax(4L)
         .build();

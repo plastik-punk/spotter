@@ -27,6 +27,8 @@ import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +66,24 @@ public class ReservationServiceImpl implements ReservationService {
         LOGGER.trace("create ({})", reservationCreateDto.toString());
         reservationValidator.validateReservationCreateDto(reservationCreateDto);
 
-        // 1. if guest user, create a new guest user, save it in DB and set returned user to reservationCreateDto
+        // 1. if in simple view, no end time is given, so we set it to 2 hours after start time by default
+        if (reservationCreateDto.getEndTime() == null) {
+            reservationCreateDto.setEndTime(reservationCreateDto.getStartTime().plusHours(2));
+        }
+
+        // 2. check if a table is still available (via getAvailability) since last check and set endTime to closingHour if necessary
+        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+            .withDate(reservationCreateDto.getDate())
+            .withStartTime(reservationCreateDto.getStartTime())
+            .withEndTime(reservationCreateDto.getEndTime())
+            .withPax(reservationCreateDto.getPax())
+            .build();
+        ReservationResponseEnum tableStatus = getAvailability(reservationCheckAvailabilityDto);
+        if (tableStatus != ReservationResponseEnum.AVAILABLE) {
+            return null; // frontend should check for null and show notification accordingly
+        }
+
+        // 3. if guest user, create and save a new guest user, then set DTOs user to this user
         if (reservationCreateDto.getUser() == null) {
             ApplicationUser guestUser = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
                 .withFirstName(reservationCreateDto.getFirstName().trim())
@@ -74,31 +93,23 @@ public class ReservationServiceImpl implements ReservationService {
                 .withoutPassword()
                 .withRole(RoleEnum.GUEST)
                 .build();
-
             ApplicationUser savedGuestUser = applicationUserRepository.save(guestUser);
             reservationCreateDto.setUser(savedGuestUser);
         }
 
-        // 2. map to Reservation entity and trim strings
+        // 4. map to Reservation entity
         Reservation reservation = mapper.reservationCreateDtoToReservation(reservationCreateDto);
         reservation.setNotes(reservation.getNotes().trim());
 
-        // TODO: change this after implementing place selection in frontend
-        Optional<Place> testPlace = placeRepository.findById(1L);
-        if (testPlace.isPresent()) {
-            reservation.setPlace(testPlace.get());
-        } else {
-            Place dummyPlace = Place.PlaceBuilder.aPlace()
-                .withId(1L)
-                .withPax(4L)
-                .withStatus(StatusEnum.AVAILABLE)
-                .build();
-            placeRepository.save(dummyPlace);
-            reservation.setPlace(dummyPlace);
-        }
+        // 5. chose first available place for reservation
+        List<Place> places = placeRepository.findAll();
+        List<Place> occupiedPlaces = reservationRepository.findOccupiedPlacesAtSpecifiedTime(reservationCheckAvailabilityDto.getDate(), reservationCheckAvailabilityDto.getStartTime(), reservationCheckAvailabilityDto.getEndTime());
+        places.removeAll(occupiedPlaces);
+        reservation.setPlace(places.getFirst());
 
         // TODO: add Restaurant name to DTO
-        // 3. send conformation Mail
+
+        // 6. send conformation Mail
         // TODO: activate mail sending for production
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("recipientName", reservationCreateDto.getFirstName() + " " + reservationCreateDto.getLastName());
@@ -111,7 +122,7 @@ public class ReservationServiceImpl implements ReservationService {
         // emailService.sendMessageUsingThymeleafTemplate(reservationCreateDto.getUser().getEmail(),
         //     "Reservation Confirmation", templateModel);
 
-        // 4. save Reservation in database and return it mapped to a DTO
+        // 7. save Reservation in database and return it mapped to a DTO
         Reservation savedReservation = reservationRepository.save(reservation);
         reservationValidator.validateReservation(savedReservation);
 
@@ -122,51 +133,70 @@ public class ReservationServiceImpl implements ReservationService {
     public ReservationResponseEnum getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) throws ValidationException {
         LOGGER.trace("getAvailability ({})", reservationCheckAvailabilityDto.toString());
         reservationValidator.validateReservationCheckAvailabilityDto(reservationCheckAvailabilityDto);
+        LocalDate date = reservationCheckAvailabilityDto.getDate();
+        LocalTime endTime = reservationCheckAvailabilityDto.getEndTime();
 
-        // 1. check if date is in the past
-        if (reservationCheckAvailabilityDto.getDate().isBefore(java.time.LocalDate.now())) {
+        // 1. set endTime depending on context
+        // a. if in simple view, no end time is given so we set it to 2 hours after start time by default
+        if (endTime == null) {
+            endTime = reservationCheckAvailabilityDto.getStartTime().plusHours(2);
+        }
+        // b. if endTime is after midnight and before 6am, set it to just before midnight to guarantee check-safety
+        if (!endTime.isBefore(LocalTime.of(0, 0)) && endTime.isBefore(LocalTime.of(6, 0))) {
+            endTime = LocalTime.of(23, 59);
+        }
+
+        // 2. check if date is in the past
+        if (date.isBefore(java.time.LocalDate.now())) {
             return ReservationResponseEnum.DATE_IN_PAST;
         }
 
-        // 2. check if restaurant is open at specified date
-        Optional<ClosedDay> optionalClosedDay = closedDayRepository.findByDate(reservationCheckAvailabilityDto.getDate());
+        // 3. check if restaurant is open at specified date
+        Optional<ClosedDay> optionalClosedDay = closedDayRepository.findByDate(date);
         if (optionalClosedDay.isPresent()) {
             return ReservationResponseEnum.CLOSED;
         }
 
-        // 3. check if reservation is during opening hours
+        // 4. check if reservation is on regular closed day of the week
         boolean isOpen = false;
-        DayOfWeek dayOfWeek = reservationCheckAvailabilityDto.getDate().getDayOfWeek();
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
         List<OpeningHours> openingHoursList = openingHoursRepository.findByDayOfWeek(dayOfWeek);
         if (openingHoursList.isEmpty()) {
             return ReservationResponseEnum.CLOSED; // if one weekday is always closed, this should return this enum instead of OUTSIDE_OPENING_HOURS
         }
-        // TODO: if startTime is in opening hours but endTime is not, return meaningful notification
+
+        LOGGER.info("Opening hours: " + openingHoursList.toString());
+
+        // 5. check if reservation is within opening hours
+        LocalTime startTime = reservationCheckAvailabilityDto.getStartTime();
         for (OpeningHours openingHours : openingHoursList) {
-            if (reservationCheckAvailabilityDto.getStartTime().isBefore(openingHours.getClosingTime())
-                && reservationCheckAvailabilityDto.getStartTime().plusHours(2).isAfter(openingHours.getOpeningTime())
-                && reservationCheckAvailabilityDto.getStartTime().plusHours(2).isBefore(openingHours.getClosingTime())
-                && reservationCheckAvailabilityDto.getStartTime().isAfter(openingHours.getOpeningTime())) {
-                isOpen = true;
-                break;
+            if (!startTime.isAfter(openingHours.getClosingTime())
+                && !startTime.isBefore(openingHours.getOpeningTime())
+                && !endTime.isBefore(openingHours.getOpeningTime())) {
+                if (!startTime.plusHours(1).isAfter(openingHours.getClosingTime())) {
+                    isOpen = true;
+                    if (!endTime.isBefore(openingHours.getClosingTime())) {
+                        reservationCheckAvailabilityDto.setEndTime(openingHours.getClosingTime());
+                    }
+                    break;
+                } else {
+                    return ReservationResponseEnum.RESPECT_CLOSING_HOUR;
+                }
             }
         }
         if (!isOpen) {
             return ReservationResponseEnum.OUTSIDE_OPENING_HOURS;
         }
 
-        // 4. check if any places are available for specified time
-        // TODO: findOccupiedPlaces seems not to work as expected
+        // 6. check if any places are available for specified time
         List<Place> places = placeRepository.findAll();
-        List<Place> occupiedPlaces = reservationRepository.findOccupiedPlaces(reservationCheckAvailabilityDto.getDate(),
-                reservationCheckAvailabilityDto.getStartTime(),
-                reservationCheckAvailabilityDto.getStartTime().plusHours(2));
+        List<Place> occupiedPlaces = reservationRepository.findOccupiedPlacesAtSpecifiedTime(date, startTime, endTime);
         places.removeAll(occupiedPlaces);
         if (places.isEmpty()) {
             return ReservationResponseEnum.ALL_OCCUPIED;
         }
 
-        // 5. check if any available table can host pax
+        // 7. check if any available table can host pax
         boolean isBigEnough = false;
         for (Place place : places) {
             if (place.getPax() >= reservationCheckAvailabilityDto.getPax()) {
@@ -178,7 +208,7 @@ public class ReservationServiceImpl implements ReservationService {
             return ReservationResponseEnum.TOO_MANY_PAX;
         }
 
-        // 6. if no check succeeded, return available
+        // 8. if no check succeeded, return available
         return ReservationResponseEnum.AVAILABLE;
     }
 }
