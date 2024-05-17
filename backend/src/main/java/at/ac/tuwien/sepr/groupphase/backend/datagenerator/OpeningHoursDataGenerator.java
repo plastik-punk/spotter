@@ -16,7 +16,7 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.Optional;
 
-@Profile({"generateData", "test"})
+@Profile({"test"})
 @Component
 @Order(5)
 public class OpeningHoursDataGenerator {

@@ -51,7 +51,7 @@ public class CustomUserDetailService implements UserService {
     }
 
 
-    public Authentication getCurrentUser() {
+    public Authentication getCurrentUserAuthentication() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
             return authentication;
@@ -60,9 +60,16 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
+    public ApplicationUser getCurrentUser() {
+        Authentication currentAuthentication = getCurrentUserAuthentication();
+        ApplicationUser existingUser = applicationUserRepository.findByEmail(currentAuthentication.getName());
+        return existingUser;
+    }
+
+    @Override
     public List<ApplicationUser> findAll() {
         LOGGER.trace("Find all staff accounts");
-        String currentUserEmail = getCurrentUser().getName();
+        String currentUserEmail = getCurrentUserAuthentication().getName();
         List<RoleEnum> roles = Arrays.asList(RoleEnum.ADMIN, RoleEnum.UNCONFIRMED_ADMIN, RoleEnum.EMPLOYEE, RoleEnum.UNCONFIRMED_EMPLOYEE);
         List<ApplicationUser> userList = applicationUserRepository.findByRoleInOrderByFirstNameAsc(roles);
         List<ApplicationUser> filteredUserList = userList.stream()
@@ -95,6 +102,8 @@ public class CustomUserDetailService implements UserService {
     public ApplicationUser findApplicationUserByEmail(String email) {
         LOGGER.debug("Find application user by email");
         ApplicationUser applicationUser = applicationUserRepository.findByEmail(email);
+        System.out.println(email);
+        System.out.println(applicationUser);
         if (applicationUser != null) {
             return applicationUser;
         }
