@@ -1,0 +1,12 @@
+.btn-light-green {
+  background-color: #90ee90; /* Lighter green */
+  border-color: #90ee90;
+}
+
+.btn-group .btn {
+  margin-right: 8px; /* Adds space between buttons */
+}
+
+.btn-group .btn:last-child {
+  margin-right: 0;
+}

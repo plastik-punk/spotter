@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { UserRegistrationDTO} from "../../dtos/app-user";
+import {UserOverviewDto, UserRegistrationDTO} from "../../dtos/app-user";
 import {NgClass, NgForOf,NgIf} from "@angular/common";
 import {UserRole} from "../../dtos/app-user";
 import {ConfirmDialogComponent} from "../confirm-dialog/confirm-dialog.component";
 import {AuthService} from "../../services/auth.service";
+import {UserService} from "../../services/user.service";
 
 @Component({
   selector: 'app-user-management',
@@ -18,75 +19,53 @@ import {AuthService} from "../../services/auth.service";
   styleUrls: ['./user-managment.component.scss']
 })
 export class UserManagementComponent implements OnInit {
-  changeWhat: UserRegistrationDTO;
+  users: UserOverviewDto[] = [];
+  unconfirmedAdmins: UserOverviewDto[] = [];
+  unconfirmedEmployees: UserOverviewDto[] = [];
+  confirmedAdmins: UserOverviewDto[] = [];
+  confirmedEmployees: UserOverviewDto[] = [];
+  changeWhat: UserOverviewDto;
   doWhat='?';
   whatRole:string;
 
-  unconfirmedAdmins: UserRegistrationDTO[] = [
-    {
-      firstName: "Alice",
-      lastName: "Johnson",
-      email: "alice@example.com",
-      mobileNumber: "123456789000000000000000000000000000000000000000000000000000000000 0",
-      password: "password123",
-      role: UserRole.UNCONFIRMED_ADMIN
-    }
-  ];
-  unconfirmedEmployees: UserRegistrationDTO[] = [
-    {
-      firstName: "Bob",
-      lastName: "Smith",
-      email: "bob@example.com",
-      mobileNumber: "0987654321",
-      password: "password123",
-      role: UserRole.UNCONFIRMED_EMPLOYEE
-    }
-  ];
-  confirmedAdmins: UserRegistrationDTO[] = [
-    {
-      firstName: "Carol",
-      lastName: "Taylor",
-      email: "carol@example.com",
-      mobileNumber: "1122334455",
-      password: "password123",
-      role: UserRole.ADMIN
-    }
-  ];
-  confirmedEmployees: UserRegistrationDTO[] = [
-    {
-      firstName: "Dave",
-      lastName: "Brown",
-      email: "dave@example.com",
-      mobileNumber: "2233445566",
-      password: "password123",
-      role: UserRole.EMPLOYEE
-    }
-  ];
-
-  constructor(private authService: AuthService) {
-
-  }
+  constructor(private authService: AuthService, private userService: UserService) {}
 
   ngOnInit(): void {
     this.fetchUsers();
   }
 
   fetchUsers(): void {
+    this.userService.getUsers().subscribe({
+      next: (users) => {
+        this.users = users;
+        this.categorizeUsers();
+      },
+      error: (error) => {
+        console.error('Failed to fetch users', error);
+      }
+    });
+  }
+
+  categorizeUsers(): void {
+    this.unconfirmedAdmins = this.users.filter(user => user.role === 'UNCONFIRMED_ADMIN');
+    this.unconfirmedEmployees = this.users.filter(user => user.role === 'UNCONFIRMED_EMPLOYEE');
+    this.confirmedAdmins = this.users.filter(user => user.role === 'ADMIN');
+    this.confirmedEmployees = this.users.filter(user => user.role === 'EMPLOYEE');
   }
 
   confirmUser(id: number): void {
-
+    // Implementation needed
   }
 
   changeUserRole(id: number, role: string): void {
-
+    // Implementation needed
   }
 
   deleteUser(id: number): void {
-
+    // Implementation needed
   }
 
-  setChangeWhat(user:UserRegistrationDTO){
+  setChangeWhat(user:UserOverviewDto){
 this.changeWhat=user;
   }
 

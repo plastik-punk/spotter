@@ -14,8 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,7 +25,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomUserDetailService implements UserService {
@@ -43,6 +47,28 @@ public class CustomUserDetailService implements UserService {
         this.jwtTokenizer = jwtTokenizer;
         this.userDataValidator = userDataValidator;
         this.userMapper = userMapper;
+    }
+
+
+    public Authentication getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            return authentication;
+        }
+        return null;
+    }
+
+    @Override
+    public List<ApplicationUser> findAll() {
+        LOGGER.debug("Find all staff accounts");
+        String currentUserEmail = getCurrentUser().getName();
+        List<RoleEnum> roles = Arrays.asList(RoleEnum.ADMIN, RoleEnum.UNCONFIRMED_ADMIN, RoleEnum.EMPLOYEE, RoleEnum.UNCONFIRMED_EMPLOYEE);
+        List<ApplicationUser> userList = applicationUserRepository.findByRoleInOrderByFirstNameAsc(roles);
+        List<ApplicationUser> filteredUserList = userList.stream()
+            .filter(user -> !user.getEmail().equals(currentUserEmail))
+            .collect(Collectors.toList());
+        LOGGER.debug("Filtered User List ({})", filteredUserList);
+        return filteredUserList;
     }
 
     @Override
