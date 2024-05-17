@@ -60,7 +60,7 @@ export class ReservationsOverviewComponent implements OnInit {
     return this.authService.getUserRole() === 'ADMIN';
   }
 
-  private loadReservations() {
+  loadReservations() {
     if (this.searchEarliestDate == null || this.searchEarliestDate === "") {
       delete this.searchParams.earliestDate;
     } else {
@@ -92,6 +92,10 @@ export class ReservationsOverviewComponent implements OnInit {
           this.defaultServiceErrorHandling(error);
         }
       });
+  }
+
+  searchChanged(): void {
+    this.searchChangedObservable.next();
   }
 
   private defaultServiceErrorHandling(error: any) {

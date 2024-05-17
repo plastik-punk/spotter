@@ -1,3 +1,7 @@
+@use "sass:map";
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
 .jumbotron {
   background: none
 }
@@ -27,6 +31,16 @@
 .top-left-logo img {
   height: 100%;
   width: auto;
+}
+
+.responsive-info-button, .responsive-warning-button, .responsive-danger-button, .responsive-dark-button, .responsive-tree-button {
+  @include button-variant($light, $light);
+}
+@each $color in (info, warning, danger) {
+  $value: map.get($theme-colors, $color);
+  tr:hover .responsive-#{$color}-button {
+    @include button-variant($value, $value);
+  }
 }
 @media (max-width: 1000px) {
   .top-left-logo {

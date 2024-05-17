@@ -14,8 +14,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -43,6 +45,15 @@ public class CustomUserDetailService implements UserService {
         this.jwtTokenizer = jwtTokenizer;
         this.userDataValidator = userDataValidator;
         this.userMapper = userMapper;
+    }
+
+    @Override
+    public Authentication getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            return authentication;
+        }
+        return null; // or throw an appropriate exception if the user is not authenticated.
     }
 
     @Override

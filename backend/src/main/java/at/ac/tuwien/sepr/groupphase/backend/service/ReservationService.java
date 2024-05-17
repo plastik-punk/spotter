@@ -19,7 +19,7 @@ public interface ReservationService {
      * @param reservationCreateDto the reservation data
      * @return the reservation as provided from the Repository layer after creation in the database
      */
-    Reservation create(ReservationCreateDto reservationCreateDto);
+    Reservation create(ReservationCreateDto reservationCreateDto) throws MessagingException;
 
     /**
      * Find all reservations that match the search parameters ordered by startDate (desc).

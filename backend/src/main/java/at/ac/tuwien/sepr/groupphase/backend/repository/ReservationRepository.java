@@ -16,12 +16,15 @@ import java.util.List;
  */
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
-    @Query(value = "SELECT r.* FROM reservation r WHERE "
-        + "(:startDate IS NULL OR r.date >= :startDate) "
+    @Query(value = "SELECT r.* FROM reservation r "
+        + "JOIN app_user u ON r.user_id = u.id "
+        + "WHERE u.email = :email "
+        + "AND (:startDate IS NULL OR r.date >= :startDate) "
         + "AND (:endDate IS NULL OR r.date <= :endDate) "
         + "AND (:startTime IS NULL OR r.start_time >= :startTime) "
         + "AND (:endTime IS NULL OR r.end_time <= :endTime)", nativeQuery = true)
     List<Reservation> findReservationsByDate(
+        @Param("email") String email,
         @Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate,
         @Param("startTime") LocalTime startTime,

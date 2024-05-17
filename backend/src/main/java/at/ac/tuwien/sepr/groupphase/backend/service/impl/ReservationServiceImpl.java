@@ -3,7 +3,6 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.mapper.ReservationMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
@@ -12,9 +11,10 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository
 import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
+import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mail.EmailService;
-import jakarta.mail.MessagingException;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ReservationMapper;
+import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +22,8 @@ import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -34,17 +34,19 @@ public class ReservationServiceImpl implements ReservationService {
     private final ApplicationUserRepository applicationUserRepository;
     private final PlaceRepository placeRepository;
     private final ReservationMapper mapper;
-
     private final EmailService emailService;
+    private final UserService userService;
 
     @Autowired
     public ReservationServiceImpl(ReservationMapper mapper, ReservationRepository reservationRepository, ApplicationUserRepository applicationUserRepository,
-                                  PlaceRepository placeRepository, EmailService emailService) {
+                                  PlaceRepository placeRepository, EmailService emailService, UserService userService) {
         this.mapper = mapper;
         this.reservationRepository = reservationRepository;
         this.applicationUserRepository = applicationUserRepository;
         this.placeRepository = placeRepository;
         this.emailService = emailService;
+        this.userService = userService;
+
     }
 
     @Override
@@ -93,7 +95,8 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public List<ReservationListDto> search(ReservationSearchDto reservationSearchDto) {
         LOGGER.trace("search ({})", reservationSearchDto.toString());
-        List<Reservation> reservations = reservationRepository.findReservationsByDate(reservationSearchDto.getEarliestDate(),
+        String email = (String) userService.getCurrentUser().getName();
+        List<Reservation> reservations = reservationRepository.findReservationsByDate(email, reservationSearchDto.getEarliestDate(),
             reservationSearchDto.getLatestDate(), reservationSearchDto.getEarliestStartTime(), reservationSearchDto.getLatestEndTime());
         return mapper.reservationToReservationListDto(reservations);
     }
