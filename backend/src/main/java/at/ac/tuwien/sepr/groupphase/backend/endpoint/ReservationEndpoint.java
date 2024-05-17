@@ -1,7 +1,9 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

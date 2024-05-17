@@ -3,7 +3,6 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import jakarta.mail.MessagingException;
 
@@ -21,6 +20,7 @@ public interface ReservationService {
      * @return the reservation as provided from the Repository layer after creation in the database
      */
     ReservationCreateDto create(ReservationCreateDto reservationCreateDto) throws MessagingException, ValidationException;
+
     /**
      * Find all reservations that match the search parameters ordered by startDate (desc).
      *
