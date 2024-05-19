@@ -16,6 +16,8 @@ import java.util.List;
 
 public interface UserService extends UserDetailsService {
 
+    /**
+     * Get the current Spring Security Authentication of the current user.
      *
      * @return a spring Security Authentication object of the current user
      */
@@ -77,6 +79,10 @@ public interface UserService extends UserDetailsService {
     void register(UserRegistrationDto userRegistrationDto) throws ValidationException;
 
     /**
+     * Updates a user.
+     *
+     * @param toUpdate Data to update the user with
+     * @throws NotFoundException if the user doesn't exist
      */
     void update(UserOverviewDto toUpdate) throws NotFoundException;
 

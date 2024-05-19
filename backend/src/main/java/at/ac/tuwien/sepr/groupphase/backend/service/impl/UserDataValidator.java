@@ -85,8 +85,6 @@ public class UserDataValidator {
         LOG.trace("validateRole({})", role);
         if (role == null) {
             validationErrors.add("User role is required");
-        } else if (!role.equals(RoleEnum.CUSTOMER) && !role.equals(RoleEnum.GUEST)) {
-            validationErrors.add("Unexpected user role");
         }
     }
 
