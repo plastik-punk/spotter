@@ -41,6 +41,8 @@ public interface TestData {
     String RESERVATION_BASE_URI = BASE_URI + "/reservations";
     String MESSAGE_BASE_URI = BASE_URI + "/messages";
 
+    String EMPLOYEES_BASE_URI = BASE_URI + "/employees";
+
     // ---------------------------------------------
     // ROLE TEST DATA
     // ---------------------------------------------
@@ -244,7 +246,7 @@ public interface TestData {
         + ", endTime=" + TEST_RESERVATION_END_TIME
         + ", pax=" + TEST_RESERVATION_PAX
         + ", notes='" + TEST_RESERVATION_NOTES
-        + "', place=" +  TEST_PLACE_AVAILABLE_1.toString() + "}";
+        + "', place=" + TEST_PLACE_AVAILABLE_1.toString() + "}";
 
     LocalTime TEST_RESERVATION_AVAILABILITY_START_TIME = LocalDateTime.of(2024, 7, 1, 18, 0, 0, 0).toLocalTime();
     LocalDate TEST_RESERVATION_AVAILABILITY_DATE = LocalDate.of(2024, 7, 1);

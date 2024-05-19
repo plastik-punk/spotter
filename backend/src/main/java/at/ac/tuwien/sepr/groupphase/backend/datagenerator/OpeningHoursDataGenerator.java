@@ -26,7 +26,8 @@ public class OpeningHoursDataGenerator {
     private final OpeningHoursRepository openingHoursRepository;
     private final RestaurantRepository restaurantRepository;
 
-    public OpeningHoursDataGenerator(OpeningHoursRepository openingHoursRepository, RestaurantRepository restaurantRepository) {
+
+    public OpeningHoursDataGenerator(OpeningHoursRepository openingHoursRepository, RestaurantRepository restaurantRepository, RestaurantDataGenerator restaurantDataGenerator) {
         this.openingHoursRepository = openingHoursRepository;
         this.restaurantRepository = restaurantRepository;
     }

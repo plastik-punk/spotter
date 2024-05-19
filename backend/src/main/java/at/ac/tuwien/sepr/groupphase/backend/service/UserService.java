@@ -1,9 +1,13 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserOverviewDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserRegistrationDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import org.aspectj.weaver.ast.Not;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -11,6 +15,18 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import java.util.List;
 
 public interface UserService extends UserDetailsService {
+
+     *
+     * @return a spring Security Authentication object of the current user
+     */
+    public Authentication getCurrentUserAuthentication();
+
+    /**
+     * Get a Application object of the user who is currently logged in.
+     *
+     * @return The ApplicationUser who is currently logged in.
+     */
+    public ApplicationUser getCurrentUser();
 
     /**
      * Find all staff accounts ((un)confirmed Admins and Employees) entries ordered by name (descending).
@@ -59,4 +75,9 @@ public interface UserService extends UserDetailsService {
      * @throws ValidationException if data used for the registration is invalid
      */
     void register(UserRegistrationDto userRegistrationDto) throws ValidationException;
+
+    /**
+     */
+    void update(UserOverviewDto toUpdate) throws NotFoundException;
+
 }

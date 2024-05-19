@@ -1,10 +1,11 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {RegistrationService} from '../../services/registration.service';
 import {UserRegistrationDTO, UserRole} from '../../dtos/app-user';
 import {NgIf} from "@angular/common";
 import {CommonModule} from "@angular/common";
 import {Router} from "@angular/router";
+import {AuthService} from "../../services/auth.service";
 
 @Component({
   selector: 'app-register',
@@ -17,34 +18,50 @@ import {Router} from "@angular/router";
   ],
   styleUrls: ['./registration.component.scss']
 })
-export class RegistrationComponent {
+export class RegistrationComponent implements OnInit {
   registrationForm: FormGroup;
   error = false;
   errorMessage = '';
   errorMessages: string[] = [];
+  title = 'Register';  // Default title
+  isAdmin: boolean = false;
 
-  constructor(private fb: FormBuilder, private registrationService: RegistrationService, private router: Router) {
+  constructor(private fb: FormBuilder, private registrationService: RegistrationService, private authService: AuthService, private router: Router) {
+    // Initialize the form with all fields
     this.registrationForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       mobileNumber: [''],
       password: ['', [Validators.required, Validators.minLength(8)]],
-      ownerCheck: [false]  // Checkbox for determining if the user wants to register as an owner
+      ownerCheck: [false]  // This will be conditionally removed if the user is an admin
     });
+  }
+
+  ngOnInit() {
+    this.isAdmin = this.authService.getUserRole() === 'ADMIN';
+    this.adjustFormBasedOnUserRole();
+  }
+
+  adjustFormBasedOnUserRole(): void {
+    if (this.isAdmin) {
+      this.title = 'Register Employee';  // Change title for admin
+    }
   }
 
   register(): void {
     if (this.registrationForm.valid) {
-      // Build the DTO from the form values
+      let role = this.isAdmin ? UserRole.UNCONFIRMED_EMPLOYEE : (this.registrationForm.get('ownerCheck')?.value ? UserRole.UNCONFIRMED_ADMIN : UserRole.CUSTOMER);
+
       const userData: UserRegistrationDTO = {
         firstName: this.registrationForm.get('firstName').value,
         lastName: this.registrationForm.get('lastName').value,
         email: this.registrationForm.get('email').value,
         mobileNumber: this.registrationForm.get('mobileNumber').value,
         password: this.registrationForm.get('password').value,
-        role: this.registrationForm.get('ownerCheck').value ? UserRole.UNCONFIRMED_ADMIN : UserRole.CUSTOMER
+        role: role
       };
+
       this.registrationService.registerUser(userData).subscribe({
         next: () => {
           console.log('Registration successful!');
