@@ -1,8 +1,11 @@
 package at.ac.tuwien.sepr.groupphase.backend.repository;
 
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * Repository for application users.
@@ -19,4 +22,9 @@ public interface ApplicationUserRepository extends JpaRepository<ApplicationUser
      * @return an application user
      */
     ApplicationUser findByEmail(String email);
+
+    List<ApplicationUser> findByRoleInOrderByFirstNameAsc(List<RoleEnum> roles);
+
+    List<ApplicationUser> findAllByOrderByFirstNameDesc();
+
 }

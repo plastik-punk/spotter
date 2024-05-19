@@ -47,10 +47,18 @@ public class ReservationServiceImpl implements ReservationService {
 
     private final EmailService emailService;
     private final ReservationValidator reservationValidator;
+    private final CustomUserDetailService applicationUserService;
 
     @Autowired
-    public ReservationServiceImpl(ReservationMapper mapper, ReservationRepository reservationRepository, ApplicationUserRepository applicationUserRepository,
-                                  PlaceRepository placeRepository, EmailService emailService, ReservationValidator reservationValidator, OpeningHoursRepository openingHoursRepository, ClosedDayRepository closedDayRepository) {
+    public ReservationServiceImpl(ReservationMapper mapper,
+                                  ReservationRepository reservationRepository,
+                                  ApplicationUserRepository applicationUserRepository,
+                                  PlaceRepository placeRepository,
+                                  EmailService emailService,
+                                  ReservationValidator reservationValidator,
+                                  OpeningHoursRepository openingHoursRepository,
+                                  ClosedDayRepository closedDayRepository,
+                                  CustomUserDetailService applicationUserService) {
         this.mapper = mapper;
         this.reservationRepository = reservationRepository;
         this.applicationUserRepository = applicationUserRepository;
@@ -59,6 +67,7 @@ public class ReservationServiceImpl implements ReservationService {
         this.reservationValidator = reservationValidator;
         this.openingHoursRepository = openingHoursRepository;
         this.closedDayRepository = closedDayRepository;
+        this.applicationUserService = applicationUserService;
     }
 
     @Override
@@ -89,7 +98,7 @@ public class ReservationServiceImpl implements ReservationService {
                 .withFirstName(reservationCreateDto.getFirstName().trim())
                 .withLastName(reservationCreateDto.getLastName().trim())
                 .withEmail(reservationCreateDto.getEmail().trim())
-                .withMobileNumber(reservationCreateDto.getMobileNumber().trim())
+                .withMobileNumber(reservationCreateDto.getMobileNumber() != null ? reservationCreateDto.getMobileNumber().trim() : reservationCreateDto.getMobileNumber())
                 .withoutPassword()
                 .withRole(RoleEnum.GUEST)
                 .build();
@@ -99,7 +108,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         // 4. map to Reservation entity
         Reservation reservation = mapper.reservationCreateDtoToReservation(reservationCreateDto);
-        reservation.setNotes(reservation.getNotes().trim());
+        reservation.setNotes(reservation.getNotes() != null ? reservation.getNotes().trim() : reservation.getNotes());
 
         // 5. chose first available place for reservation
         List<Place> places = placeRepository.findAll();

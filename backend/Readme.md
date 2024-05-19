@@ -32,6 +32,20 @@ implementing "MessageService")
 
 Interfaces are always at the top level of their package and the implementation is in a subpackage called "impl"
 
+## DataGen
+- The order of data generation is defined via dependency-injection
+- Any data-generator that is injected into another data generator will be executed first
+- Multiple data-generators can be injected into one data-generator
+- this order by injection can have multiple levels and works like a tree, conceptually, allowing precise control over
+  the order of data generation
+- @Order only defines the order of bean-creation, not the order of execution and is only used to visualize the order in a more readable manner
+
+### Example: ReservationDataGenerator:
+1. ReservationDataGenerator injects the data-generators for place and user by using them as parameters in the constructor (no need for initialization)
+2. Any data-generator that is injected in such a way is executed before the data-generator that injects it
+   - place and user data-generators are executed before the reservation data-generator
+   - place could inject user (or vice versa) to further define their order of execution if necessary
+
 ## Tests
 
 ### Naming
