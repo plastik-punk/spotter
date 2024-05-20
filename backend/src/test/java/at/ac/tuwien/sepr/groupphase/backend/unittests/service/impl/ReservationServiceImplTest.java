@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.unittests.service.impl;
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
@@ -34,6 +35,7 @@ public class ReservationServiceImplTest implements TestData {
     @Transactional
     public void givenValidData_whenCreateGuestReservation_thenReturnDto() throws MessagingException, ValidationException {
         ReservationCreateDto response = service.create(TEST_RESERVATION_CREATE_DTO_GUEST);
+        TEST_APPLICATION_USER_GUEST.setId(response.getUser().getId());
 
         assertAll(
             () -> assertEquals(TEST_APPLICATION_USER_GUEST, response.getUser()),
@@ -56,6 +58,31 @@ public class ReservationServiceImplTest implements TestData {
         dto.setStartTime(null);
 
         assertThrows(ValidationException.class, () -> service.create(dto));
+    }
+
+    @Test
+    @Transactional
+    public void givenValidData_whenUpdate_thenReturnDto() throws ValidationException {
+        ReservationDetailDto response = service.update(TEST_RESERVATION_DETAIL_DTO);
+
+        assertAll(
+            () -> assertEquals(TEST_RESERVATION_DETAIL_ID, response.getId()),
+            () -> assertEquals(TEST_RESERVATION_START_TIME, response.getStartTime()),
+            () -> assertEquals(TEST_RESERVATION_END_TIME, response.getEndTime()),
+            () -> assertEquals(TEST_RESERVATION_DATE, response.getDate()),
+            () -> assertEquals(TEST_RESERVATION_PAX, response.getPax()),
+            () -> assertEquals(TEST_RESERVATION_NOTES, response.getNotes()),
+            () -> assertEquals(TEST_PLACE_AVAILABLE_1.getId(), response.getPlaceId())
+        );
+    }
+
+    @Test
+    @Transactional
+    public void givenInvalidData_whenUpdate_thenThrowValidationException() throws ValidationException {
+        ReservationDetailDto dto = TEST_RESERVATION_DETAIL_DTO.copy();
+        dto.setStartTime(null);
+
+        assertThrows(ValidationException.class, () -> service.update(dto));
     }
 
     @Test

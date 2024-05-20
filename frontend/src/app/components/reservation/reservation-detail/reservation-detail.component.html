@@ -12,10 +12,85 @@
 <div class="container-fluid align-items-center justify-content-center">
   <div class="col-12 col-lg-10 mx-auto h-90 py-3">
     <div class="card custom-card">
+
+      <!-- Start row with Title, startTime and Date -->
+      <div class="row">
+        <div class="col-lg-4 d-flex align-items-center justify-content-center">
+          <h1 class="font-heading">Detail</h1>
+        </div>
+
+        <div class="col-lg-4 d-flex align-items-center justify-content-center flex-column">
+          <label for="reservationStartTime" class="col-form-label text-md-end text-muted">
+          </label>
+          <span id="reservationStartTime" name="reservationStartTime">
+            {{ reservationDetailDto.startTime }}
+          </span>
+        </div>
+
+        <div class="col-lg-4 d-flex align-items-center justify-content-center flex-column">
+          <label for="reservationDate" class="col-form-label text-md-end text-muted">
+          </label>
+          <span id="reservationDate" name="reservationDate">
+            {{ reservationDetailDto.date | date:'dd-MM-yyyy' }}
+          </span>
+        </div>
+      </div>
+      <!-- End row with Title, startTime and Date -->
+
+      <hr class="my-4">
+
+      <!-- Start row with pax -->
+      <div class="row">
+        <div class="row align-items-center">
+          <div class="col-lg-2 d-flex justify-content-end">
+            <label for="reservationPax" class="col-form-label text-md-end text-muted">
+              Table for
+            </label>
+          </div>
+          <div class="col-lg-2">
+            <span id="reservationPax" name="reservationPax">
+              {{ reservationDetailDto.pax }}
+            </span>
+          </div>
+        </div>
+      </div>
+      <!-- End row with pax -->
+
+      <!-- Start row with Notes -->
+      <div class="row">
+        <div class="col-lg-6 d-flex align-items-center justify-content-center flex-column flex-grow-1 h-100" *ngIf="!editMode" >
+          <label for="reservationNotes" class="col-form-label text-md-end text-muted">
+          </label>
+          <span id="reservationNotes" name="reservationNotes" class="h-100">
+            {{ reservationDetailDto.notes }}
+          </span>
+        </div>
+
+        <div class="col-lg-6 d-flex align-items-center justify-content-center flex-column flex-grow-1 h-100" *ngIf="editMode" >
+          <label for="reservationNotesEdit" class="col-form-label text-md-end text-muted">
+          </label>
+          <input
+            type="text"
+            id="reservationNotesEdit"
+            name="reservationNotesEdit"
+            placeholder="Notes (optional)"
+            class="form-control h-100"
+            [(ngModel)]="reservationDetailDto.notes"
+            #reservationNotesEdit="ngModel"
+          />
+        </div>
+
+        <div class="mt-4 d-flex flex-row">
+          <button type="submit" class="btn btn-primary" *ngIf="!editMode" (click)="toggleEditMode()">
+            Edit
+          </button>
+          <button type="submit" class="btn btn-primary" *ngIf="editMode" (click)="toggleEditMode(); onSubmit()">
+            Save
+          </button>
+        </div>
+      </div>
+      <!-- end row with Notes -->
     </div>
   </div>
 </div>
-
-
 </body>
-

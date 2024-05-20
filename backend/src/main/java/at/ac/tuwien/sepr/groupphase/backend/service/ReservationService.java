@@ -35,5 +35,13 @@ public interface ReservationService {
      * @param id the id of the reservation
      * @return the reservation details
      */
-    ReservationDetailDto getDetail(Long id) throws ValidationException;
+    ReservationDetailDto getById(Long id) throws ValidationException;
+
+    /**
+     * Update a reservation.
+     *
+     * @param reservationDetailDto the reservation data
+     * @return the updated reservation
+     */
+    ReservationDetailDto update(ReservationDetailDto reservationDetailDto) throws ValidationException;
 }

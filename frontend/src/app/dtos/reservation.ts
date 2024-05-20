@@ -38,5 +38,5 @@ export interface ReservationDetailDto {
   date: Date;
   pax: number;
   notes: string;
-  placeId: number[];
+  placeId: number;
 }

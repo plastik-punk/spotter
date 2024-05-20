@@ -19,7 +19,7 @@ public class ReservationDetailDto {
 
     private String notes;
 
-    private List<Long> placeId;
+    private Long placeId;
 
     public Long getId() {
         return id;
@@ -69,11 +69,11 @@ public class ReservationDetailDto {
         this.notes = notes;
     }
 
-    public List<Long> getPlaceId() {
+    public Long getPlaceId() {
         return placeId;
     }
 
-    public void setPlaceId(List<Long> placeId) {
+    public void setPlaceId(Long placeId) {
         this.placeId = placeId;
     }
 
@@ -131,7 +131,7 @@ public class ReservationDetailDto {
         private LocalDate date;
         private Long pax;
         private String notes;
-        private List<Long> placeId;
+        private Long placeId;
 
         private ReservationDetailDtoBuilder() {
         }
@@ -170,7 +170,7 @@ public class ReservationDetailDto {
             return this;
         }
 
-        public ReservationDetailDtoBuilder withPlaceId(List<Long> placeId) {
+        public ReservationDetailDtoBuilder withPlaceId(Long placeId) {
             this.placeId = placeId;
             return this;
         }
