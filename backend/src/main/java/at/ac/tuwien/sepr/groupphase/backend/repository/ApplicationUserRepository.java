@@ -1,8 +1,11 @@
 package at.ac.tuwien.sepr.groupphase.backend.repository;
 
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * Repository for application users.
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Repository;
 public interface ApplicationUserRepository extends JpaRepository<ApplicationUser, Long> {
 
     // TODO: this seems to expect to find exactly one user (or none) with the given email. Hence, validation on user creation needs to check if email is already in use for a registered user
+
     /**
      * Find an application user based on the email address.
      *
@@ -19,4 +23,8 @@ public interface ApplicationUserRepository extends JpaRepository<ApplicationUser
      * @return an application user
      */
     ApplicationUser findByEmail(String email);
+
+    List<ApplicationUser> findByRoleInOrderByFirstNameAsc(List<RoleEnum> roles);
+
+    List<ApplicationUser> findAllByOrderByFirstNameDesc();
 }

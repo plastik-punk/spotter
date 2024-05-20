@@ -36,11 +36,10 @@
               <label for="password" class="form-label">Password</label>
               <input type="password" id="password" class="form-control" formControlName="password" required>
             </div>
-            <div class="mb-3 form-check">
+            <div *ngIf="!isAdmin" class="mb-3 form-check">
               <input type="checkbox" class="form-check-input" id="ownerCheck" formControlName="ownerCheck">
               <label class="form-check-label" for="ownerCheck">Want to register as Owner?</label>
             </div>
-
 
             <button type="submit" class="btn btn-primary w-100" [disabled]="!registrationForm.valid">
               Register

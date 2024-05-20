@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserOverviewDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserRegistrationDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
@@ -14,8 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,7 +26,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomUserDetailService implements UserService {
@@ -43,6 +48,35 @@ public class CustomUserDetailService implements UserService {
         this.jwtTokenizer = jwtTokenizer;
         this.userDataValidator = userDataValidator;
         this.userMapper = userMapper;
+    }
+
+
+    public Authentication getCurrentUserAuthentication() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            return authentication;
+        }
+        return null;
+    }
+
+    @Override
+    public ApplicationUser getCurrentUser() {
+        Authentication currentAuthentication = getCurrentUserAuthentication();
+        ApplicationUser existingUser = applicationUserRepository.findByEmail(currentAuthentication.getName());
+        return existingUser;
+    }
+
+    @Override
+    public List<ApplicationUser> findAll() {
+        LOGGER.trace("Find all staff accounts");
+        String currentUserEmail = getCurrentUserAuthentication().getName();
+        List<RoleEnum> roles = Arrays.asList(RoleEnum.ADMIN, RoleEnum.UNCONFIRMED_ADMIN, RoleEnum.EMPLOYEE, RoleEnum.UNCONFIRMED_EMPLOYEE);
+        List<ApplicationUser> userList = applicationUserRepository.findByRoleInOrderByFirstNameAsc(roles);
+        List<ApplicationUser> filteredUserList = userList.stream()
+            .filter(user -> !user.getEmail().equals(currentUserEmail))
+            .collect(Collectors.toList());
+        LOGGER.debug("Filtered User List ({})", filteredUserList);
+        return filteredUserList;
     }
 
     @Override
@@ -68,6 +102,8 @@ public class CustomUserDetailService implements UserService {
     public ApplicationUser findApplicationUserByEmail(String email) {
         LOGGER.debug("Find application user by email");
         ApplicationUser applicationUser = applicationUserRepository.findByEmail(email);
+        System.out.println(email);
+        System.out.println(applicationUser);
         if (applicationUser != null) {
             return applicationUser;
         }
@@ -99,6 +135,21 @@ public class CustomUserDetailService implements UserService {
         ApplicationUser applicationUser = userMapper.userRegistrationDtoToApplicationUser(userRegistrationDto);
         applicationUser.setPassword(passwordEncoder.encode(userRegistrationDto.getPassword()));
         applicationUserRepository.save(applicationUser);
+    }
+
+    @Override
+    public void update(UserOverviewDto toUpdate) throws NotFoundException {
+        LOGGER.trace("update ({})", toUpdate);
+        ApplicationUser existingUser = applicationUserRepository.findById(toUpdate.getId())
+            .orElseThrow(() -> new NotFoundException("User not found with id: " + toUpdate.getId()));
+
+        existingUser.setFirstName(toUpdate.getFirstName());
+        existingUser.setLastName(toUpdate.getLastName());
+        existingUser.setEmail(toUpdate.getEmail());
+        existingUser.setMobileNumber(toUpdate.getMobileNumber());
+        existingUser.setRole(toUpdate.getRole());
+
+        applicationUserRepository.save(existingUser);
     }
 
 
