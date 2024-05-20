@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
 
-@Profile({"test"})
+@Profile({"generateData", "test"})
 @Component
 @Order(4)
 public class RestaurantDataGenerator {

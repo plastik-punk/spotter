@@ -5,6 +5,7 @@ import {Reservation, ReservationCheckAvailabilityDto, ReservationCreateDto} from
 import {Observable} from "rxjs";
 import {ReservationService} from "../../services/reservation.service";
 import {SimpleViewReservationStatusEnum} from "../../dtos/status-enum";
+import {UserOverviewDto} from "../../dtos/app-user";
 
 @Component({
   selector: 'app-home',
@@ -32,6 +33,8 @@ export class HomeComponent implements OnInit {
     pax: undefined
   }
 
+  currentUser: UserOverviewDto;
+
   enumReservationTableStatus = SimpleViewReservationStatusEnum;
   reservationStatusText: string = 'Provide Time, Date and Pax';
   reservationStatusClass: string = 'reservation-table-incomplete';
@@ -49,8 +52,6 @@ export class HomeComponent implements OnInit {
     this.reservationCheckAvailabilityDto.date = this.reservationCreateDto.date;
     this.reservationCheckAvailabilityDto.pax = this.reservationCreateDto.pax;
 
-    console.log(this.reservationCheckAvailabilityDto); // TODO: remove after testing
-
     if (this.reservationCheckAvailabilityDto.startTime == null || this.reservationCheckAvailabilityDto.pax == null || this.reservationCheckAvailabilityDto.date == null) {
       this.reservationStatusText = 'Provide Time, Date and Pax';
       this.reservationStatusClass = 'reservation-table-incomplete';
@@ -60,7 +61,7 @@ export class HomeComponent implements OnInit {
       // 2. send request to backend
       this.service.getAvailability(this.reservationCheckAvailabilityDto).subscribe({
         next: (data) => {
-          // b. update reservationTableStatus based on the data received from the backend
+          // update reservationTableStatus based on the data received from the backend
           if (data.valueOf() === this.enumReservationTableStatus.available.valueOf()) {
             this.reservationStatusText = 'Tables available';
             this.reservationStatusClass = 'reservation-table-available';
@@ -92,15 +93,23 @@ export class HomeComponent implements OnInit {
   } // onFieldChange
 
   onSubmit(form: NgForm) {
-    console.log(form); // TODO: remove after testing
+    // 1. if logged in, fetch user details and update DTO
+    if (this.authService.isLoggedIn() == true) {
+      this.currentUser = this.authService.getCurrentUser();
+      this.reservationCreateDto.firstName = this.currentUser.firstName;
+      this.reservationCreateDto.lastName = this.currentUser.lastName;
+      this.reservationCreateDto.email = this.currentUser.email;
+      this.reservationCreateDto.mobileNumber = Number(this.currentUser.mobileNumber);
+    }
+
+    // 2. send request to backend
     if (form.valid) {
       let observable: Observable<Reservation>;
       observable = this.service.createReservation(this.reservationCreateDto);
       observable.subscribe({
         next: (data) => {
           if (data == null) {
-            // table was booked in the meantime
-            // TODO: show meaningful notification
+            // TODO: handle this case (table was booked in the meantime)
           } else {
             console.log("Reservation Processed Successfully", data); // todo: remove after testing
             // TODO: handle success (notification, redirect etc.)

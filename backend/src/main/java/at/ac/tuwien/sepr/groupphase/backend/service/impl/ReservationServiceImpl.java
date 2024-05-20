@@ -47,10 +47,18 @@ public class ReservationServiceImpl implements ReservationService {
 
     private final EmailService emailService;
     private final ReservationValidator reservationValidator;
+    private final CustomUserDetailService applicationUserService;
 
     @Autowired
-    public ReservationServiceImpl(ReservationMapper mapper, ReservationRepository reservationRepository, ApplicationUserRepository applicationUserRepository,
-                                  PlaceRepository placeRepository, EmailService emailService, ReservationValidator reservationValidator, OpeningHoursRepository openingHoursRepository, ClosedDayRepository closedDayRepository) {
+    public ReservationServiceImpl(ReservationMapper mapper,
+                                  ReservationRepository reservationRepository,
+                                  ApplicationUserRepository applicationUserRepository,
+                                  PlaceRepository placeRepository,
+                                  EmailService emailService,
+                                  ReservationValidator reservationValidator,
+                                  OpeningHoursRepository openingHoursRepository,
+                                  ClosedDayRepository closedDayRepository,
+                                  CustomUserDetailService applicationUserService) {
         this.mapper = mapper;
         this.reservationRepository = reservationRepository;
         this.applicationUserRepository = applicationUserRepository;
@@ -59,6 +67,7 @@ public class ReservationServiceImpl implements ReservationService {
         this.reservationValidator = reservationValidator;
         this.openingHoursRepository = openingHoursRepository;
         this.closedDayRepository = closedDayRepository;
+        this.applicationUserService = applicationUserService;
     }
 
     @Override
@@ -83,8 +92,9 @@ public class ReservationServiceImpl implements ReservationService {
             return null; // frontend should check for null and show notification accordingly
         }
 
-        // 3. if guest user, create and save a new guest user, then set DTOs user to this user
-        if (reservationCreateDto.getUser() == null) {
+        // 3. Create guest if this is a guest-reservation, otherwise set known customer data
+        ApplicationUser currentUser = applicationUserService.getCurrentUser();
+        if (currentUser == null) {
             ApplicationUser guestUser = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
                 .withFirstName(reservationCreateDto.getFirstName().trim())
                 .withLastName(reservationCreateDto.getLastName().trim())
@@ -95,6 +105,12 @@ public class ReservationServiceImpl implements ReservationService {
                 .build();
             ApplicationUser savedGuestUser = applicationUserRepository.save(guestUser);
             reservationCreateDto.setUser(savedGuestUser);
+        } else {
+            reservationCreateDto.setFirstName(currentUser.getFirstName());
+            reservationCreateDto.setLastName(currentUser.getLastName());
+            reservationCreateDto.setEmail(currentUser.getEmail());
+            reservationCreateDto.setMobileNumber(currentUser.getMobileNumber());
+            reservationCreateDto.setUser(currentUser);
         }
 
         // 4. map to Reservation entity

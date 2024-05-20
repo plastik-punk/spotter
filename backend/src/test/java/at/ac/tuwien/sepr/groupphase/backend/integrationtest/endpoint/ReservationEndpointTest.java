@@ -65,6 +65,38 @@ public class ReservationEndpointTest implements TestData {
 
     @Test
     @Transactional
+    public void givenReservationCreateDto_whenCreateForGuest_thenReservationAndGuestIsCreated() throws Exception {
+        placeRepository.save(TEST_PLACE_AVAILABLE_1);
+
+        // when
+        String body = objectMapper.writeValueAsString(TEST_RESERVATION_CREATE_DTO_GUEST);
+        MvcResult mvcResult = this.mockMvc.perform(post(RESERVATION_BASE_URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
+            .andDo(print())
+            .andReturn();
+
+        // then
+        int statusCode = mvcResult.getResponse().getStatus();
+        ReservationCreateDto response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ReservationCreateDto.class);
+        assertNotNull(response);
+
+        assertAll(
+            () -> assertEquals(201, statusCode),
+            () -> assertEquals(TEST_APPLICATION_USER_FIRST_NAME, response.getFirstName()),
+            () -> assertEquals(TEST_APPLICATION_USER_LAST_NAME, response.getLastName()),
+            () -> assertEquals(TEST_RESERVATION_START_TIME, response.getStartTime()),
+            () -> assertEquals(TEST_RESERVATION_END_TIME, response.getEndTime()),
+            () -> assertEquals(TEST_RESERVATION_DATE, response.getDate()),
+            () -> assertEquals(TEST_RESERVATION_PAX, response.getPax()),
+            () -> assertEquals(TEST_RESERVATION_NOTES, response.getNotes()),
+            () -> assertEquals(TEST_APPLICATION_USER_EMAIL, response.getEmail()),
+            () -> assertEquals(TEST_APPLICATION_USER_MOBILE_NUMBER, response.getMobileNumber())
+        );
+    }
+
+    @Test
+    @Transactional
     public void givenReservationCreateDto_whenCreateForCustomer_thenReservationIsCreated() throws Exception {
         placeRepository.save(TEST_PLACE_AVAILABLE_1);
         applicationUserRepository.save(TEST_APPLICATION_USER_CUSTOMER_1);

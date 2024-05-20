@@ -95,8 +95,10 @@
 
         <!-- Start row with (firstName, lastName, Mail, Phone), Notes -->
         <div class="row">
-          <div class="col-lg-6 d-flex flex-column">
+          <div class="col-lg-6 d-flex flex-column" *ngIf="!authService.isLoggedIn()">
             <div class="d-flex align-items-center justify-content-center flex-column mb-3">
+
+              <!-- start guest fields -->
               <label for="reservationFirstName" class="col-form-label text-md-end text-muted">
               </label>
               <input
@@ -155,6 +157,7 @@
               />
             </div>
           </div>
+          <!-- End guest fields -->
 
           <div class="col-lg-6 d-flex align-items-center justify-content-center flex-column flex-grow-1 h-100">
             <label for="reservationNotes" class="col-form-label text-md-end text-muted">
