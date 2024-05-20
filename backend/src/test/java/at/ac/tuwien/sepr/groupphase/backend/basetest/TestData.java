@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.basetest;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ClosedDay;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Message;
@@ -190,6 +191,7 @@ public interface TestData {
     LocalDate TEST_RESERVATION_DATE = LocalDate.of(2025, 1, 2);
     Long TEST_RESERVATION_PAX = 4L;
     String TEST_RESERVATION_NOTES = "Test Notes";
+    Long TEST_RESERVATION_DETAIL_ID = 1L;
 
     ReservationCreateDto TEST_RESERVATION_CREATE_DTO_CUSTOMER = ReservationCreateDto.ReservationCreateDtoBuilder.aReservationCreateDto()
         .withApplicationUser(TEST_APPLICATION_USER_CUSTOMER_1)
@@ -215,6 +217,16 @@ public interface TestData {
         .withNotes(TEST_RESERVATION_NOTES)
         .withEmail(TEST_APPLICATION_USER_GUEST.getEmail())
         .withMobileNumber(TEST_APPLICATION_USER_GUEST.getMobileNumber())
+        .build();
+
+    ReservationDetailDto TEST_RESERVATION_DETAIL_DTO = ReservationDetailDto.ReservationDetailDtoBuilder.aReservationDetailDto()
+        .withId(TEST_RESERVATION_DETAIL_ID)
+        .withStartTime(TEST_RESERVATION_START_TIME)
+        .withEndTime(TEST_RESERVATION_END_TIME)
+        .withDate(TEST_RESERVATION_DATE)
+        .withPax(TEST_RESERVATION_PAX)
+        .withNotes(TEST_RESERVATION_NOTES)
+        .withPlaceId(TEST_PLACE_AVAILABLE_1.getId())
         .build();
 
     Reservation TEST_RESERVATION_1 = Reservation.ReservationBuilder.aReservation()

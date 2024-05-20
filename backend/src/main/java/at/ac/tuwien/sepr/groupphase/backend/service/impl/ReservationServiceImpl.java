@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ClosedDay;
 import at.ac.tuwien.sepr.groupphase.backend.entity.OpeningHours;
@@ -29,6 +30,7 @@ import java.lang.invoke.MethodHandles;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -226,5 +228,73 @@ public class ReservationServiceImpl implements ReservationService {
 
         // 8. if no check succeeded, return available
         return ReservationResponseEnum.AVAILABLE;
+    }
+
+    @Override
+    public ReservationDetailDto getById(Long id) throws ValidationException {
+        LOGGER.trace("getDetail ({})", id);
+
+        Optional<Reservation> optionalReservation = reservationRepository.findById(id);
+
+        // TODO: activate this check again
+        /*
+        if (optionalReservation.isEmpty()) {
+            // TODO: throw a fitting exception (create a new exception ideally)
+            throw new ValidationException("Reservation with id " + id + " not found", new ArrayList<>());
+        }
+         */
+
+        Reservation reservation = optionalReservation.get();
+        ApplicationUser currentUser = applicationUserService.getCurrentUser();
+
+        // TODO: activate this check again
+        /*
+        if (currentUser == null || !currentUser.getRole().equals(RoleEnum.ADMIN)) {
+            if (!reservation.getApplicationUser().equals(currentUser)) {
+                // TODO: throw a fitting exception (create a new exception ideally)
+                throw new ValidationException("You are not allowed to view this reservation", new ArrayList<>());
+            }
+        }
+         */
+
+        return mapper.reservationToReservationDetailDto(reservation);
+    }
+
+    @Override
+    public ReservationDetailDto update(ReservationDetailDto reservationDetailDto) throws ValidationException {
+        LOGGER.trace("update ({})", reservationDetailDto.toString());
+        this.reservationValidator.validateReservationDetailDto(reservationDetailDto);
+
+        // 1. check if reservation exists and if so, fetch its data
+        Optional<Reservation> optionalReservation = reservationRepository.findById(reservationDetailDto.getId());
+        if (optionalReservation.isEmpty()) {
+            // TODO: throw a fitting exception (create a new exception ideally)
+            LOGGER.error("Reservation with id " + reservationDetailDto.getId() + " not found"); // TODO: remove after testing
+            return null;
+        }
+        Reservation reservation = optionalReservation.get();
+
+        // 2. check if current user is allowed to update this reservation
+        ApplicationUser currentUser = applicationUserService.getCurrentUser();
+        if (currentUser == null || currentUser != reservation.getApplicationUser()) {
+            // TODO: throw a fitting exception (create a new exception ideally)
+        }
+
+        // 3. update reservation data and save it in DB
+        reservation.setNotes(reservationDetailDto.getNotes());
+        reservation.setPax(reservationDetailDto.getPax());
+        reservation.setStartTime(reservationDetailDto.getStartTime());
+        reservation.setEndTime(reservationDetailDto.getEndTime());
+        reservation.setDate(reservationDetailDto.getDate());
+        Reservation updatedReservation = reservationRepository.save(reservation);
+        this.reservationValidator.validateReservation(updatedReservation);
+
+        // 4. map updated reservation to DTO and return it
+        ReservationDetailDto dto = mapper.reservationToReservationDetailDto(updatedReservation);
+        this.reservationValidator.validateReservationDetailDto(dto);
+
+        LOGGER.info("Updated reservation: " + dto.toString()); // TODO REMOVE AFTER TESTING
+
+        return dto;
     }
 }

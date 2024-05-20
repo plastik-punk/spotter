@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,7 +38,6 @@ public class ReservationEndpoint {
         this.service = service;
     }
 
-    // TODO: exception handling through all layers
     @ResponseStatus(HttpStatus.CREATED)
     @PermitAll
     @PostMapping
@@ -64,5 +65,23 @@ public class ReservationEndpoint {
 
         LOGGER.info("GET /api/v1/reservations body: {}", reservationCheckAvailabilityDto.toString());
         return service.getAvailability(reservationCheckAvailabilityDto);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PermitAll
+    @GetMapping({"/detail"})
+    @Operation(summary = "Get detail information for a single reservation")
+    public ReservationDetailDto getById(@RequestParam("id") Long id) throws ValidationException {
+        LOGGER.info("GET /api/v1/reservations/detail body: {}", id);
+        return service.getById(id);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PermitAll
+    @PutMapping
+    @Operation(summary = "Update a reservation")
+    public ReservationDetailDto update(@RequestBody ReservationDetailDto reservationDetailDto) throws ValidationException {
+        LOGGER.info("PUT /api/v1/reservations body: {}", reservationDetailDto.toString());
+        return service.update(reservationDetailDto);
     }
 }

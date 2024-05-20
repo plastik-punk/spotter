@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.unittests.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.ReservationValidator;
@@ -36,6 +37,11 @@ public class ReservationValidatorTest implements TestData {
     @Test
     public void givenValidReservationCreateDto_whenValidateReservation_thenNoException() throws ValidationException {
         assertDoesNotThrow(() -> reservationValidator.validateReservationCreateDto(TEST_RESERVATION_CREATE_DTO_GUEST));
+    }
+
+    @Test
+    public void givenValidReservationDetailDto_whenValidateReservation_thenNoException() throws ValidationException {
+        assertDoesNotThrow(() -> reservationValidator.validateReservationDetailDto(TEST_RESERVATION_DETAIL_DTO));
     }
 
     @Test
@@ -102,6 +108,48 @@ public class ReservationValidatorTest implements TestData {
        Reservation reservation = TEST_RESERVATION_1.copy();
        reservation.setPlace(null);
        assertThrows(ValidationException.class, () -> reservationValidator.validateReservation(reservation));
+    }
+
+    @Test
+    public void givenNoPlace_whenValidateReservationDetailDto_thenValidationException() {
+        ReservationDetailDto dto = TEST_RESERVATION_DETAIL_DTO.copy();
+        dto.setPlaceId(null);
+        assertThrows(ValidationException.class, () -> reservationValidator.validateReservationDetailDto(dto));
+    }
+
+    @Test
+    public void givenNoStartTime_whenValidateReservationDetailDto_thenValidationException() {
+        ReservationDetailDto dto = TEST_RESERVATION_DETAIL_DTO.copy();
+        dto.setStartTime(null);
+        assertThrows(ValidationException.class, () -> reservationValidator.validateReservationDetailDto(dto));
+    }
+
+    @Test
+    public void givenNoDate_whenValidateReservationDetailDto_thenValidationException() {
+        ReservationDetailDto dto = TEST_RESERVATION_DETAIL_DTO.copy();
+        dto.setDate(null);
+        assertThrows(ValidationException.class, () -> reservationValidator.validateReservationDetailDto(dto));
+    }
+
+    @Test
+    public void givenNoPax_whenValidateReservationDetailDto_thenValidationException() {
+        ReservationDetailDto dto = TEST_RESERVATION_DETAIL_DTO.copy();
+        dto.setPax(null);
+        assertThrows(ValidationException.class, () -> reservationValidator.validateReservationDetailDto(dto));
+    }
+
+    @Test
+    public void givenNegativePax_whenValidateReservationDetailDto_thenValidationException() {
+        ReservationDetailDto dto = TEST_RESERVATION_DETAIL_DTO.copy();
+        dto.setPax(-1L);
+        assertThrows(ValidationException.class, () -> reservationValidator.validateReservationDetailDto(dto));
+    }
+
+    @Test
+    public void givenNoNotes_whenValidateReservationDetailDto_thenNoException() {
+        ReservationDetailDto dto = TEST_RESERVATION_DETAIL_DTO.copy();
+        dto.setNotes(null);
+        assertDoesNotThrow(() -> reservationValidator.validateReservationDetailDto(dto));
     }
 
     @Test
