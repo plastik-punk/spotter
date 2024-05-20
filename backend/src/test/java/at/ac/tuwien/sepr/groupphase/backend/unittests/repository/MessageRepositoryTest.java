@@ -28,18 +28,24 @@ public class MessageRepositoryTest implements TestData {
     @Test
     @Transactional
     public void givenNothing_whenSaveMessage_thenFindListWithOneElementAndFindMessageById() {
-        Message message = Message.MessageBuilder.aMessage()
-            .withTitle(TEST_NEWS_TITLE)
-            .withSummary(TEST_NEWS_SUMMARY)
-            .withText(TEST_NEWS_TEXT)
-            .withPublishedAt(TEST_NEWS_PUBLISHED_AT)
-            .build();
-
-        messageRepository.save(message);
+        messageRepository.save(TEST_MESSAGE_1);
 
         assertAll(
             () -> assertEquals(1, messageRepository.findAll().size()),
-            () -> assertNotNull(messageRepository.findById(message.getId()))
+            () -> assertNotNull(messageRepository.findById(TEST_MESSAGE_1.getId()))
+        );
+    }
+
+    @Test
+    @Transactional
+    public void givenNothing_whenFindAllByOrderByPublishedAtDesc_thenReturnOrdered() {
+        messageRepository.save(TEST_MESSAGE_1);
+        messageRepository.save(TEST_MESSAGE_3);
+
+        assertAll(
+            () -> assertEquals(2, messageRepository.findAllByOrderByPublishedAtDesc().size()),
+            () -> assertEquals(TEST_MESSAGE_3, messageRepository.findAllByOrderByPublishedAtDesc().get(0)),
+            () -> assertEquals(TEST_MESSAGE_1, messageRepository.findAllByOrderByPublishedAtDesc().get(1))
         );
     }
 }

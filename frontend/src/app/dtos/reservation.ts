@@ -24,3 +24,9 @@ export interface ReservationCreateDto {
   email: string;
   mobileNumber: number;
 }
+
+export interface ReservationCheckAvailabilityDto {
+  startTime: Date;
+  date: Date;
+  pax: number;
+}

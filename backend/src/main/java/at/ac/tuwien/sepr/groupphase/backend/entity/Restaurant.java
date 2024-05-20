@@ -6,8 +6,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -19,10 +21,6 @@ public class Restaurant {
 
     @Column(nullable = false)
     private String name;
-
-    @OneToOne
-    @JoinColumn(name = "openingHours_id", nullable = false, referencedColumnName = "id")
-    private OpeningHours openingHours;
 
     @Column(nullable = false)
     private String address;
@@ -44,14 +42,6 @@ public class Restaurant {
         this.name = name;
     }
 
-    public OpeningHours getOpeningHours() {
-        return openingHours;
-    }
-
-    public void setOpeningHours(OpeningHours openingHours) {
-        this.openingHours = openingHours;
-    }
-
     public String getAddress() {
         return address;
     }
@@ -71,13 +61,12 @@ public class Restaurant {
         Restaurant restaurant = (Restaurant) o;
         return Objects.equals(id, restaurant.id)
             && Objects.equals(name, restaurant.name)
-            && Objects.equals(openingHours, restaurant.openingHours)
             && Objects.equals(address, restaurant.address);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, openingHours, address);
+        return Objects.hash(id, name, address);
     }
 
     @Override
@@ -85,7 +74,6 @@ public class Restaurant {
         return "Restaurant{"
             + "id=" + id
             + ", name='" + name + '\''
-            + ", openingHours=" + openingHours
             + ", address='" + address + '\''
             + '}';
     }
@@ -93,7 +81,7 @@ public class Restaurant {
     public static final class RestaurantBuilder {
         private Long id;
         private String name;
-        private OpeningHours openingHours;
+        private List<OpeningHours> openingHours;
         private String address;
 
         private RestaurantBuilder() {
@@ -113,11 +101,6 @@ public class Restaurant {
             return this;
         }
 
-        public RestaurantBuilder withOpeningHours(OpeningHours openingHours) {
-            this.openingHours = openingHours;
-            return this;
-        }
-
         public RestaurantBuilder withAddress(String address) {
             this.address = address;
             return this;
@@ -127,7 +110,6 @@ public class Restaurant {
             Restaurant restaurant = new Restaurant();
             restaurant.setId(id);
             restaurant.setName(name);
-            restaurant.setOpeningHours(openingHours);
             restaurant.setAddress(address);
             return restaurant;
         }

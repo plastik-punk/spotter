@@ -33,3 +33,24 @@
     display: none; /* This hides the logo on screens with width 768px or less */
   }
 }
+
+.reservation-table-available {
+  background-color: lightgreen;
+  color: black;
+  text-align: center;
+  padding: 10px;
+}
+
+.reservation-table-conflict {
+  background-color: lightpink;
+  color: black;
+  text-align: center;
+  padding: 10px;
+}
+
+.reservation-table-incomplete {
+  background-color: lightgray;
+  color: black;
+  text-align: center;
+  padding: 10px;
+}
