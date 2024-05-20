@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
@@ -36,7 +37,6 @@ public class ReservationEndpoint {
         this.service = service;
     }
 
-    // TODO: exception handling through all layers
     @ResponseStatus(HttpStatus.CREATED)
     @PermitAll
     @PostMapping
@@ -64,5 +64,14 @@ public class ReservationEndpoint {
 
         LOGGER.info("GET /api/v1/reservations body: {}", reservationCheckAvailabilityDto.toString());
         return service.getAvailability(reservationCheckAvailabilityDto);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PermitAll
+    @GetMapping({"/detail"})
+    @Operation(summary = "Get detail information for a single reservation")
+    public ReservationDetailDto getDetail(@RequestParam("id") Long id) throws ValidationException {
+        LOGGER.info("GET /api/v1/reservations/{} body: {}", id);
+        return service.getDetail(id);
     }
 }

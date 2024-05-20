@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ClosedDay;
 import at.ac.tuwien.sepr.groupphase.backend.entity.OpeningHours;
@@ -226,5 +227,27 @@ public class ReservationServiceImpl implements ReservationService {
 
         // 8. if no check succeeded, return available
         return ReservationResponseEnum.AVAILABLE;
+    }
+
+    @Override
+    public ReservationDetailDto getDetail(Long id) {
+        LOGGER.trace("getDetail ({})", id);
+        return null;
+
+        /*
+        Optional<Reservation> optionalReservation = reservationRepository.findById(id);
+        if (optionalReservation.isEmpty()) {
+            throw new ValidationException("Reservation with id " + id + " not found.");
+        }
+        Reservation reservation = optionalReservation.get();
+        ApplicationUser currentUser = applicationUserService.getCurrentUser();
+        if (currentUser == null || !currentUser.getRole().equals(RoleEnum.ADMIN)) {
+            if (!reservation.getUser().equals(currentUser)) {
+                throw new ValidationException("You are not allowed to view this reservation.");
+            }
+        }
+        return mapper.reservationToReservationDetailDto(reservation);
+
+         */
     }
 }
