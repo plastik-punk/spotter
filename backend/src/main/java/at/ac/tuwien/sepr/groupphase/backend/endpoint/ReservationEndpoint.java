@@ -17,7 +17,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -61,12 +64,13 @@ public class ReservationEndpoint {
                                                    @RequestParam("pax") Long pax)
         throws ValidationException {
 
-        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
-            .withStartTime(LocalTime.parse(startTime))
-            .withEndTime(LocalTime.parse(startTime).plusHours(2))
-            .withDate(LocalDate.parse(date))
-            .withPax(pax)
-            .build();
+        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto =
+            ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+                .withStartTime(LocalTime.parse(startTime))
+                .withEndTime(LocalTime.parse(startTime).plusHours(2))
+                .withDate(LocalDate.parse(date))
+                .withPax(pax)
+                .build();
 
         LOGGER.info("GET /api/v1/reservations body: {}", reservationCheckAvailabilityDto.toString());
         return service.getAvailability(reservationCheckAvailabilityDto);
@@ -90,6 +94,7 @@ public class ReservationEndpoint {
         return service.update(reservationDetailDto);
     }
 
+<<<<<<< backend/src/main/java/at/ac/tuwien/sepr/groupphase/backend/endpoint/ReservationEndpoint.java
     @Secured("ROLE_USER")
     @Operation(summary = "Get list of reservations that match the given parameters", security = @SecurityRequirement(name = "apiKey"))
     @GetMapping({"/search"})
@@ -97,5 +102,15 @@ public class ReservationEndpoint {
         LOGGER.info("POST /api/v1/reservations");
         LOGGER.debug("request parameters: {}", searchParameters);
         return service.search(searchParameters);
+=======
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PermitAll
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a reservation")
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) throws ValidationException {
+        LOGGER.info("DELETE /api/v1/reservations body: {}", id);
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+>>>>>>> backend/src/main/java/at/ac/tuwien/sepr/groupphase/backend/endpoint/ReservationEndpoint.java
     }
 }

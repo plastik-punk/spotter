@@ -56,4 +56,11 @@ public interface ReservationService {
      * @return List of ReservationListDto that match the search parameters
      */
     List<ReservationListDto> search(ReservationSearchDto reservationSearchDto);
+
+    /**
+     * Delete a reservation specified by its id.
+     *
+     * @param id the id of the reservation
+     */
+    void delete(Long id) throws ValidationException;
 }

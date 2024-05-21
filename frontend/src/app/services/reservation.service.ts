@@ -1,5 +1,5 @@
 import {Injectable} from "@angular/core";
-import {HttpClient, HttpParams} from "@angular/common/http";
+import {HttpClient, HttpParams, HttpResponse} from "@angular/common/http";
 import {Globals} from '../global/globals';
 import {Observable,tap} from "rxjs";
 import {formatIsoDate} from '../util/date-helper';
@@ -66,6 +66,13 @@ export class ReservationService {
   update(reservationDetailDto: ReservationDetailDto): Observable<ReservationDetailDto> {
     return this.httpClient.put<ReservationDetailDto>(this.reservationBaseUri, reservationDetailDto);
   }
+  
+  /**
+   * search for reservations fitting Serch parameters
+   *
+   * @param searchParams the parameters of the search
+   * @return an Observable for found reservations
+   */
   search(searchParams: ReservationSearch): Observable<ReservationListDto[]> {
     let params = new HttpParams();
     if (searchParams.earliestDate) {
@@ -81,5 +88,15 @@ export class ReservationService {
       params = params.append('latestEndTime', searchParams.latestEndTime)
     }
     return this.httpClient.get<ReservationListDto[]>(this.reservationBaseUri + "/search", { params });
+  }
+
+  /**
+   * Deletes a reservation
+   *
+   * @param id the id of the reservation to delete
+   * @return an Observable for the HttpResponse
+   */
+  delete(id: number): Observable<HttpResponse<void>> {
+    return this.httpClient.delete<void>(this.reservationBaseUri + "/" + id, { observe: 'response' });
   }
 }

@@ -306,4 +306,11 @@ public class ReservationServiceImpl implements ReservationService {
             reservationSearchDto.getLatestDate(), reservationSearchDto.getEarliestStartTime(), reservationSearchDto.getLatestEndTime());
         return mapper.reservationToReservationListDto(reservations);
     }
+
+    @Override
+    public void delete(Long id) throws ValidationException {
+        LOGGER.trace("delete ({})", id);
+        this.reservationValidator.validateReservationDelete(id);
+        reservationRepository.deleteById(id);
+    }
 }

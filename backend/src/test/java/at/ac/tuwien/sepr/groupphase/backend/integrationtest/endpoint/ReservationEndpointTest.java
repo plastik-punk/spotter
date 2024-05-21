@@ -4,13 +4,17 @@ import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
+import at.ac.tuwien.sepr.groupphase.backend.service.impl.CustomUserDetailService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,9 +28,11 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @ExtendWith(SpringExtension.class)
@@ -40,6 +46,9 @@ public class ReservationEndpointTest implements TestData {
 
     @Autowired
     private ReservationRepository reservationRepository;
+
+    @Autowired
+    private ApplicationUserRepository userRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -164,5 +173,30 @@ public class ReservationEndpointTest implements TestData {
             () -> assertEquals(200, statusCode),
             () -> assertEquals(ReservationResponseEnum.AVAILABLE, response)
         );
+    }
+
+    @Test
+    @Transactional
+    public void givenValidId_whenDelete_thenNoContent() throws Exception {
+        // Given a user
+        ApplicationUser user = userRepository.save(TEST_APPLICATION_USER_CUSTOMER_1);
+
+        // And a reservation associated with the user
+        TEST_RESERVATION_TO_DELETE.setUser(user);
+        Reservation savedReservation = reservationRepository.save(TEST_RESERVATION_TO_DELETE);
+        Long validId = savedReservation.getId();
+
+        // When a delete request is made with the valid ID and authenticated with the same user
+        MvcResult mvcResult = this.mockMvc.perform(delete(RESERVATION_BASE_URI + "/" + validId)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(user.getEmail(), TEST_ROLES_CUSTOMER)))
+            .andDo(print())
+            .andReturn();
+
+        // Then the response status should be 204 (No Content)
+        int statusCode = mvcResult.getResponse().getStatus();
+        assertEquals(204, statusCode);
+
+        // And the reservation should no longer exist in the repository
+        assertFalse(reservationRepository.existsById(validId));
     }
 }
