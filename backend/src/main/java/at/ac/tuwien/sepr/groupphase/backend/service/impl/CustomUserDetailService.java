@@ -5,9 +5,11 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserOverviewDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserRegistrationDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.UserMapper;
@@ -39,15 +41,18 @@ public class CustomUserDetailService implements UserService {
     private final JwtTokenizer jwtTokenizer;
     private final UserDataValidator userDataValidator;
     private final UserMapper userMapper;
+    private final ReservationRepository reservationRepository;
 
     @Autowired
     public CustomUserDetailService(ApplicationUserRepository applicationUserRepository, PasswordEncoder passwordEncoder,
-                                   JwtTokenizer jwtTokenizer, UserDataValidator userDataValidator, UserMapper userMapper) {
+                                   JwtTokenizer jwtTokenizer, UserDataValidator userDataValidator, UserMapper userMapper,
+                                   ReservationRepository reservationRepository) {
         this.applicationUserRepository = applicationUserRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenizer = jwtTokenizer;
         this.userDataValidator = userDataValidator;
         this.userMapper = userMapper;
+        this.reservationRepository = reservationRepository;
     }
 
 
@@ -152,5 +157,19 @@ public class CustomUserDetailService implements UserService {
         applicationUserRepository.save(existingUser);
     }
 
+    @Override
+    public void delete(Long id) throws NotFoundException, ConflictException {
+        LOGGER.trace("delete ({})", id);
+        if (reservationRepository.findByUserId(id).size() != 0) {
+            throw new ConflictException("Error upon deleting user",
+                Arrays.asList("Couldn't delete user with id " + id + " because the user have open reservations."));
+        }
 
+        if (!applicationUserRepository.existsById(id)) {
+            throw new NotFoundException("User not found with id: " + id);
+        }
+        applicationUserRepository.deleteById(id);
+    }
 }
+
+

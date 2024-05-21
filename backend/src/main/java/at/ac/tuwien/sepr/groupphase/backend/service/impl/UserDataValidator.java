@@ -75,8 +75,7 @@ public class UserDataValidator {
         LOG.trace("validateRole({})", role);
         if (role == null) {
             validationErrors.add("User role is required");
-        } else if (!role.equals(RoleEnum.CUSTOMER) && !role.equals(RoleEnum.UNCONFIRMED_ADMIN)
-            && !role.equals(RoleEnum.UNCONFIRMED_EMPLOYEE)) {
+        } else if (!role.equals(RoleEnum.CUSTOMER) && !role.equals(RoleEnum.UNCONFIRMED_ADMIN) && !role.equals(RoleEnum.UNCONFIRMED_EMPLOYEE) && !role.equals(RoleEnum.EMPLOYEE) && !role.equals(RoleEnum.ADMIN)) {
             validationErrors.add("Unexpected user role");
         }
     }
@@ -92,8 +91,7 @@ public class UserDataValidator {
 
     public void validateEmail(List<String> validationErrors, String email) {
         LOG.trace("validateEmail({})", email);
-        final String emailPattern =
-            "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        final String emailPattern = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
 
         final Pattern pattern = Pattern.compile(emailPattern);
         Matcher matcher = pattern.matcher(email);
@@ -109,19 +107,17 @@ public class UserDataValidator {
         LOG.trace("validatePhoneNumber({})", phoneNumber);
         final String phonePattern = "^[0-9]{1,15}$";
 
-        final Pattern pattern = Pattern.compile(phonePattern);
-
-        if (phoneNumber != null) {
+        if (phoneNumber != null && !phoneNumber.trim().isEmpty()) {
+            final Pattern pattern = Pattern.compile(phonePattern);
             Matcher matcher = pattern.matcher(phoneNumber);
             if (!matcher.matches()) {
-                validationErrors.add("Invalid mobile number. It must start with '+' followed by up to 14 digits");
+                validationErrors.add("Invalid mobile number. It must consist of max. 15 digits.");
             }
-
         }
     }
 
     private void validatePassword(List<String> validationErrors, String pw) {
-        LOG.trace("validatePassowrd({})", pw);
+        LOG.trace("validatePassword({})", pw);
         if (pw == null) {
             validationErrors.add("No password given");
         } else if (pw.trim().isEmpty()) {
