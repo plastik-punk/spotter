@@ -106,4 +106,13 @@ h1, h2, h3, .font-heading {
   right: 0;
   position: fixed !important;
 }
-
+.top-left-logo {
+  position: absolute;
+  margin-top: 3vh;
+  margin-left: 3vw;
+  top: 0;
+  left: 0;
+  height: 6em;
+  width: auto;
+  z-index: 1000;
+}

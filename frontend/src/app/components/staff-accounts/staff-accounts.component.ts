@@ -48,11 +48,20 @@ export class StaffAccountsComponent implements OnInit {
   }
 
   categorizeUsers(): void {
-    this.unconfirmedAdmins = this.users.filter(user => user.role === 'UNCONFIRMED_ADMIN');
-    this.unconfirmedEmployees = this.users.filter(user => user.role === 'UNCONFIRMED_EMPLOYEE');
-    this.confirmedAdmins = this.users.filter(user => user.role === 'ADMIN');
-    this.confirmedEmployees = this.users.filter(user => user.role === 'EMPLOYEE');
+    this.unconfirmedAdmins = this.users
+      .filter(user => user.role === 'UNCONFIRMED_ADMIN')
+      .sort((a, b) => a.firstName.localeCompare(b.firstName));
+    this.unconfirmedEmployees = this.users
+      .filter(user => user.role === 'UNCONFIRMED_EMPLOYEE')
+      .sort((a, b) => a.firstName.localeCompare(b.firstName));
+    this.confirmedAdmins = this.users
+      .filter(user => user.role === 'ADMIN')
+      .sort((a, b) => a.firstName.localeCompare(b.firstName));
+    this.confirmedEmployees = this.users
+      .filter(user => user.role === 'EMPLOYEE')
+      .sort((a, b) => a.firstName.localeCompare(b.firstName));
   }
+
 
   confirmUser(user: UserOverviewDto): void {
     let userRole = user.role;
@@ -95,7 +104,7 @@ export class StaffAccountsComponent implements OnInit {
     this.userService.deleteUser(user.id).subscribe({
       next: (deletedUser) => {
         console.log('User ' + user.firstName + ' ' + user.lastName + 'deleted successfully', deletedUser);
-      //  this.fetchUsers();
+        this.fetchUsers();
       },
       error: (error) => {
         console.error('Failed to update user role', error);
