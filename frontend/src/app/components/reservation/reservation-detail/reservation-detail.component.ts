@@ -4,6 +4,9 @@ import {ReservationService} from "../../../services/reservation.service";
 import {AuthService} from "../../../services/auth.service";
 import {ReservationIdService} from "../../../services/reservation-id.service";
 import {Observable} from "rxjs";
+import {HttpResponse} from "@angular/common/http";
+import {ToastrService} from "ngx-toastr";
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-reservation-detail',
@@ -27,37 +30,37 @@ export class ReservationDetailComponent implements OnInit {
   constructor(
     public authService: AuthService,
     private service: ReservationService,
-    private reservationIdService: ReservationIdService
-    ) { } // constructor
+    private reservationIdService: ReservationIdService,
+    private notification: ToastrService,
+    private router: Router,
+  ) { } // constructor
 
   ngOnInit() {
-    // TODO: remove after testing
+    // TODO: remove as soon as routing to this page is implemented correctly
     this.reservationIdService.setReservationId(1);
-
-    // 1. get reservation id from service
     const id = this.reservationIdService.getReservationId();
-    if (id) {
-      // 2. load data via ID from BE and set it to reservationDetailDto
-      let observable: Observable<ReservationDetailDto>;
-      observable = this.service.getById(id);
-      observable.subscribe( {
-        next: (data) => {
-          if (data == null) {
-            // TODO: null is returned if user doesn't match a user assigned to the reservation, route back to home or somewhere else
-          } else {
-            console.log("ReservationDetailDto: ", data); // TODO: remove after testing
 
-            this.reservationDetailDto = data;
-          }
-        },
-          error: (error) => {
-            // TODO: handle error and notification
-            console.log("Error: ", error); // TODO: remove after testing
-        }, // error
-      }); // subscribe
-    } else {
-      // TODO: handle this situation, e.g. rerouting to reservation list and a notification
-    }
+
+    let observable: Observable<ReservationDetailDto>;
+    observable = this.service.getById(id);
+    observable.subscribe( {
+      next: (data) => {
+        if (data != null) {
+          this.reservationDetailDto = data;
+        }
+      },
+      error: (error) => {
+        this.notification.error(
+          error.error.errors,
+          error.error.message,
+          {
+            enableHtml: true,
+            timeOut: 5000,
+          },
+        );
+        this.router.navigate(['/home']); // TODO: change to reservation list
+      }, // error
+    }); // subscribe
   } // ngOnInit
 
   onSubmit() {
@@ -65,22 +68,62 @@ export class ReservationDetailComponent implements OnInit {
     observable = this.service.update(this.reservationDetailDto);
     observable.subscribe( {
       next: (data) => {
-        if (data == null) {
-          // TODO: handle this
-        } else {
-          // TODO: show notification for invisible action success
-          console.log("returned ReservationDetailDto: ", data); // TODO: remove after testing
+        if (data != null) {
           this.reservationDetailDto = data;
+          this.notification.success(
+            `reservation edited successfully`,
+            null, {
+              timeOut: 5000, // specify the timeout in milliseconds (if not set, this is 5000 by default)
+              enableHtml: true // allows for html formatting like bullet points for validation errors
+            });
         }
       },
       error: (error) => {
-        // TODO: handle error and notification
-        console.log("Error: ", error); // TODO: remove after testing
-      },
-    });
+        this.notification.error(
+          error.error.errors,
+          error.error.message,
+          {
+            enableHtml: true,
+            timeOut: 5000,
+          },
+        );
+      }, // error
+    }); // subscribe
   } // onSubmit
 
   toggleEditMode() {
     this.editMode = !this.editMode;
   }
+
+  onDelete() {
+    let observable: Observable<HttpResponse<void>>;
+    observable = this.service.delete(this.reservationDetailDto.id);
+
+    observable.subscribe( {
+      next: (response) => {
+        if (response.status == 204) {
+          this.notification.success(
+            `reservation canceled successfully`,
+            null, {
+              timeOut: 5000, // specify the timeout in milliseconds (if not set, this is 5000 by default)
+              enableHtml: true // allows for html formatting like bullet points for validation errors
+            });
+          this.router.navigate(['/home']); // TODO: change to reservation list
+
+        } else {
+          // TODO: depending on final implementation, handle already deleted reservation, logged out user or ended session here. All other cases are handled in error handler below.
+        }
+      },
+      error: (error) => {
+        this.notification.error(
+          error.error.errors,
+          error.error.message,
+          {
+            enableHtml: true,
+            timeOut: 5000,
+          },
+        );
+      }, // error
+    }); // subscribe
+  } // onDelete
 }
