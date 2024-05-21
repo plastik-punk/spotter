@@ -7,6 +7,7 @@ import {ReservationService} from "../../services/reservation.service";
 import {SimpleViewReservationStatusEnum} from "../../dtos/status-enum";
 import {UserOverviewDto} from "../../dtos/app-user";
 import {ToastrService} from "ngx-toastr";
+import {NotificationService} from "../../services/notification.service";
 
 @Component({
   selector: 'app-home',
@@ -44,6 +45,7 @@ export class HomeComponent implements OnInit {
     public authService: AuthService,
     private service: ReservationService,
     private notification: ToastrService,
+    private notificationService: NotificationService,
     ) { } // constructor
 
   ngOnInit() { }
@@ -88,14 +90,7 @@ export class HomeComponent implements OnInit {
           }
         },
         error: (error) => {
-          this.notification.error(
-            error.error.errors,
-            error.error.message,
-            {
-              enableHtml: true,
-              timeOut: 5000,
-            },
-          );
+          this.notificationService.handleError(error);
         }, // error
       });
   } // onFieldChange
@@ -119,24 +114,12 @@ export class HomeComponent implements OnInit {
           if (data == null) {
             // TODO: handle this case (table was booked in the meantime)
           } else {
-            this.notification.success(
-              `reservation created successfully`,
-              null, {
-                timeOut: 5000, // specify the timeout in milliseconds (if not set, this is 5000 by default)
-                enableHtml: true // allows for html formatting like bullet points for validation errors
-              });
+            this.notificationService.handleSuccess('reservation created successfully');
             // TODO: route to reservation detail view?
           }
         },
         error: (error) => {
-          this.notification.error(
-            error.error.errors,
-            error.error.message,
-            {
-              enableHtml: true,
-              timeOut: 5000,
-            },
-          );
+          this.notificationService.handleError(error);
         }, // error
       }); // observable.subscribe
     }
