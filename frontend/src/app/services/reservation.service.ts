@@ -47,11 +47,11 @@ export class ReservationService {
   /**
    * Get a reservation (detail) by its id
    *
-   * @param id the id of the reservation
+   * @param id the hashed id of the reservation
    * @return an Observable for the reservation
    */
-  getById(id: number): Observable<ReservationDetailDto> {
-    let params = new HttpParams().set('id', id.toString());
+  getByHashedId(id: string): Observable<ReservationDetailDto> {
+    let params = new HttpParams().set('id', id);
     return this.httpClient.get<ReservationDetailDto>(this.reservationBaseUri + "/detail", { params: params });
   }
 
@@ -64,4 +64,5 @@ export class ReservationService {
   update(reservationDetailDto: ReservationDetailDto): Observable<ReservationDetailDto> {
     return this.httpClient.put<ReservationDetailDto>(this.reservationBaseUri, reservationDetailDto);
   }
+
 }

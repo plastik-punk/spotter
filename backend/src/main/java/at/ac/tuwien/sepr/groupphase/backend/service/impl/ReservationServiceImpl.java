@@ -10,6 +10,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ClosedDayRepository;
@@ -238,20 +239,16 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationDetailDto getById(Long id) throws ValidationException {
-        LOGGER.trace("getDetail ({})", id);
+    public ReservationDetailDto getByHashedId(String hashValue) throws NotFoundException {
+        LOGGER.trace("getDetail ({})", hashValue);
 
-        Optional<Reservation> optionalReservation = reservationRepository.findById(id);
+        List<Reservation> reservationList = reservationRepository.findByHashValue(hashValue);
 
-        // TODO: activate this check again
-        /*
-        if (optionalReservation.isEmpty()) {
-            // TODO: throw a fitting exception (create a new exception ideally)
-            throw new ValidationException("Reservation with id " + id + " not found", new ArrayList<>());
+        if (reservationList.size() != 1) {
+            throw new NotFoundException("Reservation with not found");
         }
-         */
 
-        Reservation reservation = optionalReservation.get();
+        Reservation reservation = reservationList.getFirst();
         ApplicationUser currentUser = applicationUserService.getCurrentUser();
 
         // TODO: activate this check again

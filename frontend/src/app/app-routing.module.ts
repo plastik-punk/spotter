@@ -16,8 +16,8 @@ const routes: Routes = [
   {path: 'message', canActivate: mapToCanActivate([AuthGuard]), component: MessageComponent},
   {path: 'registration', component: RegistrationComponent},
   {path: 'employees', component: StaffAccountsComponent},
-  {path: 'reservation-detail', component: ReservationDetailComponent},
-  {path: 'reservation-edit', component: ReservationEditComponent}
+  {path: 'reservation-detail/:id', component: ReservationDetailComponent},
+  {path: 'reservation-edit/:id', component: ReservationEditComponent}
 
 ];
 

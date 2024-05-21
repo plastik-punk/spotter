@@ -30,12 +30,12 @@ public interface ReservationService {
     ReservationResponseEnum getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) throws ValidationException;
 
     /**
-     * Get the details of a reservation specified by its id.
+     * Get the details of a reservation specified by its Hashed id.
      *
-     * @param id the id of the reservation
+     * @param id the Hashed id of the reservation
      * @return the reservation details
      */
-    ReservationDetailDto getById(Long id) throws ValidationException;
+    ReservationDetailDto getByHashedId(String id) throws ValidationException;
 
     /**
      * Update a reservation.

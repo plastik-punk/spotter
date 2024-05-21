@@ -73,9 +73,9 @@ public class ReservationEndpoint {
     @PermitAll
     @GetMapping({"/detail"})
     @Operation(summary = "Get detail information for a single reservation")
-    public ReservationDetailDto getById(@RequestParam("id") Long id) throws ValidationException {
+    public ReservationDetailDto getByHashedId(@RequestParam("id") String id) throws ValidationException {
         LOGGER.info("GET /api/v1/reservations/detail body: {}", id);
-        return service.getById(id);
+        return service.getByHashedId(id);
     }
 
     @ResponseStatus(HttpStatus.OK)

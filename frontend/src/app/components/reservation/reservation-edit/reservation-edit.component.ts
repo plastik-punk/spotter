@@ -4,7 +4,6 @@ import {FormsModule, NgForm} from "@angular/forms";
 import {ReservationCheckAvailabilityDto, ReservationEditDto} from "../../../dtos/reservation";
 import {ReservationService} from "../../../services/reservation.service";
 import {AuthService} from "../../../services/auth.service";
-import {ReservationIdService} from "../../../services/reservation-id.service";
 import {Observable} from "rxjs";
 import { ActivatedRoute } from '@angular/router';
 import {SimpleViewReservationStatusEnum} from "../../../dtos/status-enum";
@@ -42,17 +41,15 @@ export class ReservationEditComponent {
   constructor(
     public authService: AuthService,
     private service: ReservationService,
-    private reservationIdService: ReservationIdService,
     private route: ActivatedRoute
   ) { } // constructor
   ngOnInit() {
     // 1. get reservation id from service
-    const id = 12;
-    console.log("id: ", id); // TODO: remove after testing
+    const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       // 2. load data via ID from BE and set it to reservationEditDto
       let observable: Observable<ReservationEditDto>;
-      observable = this.service.getById(12);
+      observable = this.service.getByHashedId(id);
       observable.subscribe({
         next: (data) => {
             console.log("returned ReservationEditDto: ", data); // TODO: remove after testing

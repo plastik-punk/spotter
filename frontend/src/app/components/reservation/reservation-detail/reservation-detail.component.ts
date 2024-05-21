@@ -2,8 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {ReservationDetailDto} from "../../../dtos/reservation";
 import {ReservationService} from "../../../services/reservation.service";
 import {AuthService} from "../../../services/auth.service";
-import {ReservationIdService} from "../../../services/reservation-id.service";
 import {Observable} from "rxjs";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
   selector: 'app-reservation-detail',
@@ -27,20 +27,20 @@ export class ReservationDetailComponent implements OnInit {
   constructor(
     public authService: AuthService,
     private service: ReservationService,
-    private reservationIdService: ReservationIdService
-    ) { } // constructor
+    private route: ActivatedRoute,
+    private router: Router
+
+  ) {
+  } // constructor
 
   ngOnInit() {
-    // TODO: remove after testing
-    this.reservationIdService.setReservationId(1);
-
     // 1. get reservation id from service
-    const id = this.reservationIdService.getReservationId();
+    const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       // 2. load data via ID from BE and set it to reservationDetailDto
       let observable: Observable<ReservationDetailDto>;
-      observable = this.service.getById(id);
-      observable.subscribe( {
+      observable = this.service.getByHashedId(id);
+      observable.subscribe({
         next: (data) => {
           if (data == null) {
             // TODO: null is returned if user doesn't match a user assigned to the reservation, route back to home or somewhere else
@@ -50,9 +50,9 @@ export class ReservationDetailComponent implements OnInit {
             this.reservationDetailDto = data;
           }
         },
-          error: (error) => {
-            // TODO: handle error and notification
-            console.log("Error: ", error); // TODO: remove after testing
+        error: (error) => {
+          // TODO: handle error and notification
+          console.log("Error: ", error); // TODO: remove after testing
         }, // error
       }); // subscribe
     } else {
@@ -63,7 +63,7 @@ export class ReservationDetailComponent implements OnInit {
   onSubmit() {
     let observable: Observable<ReservationDetailDto>;
     observable = this.service.update(this.reservationDetailDto);
-    observable.subscribe( {
+    observable.subscribe({
       next: (data) => {
         if (data == null) {
           // TODO: handle this
