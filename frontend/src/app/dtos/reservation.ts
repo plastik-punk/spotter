@@ -24,6 +24,23 @@ export interface ReservationCreateDto {
   email: string;
   mobileNumber: number;
 }
+export interface ReservationListDto {
+  id: number,
+  userFirstName: string,
+  userLastName: string,
+  startTime: Date;
+  date: Date;
+  endTime: Date;
+  pax: number;
+  placeId: number;
+}
+
+export interface ReservationSearch {
+  earliestDate?: Date;
+  latestDate?: Date;
+  earliestStartTime?: string;
+  latestEndTime?: string;
+}
 
 export interface ReservationCheckAvailabilityDto {
   startTime: Date;
