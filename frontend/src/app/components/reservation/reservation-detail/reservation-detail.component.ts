@@ -6,7 +6,8 @@ import {ReservationIdService} from "../../../services/reservation-id.service";
 import {Observable} from "rxjs";
 import {HttpResponse} from "@angular/common/http";
 import {ToastrService} from "ngx-toastr";
-import { Router } from '@angular/router';
+import {Router} from '@angular/router';
+import {NotificationService} from "../../../services/notification.service";
 
 @Component({
   selector: 'app-reservation-detail',
@@ -33,6 +34,7 @@ export class ReservationDetailComponent implements OnInit {
     private reservationIdService: ReservationIdService,
     private notification: ToastrService,
     private router: Router,
+    private notificationService: NotificationService,
   ) { } // constructor
 
   ngOnInit() {
@@ -50,14 +52,7 @@ export class ReservationDetailComponent implements OnInit {
         }
       },
       error: (error) => {
-        this.notification.error(
-          error.error.errors,
-          error.error.message,
-          {
-            enableHtml: true,
-            timeOut: 5000,
-          },
-        );
+        this.notificationService.handleError(error);
         this.router.navigate(['/home']); // TODO: change to reservation list
       }, // error
     }); // subscribe
@@ -70,23 +65,11 @@ export class ReservationDetailComponent implements OnInit {
       next: (data) => {
         if (data != null) {
           this.reservationDetailDto = data;
-          this.notification.success(
-            `reservation edited successfully`,
-            null, {
-              timeOut: 5000, // specify the timeout in milliseconds (if not set, this is 5000 by default)
-              enableHtml: true // allows for html formatting like bullet points for validation errors
-            });
+          this.notificationService.handleSuccess('reservation edited successfully');
         }
       },
       error: (error) => {
-        this.notification.error(
-          error.error.errors,
-          error.error.message,
-          {
-            enableHtml: true,
-            timeOut: 5000,
-          },
-        );
+        this.notificationService.handleError(error);
       }, // error
     }); // subscribe
   } // onSubmit
@@ -102,12 +85,7 @@ export class ReservationDetailComponent implements OnInit {
     observable.subscribe( {
       next: (response) => {
         if (response.status == 204) {
-          this.notification.success(
-            `reservation canceled successfully`,
-            null, {
-              timeOut: 5000, // specify the timeout in milliseconds (if not set, this is 5000 by default)
-              enableHtml: true // allows for html formatting like bullet points for validation errors
-            });
+          this.notificationService.handleSuccess('reservation canceled successfully');
           this.router.navigate(['/home']); // TODO: change to reservation list
 
         } else {
@@ -115,14 +93,7 @@ export class ReservationDetailComponent implements OnInit {
         }
       },
       error: (error) => {
-        this.notification.error(
-          error.error.errors,
-          error.error.message,
-          {
-            enableHtml: true,
-            timeOut: 5000,
-          },
-        );
+        this.notificationService.handleError(error);
       }, // error
     }); // subscribe
   } // onDelete
