@@ -27,7 +27,6 @@ public class ReservationMapperTest implements TestData {
     @Test
     public void givenNothing_whenMapReservationCreateDtoToEntity_thenEntityHasAllProperties() {
         Reservation reservation = reservationMapper.reservationCreateDtoToReservation(TEST_RESERVATION_CREATE_DTO_CUSTOMER);
-
         assertAll(
             () -> assertNull(reservation.getId()),
             () -> assertEquals(TEST_APPLICATION_USER_CUSTOMER_1, reservation.getApplicationUser()),

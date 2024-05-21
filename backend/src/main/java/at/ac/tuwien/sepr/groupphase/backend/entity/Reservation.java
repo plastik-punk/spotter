@@ -54,7 +54,7 @@ public class Reservation {
         return applicationUser;
     }
 
-    public void setApplicationUser(ApplicationUser user) {
+    public void setUser(ApplicationUser user) {
         this.applicationUser = user;
     }
 
@@ -217,7 +217,7 @@ public class Reservation {
         public Reservation build() {
             Reservation reservation = new Reservation();
             reservation.setId(id);
-            reservation.setApplicationUser(applicationUser);
+            reservation.setUser(applicationUser);
             reservation.setStartTime(startTime);
             reservation.setDate(date);
             reservation.setEndTime(endTime);
