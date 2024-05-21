@@ -75,11 +75,11 @@ export class ReservationService {
       params = params.append('latestDate', formatIsoDate(searchParams.latestDate));
     }
     if (searchParams.earliestStartTime) {
-      params = params.append('earliestStartTime', formatIsoDate(searchParams.earliestStartTime));
+      params = params.append('earliestStartTime', searchParams.earliestStartTime)
     }
     if (searchParams.latestEndTime) {
-      params = params.append('latestEndTime', formatIsoDate(searchParams.latestEndTime));
+      params = params.append('latestEndTime', searchParams.latestEndTime)
     }
-    return this.httpClient.get<ReservationListDto[]>(this.reservationBaseUri, { params });
+    return this.httpClient.get<ReservationListDto[]>(this.reservationBaseUri + "/search", { params });
   }
 }

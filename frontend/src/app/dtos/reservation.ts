@@ -38,8 +38,8 @@ export interface ReservationListDto {
 export interface ReservationSearch {
   earliestDate?: Date;
   latestDate?: Date;
-  earliestStartTime?: Date;
-  latestEndTime?: Date;
+  earliestStartTime?: string;
+  latestEndTime?: string;
 }
 
 export interface ReservationCheckAvailabilityDto {

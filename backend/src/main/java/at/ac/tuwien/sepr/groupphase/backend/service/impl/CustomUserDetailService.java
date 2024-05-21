@@ -84,15 +84,6 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
-    public Authentication getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
-            return authentication;
-        }
-        return null; // or throw an appropriate exception if the user is not authenticated.
-    }
-
-    @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         LOGGER.debug("Load all user by email");
         try {

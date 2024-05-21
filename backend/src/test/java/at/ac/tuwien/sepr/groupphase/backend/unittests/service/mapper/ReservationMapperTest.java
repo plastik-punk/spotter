@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.unittests.service.mapper;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ReservationMapper;
 import org.junit.jupiter.api.Test;
@@ -54,6 +55,20 @@ public class ReservationMapperTest implements TestData {
             () -> assertEquals(TEST_RESERVATION_NOTES, dto.getNotes()),
             () -> assertEquals(TEST_APPLICATION_USER_CUSTOMER_1.getEmail(), dto.getEmail()),
             () -> assertEquals(TEST_APPLICATION_USER_CUSTOMER_1.getMobileNumber(), dto.getMobileNumber())
+        );
+    }
+
+    @Test
+    public void givenValidReservation_whenMapEntityToReservationListDto_thenDtoHasAllProperties() {
+        ReservationListDto dto = reservationMapper.reservationToReservationListDto(TEST_RESERVATION_1);
+
+        assertAll(
+            () -> assertEquals(TEST_APPLICATION_USER_FIRST_NAME, dto.getUserFirstName()),
+            () -> assertEquals(TEST_APPLICATION_USER_LAST_NAME, dto.getUserLastName()),
+            () -> assertEquals(TEST_RESERVATION_START_TIME, dto.getStartTime()),
+            () -> assertEquals(TEST_RESERVATION_END_TIME, dto.getEndTime()),
+            () -> assertEquals(TEST_RESERVATION_DATE, dto.getDate()),
+            () -> assertEquals(TEST_PLACE_AVAILABLE_1.getId(), dto.getPlaceId())
         );
     }
 }

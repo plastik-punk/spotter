@@ -74,12 +74,12 @@ export class ReservationsOverviewComponent implements OnInit {
     if (this.searchEarliestStartTime == null || this.searchEarliestStartTime === "") {
       delete this.searchParams.earliestStartTime;
     } else {
-      this.searchParams.earliestStartTime = new Date(this.searchEarliestStartTime);
+      this.searchParams.earliestStartTime = this.searchEarliestStartTime;
     }
     if (this.searchLatestEndTime == null || this.searchLatestEndTime === "") {
       delete this.searchParams.latestEndTime;
     } else {
-      this.searchParams.latestEndTime = new Date(this.searchLatestEndTime);
+      this.searchParams.latestEndTime = this.searchLatestEndTime;
     }
 
     this.reservationService.search(this.searchParams)

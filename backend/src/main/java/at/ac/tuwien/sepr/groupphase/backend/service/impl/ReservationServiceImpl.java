@@ -12,7 +12,6 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
-import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ClosedDayRepository;
@@ -32,7 +31,6 @@ import java.lang.invoke.MethodHandles;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -299,10 +297,11 @@ public class ReservationServiceImpl implements ReservationService {
 
         return dto;
     }
+
     @Override
     public List<ReservationListDto> search(ReservationSearchDto reservationSearchDto) {
         LOGGER.trace("search ({})", reservationSearchDto.toString());
-        String email = (String) applicationUserService.getCurrentUser().getName();
+        String email = applicationUserService.getCurrentUserAuthentication().getName();
         List<Reservation> reservations = reservationRepository.findReservationsByDate(email, reservationSearchDto.getEarliestDate(),
             reservationSearchDto.getLatestDate(), reservationSearchDto.getEarliestStartTime(), reservationSearchDto.getLatestEndTime());
         return mapper.reservationToReservationListDto(reservations);

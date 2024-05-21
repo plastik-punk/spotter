@@ -1,20 +1,19 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.mapper;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
-import org.mapstruct.IterableMapping;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import org.mapstruct.AfterMapping;
+import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 
 import java.util.List;
-
-import org.mapstruct.MappingTarget;
 
 @Mapper
 public interface ReservationMapper {
@@ -44,6 +43,7 @@ public interface ReservationMapper {
             dto.setPlaceId(place.getId());
         }
     }
+
     @Mapping(source = "applicationUser.firstName", target = "userFirstName")
     @Mapping(source = "applicationUser.lastName", target = "userLastName")
     @Mapping(source = "startTime", target = "startTime")

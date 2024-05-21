@@ -2,9 +2,9 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,9 +27,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.invoke.MethodHandles;
-import java.util.List;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/v1/reservations")
@@ -90,9 +89,10 @@ public class ReservationEndpoint {
         LOGGER.info("PUT /api/v1/reservations body: {}", reservationDetailDto.toString());
         return service.update(reservationDetailDto);
     }
+
     @Secured("ROLE_USER")
     @Operation(summary = "Get list of reservations that match the given parameters", security = @SecurityRequirement(name = "apiKey"))
-    @GetMapping
+    @GetMapping({"/search"})
     public List<ReservationListDto> searchReservations(ReservationSearchDto searchParameters) {
         LOGGER.info("POST /api/v1/reservations");
         LOGGER.debug("request parameters: {}", searchParameters);
