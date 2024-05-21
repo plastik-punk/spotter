@@ -30,3 +30,13 @@ export interface ReservationCheckAvailabilityDto {
   date: Date;
   pax: number;
 }
+
+export interface ReservationDetailDto {
+  id: number;
+  startTime: Date;
+  endTime: Date;
+  date: Date;
+  pax: number;
+  notes: string;
+  placeId: number;
+}

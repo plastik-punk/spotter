@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.basetest;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ClosedDay;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Message;
@@ -40,8 +41,9 @@ public interface TestData {
     String BASE_URI = "/api/v1";
     String RESERVATION_BASE_URI = BASE_URI + "/reservations";
     String MESSAGE_BASE_URI = BASE_URI + "/messages";
-
     String EMPLOYEES_BASE_URI = BASE_URI + "/employees";
+    Long TEST_VALID_ID = 1L;
+    Long TEST_INVALID_ID = -1L;
 
     // ---------------------------------------------
     // ROLE TEST DATA
@@ -190,6 +192,7 @@ public interface TestData {
     LocalDate TEST_RESERVATION_DATE = LocalDate.of(2025, 1, 2);
     Long TEST_RESERVATION_PAX = 4L;
     String TEST_RESERVATION_NOTES = "Test Notes";
+    Long TEST_RESERVATION_DETAIL_ID = 1L;
 
     ReservationCreateDto TEST_RESERVATION_CREATE_DTO_CUSTOMER = ReservationCreateDto.ReservationCreateDtoBuilder.aReservationCreateDto()
         .withApplicationUser(TEST_APPLICATION_USER_CUSTOMER_1)
@@ -217,6 +220,16 @@ public interface TestData {
         .withMobileNumber(TEST_APPLICATION_USER_GUEST.getMobileNumber())
         .build();
 
+    ReservationDetailDto TEST_RESERVATION_DETAIL_DTO = ReservationDetailDto.ReservationDetailDtoBuilder.aReservationDetailDto()
+        .withId(TEST_RESERVATION_DETAIL_ID)
+        .withStartTime(TEST_RESERVATION_START_TIME)
+        .withEndTime(TEST_RESERVATION_END_TIME)
+        .withDate(TEST_RESERVATION_DATE)
+        .withPax(TEST_RESERVATION_PAX)
+        .withNotes(TEST_RESERVATION_NOTES)
+        .withPlaceId(TEST_PLACE_AVAILABLE_1.getId())
+        .build();
+
     Reservation TEST_RESERVATION_1 = Reservation.ReservationBuilder.aReservation()
         .withId(1L)
         .withUser(TEST_APPLICATION_USER_CUSTOMER_1)
@@ -230,6 +243,16 @@ public interface TestData {
 
     Reservation TEST_RESERVATION_2 = Reservation.ReservationBuilder.aReservation()
         .withId(1L)
+        .withUser(TEST_APPLICATION_USER_CUSTOMER_1)
+        .withStartTime(TEST_RESERVATION_START_TIME)
+        .withEndTime(TEST_RESERVATION_END_TIME)
+        .withDate(TEST_RESERVATION_DATE)
+        .withPax(TEST_RESERVATION_PAX)
+        .withNotes(TEST_RESERVATION_NOTES)
+        .withPlace(TEST_PLACE_AVAILABLE_1)
+        .build();
+
+    Reservation TEST_RESERVATION_TO_DELETE = Reservation.ReservationBuilder.aReservation()
         .withUser(TEST_APPLICATION_USER_CUSTOMER_1)
         .withStartTime(TEST_RESERVATION_START_TIME)
         .withEndTime(TEST_RESERVATION_END_TIME)

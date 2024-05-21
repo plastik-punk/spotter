@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ClosedDay;
 import at.ac.tuwien.sepr.groupphase.backend.entity.OpeningHours;
@@ -47,10 +48,18 @@ public class ReservationServiceImpl implements ReservationService {
 
     private final EmailService emailService;
     private final ReservationValidator reservationValidator;
+    private final CustomUserDetailService applicationUserService;
 
     @Autowired
-    public ReservationServiceImpl(ReservationMapper mapper, ReservationRepository reservationRepository, ApplicationUserRepository applicationUserRepository,
-                                  PlaceRepository placeRepository, EmailService emailService, ReservationValidator reservationValidator, OpeningHoursRepository openingHoursRepository, ClosedDayRepository closedDayRepository) {
+    public ReservationServiceImpl(ReservationMapper mapper,
+                                  ReservationRepository reservationRepository,
+                                  ApplicationUserRepository applicationUserRepository,
+                                  PlaceRepository placeRepository,
+                                  EmailService emailService,
+                                  ReservationValidator reservationValidator,
+                                  OpeningHoursRepository openingHoursRepository,
+                                  ClosedDayRepository closedDayRepository,
+                                  CustomUserDetailService applicationUserService) {
         this.mapper = mapper;
         this.reservationRepository = reservationRepository;
         this.applicationUserRepository = applicationUserRepository;
@@ -59,6 +68,7 @@ public class ReservationServiceImpl implements ReservationService {
         this.reservationValidator = reservationValidator;
         this.openingHoursRepository = openingHoursRepository;
         this.closedDayRepository = closedDayRepository;
+        this.applicationUserService = applicationUserService;
     }
 
     @Override
@@ -83,8 +93,9 @@ public class ReservationServiceImpl implements ReservationService {
             return null; // frontend should check for null and show notification accordingly
         }
 
-        // 3. if guest user, create and save a new guest user, then set DTOs user to this user
-        if (reservationCreateDto.getUser() == null) {
+        // 3. Create guest if this is a guest-reservation, otherwise set known customer data
+        ApplicationUser currentUser = applicationUserService.getCurrentUser();
+        if (currentUser == null) {
             ApplicationUser guestUser = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
                 .withFirstName(reservationCreateDto.getFirstName().trim())
                 .withLastName(reservationCreateDto.getLastName().trim())
@@ -95,6 +106,12 @@ public class ReservationServiceImpl implements ReservationService {
                 .build();
             ApplicationUser savedGuestUser = applicationUserRepository.save(guestUser);
             reservationCreateDto.setUser(savedGuestUser);
+        } else {
+            reservationCreateDto.setFirstName(currentUser.getFirstName());
+            reservationCreateDto.setLastName(currentUser.getLastName());
+            reservationCreateDto.setEmail(currentUser.getEmail());
+            reservationCreateDto.setMobileNumber(currentUser.getMobileNumber());
+            reservationCreateDto.setUser(currentUser);
         }
 
         // 4. map to Reservation entity
@@ -210,5 +227,80 @@ public class ReservationServiceImpl implements ReservationService {
 
         // 8. if no check succeeded, return available
         return ReservationResponseEnum.AVAILABLE;
+    }
+
+    @Override
+    public ReservationDetailDto getById(Long id) throws ValidationException {
+        LOGGER.trace("getDetail ({})", id);
+
+        Optional<Reservation> optionalReservation = reservationRepository.findById(id);
+
+        // TODO: activate this check again
+        /*
+        if (optionalReservation.isEmpty()) {
+            // TODO: throw a fitting exception (create a new exception ideally)
+            throw new ValidationException("Reservation with id " + id + " not found", new ArrayList<>());
+        }
+         */
+
+        Reservation reservation = optionalReservation.get();
+        ApplicationUser currentUser = applicationUserService.getCurrentUser();
+
+        // TODO: activate this check again
+        /*
+        if (currentUser == null || !currentUser.getRole().equals(RoleEnum.ADMIN)) {
+            if (!reservation.getApplicationUser().equals(currentUser)) {
+                // TODO: throw a fitting exception (create a new exception ideally)
+                throw new ValidationException("You are not allowed to view this reservation", new ArrayList<>());
+            }
+        }
+         */
+
+        return mapper.reservationToReservationDetailDto(reservation);
+    }
+
+    @Override
+    public ReservationDetailDto update(ReservationDetailDto reservationDetailDto) throws ValidationException {
+        LOGGER.trace("update ({})", reservationDetailDto.toString());
+        this.reservationValidator.validateReservationDetailDto(reservationDetailDto);
+
+        // 1. check if reservation exists and if so, fetch its data
+        Optional<Reservation> optionalReservation = reservationRepository.findById(reservationDetailDto.getId());
+        if (optionalReservation.isEmpty()) {
+            // TODO: throw a fitting exception (create a new exception ideally)
+            LOGGER.error("Reservation with id " + reservationDetailDto.getId() + " not found"); // TODO: remove after testing
+            return null;
+        }
+        Reservation reservation = optionalReservation.get();
+
+        // 2. check if current user is allowed to update this reservation
+        ApplicationUser currentUser = applicationUserService.getCurrentUser();
+        if (currentUser == null || currentUser != reservation.getApplicationUser()) {
+            // TODO: throw a fitting exception (create a new exception ideally)
+        }
+
+        // 3. update reservation data and save it in DB
+        reservation.setNotes(reservationDetailDto.getNotes());
+        reservation.setPax(reservationDetailDto.getPax());
+        reservation.setStartTime(reservationDetailDto.getStartTime());
+        reservation.setEndTime(reservationDetailDto.getEndTime());
+        reservation.setDate(reservationDetailDto.getDate());
+        Reservation updatedReservation = reservationRepository.save(reservation);
+        this.reservationValidator.validateReservation(updatedReservation);
+
+        // 4. map updated reservation to DTO and return it
+        ReservationDetailDto dto = mapper.reservationToReservationDetailDto(updatedReservation);
+        this.reservationValidator.validateReservationDetailDto(dto);
+
+        LOGGER.info("Updated reservation: " + dto.toString()); // TODO REMOVE AFTER TESTING
+
+        return dto;
+    }
+
+    @Override
+    public void delete(Long id) throws ValidationException {
+        LOGGER.trace("delete ({})", id);
+        this.reservationValidator.validateReservationDelete(id);
+        reservationRepository.deleteById(id);
     }
 }

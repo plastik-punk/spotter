@@ -12,6 +12,13 @@ import {LoginComponent} from './components/login/login.component';
 import {MessageComponent} from './components/message/message.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {httpInterceptorProviders} from './interceptors';
+import {ReservationDetailComponent} from "./components/reservation/reservation-detail/reservation-detail.component";
+import {
+  ConfirmationDialogDeleteComponent
+} from "./components/confirmation-dialog/confirmation-dialog-delete/confirmation-dialog-delete.component";
+import {ToastrModule} from 'ngx-toastr';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -21,6 +28,8 @@ import {httpInterceptorProviders} from './interceptors';
     HomeComponent,
     LoginComponent,
     MessageComponent,
+    ReservationDetailComponent,
+    ConfirmationDialogDeleteComponent,
   ],
   imports: [
     BrowserModule,
@@ -29,6 +38,9 @@ import {httpInterceptorProviders} from './interceptors';
     HttpClientModule,
     NgbModule,
     FormsModule,
+    ToastrModule.forRoot(),
+    BrowserAnimationsModule,
+    NoopAnimationsModule,
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]

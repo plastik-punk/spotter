@@ -37,7 +37,6 @@ public interface UserService extends UserDetailsService {
      */
     List<ApplicationUser> findAll();
 
-
     /**
      * Find a user in the context of Spring Security based on the email address
      * <br>

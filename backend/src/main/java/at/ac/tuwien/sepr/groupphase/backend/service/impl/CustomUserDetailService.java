@@ -67,8 +67,12 @@ public class CustomUserDetailService implements UserService {
     @Override
     public ApplicationUser getCurrentUser() {
         Authentication currentAuthentication = getCurrentUserAuthentication();
-        ApplicationUser existingUser = applicationUserRepository.findByEmail(currentAuthentication.getName());
-        return existingUser;
+        if (currentAuthentication == null) {
+            return null;
+        } else {
+            ApplicationUser existingUser = applicationUserRepository.findByEmail(currentAuthentication.getName());
+            return existingUser;
+        }
     }
 
     @Override

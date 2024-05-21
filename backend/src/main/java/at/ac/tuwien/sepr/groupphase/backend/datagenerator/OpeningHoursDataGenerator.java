@@ -16,7 +16,7 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.Optional;
 
-@Profile({"test"})
+@Profile({"generateData", "test"})
 @Component
 @Order(5)
 public class OpeningHoursDataGenerator {
@@ -26,7 +26,8 @@ public class OpeningHoursDataGenerator {
     private final OpeningHoursRepository openingHoursRepository;
     private final RestaurantRepository restaurantRepository;
 
-    public OpeningHoursDataGenerator(OpeningHoursRepository openingHoursRepository, RestaurantRepository restaurantRepository) {
+
+    public OpeningHoursDataGenerator(OpeningHoursRepository openingHoursRepository, RestaurantRepository restaurantRepository, RestaurantDataGenerator restaurantDataGenerator) {
         this.openingHoursRepository = openingHoursRepository;
         this.restaurantRepository = restaurantRepository;
     }

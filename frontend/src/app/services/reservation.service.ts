@@ -1,7 +1,12 @@
 import {Injectable} from "@angular/core";
-import {HttpClient, HttpParams} from "@angular/common/http";
+import {HttpClient, HttpParams, HttpResponse} from "@angular/common/http";
 import {Globals} from '../global/globals';
-import {Reservation, ReservationCheckAvailabilityDto, ReservationCreateDto} from "../dtos/reservation";
+import {
+  Reservation,
+  ReservationCheckAvailabilityDto,
+  ReservationCreateDto,
+  ReservationDetailDto
+} from "../dtos/reservation";
 import {Observable} from "rxjs";
 import {SimpleViewReservationStatusEnum} from "../dtos/status-enum";
 
@@ -37,5 +42,36 @@ export class ReservationService {
       params = params.append(key, reservationCheckAvailabilityDto[key]);
     });
     return this.httpClient.get<SimpleViewReservationStatusEnum>(this.reservationBaseUri, { params });
+  }
+
+  /**
+   * Get a reservation (detail) by its id
+   *
+   * @param id the id of the reservation
+   * @return an Observable for the reservation
+   */
+  getById(id: number): Observable<ReservationDetailDto> {
+    let params = new HttpParams().set('id', id.toString());
+    return this.httpClient.get<ReservationDetailDto>(this.reservationBaseUri + "/detail", { params: params });
+  }
+
+  /**
+   * Updates a reservation
+   *
+   * @param reservationDetailDto the reservation to update
+   * @return an Observable for the updated reservation
+   */
+  update(reservationDetailDto: ReservationDetailDto): Observable<ReservationDetailDto> {
+    return this.httpClient.put<ReservationDetailDto>(this.reservationBaseUri, reservationDetailDto);
+  }
+
+  /**
+   * Deletes a reservation
+   *
+   * @param id the id of the reservation to delete
+   * @return an Observable for the HttpResponse
+   */
+  delete(id: number): Observable<HttpResponse<void>> {
+    return this.httpClient.delete<void>(this.reservationBaseUri + "/" + id, { observe: 'response' });
   }
 }

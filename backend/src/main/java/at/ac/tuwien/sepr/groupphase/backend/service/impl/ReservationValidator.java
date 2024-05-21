@@ -2,8 +2,12 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
+import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,15 +19,27 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Component
 public class ReservationValidator {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+    @Autowired
     private final UserDataValidator userDataValidator;
 
     @Autowired
-    public ReservationValidator(UserDataValidator userDataValidator) {
-        this.userDataValidator = userDataValidator;
+    private final ReservationRepository reservationRepository;
+
+    @Autowired
+    private final UserService userService;
+
+    @Autowired
+    public ReservationValidator(ReservationRepository reservationRepository, UserService userService) {
+        this.userDataValidator = new UserDataValidator();
+        this.reservationRepository = reservationRepository;
+        this.userService = userService;
     }
 
     public void validateReservation(Reservation reservation) throws ValidationException {
@@ -41,6 +57,22 @@ public class ReservationValidator {
 
         if (!validationErrors.isEmpty()) {
             throw new ValidationException("Validation of reservation failed", validationErrors);
+        }
+    }
+
+    public void validateReservationDetailDto(ReservationDetailDto dto) throws ValidationException {
+        LOGGER.trace("validateReservationDetailDto({})", dto);
+        List<String> validationErrors = new ArrayList<>();
+
+        validateStartTime(validationErrors, dto.getStartTime());
+        validateEndTime(validationErrors, dto.getEndTime(), dto.getStartTime());
+        validateDate(validationErrors, dto.getDate());
+        validatePax(validationErrors, dto.getPax());
+        validateNotes(validationErrors, dto.getNotes());
+        validatePlaceId(validationErrors, dto.getPlaceId());
+
+        if (!validationErrors.isEmpty()) {
+            throw new ValidationException("Validation of reservationDetailDto failed", validationErrors);
         }
     }
 
@@ -79,6 +111,42 @@ public class ReservationValidator {
 
         if (!validationErrors.isEmpty()) {
             throw new ValidationException("Validation of reservationCheckAvailabilityDto failed", validationErrors);
+        }
+    }
+
+    public void validateReservationDelete(Long id) throws ValidationException {
+        LOGGER.trace("validateReservationDelete({})", id);
+        List<String> validationErrors = new ArrayList<>();
+
+        // 1. validate id
+        if (id <= 0) {
+            validationErrors.add("ID is invalid");
+            throw new ValidationException("Validation for delete failed", validationErrors);
+        }
+
+        // 2. fetch reservation with id for validation of deletion
+        Optional<Reservation> optionalReservation = reservationRepository.findById(id);
+        if (optionalReservation.isEmpty()) {
+            validationErrors.add("Reservation not found");
+            throw new ValidationException("Validation of delete failed", validationErrors);
+        }
+        Reservation reservation = optionalReservation.get();
+
+        // 3. fetch current user
+        ApplicationUser currentUser = userService.getCurrentUser();
+
+        // 4. validate reservation
+        if (reservation.getApplicationUser() != null && !reservation.getApplicationUser().equals(currentUser)) {
+            // this way an unauthorized user does not get any information about the existence of a reservation
+            throw new ValidationException("Only the customer booking a reservation can delete it", validationErrors);
+        } else if (reservation.getDate().isBefore(LocalDate.now())) {
+            validationErrors.add("Reservation is in the past and cannot be deleted");
+        } else if (Objects.equals(reservation.getDate(), LocalDate.now()) && reservation.getStartTime().isBefore(LocalTime.now().plusHours(1))) {
+            validationErrors.add("You can not cancel a reservation less than 1 hour before it starts");
+        }
+
+        if (!validationErrors.isEmpty()) {
+            throw new ValidationException("Validation of delete failed", validationErrors);
         }
     }
 
@@ -130,6 +198,15 @@ public class ReservationValidator {
         LOGGER.trace("validatePlace({})", place);
         if (place == null) {
             validationErrors.add("No place given");
+        }
+    }
+
+    private void validatePlaceId(List<String> validationErrors, Long placeId) {
+        LOGGER.trace("validatePlaceId({})", placeId);
+        if (placeId == null) {
+            validationErrors.add("No place ID given");
+        } else if (placeId <= 0) {
+            validationErrors.add("Place ID is invalid");
         }
     }
 }
