@@ -9,6 +9,15 @@ export interface AppUser {
   role: number;
 }
 
+export interface UserOverviewDto {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  mobileNumber?: string;
+  role: UserRole;
+}
+
 export interface UserRegistrationDTO {
   firstName: string;
   lastName: string;

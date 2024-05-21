@@ -13,6 +13,7 @@ import java.util.List;
  * Service for operations on reservations (e.g. creating a new Reservation).
  */
 public interface ReservationService {
+
     /**
      * Create a reservation.
      *
@@ -20,6 +21,30 @@ public interface ReservationService {
      * @return the reservation as provided from the Repository layer after creation in the database
      */
     ReservationCreateDto create(ReservationCreateDto reservationCreateDto) throws MessagingException, ValidationException;
+
+    /**
+     * Check if any tables are available for requested time and pax.
+     *
+     * @param reservationCheckAvailabilityDto the reservation data
+     * @return the availability status
+     */
+    ReservationResponseEnum getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) throws ValidationException;
+
+    /**
+     * Get the details of a reservation specified by its id.
+     *
+     * @param id the id of the reservation
+     * @return the reservation details
+     */
+    ReservationDetailDto getById(Long id) throws ValidationException;
+
+    /**
+     * Update a reservation.
+     *
+     * @param reservationDetailDto the reservation data
+     * @return the updated reservation
+     */
+    ReservationDetailDto update(ReservationDetailDto reservationDetailDto) throws ValidationException;
 
     /**
      * Find all reservations that match the search parameters ordered by startDate (desc).

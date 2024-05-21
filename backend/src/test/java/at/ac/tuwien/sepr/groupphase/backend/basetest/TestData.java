@@ -1,12 +1,19 @@
 package at.ac.tuwien.sepr.groupphase.backend.basetest;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ClosedDay;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Message;
+import at.ac.tuwien.sepr.groupphase.backend.entity.OpeningHours;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Restaurant;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -34,6 +41,8 @@ public interface TestData {
     String BASE_URI = "/api/v1";
     String RESERVATION_BASE_URI = BASE_URI + "/reservations";
     String MESSAGE_BASE_URI = BASE_URI + "/messages";
+
+    String EMPLOYEES_BASE_URI = BASE_URI + "/employees";
 
     // ---------------------------------------------
     // ROLE TEST DATA
@@ -69,6 +78,33 @@ public interface TestData {
     String TEST_NEWS_TEXT = "TestMessageText";
     LocalDateTime TEST_NEWS_PUBLISHED_AT =
         LocalDateTime.of(2019, 11, 13, 12, 15, 0, 0);
+    LocalDateTime TEST_NEWS_PUBLISHED_AT_2 =
+        LocalDateTime.of(2020, 1, 1, 1, 0, 0, 0);
+
+
+    Message TEST_MESSAGE_1 = Message.MessageBuilder.aMessage()
+        .withId(TEST_MESSAGE_ID)
+        .withTitle(TEST_NEWS_TITLE)
+        .withSummary(TEST_NEWS_SUMMARY)
+        .withText(TEST_NEWS_TEXT)
+        .withPublishedAt(TEST_NEWS_PUBLISHED_AT)
+        .build();
+
+    Message TEST_MESSAGE_2 = Message.MessageBuilder.aMessage()
+        .withId(TEST_MESSAGE_ID)
+        .withTitle(TEST_NEWS_TITLE)
+        .withSummary(TEST_NEWS_SUMMARY)
+        .withText(TEST_NEWS_TEXT)
+        .withPublishedAt(TEST_NEWS_PUBLISHED_AT)
+        .build();
+
+    Message TEST_MESSAGE_3 = Message.MessageBuilder.aMessage()
+        .withId(2L)
+        .withTitle(TEST_NEWS_TITLE)
+        .withSummary(TEST_NEWS_SUMMARY)
+        .withText(TEST_NEWS_TEXT)
+        .withPublishedAt(TEST_NEWS_PUBLISHED_AT_2)
+        .build();
 
     // ---------------------------------------------
     // PLACE TEST DATA
@@ -94,7 +130,7 @@ public interface TestData {
 
     Place TEST_PLACE_OCCUPIED = Place.PlaceBuilder.aPlace()
         .withId(4L)
-        .withPax(2L)
+        .withPax(6L)
         .withStatus(StatusEnum.OCCUPIED)
         .build();
 
@@ -150,11 +186,12 @@ public interface TestData {
     // RESERVATION TEST DATA
     // ---------------------------------------------
 
-    LocalTime TEST_RESERVATION_START_TIME = LocalDateTime.of(2025, 1, 1, 12, 0, 0, 0).toLocalTime();
-    LocalTime TEST_RESERVATION_END_TIME = LocalDateTime.of(2025, 1, 1, 14, 0, 0, 0).toLocalTime();
-    LocalDate TEST_RESERVATION_DATE = LocalDate.of(2025, 1, 1);
+    LocalTime TEST_RESERVATION_START_TIME = LocalDateTime.of(2025, 1, 2, 12, 0, 0, 0).toLocalTime();
+    LocalTime TEST_RESERVATION_END_TIME = LocalDateTime.of(2025, 1, 2, 14, 0, 0, 0).toLocalTime();
+    LocalDate TEST_RESERVATION_DATE = LocalDate.of(2025, 1, 2);
     Long TEST_RESERVATION_PAX = 4L;
     String TEST_RESERVATION_NOTES = "Test Notes";
+    Long TEST_RESERVATION_DETAIL_ID = 1L;
 
     ReservationCreateDto TEST_RESERVATION_CREATE_DTO_CUSTOMER = ReservationCreateDto.ReservationCreateDtoBuilder.aReservationCreateDto()
         .withApplicationUser(TEST_APPLICATION_USER_CUSTOMER_1)
@@ -180,6 +217,16 @@ public interface TestData {
         .withNotes(TEST_RESERVATION_NOTES)
         .withEmail(TEST_APPLICATION_USER_GUEST.getEmail())
         .withMobileNumber(TEST_APPLICATION_USER_GUEST.getMobileNumber())
+        .build();
+
+    ReservationDetailDto TEST_RESERVATION_DETAIL_DTO = ReservationDetailDto.ReservationDetailDtoBuilder.aReservationDetailDto()
+        .withId(TEST_RESERVATION_DETAIL_ID)
+        .withStartTime(TEST_RESERVATION_START_TIME)
+        .withEndTime(TEST_RESERVATION_END_TIME)
+        .withDate(TEST_RESERVATION_DATE)
+        .withPax(TEST_RESERVATION_PAX)
+        .withNotes(TEST_RESERVATION_NOTES)
+        .withPlaceId(TEST_PLACE_AVAILABLE_1.getId())
         .build();
 
     Reservation TEST_RESERVATION_1 = Reservation.ReservationBuilder.aReservation()
@@ -211,7 +258,96 @@ public interface TestData {
         + ", endTime=" + TEST_RESERVATION_END_TIME
         + ", pax=" + TEST_RESERVATION_PAX
         + ", notes='" + TEST_RESERVATION_NOTES
-        + "', place=" +  TEST_PLACE_AVAILABLE_1.toString() + "}";
+        + "', place=" + TEST_PLACE_AVAILABLE_1.toString() + "}";
+
+    LocalTime TEST_RESERVATION_AVAILABILITY_START_TIME = LocalDateTime.of(2024, 7, 1, 18, 0, 0, 0).toLocalTime();
+    LocalDate TEST_RESERVATION_AVAILABILITY_DATE = LocalDate.of(2024, 7, 1);
+
+    ReservationCheckAvailabilityDto TEST_RESERVATION_AVAILABILITY = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+        .withStartTime(TEST_RESERVATION_AVAILABILITY_START_TIME)
+        .withEndTime(TEST_RESERVATION_AVAILABILITY_START_TIME.plusHours(2))
+        .withDate(TEST_RESERVATION_AVAILABILITY_DATE)
+        .withPax(4L)
+        .build();
+
+    // ---------------------------------------------
+    // RESTAURANT TEST DATA
+    // ---------------------------------------------
+
+    String TEST_RESTAURANT_NAME = "The Wet Otter";
+    String TEST_RESTAURANT_ADDRESS = "Karlsplatz 13, 1040 Vienna";
+
+    Restaurant TEST_RESTAURANT_1 = Restaurant.RestaurantBuilder.aRestaurant()
+        .withId(1L)
+        .withName(TEST_RESTAURANT_NAME)
+        .withAddress(TEST_RESTAURANT_ADDRESS)
+        .build();
+    Restaurant TEST_RESTAURANT_2 = Restaurant.RestaurantBuilder.aRestaurant()
+        .withId(1L)
+        .withName(TEST_RESTAURANT_NAME)
+        .withAddress(TEST_RESTAURANT_ADDRESS)
+        .build();
+
+    String TEST_RESTAURANT_EXPECTED_STRING = "Restaurant{id=1"
+        + ", name='" + TEST_RESTAURANT_NAME
+        + "', address='" + TEST_RESTAURANT_ADDRESS + "'}";
+
+    // ---------------------------------------------
+    // CLOSED DAY TEST DATA
+    // ---------------------------------------------
+
+    LocalDate TEST_CLOSED_DAY_DATE = LocalDate.of(2024, 6, 12);
+
+    ClosedDay TEST_CLOSED_DAY_1 = ClosedDay.ClosedDayBuilder.aClosedDay()
+        .withId(1L)
+        .withRestaurant(TEST_RESTAURANT_1)
+        .withDate(TEST_CLOSED_DAY_DATE)
+        .build();
+    ClosedDay TEST_CLOSED_DAY_2 = ClosedDay.ClosedDayBuilder.aClosedDay()
+        .withId(1L)
+        .withRestaurant(TEST_RESTAURANT_1)
+        .withDate(TEST_CLOSED_DAY_DATE)
+        .build();
+
+    String TEST_CLOSED_DAY_EXPECTED_STRING = "ClosedDay{id=1"
+        + ", restaurant=" + TEST_RESTAURANT_1.toString()
+        + ", date=" + TEST_CLOSED_DAY_DATE + "}";
+
+    // ---------------------------------------------
+    // OPENING HOURS TEST DATA
+    // ---------------------------------------------
+
+    DayOfWeek TEST_OPENING_HOURS_DAY_OF_WEEK = DayOfWeek.MONDAY;
+    LocalTime TEST_OPENING_HOURS_OPENING_TIME = LocalTime.of(11, 30);
+    LocalTime TEST_OPENING_HOURS_CLOSING_TIME = LocalTime.of(15, 0);
+
+    OpeningHours TEST_OPENING_HOURS_1 = OpeningHours.OpeningHourBuilder.anOpeningHour()
+        .withId(1L)
+        .withDayOfWeek(TEST_OPENING_HOURS_DAY_OF_WEEK)
+        .withRestaurant(TEST_RESTAURANT_1)
+        .withOpeningTime(TEST_OPENING_HOURS_OPENING_TIME)
+        .withClosingTime(TEST_OPENING_HOURS_CLOSING_TIME)
+        .build();
+
+    OpeningHours TEST_OPENING_HOURS_2 = OpeningHours.OpeningHourBuilder.anOpeningHour()
+        .withId(1L)
+        .withDayOfWeek(TEST_OPENING_HOURS_DAY_OF_WEEK)
+        .withRestaurant(TEST_RESTAURANT_1)
+        .withOpeningTime(TEST_OPENING_HOURS_OPENING_TIME)
+        .withClosingTime(TEST_OPENING_HOURS_CLOSING_TIME)
+        .build();
+
+    String TEST_OPENING_HOURS_EXPECTED_STRING = "OpeningHour{id=1"
+        + ", restaurant=" + TEST_RESTAURANT_1.toString()
+        + ", dayOfWeek=" + TEST_OPENING_HOURS_DAY_OF_WEEK
+        + ", openingTime=" + TEST_OPENING_HOURS_OPENING_TIME
+        + ", closingTime=" + TEST_OPENING_HOURS_CLOSING_TIME + "}";
+
+    // ---------------------------------------------
+    // AREA TEST DATA
+    // ---------------------------------------------
+
+    // TODO
 
     // ---------------------------------------------
     // ... TEST DATA

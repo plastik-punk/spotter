@@ -13,6 +13,7 @@ import {MessageComponent} from './components/message/message.component';
 import {ReservationsOverviewComponent} from './components/reservations-overview/reservations-overview.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {httpInterceptorProviders} from './interceptors';
+import {ReservationDetailComponent} from "./components/reservation/reservation-detail/reservation-detail.component";
 
 @NgModule({
   declarations: [
@@ -22,6 +23,7 @@ import {httpInterceptorProviders} from './interceptors';
     HomeComponent,
     LoginComponent,
     MessageComponent,
+    ReservationDetailComponent,
     ReservationsOverviewComponent,
   ],
   imports: [

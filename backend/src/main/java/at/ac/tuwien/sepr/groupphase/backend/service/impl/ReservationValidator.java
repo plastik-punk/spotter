@@ -1,6 +1,8 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import org.slf4j.Logger;
@@ -43,6 +45,22 @@ public class ReservationValidator {
         }
     }
 
+    public void validateReservationDetailDto(ReservationDetailDto dto) throws ValidationException {
+        LOGGER.trace("validateReservationDetailDto({})", dto);
+        List<String> validationErrors = new ArrayList<>();
+
+        validateStartTime(validationErrors, dto.getStartTime());
+        validateEndTime(validationErrors, dto.getEndTime(), dto.getStartTime());
+        validateDate(validationErrors, dto.getDate());
+        validatePax(validationErrors, dto.getPax());
+        validateNotes(validationErrors, dto.getNotes());
+        validatePlaceId(validationErrors, dto.getPlaceId());
+
+        if (!validationErrors.isEmpty()) {
+            throw new ValidationException("Validation of reservationDetailDto failed", validationErrors);
+        }
+    }
+
     public void validateReservationCreateDto(ReservationCreateDto dto) throws ValidationException {
         LOGGER.trace("validateReservationCreateDto({})", dto);
         List<String> validationErrors = new ArrayList<>();
@@ -62,6 +80,22 @@ public class ReservationValidator {
 
         if (!validationErrors.isEmpty()) {
             throw new ValidationException("Validation of reservationCreateDto failed", validationErrors);
+        }
+    }
+
+    public void validateReservationCheckAvailabilityDto(ReservationCheckAvailabilityDto dto) throws ValidationException {
+        LOGGER.trace("validateReservationCheckAvailabilityDto({})", dto);
+        List<String> validationErrors = new ArrayList<>();
+
+        validateStartTime(validationErrors, dto.getStartTime());
+        // validateEndTime(validationErrors, dto.getEndTime(), dto.getStartTime()); // TODO: activate after end time was implemented in frontend
+        validatePax(validationErrors, dto.getPax());
+        if (dto.getDate() == null) {
+            validationErrors.add("No date given");
+        }
+
+        if (!validationErrors.isEmpty()) {
+            throw new ValidationException("Validation of reservationCheckAvailabilityDto failed", validationErrors);
         }
     }
 
@@ -113,6 +147,15 @@ public class ReservationValidator {
         LOGGER.trace("validatePlace({})", place);
         if (place == null) {
             validationErrors.add("No place given");
+        }
+    }
+
+    private void validatePlaceId(List<String> validationErrors, Long placeId) {
+        LOGGER.trace("validatePlaceId({})", placeId);
+        if (placeId == null) {
+            validationErrors.add("No place ID given");
+        } else if (placeId <= 0) {
+            validationErrors.add("Place ID is invalid");
         }
     }
 }

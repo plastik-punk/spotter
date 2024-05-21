@@ -2,9 +2,11 @@ package at.ac.tuwien.sepr.groupphase.backend.service.mapper;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import org.mapstruct.IterableMapping;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -33,6 +35,15 @@ public interface ReservationMapper {
         }
     }
 
+    ReservationDetailDto reservationToReservationDetailDto(Reservation reservation);
+
+    @AfterMapping
+    default void mapEntityPlaceToDtoPlaceId(@MappingTarget ReservationDetailDto dto, Reservation entity) {
+        Place place = entity.getPlace();
+        if (place != null) {
+            dto.setPlaceId(place.getId());
+        }
+    }
     @Mapping(source = "applicationUser.firstName", target = "userFirstName")
     @Mapping(source = "applicationUser.lastName", target = "userLastName")
     @Mapping(source = "startTime", target = "startTime")

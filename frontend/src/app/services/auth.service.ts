@@ -1,10 +1,11 @@
 import {Injectable} from '@angular/core';
 import {AuthRequest} from '../dtos/auth-request';
 import {Observable} from 'rxjs';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {tap} from 'rxjs/operators';
 import {jwtDecode} from 'jwt-decode';
 import {Globals} from '../global/globals';
+import {UserOverviewDto} from "../dtos/app-user";
 
 @Injectable({
   providedIn: 'root'
@@ -24,8 +25,26 @@ export class AuthService {
   loginUser(authRequest: AuthRequest): Observable<string> {
     return this.httpClient.post(this.authBaseUri, authRequest, {responseType: 'text'})
       .pipe(
-        tap((authResponse: string) => this.setToken(authResponse))
+        tap((authResponse: string) => {
+          this.setToken(authResponse);
+          this.fetchUserDetails();
+        })
       );
+  }
+
+
+  /**
+   * Get the details of the current logged in user and put them in the Localstorage(Password excluded)
+   *
+   */
+  fetchUserDetails(): void {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.getToken()}`
+    });
+    this.httpClient.get<UserOverviewDto>(`${this.authBaseUri}`, {headers}).subscribe({
+      next: (user: UserOverviewDto) => this.setUser(user),
+      error: (error) => console.error('Error fetching user details', error)
+    });
   }
 
 
@@ -39,10 +58,19 @@ export class AuthService {
   logoutUser() {
     console.log('Logout');
     localStorage.removeItem('authToken');
+    localStorage.removeItem('user');
   }
 
   getToken() {
     return localStorage.getItem('authToken');
+  }
+
+  getCurrentUser(): UserOverviewDto | null {
+    const userJson = localStorage.getItem('user');
+    if (userJson) {
+      return JSON.parse(userJson);
+    }
+    return null;
   }
 
   /**
@@ -65,6 +93,11 @@ export class AuthService {
     localStorage.setItem('authToken', authResponse);
   }
 
+  private setUser(user: UserOverviewDto): void {
+    localStorage.setItem('user', JSON.stringify(user));
+    console.log(this.getCurrentUser());
+  }
+
   private getTokenExpirationDate(token: string): Date {
 
     const decoded: any = jwtDecode(token);
@@ -76,5 +109,6 @@ export class AuthService {
     date.setUTCSeconds(decoded.exp);
     return date;
   }
+
 
 }

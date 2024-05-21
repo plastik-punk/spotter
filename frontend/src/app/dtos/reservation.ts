@@ -41,3 +41,19 @@ export interface ReservationSearch {
   earliestStartTime?: Date;
   latestEndTime?: Date;
 }
+
+export interface ReservationCheckAvailabilityDto {
+  startTime: Date;
+  date: Date;
+  pax: number;
+}
+
+export interface ReservationDetailDto {
+  id: number;
+  startTime: Date;
+  endTime: Date;
+  date: Date;
+  pax: number;
+  notes: string;
+  placeId: number;
+}

@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.repository;
 
+import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,6 +17,10 @@ import java.util.List;
  */
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
+
+    @Query("SELECT r.place FROM Reservation r WHERE r.date = :date AND ((r.startTime < :startTime AND r.endTime > :startTime) OR (r.startTime < :endTime AND r.endTime > :endTime) OR (r.startTime >= :startTime AND r.endTime <= :endTime))")
+    List<Place> findOccupiedPlacesAtSpecifiedTime(@Param("date") LocalDate date, @Param("startTime") LocalTime startTime, @Param("endTime") LocalTime endTime);
+
     @Query(value = "SELECT r.* FROM reservation r "
         + "JOIN app_user u ON r.user_id = u.id "
         + "WHERE u.email = :email "

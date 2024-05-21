@@ -19,7 +19,7 @@ import java.time.LocalTime;
 import java.time.LocalDate;
 import java.util.List;
 
-@Profile({"generateData"})
+@Profile({"generateData", "test"})
 @Component
 @Order(3)
 public class ReservationDataGenerator {
@@ -58,9 +58,9 @@ public class ReservationDataGenerator {
 
                 Reservation reservation = Reservation.ReservationBuilder.aReservation()
                     .withUser(applicationUser)
-                    .withStartTime(LocalTime.of(15 + i, 0))
-                    .withDate(LocalDate.of(2022, 1 + i, 1 + i))
-                    .withEndTime(LocalTime.of(17 + i, 0))
+                    .withStartTime(LocalTime.of(17, 0))
+                    .withDate(LocalDate.of(2024, 6, 1))
+                    .withEndTime(LocalTime.of(19, 0))
                     .withPax(2L + (i % 2))
                     .withNotes("This is a note for reservation " + i)
                     .withPlace(place)
