@@ -30,7 +30,6 @@ import java.lang.invoke.MethodHandles;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -296,5 +295,12 @@ public class ReservationServiceImpl implements ReservationService {
         LOGGER.info("Updated reservation: " + dto.toString()); // TODO REMOVE AFTER TESTING
 
         return dto;
+    }
+
+    @Override
+    public void delete(Long id) throws ValidationException {
+        LOGGER.trace("delete ({})", id);
+        this.reservationValidator.validateReservationDelete(id);
+        reservationRepository.deleteById(id);
     }
 }

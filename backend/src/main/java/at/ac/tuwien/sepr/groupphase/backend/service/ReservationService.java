@@ -44,4 +44,11 @@ public interface ReservationService {
      * @return the updated reservation
      */
     ReservationDetailDto update(ReservationDetailDto reservationDetailDto) throws ValidationException;
+
+    /**
+     * Delete a reservation specified by its id.
+     *
+     * @param id the id of the reservation
+     */
+    void delete(Long id) throws ValidationException;
 }

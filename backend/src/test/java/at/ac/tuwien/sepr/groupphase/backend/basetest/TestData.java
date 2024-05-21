@@ -41,8 +41,9 @@ public interface TestData {
     String BASE_URI = "/api/v1";
     String RESERVATION_BASE_URI = BASE_URI + "/reservations";
     String MESSAGE_BASE_URI = BASE_URI + "/messages";
-
     String EMPLOYEES_BASE_URI = BASE_URI + "/employees";
+    Long TEST_VALID_ID = 1L;
+    Long TEST_INVALID_ID = -1L;
 
     // ---------------------------------------------
     // ROLE TEST DATA
@@ -242,6 +243,16 @@ public interface TestData {
 
     Reservation TEST_RESERVATION_2 = Reservation.ReservationBuilder.aReservation()
         .withId(1L)
+        .withUser(TEST_APPLICATION_USER_CUSTOMER_1)
+        .withStartTime(TEST_RESERVATION_START_TIME)
+        .withEndTime(TEST_RESERVATION_END_TIME)
+        .withDate(TEST_RESERVATION_DATE)
+        .withPax(TEST_RESERVATION_PAX)
+        .withNotes(TEST_RESERVATION_NOTES)
+        .withPlace(TEST_PLACE_AVAILABLE_1)
+        .build();
+
+    Reservation TEST_RESERVATION_TO_DELETE = Reservation.ReservationBuilder.aReservation()
         .withUser(TEST_APPLICATION_USER_CUSTOMER_1)
         .withStartTime(TEST_RESERVATION_START_TIME)
         .withEndTime(TEST_RESERVATION_END_TIME)
