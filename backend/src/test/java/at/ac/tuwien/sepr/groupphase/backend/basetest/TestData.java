@@ -192,6 +192,7 @@ public interface TestData {
     Long TEST_RESERVATION_PAX = 4L;
     String TEST_RESERVATION_NOTES = "Test Notes";
     Long TEST_RESERVATION_DETAIL_ID = 1L;
+    String TEST_RESERVATION_HASH_VALUE = "TestHashValue";
 
     ReservationCreateDto TEST_RESERVATION_CREATE_DTO_CUSTOMER = ReservationCreateDto.ReservationCreateDtoBuilder.aReservationCreateDto()
         .withApplicationUser(TEST_APPLICATION_USER_CUSTOMER_1)
@@ -268,6 +269,7 @@ public interface TestData {
         .withEndTime(TEST_RESERVATION_AVAILABILITY_START_TIME.plusHours(2))
         .withDate(TEST_RESERVATION_AVAILABILITY_DATE)
         .withPax(4L)
+        .withIdToExclude(-1L)
         .build();
 
     // ---------------------------------------------

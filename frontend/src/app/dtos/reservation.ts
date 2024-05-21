@@ -29,9 +29,20 @@ export interface ReservationCheckAvailabilityDto {
   startTime: Date;
   date: Date;
   pax: number;
+  idToExclude?: number;
 }
 
 export interface ReservationDetailDto {
+  id: number;
+  startTime: Date;
+  endTime: Date;
+  date: Date;
+  pax: number;
+  notes: string;
+  placeId: number;
+}
+
+export interface ReservationEditDto {
   id: number;
   startTime: Date;
   endTime: Date;

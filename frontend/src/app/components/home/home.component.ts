@@ -30,7 +30,8 @@ export class HomeComponent implements OnInit {
   reservationCheckAvailabilityDto: ReservationCheckAvailabilityDto = {
     startTime: undefined,
     date: undefined,
-    pax: undefined
+    pax: undefined,
+    idToExclude: -1
   }
 
   currentUser: UserOverviewDto;

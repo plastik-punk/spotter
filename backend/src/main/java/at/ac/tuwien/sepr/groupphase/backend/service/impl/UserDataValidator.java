@@ -119,7 +119,7 @@ public class UserDataValidator {
     }
 
     private void validatePassword(List<String> validationErrors, String pw) {
-        LOG.trace("validatePassowrd({})", pw);
+        LOG.trace("validatePassword({})", pw);
         if (pw == null) {
             validationErrors.add("No password given");
         } else if (pw.trim().isEmpty()) {

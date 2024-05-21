@@ -52,8 +52,9 @@ public class ReservationEndpoint {
     @GetMapping
     @Operation(summary = "Check if any tables are available for requested time and pax")
     public ReservationResponseEnum getAvailability(@RequestParam("startTime") String startTime,
-                                                    @RequestParam("date") String date,
-                                                    @RequestParam("pax") Long pax)
+                                                   @RequestParam("date") String date,
+                                                   @RequestParam("pax") Long pax,
+                                                   @RequestParam("idToExclude") Long idToExclude)
         throws ValidationException {
 
         ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
@@ -61,6 +62,7 @@ public class ReservationEndpoint {
             .withEndTime(LocalTime.parse(startTime).plusHours(2))
             .withDate(LocalDate.parse(date))
             .withPax(pax)
+            .withIdToExclude(idToExclude)
             .build();
 
         LOGGER.info("GET /api/v1/reservations body: {}", reservationCheckAvailabilityDto.toString());

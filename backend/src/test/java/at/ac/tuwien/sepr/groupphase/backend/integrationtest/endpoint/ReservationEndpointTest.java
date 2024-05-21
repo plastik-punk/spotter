@@ -24,8 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -152,6 +152,7 @@ public class ReservationEndpointTest implements TestData {
                 .param("endTime", TEST_RESERVATION_AVAILABILITY.getEndTime().toString())
                 .param("date", TEST_RESERVATION_AVAILABILITY.getDate().toString())
                 .param("pax", TEST_RESERVATION_AVAILABILITY.getPax().toString())
+                .param("idToExclude", TEST_RESERVATION_AVAILABILITY.getIdToExclude().toString())
                 .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(TEST_USER_CUSTOMER, TEST_ROLES_CUSTOMER)))
             .andDo(print())
             .andReturn();
@@ -160,7 +161,7 @@ public class ReservationEndpointTest implements TestData {
         int statusCode = mvcResult.getResponse().getStatus();
         ReservationResponseEnum response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ReservationResponseEnum.class);
         assertNotNull(response);
-        assertAll (
+        assertAll(
             () -> assertEquals(200, statusCode),
             () -> assertEquals(ReservationResponseEnum.AVAILABLE, response)
         );

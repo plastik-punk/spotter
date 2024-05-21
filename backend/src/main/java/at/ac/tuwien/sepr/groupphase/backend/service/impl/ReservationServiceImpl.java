@@ -10,13 +10,13 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
-import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ClosedDayRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.OpeningHoursRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
+import at.ac.tuwien.sepr.groupphase.backend.service.HashService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mail.EmailService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ReservationMapper;
@@ -30,7 +30,6 @@ import java.lang.invoke.MethodHandles;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,8 +45,8 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationMapper mapper;
     private final OpeningHoursRepository openingHoursRepository;
     private final ClosedDayRepository closedDayRepository;
-
     private final EmailService emailService;
+    private final HashService hashService;
     private final ReservationValidator reservationValidator;
     private final CustomUserDetailService applicationUserService;
 
@@ -60,6 +59,7 @@ public class ReservationServiceImpl implements ReservationService {
                                   ReservationValidator reservationValidator,
                                   OpeningHoursRepository openingHoursRepository,
                                   ClosedDayRepository closedDayRepository,
+                                  HashService hashService,
                                   CustomUserDetailService applicationUserService) {
         this.mapper = mapper;
         this.reservationRepository = reservationRepository;
@@ -69,6 +69,7 @@ public class ReservationServiceImpl implements ReservationService {
         this.reservationValidator = reservationValidator;
         this.openingHoursRepository = openingHoursRepository;
         this.closedDayRepository = closedDayRepository;
+        this.hashService = hashService;
         this.applicationUserService = applicationUserService;
     }
 
@@ -127,7 +128,17 @@ public class ReservationServiceImpl implements ReservationService {
 
         // TODO: add Restaurant name to DTO
 
-        // 6. send conformation Mail
+        String hashedValue = hashService.hashSha256(reservation.getDate().toString()
+            + reservation.getStartTime().toString() + reservation.getEndTime().toString()
+            + reservation.getPax().toString() + reservation.getPlace().getId().toString());
+        reservation.setHashValue(hashedValue);
+
+        // 6. save Reservation in database and return it mapped to a DTO
+        Reservation savedReservation = reservationRepository.save(reservation);
+        reservationValidator.validateReservation(savedReservation);
+
+
+        // 7. send conformation Mail
         // TODO: activate mail sending for production
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("recipientName", reservationCreateDto.getFirstName() + " " + reservationCreateDto.getLastName());
@@ -136,13 +147,9 @@ public class ReservationServiceImpl implements ReservationService {
         templateModel.put("restaurantName", "--SpotterEssen--"); //TODO: change to restaurant name
         templateModel.put("reservationDate", reservationCreateDto.getDate());
         templateModel.put("reservationTime", reservationCreateDto.getStartTime());
-        templateModel.put("link", "--link here--"); //TODO: change to the link
-        // emailService.sendMessageUsingThymeleafTemplate(reservationCreateDto.getUser().getEmail(),
-        //     "Reservation Confirmation", templateModel);
-
-        // 7. save Reservation in database and return it mapped to a DTO
-        Reservation savedReservation = reservationRepository.save(reservation);
-        reservationValidator.validateReservation(savedReservation);
+        templateModel.put("link", "http://localhost:4200/#/reservation-detail/" + savedReservation.getHashValue()); //TODO: change away from localhost
+        emailService.sendMessageUsingThymeleafTemplate(reservationCreateDto.getUser().getEmail(),
+            "Reservation Confirmation", templateModel);
 
         return mapper.reservationToReservationCreateDto(savedReservation);
     }
