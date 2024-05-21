@@ -91,8 +91,16 @@ export class StaffAccountsComponent implements OnInit {
 
   }
 
-  deleteUser(id: number): void {
-    // Implementation needed
+  deleteUser(user: UserOverviewDto): void {
+    this.userService.deleteUser(user.id).subscribe({
+      next: (deletedUser) => {
+        console.log('User ' + user.firstName + ' ' + user.lastName + 'deleted successfully', deletedUser);
+      //  this.fetchUsers();
+      },
+      error: (error) => {
+        console.error('Failed to update user role', error);
+      }
+    });
   }
 
   setChangeWhat(user: UserOverviewDto) {
@@ -138,6 +146,10 @@ export class StaffAccountsComponent implements OnInit {
     }
     if (action === "confirm") {
       this.confirmUser(user);
+    }
+
+    if (action === "delete") {
+      this.deleteUser(user);
     }
   }
 }

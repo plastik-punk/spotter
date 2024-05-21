@@ -4,6 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserOverviewDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserRegistrationDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import org.springframework.security.core.Authentication;
@@ -81,8 +82,18 @@ public interface UserService extends UserDetailsService {
      * Updates a user.
      *
      * @param toUpdate Data to update the user with
-     * @throws NotFoundException if the user doesn't exist
+     * @throws NotFoundException if the user doesn't exist in the persistent data storage.
      */
     void update(UserOverviewDto toUpdate) throws NotFoundException;
+
+    /**
+     * Delete the user with the given ID from the data storage.
+     *
+     * @param id ID of the user who should get deleted.
+     * @throws NotFoundException if the user doesn't exist in the persistent data storage.
+     * @throws ConflictException if the user has an reservation.
+     */
+    void delete(Long id) throws NotFoundException, ConflictException;
+
 
 }

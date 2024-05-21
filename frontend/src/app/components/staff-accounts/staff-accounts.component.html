@@ -1,9 +1,8 @@
-
 <div class="container mt-4">
 
   <div class="row justify-content-center">
     <div class="top-left-logo">
-      <img src="assets/images/logo.png"alt="Logo">
+      <img src="assets/images/logo.png" alt="Logo">
     </div>
     <div class="card">
       <div class="card-header">
@@ -26,6 +25,7 @@
                   <th>Email</th>
                   <th>Phone Number</th>
                   <th>Actions</th>
+                  <th>Delete</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -40,9 +40,11 @@
                             data-bs-target="#confirm-dialog" (click)="setChangeWhat(user); setDoWhat(2)">
                       <i class="bi bi-check-lg"></i> Confirm
                     </button>
+                  </td>
+                  <td>
                     <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
                             data-bs-target="#confirm-dialog" (click)="setChangeWhat(user); setDoWhat(0)">
-                      <i class="bi bi-trash"></i> Delete
+                      <i class="bi bi-trash"></i>
                     </button>
                   </td>
                 </tr>
@@ -67,6 +69,7 @@
                   <th>Email</th>
                   <th>Phone Number</th>
                   <th>Actions</th>
+                  <th>Delete</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -80,10 +83,11 @@
                             data-bs-target="#confirm-dialog" (click)="setChangeWhat(user); setDoWhat(2)">
                       <i class="bi bi-check-lg"></i> Confirm
                     </button>
+                  </td>
+                  <td>
                     <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
                             data-bs-target="#confirm-dialog" (click)="setChangeWhat(user); setDoWhat(0)">
                       <i class="bi bi-trash"></i>
-                      Delete
                     </button>
                   </td>
                 </tr>
@@ -108,7 +112,7 @@
                   <th>Email</th>
                   <th>Phone Number</th>
                   <th>Actions</th>
-                  <th>Change Role</th>
+                  <th>Delete</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -120,15 +124,14 @@
                   <td>
                     <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
                             data-bs-target="#confirm-dialog" (click)="setChangeWhat(user); setDoWhat(1)">
-                      <i class="bi bi-check-lg"></i> Change Role
-                    </button>
-                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#confirm-dialog" (click)="setChangeWhat(user); setDoWhat(0)">
-                      <i class="bi bi-trash"></i> Delete
+                      <i class="bi bi-arrow-left-right"></i> Change Role
                     </button>
                   </td>
                   <td>
-
+                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#confirm-dialog" (click)="setChangeWhat(user); setDoWhat(0)">
+                      <i class="bi bi-trash"></i>
+                    </button>
                   </td>
                 </tr>
                 </tbody>
@@ -152,7 +155,7 @@
                   <th>Email</th>
                   <th>Phone Number</th>
                   <th>Actions</th>
-                  <th>Change Role</th>
+                  <th>Delete</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -162,16 +165,16 @@
                   <td>{{ user.email }}</td>
                   <td>{{ user.mobileNumber }}</td>
                   <td>
-
+                    <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#confirm-dialog" (click)="setChangeWhat(user); setDoWhat(1)">
+                      <i class="bi bi-arrow-left-right"></i> Change Role
+                    </button>
                   <td>
-                  <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
-                          data-bs-target="#confirm-dialog" (click)="setChangeWhat(user); setDoWhat(1)">
-                    <i class="bi bi-check-lg"></i> Change Role
-                  </button>
-                  <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                          data-bs-target="#confirm-dialog" (click)="setChangeWhat(user); setDoWhat(0)">
-                    <i class="bi bi-trash"></i> Delete
-                  </button>
+                    <button class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#confirm-dialog" (click)="setChangeWhat(user); setDoWhat(0)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+
                   </td>
                 </tr>
                 </tbody>

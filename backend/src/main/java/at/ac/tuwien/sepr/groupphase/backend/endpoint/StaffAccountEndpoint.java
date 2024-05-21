@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserOverviewDto;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.UserMapper;
@@ -11,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -53,7 +55,18 @@ public class StaffAccountEndpoint {
         LOGGER.info("PUT /api/v1/employees " + "/{}", toUpdate);
         userService.update(toUpdate);
         return ResponseEntity.noContent().build();
+    }
 
+    @DeleteMapping("{id}")
+    @Secured("ROLE_ADMIN")
+    public ResponseEntity<Void> delete(@PathVariable("id") long id) throws NotFoundException, ConflictException {
+        LOGGER.info("DELETE /api/v1/employees/{}", id);
+        try {
+            userService.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
 
