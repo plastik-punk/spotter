@@ -25,6 +25,8 @@ public interface ApplicationUserRepository extends JpaRepository<ApplicationUser
     ApplicationUser findByEmail(String email);
 
     /**
+     * Find all users by role.
+     *
      * @param roles user with which roles are to be fetched
      * @return sorted list by first name of users who have the given roles
      */
