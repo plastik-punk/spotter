@@ -55,16 +55,17 @@ public class ReservationEndpoint {
     @GetMapping
     @Operation(summary = "Check if any tables are available for requested time and pax")
     public ReservationResponseEnum getAvailability(@RequestParam("startTime") String startTime,
-                                                    @RequestParam("date") String date,
-                                                    @RequestParam("pax") Long pax)
+                                                   @RequestParam("date") String date,
+                                                   @RequestParam("pax") Long pax)
         throws ValidationException {
 
-        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
-            .withStartTime(LocalTime.parse(startTime))
-            .withEndTime(LocalTime.parse(startTime).plusHours(2))
-            .withDate(LocalDate.parse(date))
-            .withPax(pax)
-            .build();
+        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto =
+            ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+                .withStartTime(LocalTime.parse(startTime))
+                .withEndTime(LocalTime.parse(startTime).plusHours(2))
+                .withDate(LocalDate.parse(date))
+                .withPax(pax)
+                .build();
 
         LOGGER.info("GET /api/v1/reservations body: {}", reservationCheckAvailabilityDto.toString());
         return service.getAvailability(reservationCheckAvailabilityDto);
@@ -92,7 +93,7 @@ public class ReservationEndpoint {
     @PermitAll
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a reservation")
-    public ResponseEntity<Void> delete(@PathVariable ("id") Long id) throws ValidationException {
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) throws ValidationException {
         LOGGER.info("DELETE /api/v1/reservations body: {}", id);
         service.delete(id);
         return ResponseEntity.noContent().build();
