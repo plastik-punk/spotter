@@ -31,7 +31,8 @@ export class HomeComponent implements OnInit {
   reservationCheckAvailabilityDto: ReservationCheckAvailabilityDto = {
     startTime: undefined,
     date: undefined,
-    pax: undefined
+    pax: undefined,
+    idToExclude: -1
   }
 
   currentUser: UserOverviewDto;
@@ -111,9 +112,11 @@ export class HomeComponent implements OnInit {
         next: (data) => {
           if (data == null) {
             // TODO: handle this case (table was booked in the meantime)
+            console.log("null"); // TODO remove after testing
           } else {
             this.notificationService.handleSuccess('reservation created successfully');
             // TODO: route to reservation detail view?
+            console.log("not null");
           }
         },
         error: (error) => {

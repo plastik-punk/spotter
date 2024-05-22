@@ -1,6 +1,8 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.exceptionhandler;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ConflictErrorRestDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ValidationErrorRestDto;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import org.slf4j.Logger;
@@ -68,6 +70,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         body.put("Validation errors", errors);
 
         return new ResponseEntity<>(body.toString(), headers, status);
-
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseBody
+    public ConflictErrorRestDto handleConflictException(ConflictException e) {
+        LOGGER.warn("Terminating request processing with status 409 due to {}: {}", e.getClass().getSimpleName(), e.getMessage());
+        return new ConflictErrorRestDto(e.summary(), e.errors());
+    }
+
 }

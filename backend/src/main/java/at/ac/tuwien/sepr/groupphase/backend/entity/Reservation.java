@@ -38,6 +38,9 @@ public class Reservation {
     @Column(length = 100000)
     private String notes;
 
+    @Column(nullable = false)
+    private String hashValue;
+
     public Long getId() {
         return id;
     }
@@ -94,6 +97,14 @@ public class Reservation {
         this.notes = notes;
     }
 
+    public String getHashValue() {
+        return hashValue;
+    }
+
+    public void setHashValue(String hashValue) {
+        this.hashValue = hashValue;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -138,6 +149,7 @@ public class Reservation {
             .withEndTime(this.endTime)
             .withPax(this.pax)
             .withNotes(this.notes)
+            .withHashValue(this.hashValue)
             .build();
     }
 
@@ -149,6 +161,7 @@ public class Reservation {
         private LocalTime endTime;
         private Long pax;
         private String notes;
+        private String hashValue;
 
         private ReservationBuilder() {
         }
@@ -192,6 +205,11 @@ public class Reservation {
             return this;
         }
 
+        public ReservationBuilder withHashValue(String hashValue) {
+            this.hashValue = hashValue;
+            return this;
+        }
+
         public Reservation build() {
             Reservation reservation = new Reservation();
             reservation.setId(id);
@@ -201,6 +219,7 @@ public class Reservation {
             reservation.setEndTime(endTime);
             reservation.setPax(pax);
             reservation.setNotes(notes);
+            reservation.setHashValue(hashValue);
             return reservation;
         }
     }

@@ -1,7 +1,5 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
-import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;
@@ -15,6 +13,8 @@ public class ReservationCheckAvailabilityDto {
     private LocalDate date;
 
     private Long pax;
+
+    private Long idToExclude;
 
     public LocalTime getStartTime() {
         return startTime;
@@ -48,6 +48,14 @@ public class ReservationCheckAvailabilityDto {
         this.pax = pax;
     }
 
+    public Long getIdToExclude() {
+        return idToExclude;
+    }
+
+    public void setIdToExclude(Long idToExclude) {
+        this.idToExclude = idToExclude;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -74,6 +82,7 @@ public class ReservationCheckAvailabilityDto {
             + ", endTime=" + endTime
             + ", date=" + date
             + ", pax=" + pax
+            + ", idToExclude=" + idToExclude
             + '}';
     }
 
@@ -83,6 +92,7 @@ public class ReservationCheckAvailabilityDto {
             .withEndTime(this.endTime)
             .withDate(this.date)
             .withPax(this.pax)
+            .withIdToExclude(this.idToExclude)
             .build();
     }
 
@@ -91,6 +101,7 @@ public class ReservationCheckAvailabilityDto {
         private LocalTime endTime;
         private LocalDate date;
         private Long pax;
+        private Long idToExclude;
 
         private ReservationCheckAvailabilityDtoBuilder() {
         }
@@ -119,12 +130,18 @@ public class ReservationCheckAvailabilityDto {
             return this;
         }
 
+        public ReservationCheckAvailabilityDtoBuilder withIdToExclude(Long idToExclude) {
+            this.idToExclude = idToExclude;
+            return this;
+        }
+
         public ReservationCheckAvailabilityDto build() {
             ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = new ReservationCheckAvailabilityDto();
             reservationCheckAvailabilityDto.setStartTime(startTime);
             reservationCheckAvailabilityDto.setEndTime(endTime);
             reservationCheckAvailabilityDto.setDate(date);
             reservationCheckAvailabilityDto.setPax(pax);
+            reservationCheckAvailabilityDto.setIdToExclude(idToExclude);
             return reservationCheckAvailabilityDto;
         }
     }

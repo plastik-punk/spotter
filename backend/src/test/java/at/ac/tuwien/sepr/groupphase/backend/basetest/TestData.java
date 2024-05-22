@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.basetest;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ClosedDay;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Message;
@@ -194,6 +195,8 @@ public interface TestData {
     Long TEST_RESERVATION_PAX = 4L;
     String TEST_RESERVATION_NOTES = "Test Notes";
     Long TEST_RESERVATION_DETAIL_ID = 1L;
+    String TEST_RESERVATION_HASH_VALUE = "TestHashValue";
+    String TEST_RESERVATION_HASH_VALUE_1 = "1476C39F97636A345B7BCCA9AAE7787E7140D6835FDDD947EC561DEC9C6F9AC5";
 
     ReservationCreateDto TEST_RESERVATION_CREATE_DTO_CUSTOMER = ReservationCreateDto.ReservationCreateDtoBuilder.aReservationCreateDto()
         .withApplicationUser(TEST_APPLICATION_USER_CUSTOMER_1)
@@ -221,12 +224,25 @@ public interface TestData {
         .withMobileNumber(TEST_APPLICATION_USER_GUEST.getMobileNumber())
         .build();
 
+
     List<Long> TEST_PLACE_IDS = new ArrayList<>() {
         {
             add(TEST_PLACE_AVAILABLE_1.getId());
             add(TEST_PLACE_AVAILABLE_2.getId());
         }
     };
+
+    ReservationEditDto TEST_RESERVATION_EDIT_DTO = ReservationEditDto.ReservationEditDtoBuilder.aReservationEditDto()
+        .withReservationId(TEST_RESERVATION_DETAIL_ID)
+        .withUser(TEST_APPLICATION_USER_CUSTOMER_1)
+        .withStartTime(TEST_RESERVATION_START_TIME)
+        .withEndTime(TEST_RESERVATION_END_TIME)
+        .withDate(TEST_RESERVATION_DATE)
+        .withPax(TEST_RESERVATION_PAX)
+        .withNotes(TEST_RESERVATION_NOTES)
+        .withHashedId(TEST_RESERVATION_HASH_VALUE)
+        .withPlaceIds(TEST_PLACE_IDS)
+        .build();
 
     ReservationDetailDto TEST_RESERVATION_DETAIL_DTO = ReservationDetailDto.ReservationDetailDtoBuilder.aReservationDetailDto()
         .withId(TEST_RESERVATION_DETAIL_ID)
@@ -265,6 +281,7 @@ public interface TestData {
         .withDate(TEST_RESERVATION_DATE)
         .withPax(TEST_RESERVATION_PAX)
         .withNotes(TEST_RESERVATION_NOTES)
+        .withHashValue(TEST_RESERVATION_HASH_VALUE)
         .build();
 
     String TEST_RESERVATION_EXPECTED_STRING = "Reservation{id=1"
@@ -283,6 +300,7 @@ public interface TestData {
         .withEndTime(TEST_RESERVATION_AVAILABILITY_START_TIME.plusHours(2))
         .withDate(TEST_RESERVATION_AVAILABILITY_DATE)
         .withPax(4L)
+        .withIdToExclude(-1L)
         .build();
 
     // ---------------------------------------------

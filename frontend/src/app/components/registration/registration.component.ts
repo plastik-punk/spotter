@@ -1,11 +1,11 @@
-import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import {RegistrationService} from '../../services/registration.service';
-import {UserRegistrationDTO, UserRole} from '../../dtos/app-user';
-import {NgIf} from "@angular/common";
-import {CommonModule} from "@angular/common";
-import {Router} from "@angular/router";
-import {AuthService} from "../../services/auth.service";
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { RegistrationService } from '../../services/registration.service';
+import { UserRegistrationDTO, UserRole } from '../../dtos/app-user';
+import { NgIf } from "@angular/common";
+import { CommonModule } from "@angular/common";
+import { Router } from "@angular/router";
+import { AuthService } from "../../services/auth.service";
 
 @Component({
   selector: 'app-register',
@@ -34,7 +34,7 @@ export class RegistrationComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       mobileNumber: [''],
       password: ['', [Validators.required, Validators.minLength(8)]],
-      ownerCheck: [false]  // This will be conditionally removed if the user is an admin
+      role: [this.isAdmin ? 'EMPLOYEE' : 'CUSTOMER', Validators.required]
     });
   }
 
@@ -45,13 +45,18 @@ export class RegistrationComponent implements OnInit {
 
   adjustFormBasedOnUserRole(): void {
     if (this.isAdmin) {
-      this.title = 'Register Employee';  // Change title for admin
+      this.title = 'Register new Employee or Admin';  // Change title for admin
     }
   }
 
   register(): void {
     if (this.registrationForm.valid) {
-      let role = this.isAdmin ? UserRole.UNCONFIRMED_EMPLOYEE : (this.registrationForm.get('ownerCheck')?.value ? UserRole.UNCONFIRMED_ADMIN : UserRole.CUSTOMER);
+      let role;
+      if (this.isAdmin) {
+        role = this.registrationForm.get('role').value === 'ADMIN' ? UserRole.ADMIN : UserRole.EMPLOYEE;
+      } else {
+        role = this.registrationForm.get('role').value === 'OWNER' ? UserRole.UNCONFIRMED_ADMIN : (this.registrationForm.get('role').value === 'EMPLOYEE' ? UserRole.UNCONFIRMED_EMPLOYEE : UserRole.CUSTOMER);
+      }
 
       const userData: UserRegistrationDTO = {
         firstName: this.registrationForm.get('firstName').value,

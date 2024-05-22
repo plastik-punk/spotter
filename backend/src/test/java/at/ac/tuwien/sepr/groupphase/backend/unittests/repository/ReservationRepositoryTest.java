@@ -37,6 +37,7 @@ public class ReservationRepositoryTest implements TestData {
             .withEndTime(TEST_RESERVATION_END_TIME)
             .withPax(TEST_RESERVATION_PAX)
             .withNotes(TEST_RESERVATION_NOTES)
+            .withHashValue(TEST_RESERVATION_HASH_VALUE)
             .build();
         reservationRepository.save(reservation);
 
@@ -45,4 +46,103 @@ public class ReservationRepositoryTest implements TestData {
             () -> assertNotNull(reservationRepository.findById(reservation.getId()))
         );
     }
+
+    /*
+    @Test
+    @Transactional
+    public void givenLongerReservation_whenFindOccupiedPlacesAtSpecifiedTime_thenFindOccupiedPlaces() {
+        Reservation reservation = Reservation.ReservationBuilder.aReservation()
+            .withId(1L)
+            .withUser(applicationUserRepository.save(TEST_APPLICATION_USER_CUSTOMER_1))
+            .withStartTime(TEST_RESERVATION_START_TIME)
+            .withDate(TEST_RESERVATION_DATE)
+            .withEndTime(TEST_RESERVATION_END_TIME)
+            .withPax(TEST_RESERVATION_PAX)
+            .withNotes(TEST_RESERVATION_NOTES)
+            .withHashValue(TEST_RESERVATION_HASH_VALUE)
+            .build();
+        reservationRepository.save(reservation);
+    }
+
+    @Test
+    @Transactional
+    public void givenShorterReservation_whenFindOccupiedPlacesAtSpecifiedTime_thenFindOccupiedPlaces() {
+        Reservation reservation = Reservation.ReservationBuilder.aReservation()
+            .withId(1L)
+            .withUser(applicationUserRepository.save(TEST_APPLICATION_USER_CUSTOMER_1))
+            .withStartTime(TEST_RESERVATION_START_TIME)
+            .withDate(TEST_RESERVATION_DATE)
+            .withEndTime(TEST_RESERVATION_END_TIME)
+            .withPax(TEST_RESERVATION_PAX)
+            .withNotes(TEST_RESERVATION_NOTES)
+            .withHashValue(TEST_RESERVATION_HASH_VALUE)
+            .build();
+        reservationRepository.save(reservation);
+    }
+
+    @Test
+    @Transactional
+    public void givenEndOnStartTime_whenFindOccupiedPlacesAtSpecifiedTime_thenFindNone() {
+        Reservation reservation = Reservation.ReservationBuilder.aReservation()
+            .withId(1L)
+            .withUser(applicationUserRepository.save(TEST_APPLICATION_USER_CUSTOMER_1))
+            .withStartTime(TEST_RESERVATION_START_TIME)
+            .withDate(TEST_RESERVATION_DATE)
+            .withEndTime(TEST_RESERVATION_END_TIME)
+            .withPax(TEST_RESERVATION_PAX)
+            .withNotes(TEST_RESERVATION_NOTES)
+            .withHashValue(TEST_RESERVATION_HASH_VALUE)
+            .build();
+        reservationRepository.save(reservation);
+    }
+
+    @Test
+    @Transactional
+    public void givenStartOnEndTime_whenFindOccupiedPlacesAtSpecifiedTime_thenFindNone() {
+        Reservation reservation = Reservation.ReservationBuilder.aReservation()
+            .withId(1L)
+            .withUser(applicationUserRepository.save(TEST_APPLICATION_USER_CUSTOMER_1))
+            .withStartTime(TEST_RESERVATION_START_TIME)
+            .withDate(TEST_RESERVATION_DATE)
+            .withEndTime(TEST_RESERVATION_END_TIME)
+            .withPax(TEST_RESERVATION_PAX)
+            .withNotes(TEST_RESERVATION_NOTES)
+            .withHashValue(TEST_RESERVATION_HASH_VALUE)
+            .build();
+        reservationRepository.save(reservation);
+    }
+
+    @Test
+    @Transactional
+    public void givenStartBeforeAndEndAfterStartTime_whenFindOccupiedPlacesAtSpecifiedTime_thenFindOccupiedPlaces() {
+        Reservation reservation = Reservation.ReservationBuilder.aReservation()
+            .withId(1L)
+            .withUser(applicationUserRepository.save(TEST_APPLICATION_USER_CUSTOMER_1))
+            .withStartTime(TEST_RESERVATION_START_TIME)
+            .withDate(TEST_RESERVATION_DATE)
+            .withEndTime(TEST_RESERVATION_END_TIME)
+            .withPax(TEST_RESERVATION_PAX)
+            .withNotes(TEST_RESERVATION_NOTES)
+            .withHashValue(TEST_RESERVATION_HASH_VALUE)
+            .build();
+        reservationRepository.save(reservation);
+    }
+
+    @Test
+    @Transactional
+    public void givenStartBeforeAndEndAfterEndTime_whenFindOccupiedPlacesAtSpecifiedTime_thenFindOccupiedPlaces() {
+        Reservation reservation = Reservation.ReservationBuilder.aReservation()
+            .withId(1L)
+            .withUser(applicationUserRepository.save(TEST_APPLICATION_USER_CUSTOMER_1))
+            .withStartTime(TEST_RESERVATION_START_TIME)
+            .withDate(TEST_RESERVATION_DATE)
+            .withEndTime(TEST_RESERVATION_END_TIME)
+            .withPax(TEST_RESERVATION_PAX)
+            .withNotes(TEST_RESERVATION_NOTES)
+            .withHashValue(TEST_RESERVATION_HASH_VALUE)
+            .build();
+        reservationRepository.save(reservation);
+    }
+
+     */
 }

@@ -58,7 +58,7 @@
 
       <!-- Start row with Notes -->
       <div class="row">
-        <div class="col-lg-6 d-flex align-items-center justify-content-center flex-column flex-grow-1 h-100" *ngIf="!editMode" >
+        <div class="col-lg-6 d-flex align-items-center justify-content-center flex-column flex-grow-1 h-100">
           <label for="reservationNotes" class="col-form-label text-md-end text-muted">
           </label>
           <span id="reservationNotes" name="reservationNotes" class="h-100">
@@ -66,26 +66,12 @@
           </span>
         </div>
 
-        <div class="col-lg-6 d-flex align-items-center justify-content-center flex-column flex-grow-1 h-100" *ngIf="editMode" >
-          <label for="reservationNotesEdit" class="col-form-label text-md-end text-muted">
-          </label>
-          <input
-            type="text"
-            id="reservationNotesEdit"
-            name="reservationNotesEdit"
-            placeholder="Notes (optional)"
-            class="form-control h-100"
-            [(ngModel)]="reservationDetailDto.notes"
-            #reservationNotesEdit="ngModel"
-          />
-        </div>
-
         <div class="mt-4 d-flex flex-row">
-          <button type="button" class="btn btn-primary" *ngIf="!editMode" (click)="toggleEditMode()">
+          <button type="button" class="btn btn-primary" (click)="onEdit()">
             Edit
           </button>
-          <button type="button" class="btn btn-primary" *ngIf="editMode" (click)="toggleEditMode(); onSubmit()">
-            Save
+          <button type="button" class="btn btn-primary" (click)="onSubmit()">
+            Back
           </button>
           <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmation-dialog-delete">
             Cancel
