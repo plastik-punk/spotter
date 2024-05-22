@@ -81,11 +81,14 @@
         </div>
 
         <div class="mt-4 d-flex flex-row">
-          <button type="submit" class="btn btn-primary" *ngIf="!editMode" (click)="toggleEditMode()">
+          <button type="button" class="btn btn-primary" *ngIf="!editMode" (click)="toggleEditMode()">
             Edit
           </button>
-          <button type="submit" class="btn btn-primary" *ngIf="editMode" (click)="toggleEditMode(); onSubmit()">
+          <button type="button" class="btn btn-primary" *ngIf="editMode" (click)="toggleEditMode(); onSubmit()">
             Save
+          </button>
+          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmation-dialog-delete">
+            Delete
           </button>
         </div>
       </div>
@@ -94,3 +97,9 @@
   </div>
 </div>
 </body>
+
+<app-confirmation-dialog-delete
+  [dialogTitle]="'Delete this Reservation?'"
+  [dialogText]="'Do you really want to delete this reservation?'"
+  (confirm)="onDelete()"
+></app-confirmation-dialog-delete>

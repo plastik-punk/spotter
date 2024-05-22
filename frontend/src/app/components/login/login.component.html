@@ -29,7 +29,7 @@
       <div class="card custom-card shadow card-width" id="login-card">
         <div class="card-header bg-transparent border-bottom-0">
           <h3 class="mb-0 text-center font-heading">LOGIN</h3>
-          <p class="text-center mb-0 font-text" style="margin-top: 1vh">Don't have an account yet? <a href="#">Sign up</a></p>
+          <p class="text-center mb-0 font-text" style="margin-top: 1vh">Don't have an account yet? <a routerLink="/registration" class="text-danger">Register</a></p>
         </div>
         <div class="card-body">
           <form [formGroup]="loginForm" (ngSubmit)="loginUser()" id="login-form">
@@ -43,9 +43,7 @@
             </div>
             <button type="submit" class="btn btn-danger w-100" style="font-size: 1.5rem; line-height: 2;" id="login-submit-button">Login</button>
           </form>
-          <p class="mt-4 text-center">
-            Don't have an account yet? <a routerLink="/registration" class="text-danger">Register</a>
-          </p>
+
 
           <div class="separator" id="login-or-separator">
             <div class="line"></div>

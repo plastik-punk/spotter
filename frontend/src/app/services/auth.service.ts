@@ -95,7 +95,6 @@ export class AuthService {
 
   private setUser(user: UserOverviewDto): void {
     localStorage.setItem('user', JSON.stringify(user));
-    console.log(this.getCurrentUser());
   }
 
   private getTokenExpirationDate(token: string): Date {

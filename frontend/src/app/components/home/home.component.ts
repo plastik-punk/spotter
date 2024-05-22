@@ -6,6 +6,8 @@ import {Observable} from "rxjs";
 import {ReservationService} from "../../services/reservation.service";
 import {SimpleViewReservationStatusEnum} from "../../dtos/status-enum";
 import {UserOverviewDto} from "../../dtos/app-user";
+import {ToastrService} from "ngx-toastr";
+import {NotificationService} from "../../services/notification.service";
 
 @Component({
   selector: 'app-home',
@@ -42,7 +44,9 @@ export class HomeComponent implements OnInit {
 
   constructor(
     public authService: AuthService,
-    private service: ReservationService
+    private service: ReservationService,
+    private notification: ToastrService,
+    private notificationService: NotificationService,
     ) { } // constructor
 
   ngOnInit() { }
@@ -87,9 +91,8 @@ export class HomeComponent implements OnInit {
           }
         },
         error: (error) => {
-          // TODO: error and notification handling
-          console.error("Error Processing Reservation", error);
-        },
+          this.notificationService.handleError(error);
+        }, // error
       });
   } // onFieldChange
 
@@ -112,13 +115,12 @@ export class HomeComponent implements OnInit {
           if (data == null) {
             // TODO: handle this case (table was booked in the meantime)
           } else {
-            console.log("Reservation Processed Successfully", data); // todo: remove after testing
-            // TODO: handle success (notification, redirect etc.)
+            this.notificationService.handleSuccess('reservation created successfully');
+            // TODO: route to reservation detail view?
           }
         },
         error: (error) => {
-          // TODO: handle error and notifications
-          console.error("Error Processing Reservation", error);
+          this.notificationService.handleError(error);
         }, // error
       }); // observable.subscribe
     }

@@ -301,4 +301,11 @@ public class ReservationServiceImpl implements ReservationService {
 
         return dto;
     }
+
+    @Override
+    public void delete(Long id) throws ValidationException {
+        LOGGER.trace("delete ({})", id);
+        this.reservationValidator.validateReservationDelete(id);
+        reservationRepository.deleteById(id);
+    }
 }

@@ -87,7 +87,7 @@ Interfaces are always at the top level of their package and the implementation i
 
 ### test endpoints
 - Each endpoint has a test class in the corresponding package of "integrationtest"
-- delete contents of each table that is being accessed during testing in a @BeforeEach method
-- test end-to-end functionality with one positive test for each method and test for:
+- use @Transactional for each test
+- test positive for each method, check for:
   - status code
   - response body

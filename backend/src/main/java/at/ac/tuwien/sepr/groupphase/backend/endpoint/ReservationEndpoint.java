@@ -13,7 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -85,5 +88,15 @@ public class ReservationEndpoint {
     public ReservationDetailDto update(@RequestBody ReservationDetailDto reservationDetailDto) throws ValidationException {
         LOGGER.info("PUT /api/v1/reservations body: {}", reservationDetailDto.toString());
         return service.update(reservationDetailDto);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PermitAll
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a reservation")
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) throws ValidationException {
+        LOGGER.info("DELETE /api/v1/reservations body: {}", id);
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

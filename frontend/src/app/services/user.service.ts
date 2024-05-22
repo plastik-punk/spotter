@@ -34,4 +34,15 @@ export class UserService {
     let userId = user.id
     return this.httpClient.put<UserOverviewDto>(this.employeesBaseUri + `/${userId}`, user)
   }
+
+  /**
+   * Delete a user based on its id
+   *
+   * @param userId the id of the user to delete
+   * @return an Observable of the delete action
+   */
+  deleteUser(userId: number): Observable<void> {
+    return this.httpClient.delete<void>(`${this.employeesBaseUri}/${userId}`);
+  }
+
 }
