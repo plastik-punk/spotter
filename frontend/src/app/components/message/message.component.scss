@@ -1,8 +1,3 @@
-:host {
-  width: 100%;
-  height: 100%;
-}
-
 body, html {
   height: 100%;
   width: 100%;
@@ -36,7 +31,7 @@ body, html {
 }
 @media (max-width: 1000px) {
   .top-left-logo {
-    display: none; /* This hides the logo on screens with width 768px or less */
+    display: none; /* This hides the logo on screens with width 1000 or less */
   }
 }
 
