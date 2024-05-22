@@ -1,5 +1,4 @@
 $sidebar-width: 15vw;
-
 .sidebar {
   position: fixed;
   z-index: 1010;
@@ -19,6 +18,7 @@ $sidebar-width: 15vw;
     display: block;
     padding: 0.5rem 0;
   }
+
   .nav-link {
     color: #555; /* Darker grey color instead of blue */
     text-decoration: none; /* Removes underline */
@@ -31,7 +31,6 @@ $sidebar-width: 15vw;
     }
   }
 
-
   ul.nav {
     list-style: none;
     padding: 0;
@@ -41,7 +40,6 @@ $sidebar-width: 15vw;
       padding: 0.5rem 0;
       position: relative;
 
-      // Ensure the line is only added if the next sibling is not hidden
       &:not(:last-child):after {
         content: "";
         position: absolute;
@@ -49,27 +47,29 @@ $sidebar-width: 15vw;
         left: 0;
         right: 0;
         height: 1px;
-        background-color: #000; // Change the color to black
+        background-color: #000; /* Change the color to black */
         display: block;
       }
 
-      // Remove the line if the next sibling is hidden
-      &:not(:last-child):nth-last-child(2):after {
-        display: none;
+      // Hide the line if the next sibling is hidden
+      & + li.nav-item.hidden {
+        &:before {
+          content: "";
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          height: 1px;
+          background-color: #fff;
+        }
       }
 
       &:last-child {
         border-bottom: none;
       }
 
-      // Add a rule to specifically target hidden nav items
       &.hidden {
         display: none;
-      }
-
-      // Ensure that no line appears below a nav item if it is followed by a hidden nav item
-      &.hidden + .nav-item {
-        border-top: none;
       }
 
       // Ensure no line is generated if the nav-item itself is hidden
@@ -80,8 +80,7 @@ $sidebar-width: 15vw;
   }
 }
 
-
-    .hidden {
+.hidden {
   transform: translateX(-100%);
 }
 
