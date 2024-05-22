@@ -43,7 +43,7 @@ export class ReservationDetailComponent implements OnInit {
       // 2. load data via ID from BE and set it to reservationDetailDto
       let observable: Observable<ReservationDetailDto>;
       observable = this.service.getByHashedId(id);
-      observable.subscribe( {
+      observable.subscribe({
         next: (data) => {
           if (data != null) {
             this.reservationDetailDto = data;

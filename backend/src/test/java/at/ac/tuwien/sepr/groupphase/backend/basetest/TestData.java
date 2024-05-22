@@ -261,6 +261,7 @@ public interface TestData {
         .withPax(TEST_RESERVATION_PAX)
         .withNotes(TEST_RESERVATION_NOTES)
         .withPlace(TEST_PLACE_AVAILABLE_1)
+        .withHashValue(TEST_RESERVATION_HASH_VALUE)
         .build();
 
     String TEST_RESERVATION_EXPECTED_STRING = "Reservation{id=1"
