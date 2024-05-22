@@ -22,9 +22,12 @@ public class ReservationListDto {
 
     private Long placeId;
 
+    private String hashId;
+
     public Long getId() {
         return id;
     }
+
 
     public ReservationListDto setId(Long id) {
         this.id = id;
@@ -94,6 +97,15 @@ public class ReservationListDto {
         return this;
     }
 
+    public String getHashId() {
+        return hashId;
+    }
+
+    public ReservationListDto setHashId(String hashId) {
+        this.hashId = hashId;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -109,7 +121,8 @@ public class ReservationListDto {
             && Objects.equals(date, that.date)
             && Objects.equals(endTime, that.endTime)
             && Objects.equals(pax, that.pax)
-            && Objects.equals(placeId, that.placeId);
+            && Objects.equals(placeId, that.placeId)
+            && Objects.equals(hashId, that.hashId);
     }
 
     @Override
@@ -143,6 +156,7 @@ public class ReservationListDto {
         private LocalTime endTime;
         private Long pax;
         private Long placeId;
+        private String hashId;
 
         private ReservationListDtoBuilder() {
         }
@@ -191,6 +205,11 @@ public class ReservationListDto {
             return this;
         }
 
+        public ReservationListDtoBuilder withHashId(String hashId) {
+            this.hashId = hashId;
+            return this;
+        }
+
         public ReservationListDto build() {
             ReservationListDto reservationListDto = new ReservationListDto();
             reservationListDto.setId(id);
@@ -201,6 +220,7 @@ public class ReservationListDto {
             reservationListDto.setEndTime(endTime);
             reservationListDto.setPax(pax);
             reservationListDto.setPlaceId(placeId);
+            reservationListDto.setHashId(hashId);
             return reservationListDto;
         }
     }

@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
@@ -81,7 +82,7 @@ public class ReservationEndpoint {
     @PermitAll
     @GetMapping({"/detail"})
     @Operation(summary = "Get detail information for a single reservation")
-    public ReservationDetailDto getByHashedId(@RequestParam("id") String id) throws ValidationException {
+    public ReservationEditDto getByHashedId(@RequestParam("id") String id) throws ValidationException {
         LOGGER.info("GET /api/v1/reservations/detail body: {}", id);
         return service.getByHashedId(id);
     }

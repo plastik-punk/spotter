@@ -33,6 +33,7 @@ export interface ReservationListDto {
   endTime: Date;
   pax: number;
   placeId: number;
+  hashId: string;
 }
 
 export interface ReservationSearch {
@@ -60,11 +61,13 @@ export interface ReservationDetailDto {
 }
 
 export interface ReservationEditDto {
-  id: number;
+  reservationId: number;
   startTime: Date;
   endTime: Date;
   date: Date;
   pax: number;
   notes: string;
+  hashedId: string;
+  user: AppUser;
   placeId: number;
 }

@@ -1,12 +1,10 @@
-import {ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild, ViewChildren} from '@angular/core';
-import {MessageService} from '../../services/message.service';
-import {Message} from '../../dtos/message';
-import {NgbModal, NgbPaginationConfig} from '@ng-bootstrap/ng-bootstrap';
-import {UntypedFormBuilder, NgForm} from '@angular/forms';
+import {Component, OnInit} from '@angular/core';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AuthService} from '../../services/auth.service';
 import {ReservationListDto, ReservationSearch} from "../../dtos/reservation";
 import {debounceTime, Subject} from "rxjs";
 import {ReservationService} from "../../services/reservation.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-reservations-overview',
@@ -28,7 +26,8 @@ export class ReservationsOverviewComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private modalService: NgbModal,
-    private reservationService: ReservationService) {
+    private reservationService: ReservationService,
+    private router: Router) {
   }
 
   ngOnInit(): void {

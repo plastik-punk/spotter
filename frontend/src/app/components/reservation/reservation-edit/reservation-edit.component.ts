@@ -1,33 +1,50 @@
-import { Component } from '@angular/core';
-import {DatePipe, NgIf} from "@angular/common";
+import {Component, OnInit} from '@angular/core';
 import {FormsModule, NgForm} from "@angular/forms";
 import {ReservationCheckAvailabilityDto, ReservationEditDto} from "../../../dtos/reservation";
 import {ReservationService} from "../../../services/reservation.service";
 import {AuthService} from "../../../services/auth.service";
 import {Observable} from "rxjs";
-import { ActivatedRoute } from '@angular/router';
 import {SimpleViewReservationStatusEnum} from "../../../dtos/status-enum";
+import {ActivatedRoute, Router} from "@angular/router";
+import {ToastrService} from "ngx-toastr";
+import {NotificationService} from "../../../services/notification.service";
+import {NgIf} from "@angular/common";
+import {AppUser} from "../../../dtos/app-user";
+
 
 @Component({
   selector: 'app-reservation-edit',
+  templateUrl: './reservation-edit.component.html',
   standalone: true,
   imports: [
-    DatePipe,
     FormsModule,
     NgIf
   ],
-  templateUrl: './reservation-edit.component.html',
-  styleUrl: './reservation-edit.component.scss'
+  styleUrls: ['./reservation-edit.component.scss']
 })
-export class ReservationEditComponent {
+
+export class ReservationEditComponent implements OnInit {
+  hashId: string;
+
   reservationEditDto: ReservationEditDto = {
-    id: undefined,
-    startTime: undefined,
-    endTime: undefined,
     date: undefined,
-    pax: undefined,
+    endTime: undefined,
+    hashedId: undefined,
     notes: undefined,
-    placeId: undefined
+    pax: undefined,
+    placeId: undefined,
+    reservationId: undefined,
+    startTime: undefined,
+    user: {
+      id: undefined,
+      email: undefined,
+      firstName: undefined,
+      lastName: undefined,
+      username: undefined,
+      mobileNumber: undefined,
+      password: undefined,
+      role: undefined
+    },
   };
   reservationCheckAvailabilityDto: ReservationCheckAvailabilityDto = {
     startTime: undefined,
@@ -35,29 +52,37 @@ export class ReservationEditComponent {
     pax: undefined,
     idToExclude: undefined
   }
+
   enumReservationTableStatus = SimpleViewReservationStatusEnum;
   reservationStatusText: string = 'Provide Time, Date and Pax';
   reservationStatusClass: string = 'reservation-table-incomplete';
+
   constructor(
     public authService: AuthService,
     private service: ReservationService,
-    private route: ActivatedRoute
-  ) { } // constructor
+    private route: ActivatedRoute,
+    private notification: ToastrService,
+    private notificationService: NotificationService,
+    private router: Router
+  ) {
+  } // constructor
+
   ngOnInit() {
     // 1. get reservation id from service
-    const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
+    this.hashId = this.route.snapshot.paramMap.get('id');
+    if (this.hashId) {
       // 2. load data via ID from BE and set it to reservationEditDto
       let observable: Observable<ReservationEditDto>;
-      observable = this.service.getByHashedId(id);
+      observable = this.service.getByHashedId(this.hashId);
       observable.subscribe({
         next: (data) => {
-            console.log("returned ReservationEditDto: ", data); // TODO: remove after testing
+          if (data != null) {
             this.reservationEditDto = data;
+          }
         },
         error: (error) => {
-          // TODO: handle error and notification
-          console.log("Error: ", error); // TODO: remove after testing
+          this.notificationService.handleError(error);
+          this.router.navigate(['/home']);
         },
       });
     }
@@ -72,7 +97,7 @@ export class ReservationEditComponent {
     this.reservationCheckAvailabilityDto.startTime = this.reservationEditDto.startTime;
     this.reservationCheckAvailabilityDto.date = this.reservationEditDto.date;
     this.reservationCheckAvailabilityDto.pax = this.reservationEditDto.pax;
-    this.reservationCheckAvailabilityDto.idToExclude = this.reservationEditDto.id;
+    this.reservationCheckAvailabilityDto.idToExclude = this.reservationEditDto.reservationId;
 
     if (this.reservationCheckAvailabilityDto.startTime == null || this.reservationCheckAvailabilityDto.pax == null || this.reservationCheckAvailabilityDto.date == null) {
       this.reservationStatusText = 'Provide Time, Date and Pax';

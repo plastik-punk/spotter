@@ -3,7 +3,7 @@ import {HttpClient, HttpParams, HttpResponse} from "@angular/common/http";
 import {Globals} from '../global/globals';
 import {Observable,tap} from "rxjs";
 import {formatIsoDate} from '../util/date-helper';
-import {ReservationSearch,ReservationListDto} from "../dtos/reservation";
+import {ReservationSearch, ReservationListDto, ReservationEditDto} from "../dtos/reservation";
 import {
   Reservation,
   ReservationCheckAvailabilityDto,
@@ -52,9 +52,9 @@ export class ReservationService {
    * @param id the hashed id of the reservation
    * @return an Observable for the reservation
    */
-  getByHashedId(id: string): Observable<ReservationDetailDto> {
+  getByHashedId(id: string): Observable<ReservationEditDto> {
     let params = new HttpParams().set('id', id);
-    return this.httpClient.get<ReservationDetailDto>(this.reservationBaseUri + "/detail", { params: params });
+    return this.httpClient.get<ReservationEditDto>(this.reservationBaseUri + "/detail", { params: params });
   }
 
   /**
@@ -66,7 +66,7 @@ export class ReservationService {
   update(reservationDetailDto: ReservationDetailDto): Observable<ReservationDetailDto> {
     return this.httpClient.put<ReservationDetailDto>(this.reservationBaseUri, reservationDetailDto);
   }
-  
+
   /**
    * search for reservations fitting Serch parameters
    *

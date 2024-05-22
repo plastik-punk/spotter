@@ -1,29 +1,26 @@
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Lexend+Giga:wght@500&display=swap"
-      rel="stylesheet">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Leckerli+One&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Lexend+Giga:wght@500&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Leckerli+One&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
 <body>
 <div class="top-left-logo">
   <img src="assets/images/logo.png" alt="Logo">
 </div>
-<div class="container-fluid align-items-center justify-content-center">
-  <div class="col-12 col-lg-10 mx-auto h-90 py-3">
+<div class="container-fluid">
+  <div class="col-12 col-lg-10 mx-auto">
     <div class="card custom-card">
-
       <form #form="ngForm" (ngSubmit)="onSubmit(form)">
-
         <!-- Start row with Title, startTime and Date -->
         <div class="row">
-          <div class="col-lg-4 d-flex align-items-center justify-content-center">
-            <h1 class="font-heading">Edit</h1>
+          <div class="column">
+            <h1 class="font-heading">Reserve</h1>
           </div>
-
-          <div class="col-lg-4 d-flex align-items-center justify-content-center flex-column">
-            <label for="reservationStartTime" class="col-form-label text-md-end text-muted">
-            </label>
+          <div class="column">
             <input
               type="time"
               id="reservationStartTime"
@@ -36,10 +33,7 @@
               required
             />
           </div>
-
-          <div class="col-lg-4 d-flex align-items-center justify-content-center flex-column">
-            <label for="reservationDate" class="col-form-label text-md-end text-muted">
-            </label>
+          <div class="column">
             <input
               type="date"
               id="reservationDate"
@@ -54,70 +48,121 @@
             />
           </div>
         </div>
-        <!-- End row with Title, startTime and Date -->
 
         <hr class="my-4">
 
         <!-- Start row with notification -->
-        <div class="row d-flex justify-content-center align-items-center">
-          <div class="col-lg-12" [class]="reservationStatusClass">
-            {{reservationStatusText}}
+        <div class="row">
+          <div class="column">
+            <div class="col-lg-12" [class]="reservationStatusClass">
+              {{ reservationStatusText }}
+            </div>
           </div>
         </div>
         <!-- End row with notification -->
 
         <hr class="my-4">
 
+        <!-- Start row with advanced view -->
+        <div class="row" style="justify-content: center; padding: 2vh">
+          <button class="btn av-btn" routerLink="">Advanced View -></button>
+        </div>
+        <!-- End row with advanced view -->
+
         <!-- Start row with pax -->
         <div class="row">
-          <div class="row align-items-center">
-            <div class="col-lg-2 d-flex justify-content-end">
-              <label for="reservationPax" class="col-form-label text-md-end text-muted">
-                Table for
-              </label>
-            </div>
-            <div class="col-lg-2">
-              <input
-                type="number"
-                id="reservationPax"
-                name="reservationPax"
-                placeholder="pax"
-                class="form-control"
-                [(ngModel)]="reservationEditDto.pax"
-                #reservationPax="ngModel"
-                (ngModelChange)="onFieldChange()"
-                required
-              />
-            </div>
+          <div class="column pax-container">
+            <label for="reservationPax" style="margin-right: 10px;">Table for:</label>
+            <input
+              type="number"
+              id="reservationPax"
+              name="reservationPax"
+              placeholder="pax"
+              class="form-control pax-input"
+              [(ngModel)]="reservationEditDto.pax"
+              #reservationPax="ngModel"
+              (ngModelChange)="onFieldChange()"
+              min="1"
+              required
+            />
           </div>
         </div>
         <!-- End row with pax -->
 
-          <div class="col-lg-6 d-flex align-items-center justify-content-center flex-column flex-grow-1 h-100">
-            <label for="reservationNotes" class="col-form-label text-md-end text-muted">
-            </label>
-            <input
-              type="text"
-              id="reservationNotes"
-              name="reservationNotes"
-              placeholder="Notes (optional)"
-              class="form-control h-100"
-              [(ngModel)]="reservationEditDto.notes"
-              #reservationNotes="ngModel"
-            />
-          </div>
+        <!-- Start row with (firstName, lastName, Mail, Phone), Notes -->
+        <div class="row">
+          <div class="column" *ngIf="!authService.isLoggedIn()">
+            <div >
+              <!-- start guest fields -->
+              <input
+                type="text"
+                id="reservationFirstName"
+                name="reservationFirstName"
+                placeholder="First Name"
+                class="form-control"
+                [(ngModel)]="reservationEditDto.user.firstName"
+                #reservationFirstName="ngModel"
+                required
+              />
 
+              <input
+                type="text"
+                id="reservationLastName"
+                name="reservationLastName"
+                placeholder="Last Name"
+                class="form-control"
+                [(ngModel)]="reservationEditDto.user.lastName"
+                #reservationLastName="ngModel"
+                required
+              />
+
+              <input
+                type="text"
+                id="reservationEmail"
+                name="reservationEmail"
+                placeholder="Email"
+                class="form-control"
+                [(ngModel)]="reservationEditDto.user.email"
+                #reservationEmail="ngModel"
+                required
+              />
+
+              <input
+                type="tel"
+                id="reservationMobileNumber"
+                name="reservationMobileNumber"
+                placeholder="Phone (optional)"
+                class="form-control"
+                [(ngModel)]="reservationEditDto.user.mobileNumber"
+                #reservationMobileNumber="ngModel"
+              />
+            </div>
+          </div>
+          <!-- End guest fields -->
+
+          <div class="column">
+              <textarea
+                id="reservationNotes"
+                name="reservationNotes"
+                placeholder="Notes (optional)"
+                class="form-control notes-textarea"
+                [(ngModel)]="reservationEditDto.notes"
+                #reservationNotes="ngModel"
+              ></textarea>
+          </div>
+        </div>
         <!-- End row with (firstName, lastName, Mail, Phone), Notes -->
 
-        <div class="mt-4 d-flex flex-row">
-          <button type="submit" class="btn btn-primary" [disabled]="!form.valid">
-            Save
-          </button>
+        <div class="row">
+          <div class="column">
+            <button type="submit" class="btn btn-danger" [disabled]="!form.valid">
+              Book
+            </button>
+          </div>
         </div>
       </form>
-
-      <!-- end row with Notes -->
     </div>
   </div>
 </div>
 </body>
+</html>
