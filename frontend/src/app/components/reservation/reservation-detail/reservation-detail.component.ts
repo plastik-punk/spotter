@@ -5,7 +5,6 @@ import {AuthService} from "../../../services/auth.service";
 import {ReservationIdService} from "../../../services/reservation-id.service";
 import {Observable} from "rxjs";
 import {HttpResponse} from "@angular/common/http";
-import {ToastrService} from "ngx-toastr";
 import {Router} from '@angular/router';
 import {NotificationService} from "../../../services/notification.service";
 
@@ -25,14 +24,13 @@ export class ReservationDetailComponent implements OnInit {
     date: undefined,
     pax: undefined,
     notes: undefined,
-    placeId: undefined
+    placeIds: undefined
   };
 
   constructor(
     public authService: AuthService,
     private service: ReservationService,
     private reservationIdService: ReservationIdService,
-    private notification: ToastrService,
     private router: Router,
     private notificationService: NotificationService,
   ) { } // constructor

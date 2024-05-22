@@ -10,11 +10,9 @@ import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
-import at.ac.tuwien.sepr.groupphase.backend.service.impl.CustomUserDetailService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -117,7 +115,7 @@ public class ReservationEndpointTest implements TestData {
             () -> assertEquals(TEST_RESERVATION_DATE, response.getDate()),
             () -> assertEquals(TEST_RESERVATION_PAX, response.getPax()),
             () -> assertEquals(TEST_RESERVATION_NOTES, response.getNotes()),
-            () -> assertEquals(TEST_PLACE_AVAILABLE_1.getId(), response.getPlaceId())
+            () -> assertEquals(TEST_PLACE_IDS, response.getPlaceIds())
         );
     }
 

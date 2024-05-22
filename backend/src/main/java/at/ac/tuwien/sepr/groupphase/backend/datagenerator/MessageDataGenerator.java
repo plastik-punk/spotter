@@ -44,7 +44,6 @@ public class MessageDataGenerator {
                     .withText(TEST_NEWS_TEXT + " " + i)
                     .withPublishedAt(LocalDateTime.now().minusMonths(i))
                     .build();
-                LOGGER.debug("saving message {}", message);
                 messageRepository.save(message);
             }
         }

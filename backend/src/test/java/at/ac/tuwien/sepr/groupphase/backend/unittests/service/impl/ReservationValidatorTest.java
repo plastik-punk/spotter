@@ -120,20 +120,6 @@ public class ReservationValidatorTest implements TestData {
         assertThrows(ValidationException.class, () -> reservationValidator.validateReservation(reservation));
     }
 
-   @Test
-   public void givenNoPlace_whenValidateReservation_thenValidationException() {
-       Reservation reservation = TEST_RESERVATION_1.copy();
-       reservation.setPlace(null);
-       assertThrows(ValidationException.class, () -> reservationValidator.validateReservation(reservation));
-    }
-
-    @Test
-    public void givenNoPlace_whenValidateReservationDetailDto_thenValidationException() {
-        ReservationDetailDto dto = TEST_RESERVATION_DETAIL_DTO.copy();
-        dto.setPlaceId(null);
-        assertThrows(ValidationException.class, () -> reservationValidator.validateReservationDetailDto(dto));
-    }
-
     @Test
     public void givenNoStartTime_whenValidateReservationDetailDto_thenValidationException() {
         ReservationDetailDto dto = TEST_RESERVATION_DETAIL_DTO.copy();

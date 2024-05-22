@@ -63,7 +63,6 @@ public class ReservationDataGenerator {
                     .withEndTime(LocalTime.of(19, 0))
                     .withPax(2L + (i % 2))
                     .withNotes("This is a note for reservation " + i)
-                    .withPlace(place)
                     .build();
 
                 LOGGER.debug("Saving reservation {}", reservation);

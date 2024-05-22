@@ -25,8 +25,7 @@ public class ReservationTest implements TestData {
             () -> assertEquals(TEST_RESERVATION_END_TIME, TEST_RESERVATION_1.getEndTime()),
             () -> assertEquals(TEST_RESERVATION_DATE, TEST_RESERVATION_1.getDate()),
             () -> assertEquals(TEST_RESERVATION_PAX, TEST_RESERVATION_1.getPax()),
-            () -> assertEquals(TEST_RESERVATION_NOTES, TEST_RESERVATION_1.getNotes()),
-            () -> assertEquals(TEST_PLACE_AVAILABLE_1, TEST_RESERVATION_1.getPlace())
+            () -> assertEquals(TEST_RESERVATION_NOTES, TEST_RESERVATION_1.getNotes())
         );
     }
 

@@ -29,12 +29,4 @@ public interface ReservationMapper {
     }
 
     ReservationDetailDto reservationToReservationDetailDto(Reservation reservation);
-
-    @AfterMapping
-    default void mapEntityPlaceToDtoPlaceId(@MappingTarget ReservationDetailDto dto, Reservation entity) {
-        Place place = entity.getPlace();
-        if (place != null) {
-            dto.setPlaceId(place.getId());
-        }
-    }
 }

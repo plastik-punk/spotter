@@ -71,8 +71,7 @@ public class ReservationServiceImplTest implements TestData {
             () -> assertEquals(TEST_RESERVATION_END_TIME, response.getEndTime()),
             () -> assertEquals(TEST_RESERVATION_DATE, response.getDate()),
             () -> assertEquals(TEST_RESERVATION_PAX, response.getPax()),
-            () -> assertEquals(TEST_RESERVATION_NOTES, response.getNotes()),
-            () -> assertEquals(TEST_PLACE_AVAILABLE_1.getId(), response.getPlaceId())
+            () -> assertEquals(TEST_RESERVATION_NOTES, response.getNotes())
         );
     }
 

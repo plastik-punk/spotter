@@ -6,7 +6,6 @@ import {Observable} from "rxjs";
 import {ReservationService} from "../../services/reservation.service";
 import {SimpleViewReservationStatusEnum} from "../../dtos/status-enum";
 import {UserOverviewDto} from "../../dtos/app-user";
-import {ToastrService} from "ngx-toastr";
 import {NotificationService} from "../../services/notification.service";
 
 @Component({
@@ -44,7 +43,6 @@ export class HomeComponent implements OnInit {
   constructor(
     public authService: AuthService,
     private service: ReservationService,
-    private notification: ToastrService,
     private notificationService: NotificationService,
     ) { } // constructor
 

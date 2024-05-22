@@ -53,7 +53,6 @@ public class ReservationValidator {
         validateDate(validationErrors, reservation.getDate());
         validatePax(validationErrors, reservation.getPax());
         validateNotes(validationErrors, reservation.getNotes());
-        validatePlace(validationErrors, reservation.getPlace());
 
         if (!validationErrors.isEmpty()) {
             throw new ValidationException("Validation of reservation failed", validationErrors);
@@ -69,7 +68,7 @@ public class ReservationValidator {
         validateDate(validationErrors, dto.getDate());
         validatePax(validationErrors, dto.getPax());
         validateNotes(validationErrors, dto.getNotes());
-        validatePlaceId(validationErrors, dto.getPlaceId());
+        // validatePlaceId(validationErrors, dto.getPlaceId());
 
         if (!validationErrors.isEmpty()) {
             throw new ValidationException("Validation of reservationDetailDto failed", validationErrors);
@@ -201,12 +200,8 @@ public class ReservationValidator {
         }
     }
 
-    private void validatePlaceId(List<String> validationErrors, Long placeId) {
+    private void validatePlaceId(List<String> validationErrors, List<Long> placeId) {
         LOGGER.trace("validatePlaceId({})", placeId);
-        if (placeId == null) {
-            validationErrors.add("No place ID given");
-        } else if (placeId <= 0) {
-            validationErrors.add("Place ID is invalid");
-        }
+        // TODO
     }
 }

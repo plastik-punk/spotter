@@ -39,7 +39,6 @@ public class PlaceDataGenerator {
                     .withPax((long) (2 + i))
                     .withStatus(StatusEnum.AVAILABLE)
                     .build();
-                LOGGER.debug("Saving place {}", place);
                 placeRepository.save(place);
             }
         }

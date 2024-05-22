@@ -8,8 +8,6 @@ export interface Reservation {
   endTime: Date;
   pax: number;
   notes: string;
-  placeId: number;
-  userId: number;
 }
 
 export interface ReservationCreateDto {
@@ -38,5 +36,5 @@ export interface ReservationDetailDto {
   date: Date;
   pax: number;
   notes: string;
-  placeId: number;
+  placeIds: number[];
 }

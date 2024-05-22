@@ -18,7 +18,11 @@ import java.util.List;
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
 
-    @Query("SELECT r.place FROM Reservation r WHERE r.date = :date AND ((r.startTime < :startTime AND r.endTime > :startTime) OR (r.startTime < :endTime AND r.endTime > :endTime) OR (r.startTime >= :startTime AND r.endTime <= :endTime))")
-    List<Place> findOccupiedPlacesAtSpecifiedTime(@Param("date") LocalDate date, @Param("startTime") LocalTime startTime, @Param("endTime") LocalTime endTime);
-
+    @Query("SELECT r.id "
+        + "FROM Reservation r "
+        + "WHERE r.date = :date "
+        + "AND ((r.startTime < :startTime AND r.endTime > :startTime) "
+        + "OR (r.startTime < :endTime AND r.endTime > :endTime) "
+        + "OR (r.startTime >= :startTime AND r.endTime <= :endTime))")
+    List<Long> findReservationsAtSpecifiedTime(@Param("date") LocalDate date, @Param("startTime") LocalTime startTime, @Param("endTime") LocalTime endTime);
 }
