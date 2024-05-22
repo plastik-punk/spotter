@@ -3,9 +3,13 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import jakarta.mail.MessagingException;
+
+import java.util.List;
 
 
 /**
@@ -44,6 +48,14 @@ public interface ReservationService {
      * @return the updated reservation
      */
     ReservationDetailDto update(ReservationDetailDto reservationDetailDto) throws ValidationException;
+
+    /**
+     * Find all reservations that match the search parameters ordered by startDate (desc).
+     *
+     * @param reservationSearchDto the search parameters to use in filtering.
+     * @return List of ReservationListDto that match the search parameters
+     */
+    List<ReservationListDto> search(ReservationSearchDto reservationSearchDto);
 
     /**
      * Delete a reservation specified by its id.

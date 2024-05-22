@@ -1,13 +1,15 @@
 import {Injectable} from "@angular/core";
 import {HttpClient, HttpParams, HttpResponse} from "@angular/common/http";
 import {Globals} from '../global/globals';
+import {Observable,tap} from "rxjs";
+import {formatIsoDate} from '../util/date-helper';
+import {ReservationSearch,ReservationListDto} from "../dtos/reservation";
 import {
   Reservation,
   ReservationCheckAvailabilityDto,
   ReservationCreateDto,
   ReservationDetailDto
 } from "../dtos/reservation";
-import {Observable} from "rxjs";
 import {SimpleViewReservationStatusEnum} from "../dtos/status-enum";
 
 @Injectable({
@@ -63,6 +65,29 @@ export class ReservationService {
    */
   update(reservationDetailDto: ReservationDetailDto): Observable<ReservationDetailDto> {
     return this.httpClient.put<ReservationDetailDto>(this.reservationBaseUri, reservationDetailDto);
+  }
+  
+  /**
+   * search for reservations fitting Serch parameters
+   *
+   * @param searchParams the parameters of the search
+   * @return an Observable for found reservations
+   */
+  search(searchParams: ReservationSearch): Observable<ReservationListDto[]> {
+    let params = new HttpParams();
+    if (searchParams.earliestDate) {
+      params = params.append('earliestDate', formatIsoDate(searchParams.earliestDate));
+    }
+    if (searchParams.latestDate) {
+      params = params.append('latestDate', formatIsoDate(searchParams.latestDate));
+    }
+    if (searchParams.earliestStartTime) {
+      params = params.append('earliestStartTime', searchParams.earliestStartTime)
+    }
+    if (searchParams.latestEndTime) {
+      params = params.append('latestEndTime', searchParams.latestEndTime)
+    }
+    return this.httpClient.get<ReservationListDto[]>(this.reservationBaseUri + "/search", { params });
   }
 
   /**

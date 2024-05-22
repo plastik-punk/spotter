@@ -10,6 +10,7 @@ import {FooterComponent} from './components/footer/footer.component';
 import {HomeComponent} from './components/home/home.component';
 import {LoginComponent} from './components/login/login.component';
 import {MessageComponent} from './components/message/message.component';
+import {ReservationsOverviewComponent} from './components/reservations-overview/reservations-overview.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {httpInterceptorProviders} from './interceptors';
 import {ReservationDetailComponent} from "./components/reservation/reservation-detail/reservation-detail.component";
@@ -29,6 +30,7 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
     LoginComponent,
     MessageComponent,
     ReservationDetailComponent,
+    ReservationsOverviewComponent,
     ConfirmationDialogDeleteComponent,
   ],
   imports: [

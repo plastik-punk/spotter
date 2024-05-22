@@ -3,6 +3,8 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ClosedDay;
 import at.ac.tuwien.sepr.groupphase.backend.entity.OpeningHours;
@@ -300,6 +302,15 @@ public class ReservationServiceImpl implements ReservationService {
         LOGGER.info("Updated reservation: " + dto.toString()); // TODO REMOVE AFTER TESTING
 
         return dto;
+    }
+
+    @Override
+    public List<ReservationListDto> search(ReservationSearchDto reservationSearchDto) {
+        LOGGER.trace("search ({})", reservationSearchDto.toString());
+        String email = applicationUserService.getCurrentUserAuthentication().getName();
+        List<Reservation> reservations = reservationRepository.findReservationsByDate(email, reservationSearchDto.getEarliestDate(),
+            reservationSearchDto.getLatestDate(), reservationSearchDto.getEarliestStartTime(), reservationSearchDto.getLatestEndTime());
+        return mapper.reservationToReservationListDto(reservations);
     }
 
     @Override
