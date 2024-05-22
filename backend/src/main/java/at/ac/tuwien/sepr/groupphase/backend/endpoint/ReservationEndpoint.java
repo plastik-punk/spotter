@@ -2,7 +2,6 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
@@ -91,9 +90,9 @@ public class ReservationEndpoint {
     @PermitAll
     @PutMapping
     @Operation(summary = "Update a reservation")
-    public ReservationDetailDto update(@RequestBody ReservationDetailDto reservationDetailDto) throws ValidationException {
-        LOGGER.info("PUT /api/v1/reservations body: {}", reservationDetailDto.toString());
-        return service.update(reservationDetailDto);
+    public ReservationEditDto update(@RequestBody ReservationEditDto reservationEditDto) throws ValidationException {
+        LOGGER.info("PUT /api/v1/reservations body: {}", reservationEditDto.toString());
+        return service.update(reservationEditDto);
     }
 
     @Secured("ROLE_USER")

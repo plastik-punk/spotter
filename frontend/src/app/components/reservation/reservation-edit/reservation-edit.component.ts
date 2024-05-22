@@ -89,7 +89,21 @@ export class ReservationEditComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
-
+    if (form.valid) {
+      let observable: Observable<ReservationEditDto>;
+      observable = this.service.update(this.reservationEditDto);
+      observable.subscribe({
+        next: (data) => {
+          this.notification.success("Reservation updated successfully");
+          if (this.authService.isLoggedIn()) {
+            this.router.navigate(['/reservations-overview']);
+          }
+        },
+        error: (error) => {
+          this.notificationService.handleError(error);
+        },
+      });
+    }
   }
 
   onFieldChange() {

@@ -2,7 +2,6 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
@@ -45,10 +44,10 @@ public interface ReservationService {
     /**
      * Update a reservation.
      *
-     * @param reservationDetailDto the reservation data
+     * @param reservationEditDto the reservation data
      * @return the updated reservation
      */
-    ReservationDetailDto update(ReservationDetailDto reservationDetailDto) throws ValidationException;
+    ReservationEditDto update(ReservationEditDto reservationEditDto) throws ValidationException;
 
     /**
      * Find all reservations that match the search parameters ordered by startDate (desc).

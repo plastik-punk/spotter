@@ -2,7 +2,6 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
@@ -143,7 +142,6 @@ public class ReservationServiceImpl implements ReservationService {
 
 
         // 7. send conformation Mail
-        // TODO: activate mail sending for production
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("recipientName", reservationCreateDto.getFirstName() + " " + reservationCreateDto.getLastName());
         templateModel.put("text", reservationCreateDto.getNotes());
@@ -268,37 +266,63 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationDetailDto update(ReservationDetailDto reservationDetailDto) throws ValidationException {
-        LOGGER.trace("update ({})", reservationDetailDto.toString());
-        this.reservationValidator.validateReservationDetailDto(reservationDetailDto);
+    public ReservationEditDto update(ReservationEditDto reservationEditDto) throws ValidationException {
+        LOGGER.trace("update ({})", reservationEditDto.toString());
+        //this.reservationValidator.validateReservationDetailDto(reservationDetailDto);
 
         // 1. check if reservation exists and if so, fetch its data
-        Optional<Reservation> optionalReservation = reservationRepository.findById(reservationDetailDto.getId());
+        Optional<Reservation> optionalReservation = reservationRepository.findById(reservationEditDto.getReservationId());
         if (optionalReservation.isEmpty()) {
             // TODO: throw a fitting exception (create a new exception ideally)
-            LOGGER.error("Reservation with id " + reservationDetailDto.getId() + " not found"); // TODO: remove after testing
+            LOGGER.error("Reservation with id " + reservationEditDto.getReservationId() + " not found"); // TODO: remove after testing
             return null;
         }
         Reservation reservation = optionalReservation.get();
 
         // 2. check if current user is allowed to update this reservation
-        ApplicationUser currentUser = applicationUserService.getCurrentUser();
+        ApplicationUser currentUser = reservationEditDto.getUser();
         if (currentUser == null || currentUser != reservation.getApplicationUser()) {
             // TODO: throw a fitting exception (create a new exception ideally)
         }
 
         // 3. update reservation data and save it in DB
-        reservation.setNotes(reservationDetailDto.getNotes());
-        reservation.setPax(reservationDetailDto.getPax());
-        reservation.setStartTime(reservationDetailDto.getStartTime());
-        reservation.setEndTime(reservationDetailDto.getEndTime());
-        reservation.setDate(reservationDetailDto.getDate());
+        reservation.setNotes(reservationEditDto.getNotes());
+        reservation.setPax(reservationEditDto.getPax());
+        reservation.setStartTime(reservationEditDto.getStartTime());
+        reservation.setEndTime(reservationEditDto.getEndTime());
+        reservation.setDate(reservationEditDto.getDate());
+        reservation.setHashValue(hashService.hashSha256(reservation.getDate().toString()
+            + reservation.getStartTime().toString() + reservation.getEndTime().toString()
+            + reservation.getPax().toString() + reservation.getPlace().getId().toString()));
         Reservation updatedReservation = reservationRepository.save(reservation);
         this.reservationValidator.validateReservation(updatedReservation);
 
-        // 4. map updated reservation to DTO and return it
-        ReservationDetailDto dto = mapper.reservationToReservationDetailDto(updatedReservation);
-        this.reservationValidator.validateReservationDetailDto(dto);
+        //4. update user data if user is a guest
+        assert currentUser != null;
+        if (currentUser.getRole().equals(RoleEnum.GUEST)) {
+            applicationUserRepository.save(currentUser);
+        }
+
+        //5. send confirmation mail
+
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("recipientName", currentUser.getFirstName() + " " + currentUser.getLastName());
+        templateModel.put("text", reservation.getNotes());
+        templateModel.put("persons", reservation.getPax());
+        templateModel.put("restaurantName", "--SpotterEssen--"); //TODO: change to restaurant name
+        templateModel.put("reservationDate", reservation.getDate());
+        templateModel.put("reservationTime", reservation.getStartTime());
+        templateModel.put("link", "http://localhost:4200/#/reservation-detail/" + reservation.getHashValue()); //TODO: change away from localhost
+        try {
+            emailService.sendMessageUsingThymeleafTemplate(currentUser.getEmail(),
+                "Reservation Confirmation", templateModel);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+
+        // 6. map updated reservation to DTO and return it
+        ReservationEditDto dto = mapper.reservationToReservationEditDto(updatedReservation);
+        //this.reservationValidator.validateReservationDetailDto(dto); TODO: check if this is necessary
 
         LOGGER.info("Updated reservation: " + dto.toString()); // TODO REMOVE AFTER TESTING
 

@@ -60,11 +60,11 @@ export class ReservationService {
   /**
    * Updates a reservation
    *
-   * @param reservationDetailDto the reservation to update
+   * @param reservationEditDto the reservation to update
    * @return an Observable for the updated reservation
    */
-  update(reservationDetailDto: ReservationDetailDto): Observable<ReservationDetailDto> {
-    return this.httpClient.put<ReservationDetailDto>(this.reservationBaseUri, reservationDetailDto);
+  update(reservationEditDto: ReservationEditDto): Observable<ReservationEditDto> {
+    return this.httpClient.put<ReservationEditDto>(this.reservationBaseUri, reservationEditDto);
   }
 
   /**
