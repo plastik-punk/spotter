@@ -2,7 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
@@ -61,16 +61,17 @@ public class ReservationEndpoint {
     @Operation(summary = "Check if any tables are available for requested time and pax")
     public ReservationResponseEnum getAvailability(@RequestParam("startTime") String startTime,
                                                    @RequestParam("date") String date,
-                                                   @RequestParam("pax") Long pax)
+                                                   @RequestParam("pax") Long pax,
+                                                   @RequestParam("idToExclude") Long idToExclude)
         throws ValidationException {
 
-        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto =
-            ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
-                .withStartTime(LocalTime.parse(startTime))
-                .withEndTime(LocalTime.parse(startTime).plusHours(2))
-                .withDate(LocalDate.parse(date))
-                .withPax(pax)
-                .build();
+        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+            .withStartTime(LocalTime.parse(startTime))
+            .withEndTime(LocalTime.parse(startTime).plusHours(2))
+            .withDate(LocalDate.parse(date))
+            .withPax(pax)
+            .withIdToExclude(idToExclude)
+            .build();
 
         LOGGER.info("GET /api/v1/reservations body: {}", reservationCheckAvailabilityDto.toString());
         return service.getAvailability(reservationCheckAvailabilityDto);
@@ -80,18 +81,18 @@ public class ReservationEndpoint {
     @PermitAll
     @GetMapping({"/detail"})
     @Operation(summary = "Get detail information for a single reservation")
-    public ReservationDetailDto getById(@RequestParam("id") Long id) throws ValidationException {
+    public ReservationEditDto getByHashedId(@RequestParam("id") String id) throws ValidationException {
         LOGGER.info("GET /api/v1/reservations/detail body: {}", id);
-        return service.getById(id);
+        return service.getByHashedId(id);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @PermitAll
     @PutMapping
     @Operation(summary = "Update a reservation")
-    public ReservationDetailDto update(@RequestBody ReservationDetailDto reservationDetailDto) throws ValidationException {
-        LOGGER.info("PUT /api/v1/reservations body: {}", reservationDetailDto.toString());
-        return service.update(reservationDetailDto);
+    public ReservationEditDto update(@RequestBody ReservationEditDto reservationEditDto) throws ValidationException {
+        LOGGER.info("PUT /api/v1/reservations body: {}", reservationEditDto.toString());
+        return service.update(reservationEditDto);
     }
 
     @Secured("ROLE_USER")

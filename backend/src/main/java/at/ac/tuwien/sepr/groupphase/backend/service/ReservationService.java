@@ -2,7 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
@@ -34,20 +34,20 @@ public interface ReservationService {
     ReservationResponseEnum getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) throws ValidationException;
 
     /**
-     * Get the details of a reservation specified by its id.
+     * Get the details of a reservation specified by its Hashed id.
      *
-     * @param id the id of the reservation
+     * @param id the Hashed id of the reservation
      * @return the reservation details
      */
-    ReservationDetailDto getById(Long id) throws ValidationException;
+    ReservationEditDto getByHashedId(String id) throws ValidationException;
 
     /**
      * Update a reservation.
      *
-     * @param reservationDetailDto the reservation data
+     * @param reservationEditDto the reservation data
      * @return the updated reservation
      */
-    ReservationDetailDto update(ReservationDetailDto reservationDetailDto) throws ValidationException;
+    ReservationEditDto update(ReservationEditDto reservationEditDto) throws ValidationException;
 
     /**
      * Find all reservations that match the search parameters ordered by startDate (desc).

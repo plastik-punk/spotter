@@ -6,7 +6,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
-
+import at.ac.tuwien.sepr.groupphase.backend.service.HashService;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +15,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
-import java.time.LocalTime;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Profile({"generateData", "test"})
@@ -30,13 +30,15 @@ public class ReservationDataGenerator {
     private final ReservationRepository reservationRepository;
     private final PlaceRepository placeRepository;
     private final ApplicationUserRepository applicationUserRepository;
+    private final HashService hashService;
 
     public ReservationDataGenerator(ReservationRepository reservationRepository, PlaceRepository placeRepository,
                                     ApplicationUserRepository applicationUserRepository, PlaceDataGenerator placeDataGenerator,
-                                    UserDataGenerator userDataGenerator) {
+                                    UserDataGenerator userDataGenerator, HashService hashService) {
         this.reservationRepository = reservationRepository;
         this.placeRepository = placeRepository;
         this.applicationUserRepository = applicationUserRepository;
+        this.hashService = hashService;
     }
 
     @PostConstruct
@@ -64,6 +66,7 @@ public class ReservationDataGenerator {
                     .withPax(2L + (i % 2))
                     .withNotes("This is a note for reservation " + i)
                     .withPlace(place)
+                    .withHashValue(hashService.hashSha256("" + i))
                     .build();
 
                 LOGGER.debug("Saving reservation {}", reservation);

@@ -3,7 +3,7 @@ import {HttpClient, HttpParams, HttpResponse} from "@angular/common/http";
 import {Globals} from '../global/globals';
 import {Observable,tap} from "rxjs";
 import {formatIsoDate} from '../util/date-helper';
-import {ReservationSearch,ReservationListDto} from "../dtos/reservation";
+import {ReservationSearch, ReservationListDto, ReservationEditDto} from "../dtos/reservation";
 import {
   Reservation,
   ReservationCheckAvailabilityDto,
@@ -49,24 +49,24 @@ export class ReservationService {
   /**
    * Get a reservation (detail) by its id
    *
-   * @param id the id of the reservation
+   * @param id the hashed id of the reservation
    * @return an Observable for the reservation
    */
-  getById(id: number): Observable<ReservationDetailDto> {
-    let params = new HttpParams().set('id', id.toString());
-    return this.httpClient.get<ReservationDetailDto>(this.reservationBaseUri + "/detail", { params: params });
+  getByHashedId(id: string): Observable<ReservationEditDto> {
+    let params = new HttpParams().set('id', id);
+    return this.httpClient.get<ReservationEditDto>(this.reservationBaseUri + "/detail", { params: params });
   }
 
   /**
    * Updates a reservation
    *
-   * @param reservationDetailDto the reservation to update
+   * @param reservationEditDto the reservation to update
    * @return an Observable for the updated reservation
    */
-  update(reservationDetailDto: ReservationDetailDto): Observable<ReservationDetailDto> {
-    return this.httpClient.put<ReservationDetailDto>(this.reservationBaseUri, reservationDetailDto);
+  update(reservationEditDto: ReservationEditDto): Observable<ReservationEditDto> {
+    return this.httpClient.put<ReservationEditDto>(this.reservationBaseUri, reservationEditDto);
   }
-  
+
   /**
    * search for reservations fitting Serch parameters
    *

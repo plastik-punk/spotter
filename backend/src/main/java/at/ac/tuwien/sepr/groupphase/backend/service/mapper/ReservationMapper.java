@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service.mapper;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
@@ -50,9 +51,17 @@ public interface ReservationMapper {
     @Mapping(source = "date", target = "date")
     @Mapping(source = "endTime", target = "endTime")
     @Mapping(source = "place.id", target = "placeId")
+    @Mapping(source = "hashValue", target = "hashId")
     @Named("reservationList")
     ReservationListDto reservationToReservationListDto(Reservation reservation);
 
     @IterableMapping(qualifiedByName = "reservationList")
     List<ReservationListDto> reservationToReservationListDto(List<Reservation> reservation);
+
+    @Mapping(source = "reservation.applicationUser", target = "user")
+    @Mapping(source = "reservation.id", target = "reservationId")
+    @Mapping(source = "reservation.hashValue", target = "hashedId")
+    @Mapping(source = "reservation.notes", target = "notes")
+    @Mapping(source = "reservation.place.id", target = "placeId")
+    ReservationEditDto reservationToReservationEditDto(Reservation reservation);
 }

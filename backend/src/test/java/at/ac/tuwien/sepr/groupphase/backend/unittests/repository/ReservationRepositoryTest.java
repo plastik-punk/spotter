@@ -52,6 +52,7 @@ public class ReservationRepositoryTest implements TestData {
             .withPax(TEST_RESERVATION_PAX)
             .withNotes(TEST_RESERVATION_NOTES)
             .withPlace(placeRepository.save(TEST_PLACE_AVAILABLE_1))
+            .withHashValue(TEST_RESERVATION_HASH_VALUE)
             .build();
         reservationRepository.save(reservation);
 
@@ -64,7 +65,7 @@ public class ReservationRepositoryTest implements TestData {
     @Test
     @Transactional
     public void givenLongerReservation_whenFindOccupiedPlacesAtSpecifiedTime_thenFindOccupiedPlaces() {
-            Reservation reservation = Reservation.ReservationBuilder.aReservation()
+        Reservation reservation = Reservation.ReservationBuilder.aReservation()
             .withId(1L)
             .withUser(applicationUserRepository.save(TEST_APPLICATION_USER_CUSTOMER_1))
             .withStartTime(TEST_RESERVATION_START_TIME)
@@ -73,6 +74,7 @@ public class ReservationRepositoryTest implements TestData {
             .withPax(TEST_RESERVATION_PAX)
             .withNotes(TEST_RESERVATION_NOTES)
             .withPlace(placeRepository.save(TEST_PLACE_OCCUPIED))
+            .withHashValue(TEST_RESERVATION_HASH_VALUE)
             .build();
         reservationRepository.save(reservation);
         List<Place> occupiedPlaces = reservationRepository.findOccupiedPlacesAtSpecifiedTime(TEST_RESERVATION_DATE, TEST_RESERVATION_START_TIME, TEST_RESERVATION_END_TIME);
@@ -91,6 +93,7 @@ public class ReservationRepositoryTest implements TestData {
             .withPax(TEST_RESERVATION_PAX)
             .withNotes(TEST_RESERVATION_NOTES)
             .withPlace(placeRepository.save(TEST_PLACE_OCCUPIED))
+            .withHashValue(TEST_RESERVATION_HASH_VALUE)
             .build();
         reservationRepository.save(reservation);
         List<Place> occupiedPlaces = reservationRepository.findOccupiedPlacesAtSpecifiedTime(TEST_RESERVATION_DATE, TEST_RESERVATION_START_TIME, TEST_RESERVATION_END_TIME);
@@ -109,6 +112,7 @@ public class ReservationRepositoryTest implements TestData {
             .withPax(TEST_RESERVATION_PAX)
             .withNotes(TEST_RESERVATION_NOTES)
             .withPlace(placeRepository.save(TEST_PLACE_OCCUPIED))
+            .withHashValue(TEST_RESERVATION_HASH_VALUE)
             .build();
         reservationRepository.save(reservation);
         List<Place> occupiedPlaces = reservationRepository.findOccupiedPlacesAtSpecifiedTime(TEST_RESERVATION_DATE, TEST_RESERVATION_START_TIME.minusHours(2), TEST_RESERVATION_START_TIME);
@@ -127,6 +131,7 @@ public class ReservationRepositoryTest implements TestData {
             .withPax(TEST_RESERVATION_PAX)
             .withNotes(TEST_RESERVATION_NOTES)
             .withPlace(placeRepository.save(TEST_PLACE_OCCUPIED))
+            .withHashValue(TEST_RESERVATION_HASH_VALUE)
             .build();
         reservationRepository.save(reservation);
         List<Place> occupiedPlaces = reservationRepository.findOccupiedPlacesAtSpecifiedTime(TEST_RESERVATION_DATE, TEST_RESERVATION_END_TIME, TEST_RESERVATION_END_TIME.plusHours(2));
@@ -145,6 +150,7 @@ public class ReservationRepositoryTest implements TestData {
             .withPax(TEST_RESERVATION_PAX)
             .withNotes(TEST_RESERVATION_NOTES)
             .withPlace(placeRepository.save(TEST_PLACE_OCCUPIED))
+            .withHashValue(TEST_RESERVATION_HASH_VALUE)
             .build();
         reservationRepository.save(reservation);
         List<Place> occupiedPlaces = reservationRepository.findOccupiedPlacesAtSpecifiedTime(TEST_RESERVATION_DATE, TEST_RESERVATION_START_TIME.minusHours(1), TEST_RESERVATION_END_TIME.minusHours(1));
@@ -163,6 +169,7 @@ public class ReservationRepositoryTest implements TestData {
             .withPax(TEST_RESERVATION_PAX)
             .withNotes(TEST_RESERVATION_NOTES)
             .withPlace(placeRepository.save(TEST_PLACE_OCCUPIED))
+            .withHashValue(TEST_RESERVATION_HASH_VALUE)
             .build();
         reservationRepository.save(reservation);
         List<Place> occupiedPlaces = reservationRepository.findOccupiedPlacesAtSpecifiedTime(TEST_RESERVATION_DATE, TEST_RESERVATION_START_TIME.plusHours(1), TEST_RESERVATION_END_TIME.plusHours(1));

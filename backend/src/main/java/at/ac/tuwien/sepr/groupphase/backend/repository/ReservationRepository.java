@@ -37,6 +37,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
         @Param("startTime") LocalTime startTime,
         @Param("endTime") LocalTime endTime);
 
+    List<Reservation> findByHashValue(String hashValue);
+
     @Query("SELECT r FROM Reservation r WHERE r.applicationUser.id = :userId")
     List<Reservation> findByUserId(@Param("userId") Long userId);
 }

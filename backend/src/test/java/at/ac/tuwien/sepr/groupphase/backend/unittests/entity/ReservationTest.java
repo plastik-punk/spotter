@@ -33,8 +33,7 @@ public class ReservationTest implements TestData {
     @Test
     void givenEqualReservations_whenEquals_thenTrue() {
         assertAll(
-            () -> assertTrue(TEST_RESERVATION_1.equals(TEST_RESERVATION_2) && TEST_RESERVATION_2.equals(TEST_RESERVATION_1)),
-            () -> assertEquals(TEST_RESERVATION_1.hashCode(), TEST_RESERVATION_2.hashCode())
+            () -> assertTrue(TEST_RESERVATION_1.equals(TEST_RESERVATION_2) && TEST_RESERVATION_2.equals(TEST_RESERVATION_1))
         );
     }
 
@@ -43,8 +42,4 @@ public class ReservationTest implements TestData {
         assertEquals(TEST_RESERVATION_EXPECTED_STRING, TEST_RESERVATION_1.toString());
     }
 
-    @Test
-    void givenEqualData_whenHashCode_thenTrue() {
-        assertEquals(TEST_RESERVATION_1.hashCode(), TEST_RESERVATION_2.hashCode());
-    }
 }

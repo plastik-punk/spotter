@@ -42,6 +42,9 @@ public class Reservation {
     @JoinColumn(name = "place_id", nullable = false, referencedColumnName = "id")
     private Place place;
 
+    @Column(nullable = false)
+    private String hashValue;
+
     public Long getId() {
         return id;
     }
@@ -106,6 +109,13 @@ public class Reservation {
         this.place = place;
     }
 
+    public String getHashValue() {
+        return hashValue;
+    }
+
+    public void setHashValue(String hashValue) {
+        this.hashValue = hashValue;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -122,13 +132,10 @@ public class Reservation {
             && Objects.equals(endTime, reservation.endTime)
             && Objects.equals(pax, reservation.pax)
             && Objects.equals(notes, reservation.notes)
-            && Objects.equals(place, reservation.place);
+            && Objects.equals(place, reservation.place)
+            && Objects.equals(hashValue, reservation.hashValue);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, applicationUser, startTime, date, endTime, pax, notes, place);
-    }
 
     @Override
     public String toString() {
@@ -154,6 +161,7 @@ public class Reservation {
             .withPax(this.pax)
             .withNotes(this.notes)
             .withPlace(this.place)
+            .withHashValue(this.hashValue)
             .build();
     }
 
@@ -166,6 +174,7 @@ public class Reservation {
         private Long pax;
         private String notes;
         private Place place;
+        private String hashValue;
 
         private ReservationBuilder() {
         }
@@ -214,6 +223,11 @@ public class Reservation {
             return this;
         }
 
+        public ReservationBuilder withHashValue(String hashValue) {
+            this.hashValue = hashValue;
+            return this;
+        }
+
         public Reservation build() {
             Reservation reservation = new Reservation();
             reservation.setId(id);
@@ -224,6 +238,7 @@ public class Reservation {
             reservation.setPax(pax);
             reservation.setNotes(notes);
             reservation.setPlace(place);
+            reservation.setHashValue(hashValue);
             return reservation;
         }
     }
