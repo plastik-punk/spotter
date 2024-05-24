@@ -304,15 +304,7 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         //5. send confirmation mail
-
-        Map<String, Object> templateModel = new HashMap<>();
-        templateModel.put("recipientName", currentUser.getFirstName() + " " + currentUser.getLastName());
-        templateModel.put("text", reservation.getNotes());
-        templateModel.put("persons", reservation.getPax());
-        templateModel.put("restaurantName", "--SpotterEssen--"); //TODO: change to restaurant name
-        templateModel.put("reservationDate", reservation.getDate());
-        templateModel.put("reservationTime", reservation.getStartTime());
-        templateModel.put("link", "http://localhost:4200/#/reservation-detail/" + reservation.getHashValue()); //TODO: change away from localhost
+        Map<String, Object> templateModel = constructMailTemplateModel(reservation, currentUser);
         try {
             emailService.sendMessageUsingThymeleafTemplate(currentUser.getEmail(),
                 "Reservation Confirmation", templateModel);
@@ -339,9 +331,46 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public void delete(Long id) throws ValidationException {
-        LOGGER.trace("delete ({})", id);
+    public void cancel(Long id) throws ValidationException {
+        LOGGER.trace("cancel ({})", id);
+
+        //validate reservation
         this.reservationValidator.validateReservationDelete(id);
-        reservationRepository.deleteById(id);
+
+        //fetch reservation
+        Optional<Reservation> optionalReservation = reservationRepository.findById(id);
+        if (optionalReservation.isEmpty()) {
+            throw new ValidationException("Reservation not found", null);
+        }
+        Reservation reservation = optionalReservation.get();
+
+        //delete reservation
+        reservationRepository.deleteById(reservation.getId());
+
+        //fetch reservation user
+        ApplicationUser currentUser = reservation.getApplicationUser();
+
+        //send confirmation mail
+        Map<String, Object> templateModel = constructMailTemplateModel(reservation, currentUser);
+        try {
+            emailService.sendCancellationMessageUsingThymeleafTemplate(currentUser.getEmail(),
+                "Cancellation Confirmation", templateModel);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+
+        LOGGER.info("Canceled reservation: " + id); // TODO REMOVE AFTER TESTING
+    }
+
+    private Map<String, Object> constructMailTemplateModel(Reservation reservation, ApplicationUser currentUser) {
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("recipientName", currentUser.getFirstName() + " " + currentUser.getLastName());
+        templateModel.put("text", reservation.getNotes());
+        templateModel.put("persons", reservation.getPax());
+        templateModel.put("restaurantName", "--SpotterEssen--"); //TODO: change to restaurant name
+        templateModel.put("reservationDate", reservation.getDate());
+        templateModel.put("reservationTime", reservation.getStartTime());
+        templateModel.put("link", "http://localhost:4200/#/reservation-detail/" + reservation.getHashValue()); //TODO: change away from localhost
+        return templateModel;
     }
 }

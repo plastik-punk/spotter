@@ -110,7 +110,7 @@ public class ReservationEndpoint {
     @Operation(summary = "Delete a reservation")
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) throws ValidationException {
         LOGGER.info("DELETE /api/v1/reservations body: {}", id);
-        service.delete(id);
+        service.cancel(id);
         return ResponseEntity.noContent().build();
 
     }
