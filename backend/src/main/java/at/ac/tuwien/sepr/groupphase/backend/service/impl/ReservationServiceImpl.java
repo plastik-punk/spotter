@@ -23,7 +23,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationPlaceRepositor
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.HashService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
-import at.ac.tuwien.sepr.groupphase.backend.service.mail.EmailService;
+import at.ac.tuwien.sepr.groupphase.backend.service.EmailService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ReservationMapper;
 import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
@@ -35,6 +35,7 @@ import java.lang.invoke.MethodHandles;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +56,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final EmailService emailService;
     private final HashService hashService;
     private final ReservationValidator reservationValidator;
-    private final CustomUserDetailService applicationUserService;
+    private final ApplicationUserServiceImpl applicationUserService;
 
     @Autowired
     public ReservationServiceImpl(ReservationMapper mapper,
@@ -68,7 +69,7 @@ public class ReservationServiceImpl implements ReservationService {
                                   ReservationPlaceRepository reservationPlaceRepository,
                                   ClosedDayRepository closedDayRepository,
                                   HashService hashService,
-                                  CustomUserDetailService applicationUserService) {
+                                  ApplicationUserServiceImpl applicationUserService) {
         this.mapper = mapper;
         this.reservationRepository = reservationRepository;
         this.applicationUserRepository = applicationUserRepository;
@@ -105,7 +106,7 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         // 3. Create guest if this is a guest-reservation, otherwise set known customer data
-        ApplicationUser currentUser = applicationUserService.getCurrentUser();
+        ApplicationUser currentUser = applicationUserService.getCurrentApplicationUser();
         if (currentUser == null) {
             ApplicationUser guestUser = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
                 .withFirstName(reservationCreateDto.getFirstName().trim())
@@ -258,6 +259,7 @@ public class ReservationServiceImpl implements ReservationService {
     public ReservationEditDto getByHashedId(String hashValue) throws NotFoundException {
         LOGGER.trace("getDetail ({})", hashValue);
 
+        // TODO: this should not be a list, but a single reservation
         List<Reservation> reservationList = reservationRepository.findByHashValue(hashValue);
 
         if (reservationList.size() != 1) {
@@ -265,7 +267,7 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         Reservation reservation = reservationList.getFirst();
-        ApplicationUser currentUser = applicationUserService.getCurrentUser();
+        ApplicationUser currentUser = applicationUserService.getCurrentApplicationUser();
 
         // TODO: activate this check again
         /*
@@ -277,8 +279,12 @@ public class ReservationServiceImpl implements ReservationService {
         }
          */
 
-        return mapper.reservationToReservationEditDto(reservation);
-
+        // fetch places for reservation
+        ReservationEditDto reservationEditDto = mapper.reservationToReservationEditDto(reservation);
+        List<Long> reservationIds = Collections.singletonList(reservation.getId());
+        List<Long> reservationPlaces = reservationPlaceRepository.findPlaceIdsByReservationIds(reservationIds);
+        reservationEditDto.setPlaceIds(reservationPlaces);
+        return reservationEditDto;
     }
 
     @Override
@@ -387,6 +393,9 @@ public class ReservationServiceImpl implements ReservationService {
             throw new ValidationException("Reservation not found", null);
         }
         Reservation reservation = optionalReservation.get();
+
+        //delete entries in join table
+        reservationPlaceRepository.deleteByReservationId(reservation.getId());
 
         //delete reservation
         reservationRepository.deleteById(reservation.getId());

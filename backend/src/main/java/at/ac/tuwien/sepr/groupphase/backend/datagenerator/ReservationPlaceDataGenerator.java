@@ -32,7 +32,7 @@ public class ReservationPlaceDataGenerator {
                                          PlaceRepository placeRepository,
                                          ReservationDataGenerator reservationDataGenerator,
                                          PlaceDataGenerator placeDataGenerator,
-                                         UserDataGenerator userDataGenerator) {
+                                         ApplicationUserDataGenerator applicationUserDataGenerator) {
         this.reservationPlaceRepository = reservationPlaceRepository;
         this.reservationRepository = reservationRepository;
         this.placeRepository = placeRepository;

@@ -47,7 +47,6 @@ public class ReservationRepositoryTest implements TestData {
         );
     }
 
-    /*
     @Test
     @Transactional
     public void givenLongerReservation_whenFindOccupiedPlacesAtSpecifiedTime_thenFindOccupiedPlaces() {
@@ -143,6 +142,4 @@ public class ReservationRepositoryTest implements TestData {
             .build();
         reservationRepository.save(reservation);
     }
-
-     */
 }

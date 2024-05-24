@@ -1,6 +1,5 @@
 package at.ac.tuwien.sepr.groupphase.backend.repository;
 
-import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -43,6 +42,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     List<Reservation> findByHashValue(String hashValue);
 
-    @Query("SELECT r FROM Reservation r WHERE r.applicationUser.id = :userId")
-    List<Reservation> findByUserId(@Param("userId") Long userId);
+    @Query("SELECT r FROM Reservation r WHERE r.applicationUser.id = :applicationUserId")
+    List<Reservation> findByApplicationUserId(@Param("applicationUserId") Long applicationUserId);
 }

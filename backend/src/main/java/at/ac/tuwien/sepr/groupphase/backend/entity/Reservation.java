@@ -53,8 +53,8 @@ public class Reservation {
         return applicationUser;
     }
 
-    public void setUser(ApplicationUser user) {
-        this.applicationUser = user;
+    public void setUser(ApplicationUser applicationUser) {
+        this.applicationUser = applicationUser;
     }
 
     public LocalTime getStartTime() {

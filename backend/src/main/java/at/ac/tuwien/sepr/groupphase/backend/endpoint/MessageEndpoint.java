@@ -1,7 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DetailedMessageDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SimpleMessageDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.MessageDetailedSimpleDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.MessageSimpleDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.MessageInquiryDto;
 import at.ac.tuwien.sepr.groupphase.backend.service.MessageService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.MessageMapper;
@@ -41,7 +41,7 @@ public class MessageEndpoint {
     @Secured("ROLE_USER")
     @GetMapping
     @Operation(summary = "Get list of messages without details", security = @SecurityRequirement(name = "apiKey"))
-    public List<SimpleMessageDto> findAll() {
+    public List<MessageSimpleDto> findAll() {
         LOGGER.info("GET /api/v1/messages");
         return messageMapper.messageToSimpleMessageDto(messageService.findAll());
     }
@@ -49,7 +49,7 @@ public class MessageEndpoint {
     @Secured("ROLE_USER")
     @GetMapping(value = "/{id}")
     @Operation(summary = "Get detailed information about a specific message", security = @SecurityRequirement(name = "apiKey"))
-    public DetailedMessageDto find(@PathVariable(name = "id") Long id) {
+    public MessageDetailedSimpleDto find(@PathVariable(name = "id") Long id) {
         LOGGER.info("GET /api/v1/messages/{}", id);
         return messageMapper.messageToDetailedMessageDto(messageService.findOne(id));
     }
@@ -58,7 +58,7 @@ public class MessageEndpoint {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     @Operation(summary = "Publish a new message", security = @SecurityRequirement(name = "apiKey"))
-    public DetailedMessageDto create(@Valid @RequestBody MessageInquiryDto messageDto) {
+    public MessageDetailedSimpleDto create(@Valid @RequestBody MessageInquiryDto messageDto) {
         LOGGER.info("POST /api/v1/messages body: {}", messageDto);
         return messageMapper.messageToDetailedMessageDto(
             messageService.publishMessage(messageMapper.messageInquiryDtoToMessage(messageDto)));

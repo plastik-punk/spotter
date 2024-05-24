@@ -143,7 +143,7 @@ public interface TestData {
 
     String TEST_APPLICATION_USER_FIRST_NAME = "Otter";
     String TEST_APPLICATION_USER_LAST_NAME = "McOtterface";
-    String TEST_APPLICATION_USER_EMAIL = "otter@spotter.at";
+    String TEST_APPLICATION_USER_EMAIL = "otter@example.at";
     String TEST_APPLICATION_USER_MOBILE_NUMBER = "06501234567";
     String TEST_APPLICATION_USER_PASSWORD = "naughtyotter";
     RoleEnum TEST_APPLICATION_USER_ROLE = RoleEnum.CUSTOMER;

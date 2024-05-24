@@ -16,7 +16,7 @@ import java.lang.invoke.MethodHandles;
 @Profile({"generateData", "test"})
 @Component
 @Order(2)
-public class UserDataGenerator {
+public class ApplicationUserDataGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final PasswordEncoder passwordEncoder;
@@ -32,7 +32,7 @@ public class UserDataGenerator {
 
     private final ApplicationUserRepository applicationUserRepository;
 
-    public UserDataGenerator(ApplicationUserRepository applicationUserRepository, PasswordEncoder passwordEncoder) {
+    public ApplicationUserDataGenerator(ApplicationUserRepository applicationUserRepository, PasswordEncoder passwordEncoder) {
         this.applicationUserRepository = applicationUserRepository;
         this.passwordEncoder = passwordEncoder;
     }

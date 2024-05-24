@@ -6,9 +6,8 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
-import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
-import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
+import at.ac.tuwien.sepr.groupphase.backend.service.ApplicationUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,26 +27,26 @@ public class ReservationValidator {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     @Autowired
-    private final UserDataValidator userDataValidator;
+    private final ApplicationUserValidator applicationUserValidator;
 
     @Autowired
     private final ReservationRepository reservationRepository;
 
     @Autowired
-    private final UserService userService;
+    private final ApplicationUserService applicationUserService;
 
     @Autowired
-    public ReservationValidator(ReservationRepository reservationRepository, UserService userService) {
-        this.userDataValidator = new UserDataValidator();
+    public ReservationValidator(ReservationRepository reservationRepository, ApplicationUserService applicationUserService) {
+        this.applicationUserValidator = new ApplicationUserValidator();
         this.reservationRepository = reservationRepository;
-        this.userService = userService;
+        this.applicationUserService = applicationUserService;
     }
 
     public void validateReservation(Reservation reservation) throws ValidationException {
         LOGGER.trace("validateReservation({})", reservation);
         List<String> validationErrors = new ArrayList<>();
 
-        this.userDataValidator.validateApplicationUser(validationErrors, reservation.getApplicationUser());
+        this.applicationUserValidator.validateApplicationUser(validationErrors, reservation.getApplicationUser());
 
         validateStartTime(validationErrors, reservation.getStartTime());
         // validateEndTime(validationErrors, reservation.getEndTime(), reservation.getStartTime()); // TODO: activate after end time was implemented in frontend
@@ -81,11 +80,11 @@ public class ReservationValidator {
         List<String> validationErrors = new ArrayList<>();
 
         if (dto.getUser() != null) {
-            this.userDataValidator.validateApplicationUser(validationErrors, dto.getUser());
+            this.applicationUserValidator.validateApplicationUser(validationErrors, dto.getUser());
         }
-        this.userDataValidator.validateFirstName(validationErrors, dto.getFirstName());
-        this.userDataValidator.validateEmail(validationErrors, dto.getEmail());
-        this.userDataValidator.validatePhoneNumber(validationErrors, dto.getMobileNumber());
+        this.applicationUserValidator.validateFirstName(validationErrors, dto.getFirstName());
+        this.applicationUserValidator.validateEmail(validationErrors, dto.getEmail());
+        this.applicationUserValidator.validatePhoneNumber(validationErrors, dto.getMobileNumber());
 
         validateStartTime(validationErrors, dto.getStartTime());
         // validateEndTime(validationErrors, dto.getEndTime(), dto.getStartTime()); // TODO: activate after end time was implemented in frontend
@@ -133,7 +132,7 @@ public class ReservationValidator {
         Reservation reservation = optionalReservation.get();
 
         // 3. fetch current user
-        ApplicationUser currentUser = userService.getCurrentUser();
+        ApplicationUser currentUser = applicationUserService.getCurrentApplicationUser();
 
         // 4. validate reservation
         if (currentUser != null && reservation.getApplicationUser() != null && !reservation.getApplicationUser().equals(currentUser)) {

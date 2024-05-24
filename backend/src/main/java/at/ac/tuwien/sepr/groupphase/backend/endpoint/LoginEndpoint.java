@@ -1,13 +1,12 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserOverviewDto;
-import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
-import at.ac.tuwien.sepr.groupphase.backend.service.mapper.UserMapper;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ApplicationUserLoginDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ApplicationUserOverviewDto;
+import at.ac.tuwien.sepr.groupphase.backend.service.ApplicationUserService;
+import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ApplicationUserMapper;
 import jakarta.annotation.security.PermitAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,26 +21,26 @@ public class LoginEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final UserService userService;
-    private final UserMapper userMapper;
+    private final ApplicationUserService applicationUserService;
+    private final ApplicationUserMapper applicationUserMapper;
 
-    public LoginEndpoint(UserService userService, UserMapper userMapper) {
-        this.userService = userService;
-        this.userMapper = userMapper;
+    public LoginEndpoint(ApplicationUserService applicationUserService, ApplicationUserMapper applicationUserMapper) {
+        this.applicationUserService = applicationUserService;
+        this.applicationUserMapper = applicationUserMapper;
     }
 
     @PermitAll
     @PostMapping
-    public String login(@RequestBody UserLoginDto userLoginDto) {
-        LOGGER.info("POST /api/v1/authentication body: {}", userLoginDto);
-        return userService.login(userLoginDto);
+    public String login(@RequestBody ApplicationUserLoginDto applicationUserLoginDto) {
+        LOGGER.info("POST /api/v1/authentication body: {}", applicationUserLoginDto);
+        return applicationUserService.login(applicationUserLoginDto);
     }
 
     @GetMapping
     @PermitAll
-    public UserOverviewDto getCurrentUserDetails() {
+    public ApplicationUserOverviewDto getCurrentUserDetails() {
         LOGGER.info("GET /api/v1/authentication");
-        UserOverviewDto fetchedUser = userMapper.applicationUserToUserOverviewDto(userService.getCurrentUser());
+        ApplicationUserOverviewDto fetchedUser = applicationUserMapper.applicationUserToUserOverviewDto(applicationUserService.getCurrentApplicationUser());
         return fetchedUser;
     }
 

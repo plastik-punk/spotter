@@ -136,7 +136,7 @@ public class ReservationCreateDto {
     @Override
     public String toString() {
         return "ReservationCreateDto{"
-            + "user='" + applicationUser + '\''
+            + "applicationUser='" + applicationUser + '\''
             + ", firstName='" + firstName + '\''
             + ", lastName='" + lastName + '\''
             + ", startTime=" + startTime

@@ -59,7 +59,7 @@ export class ReservationDetailComponent implements OnInit {
         },
         error: (error) => {
           this.notificationService.handleError(error);
-          this.router.navigate(['/reservations-overview']);
+          this.router.navigate(['/reservation-overview']);
         }, // error
       }); // subscribe
     } // ngOnInit
@@ -67,9 +67,9 @@ export class ReservationDetailComponent implements OnInit {
 
   onSubmit() {
     if (this.authService.isLoggedIn()) {
-      this.router.navigate(['/reservations-overview']);
+      this.router.navigate(['/reservation-overview']);
     } else {
-      this.router.navigate(['/home']);
+      this.router.navigate(['/reservation-simple']);
     }
   } // onSubmit
 
@@ -86,9 +86,9 @@ export class ReservationDetailComponent implements OnInit {
         if (response.status == 204) {
           this.notificationService.handleSuccess('reservation canceled successfully');
           if (this.authService.isLoggedIn()) {
-            this.router.navigate(['/reservations-overview']);
+            this.router.navigate(['/reservation-overview']);
           } else {
-            this.router.navigate(['/home']);
+            this.router.navigate(['/reservation-simple']);
           }
         } else {
           // TODO: depending on final implementation, handle already deleted reservation, logged out user or ended session here. All other cases are handled in error handler below.

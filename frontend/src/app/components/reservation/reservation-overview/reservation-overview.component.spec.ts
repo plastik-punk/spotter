@@ -1,8 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ReservationsOverviewComponent } from './reservations-overview.component';
+import { ReservationsOverviewComponent } from './reservation-overview.component';
 
-describe('ReservationsOverviewComponent', () => {
+describe('ReservationOverviewComponent', () => {
   let component: ReservationsOverviewComponent;
   let fixture: ComponentFixture<ReservationsOverviewComponent>;
 
@@ -11,7 +11,7 @@ describe('ReservationsOverviewComponent', () => {
       imports: [ReservationsOverviewComponent]
     })
     .compileComponents();
-    
+
     fixture = TestBed.createComponent(ReservationsOverviewComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

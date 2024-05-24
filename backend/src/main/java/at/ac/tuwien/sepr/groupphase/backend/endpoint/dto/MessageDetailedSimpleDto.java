@@ -3,7 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class DetailedMessageDto extends SimpleMessageDto {
+public class MessageDetailedSimpleDto extends MessageSimpleDto {
 
     private String text;
 
@@ -20,7 +20,7 @@ public class DetailedMessageDto extends SimpleMessageDto {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof DetailedMessageDto that)) {
+        if (!(o instanceof MessageDetailedSimpleDto that)) {
             return false;
         }
         if (!super.equals(o)) {
@@ -36,7 +36,7 @@ public class DetailedMessageDto extends SimpleMessageDto {
 
     @Override
     public String toString() {
-        return "DetailedMessageDto{"
+        return "MessageDetailedSimpleDto{"
             + "text='" + text + '\''
             + '}';
     }
@@ -81,14 +81,14 @@ public class DetailedMessageDto extends SimpleMessageDto {
             return this;
         }
 
-        public DetailedMessageDto build() {
-            DetailedMessageDto detailedMessageDto = new DetailedMessageDto();
-            detailedMessageDto.setId(id);
-            detailedMessageDto.setPublishedAt(publishedAt);
-            detailedMessageDto.setText(text);
-            detailedMessageDto.setTitle(title);
-            detailedMessageDto.setSummary(summary);
-            return detailedMessageDto;
+        public MessageDetailedSimpleDto build() {
+            MessageDetailedSimpleDto messageDetailedDto = new MessageDetailedSimpleDto();
+            messageDetailedDto.setId(id);
+            messageDetailedDto.setPublishedAt(publishedAt);
+            messageDetailedDto.setText(text);
+            messageDetailedDto.setTitle(title);
+            messageDetailedDto.setSummary(summary);
+            return messageDetailedDto;
         }
     }
 }

@@ -4,11 +4,13 @@ import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 import java.util.Objects;
 
-public class UserRegistrationDto {
+public class ApplicationUserOverviewDto {
+
+    @NotBlank(message = "Registered user needs an ID")
+    private Long id;
 
     @NotBlank(message = "First name must not be empty")
     private String firstName;
@@ -21,10 +23,6 @@ public class UserRegistrationDto {
     private String email;
 
     private String mobileNumber;  // Optional, no @NotNull or @NotBlank
-
-    @NotBlank(message = "Password must not be empty")
-    @Size(min = 8, message = "Password must be at least 8 characters long")
-    private String password;
 
     @NotNull(message = "Role must not be null")
     private RoleEnum role;
@@ -62,12 +60,12 @@ public class UserRegistrationDto {
         this.mobileNumber = mobileNumber;
     }
 
-    public String getPassword() {
-        return password;
+    public Long getId() {
+        return id;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public RoleEnum getRole() {
@@ -83,31 +81,31 @@ public class UserRegistrationDto {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof UserRegistrationDto)) {
+        if (!(o instanceof ApplicationUserOverviewDto)) {
             return false;
         }
-        UserRegistrationDto that = (UserRegistrationDto) o;
+        ApplicationUserOverviewDto that = (ApplicationUserOverviewDto) o;
         return Objects.equals(firstName, that.firstName)
             && Objects.equals(lastName, that.lastName)
             && Objects.equals(email, that.email)
             && Objects.equals(mobileNumber, that.mobileNumber)
-            && Objects.equals(password, that.password)
+            && Objects.equals(id, that.id)
             && role == that.role;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(firstName, lastName, email, mobileNumber, password, role);
+        return Objects.hash(firstName, lastName, email, mobileNumber, id, role);
     }
 
     @Override
     public String toString() {
-        return "UserRegistrationDto{"
+        return "ApplicationUserRegistrationDto{"
+            + "Id='" + id + '\''
             + "firstName='" + firstName + '\''
             + ", lastName='" + lastName + '\''
             + ", email='" + email + '\''
             + ", mobileNumber='" + mobileNumber + '\''
-            + ", password='[PROTECTED]'"
             + ", role=" + role
             + '}';
     }

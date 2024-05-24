@@ -17,9 +17,7 @@ public interface ReservationPlaceRepository extends JpaRepository<ReservationPla
 
     @Transactional
     @Modifying
-    @Query("DELETE FROM ReservationPlace rp WHERE rp.reservation.id = ?1")
     void deleteByReservationId(Long reservationId);
 
     List<ReservationPlace> findByReservationId(Long reservationId);
-
 }

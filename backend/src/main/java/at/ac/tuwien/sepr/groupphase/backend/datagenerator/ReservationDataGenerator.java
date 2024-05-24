@@ -34,7 +34,7 @@ public class ReservationDataGenerator {
 
     public ReservationDataGenerator(ReservationRepository reservationRepository, PlaceRepository placeRepository,
                                     ApplicationUserRepository applicationUserRepository, PlaceDataGenerator placeDataGenerator,
-                                    UserDataGenerator userDataGenerator, HashService hashService) {
+                                    ApplicationUserDataGenerator applicationUserDataGenerator, HashService hashService) {
         this.reservationRepository = reservationRepository;
         this.placeRepository = placeRepository;
         this.applicationUserRepository = applicationUserRepository;

@@ -82,7 +82,7 @@ export class ReservationEditComponent implements OnInit {
         },
         error: (error) => {
           this.notificationService.handleError(error);
-          this.router.navigate(['/home']);
+          this.router.navigate(['/reservation-simple']);
         },
       });
     }
@@ -96,7 +96,7 @@ export class ReservationEditComponent implements OnInit {
         next: (data) => {
           this.notification.success("Reservation updated successfully");
           if (this.authService.isLoggedIn()) {
-            this.router.navigate(['/reservations-overview']);
+            this.router.navigate(['/reservation-overview']);
           }
         },
         error: (error) => {
