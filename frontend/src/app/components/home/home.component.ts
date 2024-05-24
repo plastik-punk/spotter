@@ -6,7 +6,6 @@ import { Observable } from "rxjs";
 import { ReservationService } from "../../services/reservation.service";
 import { SimpleViewReservationStatusEnum } from "../../dtos/status-enum";
 import { UserOverviewDto } from "../../dtos/app-user";
-import { ToastrService } from "ngx-toastr";
 import { NotificationService } from "../../services/notification.service";
 
 @Component({
@@ -45,14 +44,12 @@ export class HomeComponent implements OnInit {
   constructor(
     public authService: AuthService,
     private service: ReservationService,
-    private notification: ToastrService,
     private notificationService: NotificationService,
-  ) { } // constructor
+  ) { }
 
   ngOnInit() { }
 
   onFieldChange() {
-    // 1. update DTO with current content of form
     this.reservationCheckAvailabilityDto.startTime = this.reservationCreateDto.startTime;
     this.reservationCheckAvailabilityDto.date = this.reservationCreateDto.date;
     this.reservationCheckAvailabilityDto.pax = this.reservationCreateDto.pax;
@@ -63,10 +60,8 @@ export class HomeComponent implements OnInit {
       return;
     }
 
-    // 2. send request to backend
     this.service.getAvailability(this.reservationCheckAvailabilityDto).subscribe({
       next: (data) => {
-        // update reservationTableStatus based on the data received from the backend
         if (data.valueOf() === this.enumReservationTableStatus.available.valueOf()) {
           this.reservationStatusText = 'Tables available';
           this.reservationStatusClass = 'reservation-table-available';
@@ -91,15 +86,13 @@ export class HomeComponent implements OnInit {
         }
       },
       error: (error) => {
-        this.notificationService.handleError(error);
-      }, // error
+        this.notificationService.showError('Failed to check availability. Please try again later.');
+      },
     });
-  } // onFieldChange
+  }
 
   onSubmit(form: NgForm) {
-    console.log('Form submitted');
-    // 1. if logged in, fetch user details and update DTO
-    if (this.authService.isLoggedIn() == true) {
+    if (this.authService.isLoggedIn()) {
       this.currentUser = this.authService.getCurrentUser();
       this.reservationCreateDto.firstName = this.currentUser.firstName;
       this.reservationCreateDto.lastName = this.currentUser.lastName;
@@ -107,29 +100,28 @@ export class HomeComponent implements OnInit {
       this.reservationCreateDto.mobileNumber = Number(this.currentUser.mobileNumber);
     }
 
-    // 2. send request to backend
     if (form.valid) {
       let observable: Observable<Reservation>;
       observable = this.service.createReservation(this.reservationCreateDto);
       observable.subscribe({
         next: (data) => {
           if (data == null) {
-            // TODO: handle this case (table was booked in the meantime)
+            this.notificationService.showError('The table was booked in the meantime. Please try again.');
           } else {
-            this.notificationService.handleSuccess('Reservation created successfully');
-            // reset form fields after successful reservation
+            this.notificationService.showSuccess('Reservation created successfully.');
             this.resetForm(form);
           }
         },
         error: (error) => {
-          this.notificationService.handleError(error);
-        }, // error
-      }); // observable.subscribe
+          this.notificationService.showError('Failed to create reservation. Please try again later.');
+        },
+      });
+    } else {
+      this.showFormErrors();
     }
-  } // onSubmit
+  }
 
-  resetForm(form: NgForm) {
-    console.log('Resetting form');
+  private resetForm(form: NgForm) {
     form.resetForm();
     this.reservationCreateDto = {
       user: undefined,
@@ -143,5 +135,17 @@ export class HomeComponent implements OnInit {
       email: undefined,
       mobileNumber: undefined
     };
+  }
+
+  private showFormErrors(): void {
+    if (!this.reservationCreateDto.startTime) {
+      this.notificationService.showError('Start time is required.');
+    }
+    if (!this.reservationCreateDto.date) {
+      this.notificationService.showError('Date is required.');
+    }
+    if (!this.reservationCreateDto.pax) {
+      this.notificationService.showError('Number of people (pax) is required.');
+    }
   }
 }

@@ -1,19 +1,18 @@
-import {Component, OnInit} from '@angular/core';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {AuthService} from '../../services/auth.service';
-import {ReservationListDto, ReservationSearch} from "../../dtos/reservation";
-import {debounceTime, Subject} from "rxjs";
-import {ReservationService} from "../../services/reservation.service";
-import {Router} from "@angular/router";
+import { Component, OnInit } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { AuthService } from '../../services/auth.service';
+import { ReservationListDto, ReservationSearch } from "../../dtos/reservation";
+import { debounceTime, Subject } from "rxjs";
+import { ReservationService } from "../../services/reservation.service";
+import { Router } from "@angular/router";
+import { NotificationService } from "../../services/notification.service";
 
 @Component({
   selector: 'app-reservations-overview',
   templateUrl: './reservations-overview.component.html',
-  styleUrl: './reservations-overview.component.scss'
+  styleUrls: ['./reservations-overview.component.scss']
 })
 export class ReservationsOverviewComponent implements OnInit {
-  error = false;
-  errorMessage = '';
   reservations: ReservationListDto[] = [];
   displayedReservations: ReservationListDto[] = [];
   searchParams: ReservationSearch = {};
@@ -27,34 +26,25 @@ export class ReservationsOverviewComponent implements OnInit {
     private authService: AuthService,
     private modalService: NgbModal,
     private reservationService: ReservationService,
-    private router: Router) {
-  }
+    private notificationService: NotificationService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.loadReservations();
     this.searchChangedObservable
       .pipe(debounceTime(300))
-      .subscribe({next: () => this.loadReservations()});
-  }
-
-  /**
-   * Error flag will be deactivated, which clears the error message
-   */
-  vanishError() {
-    this.error = false;
+      .subscribe({ next: () => this.loadReservations() });
   }
 
   showMore() {
     let newLength = this.displayedReservations.length + 5;
     if (newLength > this.reservations.length) {
-      newLength = this.reservations.length
+      newLength = this.reservations.length;
     }
     this.displayedReservations = this.reservations.slice(0, newLength);
   }
 
-  /**
-   * Returns true if the authenticated user is an admin
-   */
   isAdmin(): boolean {
     return this.authService.getUserRole() === 'ADMIN';
   }
@@ -88,22 +78,12 @@ export class ReservationsOverviewComponent implements OnInit {
           this.displayedReservations = this.reservations.slice(0, 10);
         },
         error: error => {
-          this.defaultServiceErrorHandling(error);
+          this.notificationService.showError('Failed to load reservations. Please try again later.');
         }
       });
   }
 
   searchChanged(): void {
     this.searchChangedObservable.next();
-  }
-
-  private defaultServiceErrorHandling(error: any) {
-    console.log(error);
-    this.error = true;
-    if (typeof error.error === 'object') {
-      this.errorMessage = error.error.error;
-    } else {
-      this.errorMessage = error.error;
-    }
   }
 }

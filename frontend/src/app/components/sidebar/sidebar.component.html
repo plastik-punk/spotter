@@ -15,6 +15,9 @@
         <a class="nav-link" routerLink="/home" routerLinkActive="active">Home</a>
       </li>
       <li class="nav-item" *ngIf="authService.isLoggedIn()">
+        <a class="nav-link" routerLink="/reservations-overview" routerLinkActive="active">Reservations</a>
+      </li>
+      <li class="nav-item" *ngIf="authService.isLoggedIn()">
         <a class="nav-link" routerLink="/message" routerLinkActive="active">Message</a>
       </li>
       <li class="nav-item" *ngIf="!authService.isLoggedIn()">
