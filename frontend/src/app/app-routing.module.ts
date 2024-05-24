@@ -1,14 +1,14 @@
-import {NgModule} from '@angular/core';
+import { NgModule } from '@angular/core';
 import {mapToCanActivate, RouterModule, Routes} from '@angular/router';
-import {HomeComponent} from './components/home/home.component';
-import {LoginComponent} from './components/login/login.component';
-import {AuthGuard} from './guards/auth.guard';
-import {MessageComponent} from './components/message/message.component';
-import {ReservationsOverviewComponent} from './components/reservations-overview/reservations-overview.component';
-import {RegistrationComponent} from "./components/registration/registration.component";
-import {StaffAccountsComponent} from "./components/staff-accounts/staff-accounts.component";
-import {ReservationDetailComponent} from "./components/reservation/reservation-detail/reservation-detail.component";
-import {ReservationEditComponent} from "./components/reservation/reservation-edit/reservation-edit.component";
+import { HomeComponent } from './components/home/home.component';
+import { LoginComponent } from './components/login/login.component';
+import { AuthGuard } from './guards/auth.guard';
+import { MessageComponent } from './components/message/message.component';
+import { ReservationsOverviewComponent } from './components/reservations-overview/reservations-overview.component';
+import { RegistrationComponent } from "./components/registration/registration.component";
+import { StaffAccountsComponent } from "./components/staff-accounts/staff-accounts.component";
+import { ReservationDetailComponent } from "./components/reservation/reservation-detail/reservation-detail.component";
+import { ReservationEditComponent } from "./components/reservation/reservation-edit/reservation-edit.component";
 
 const routes: Routes = [
   {path: '', redirectTo: 'login', pathMatch: 'full'},
@@ -25,8 +25,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {useHash: true})],
+  imports: [RouterModule.forRoot(routes, { useHash: true })],
   exports: [RouterModule]
 })
-export class AppRoutingModule {
-}
+export class AppRoutingModule { }

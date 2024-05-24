@@ -45,12 +45,11 @@ export class HomeComponent implements OnInit {
     public authService: AuthService,
     private service: ReservationService,
     private notificationService: NotificationService,
-    ) { } // constructor
+  ) { }
 
   ngOnInit() { }
 
   onFieldChange() {
-    // 1. update DTO with current content of form
     this.reservationCheckAvailabilityDto.startTime = this.reservationCreateDto.startTime;
     this.reservationCheckAvailabilityDto.date = this.reservationCreateDto.date;
     this.reservationCheckAvailabilityDto.pax = this.reservationCreateDto.pax;
@@ -61,42 +60,39 @@ export class HomeComponent implements OnInit {
       return;
     }
 
-      // 2. send request to backend
-      this.service.getAvailability(this.reservationCheckAvailabilityDto).subscribe({
-        next: (data) => {
-          // update reservationTableStatus based on the data received from the backend
-          if (data.valueOf() === this.enumReservationTableStatus.available.valueOf()) {
-            this.reservationStatusText = 'Tables available';
-            this.reservationStatusClass = 'reservation-table-available';
-          } else if (data.valueOf() === this.enumReservationTableStatus.closed.valueOf()) {
-            this.reservationStatusText = 'Location Closed This Day';
-            this.reservationStatusClass = 'reservation-table-conflict';
-          } else if (data.valueOf() === this.enumReservationTableStatus.outsideOpeningHours.valueOf()) {
-            this.reservationStatusText = 'Outside Of Opening Hours';
-            this.reservationStatusClass = 'reservation-table-conflict';
-          } else if (data.valueOf() === this.enumReservationTableStatus.respectClosingHour.valueOf()) {
-            this.reservationStatusText = 'Respect Closing Hour';
-            this.reservationStatusClass = 'reservation-table-conflict';
-          } else if (data.valueOf() === this.enumReservationTableStatus.tooManyPax.valueOf()) {
-            this.reservationStatusText = 'Too Many Pax for available tables (try advanced reservation)';
-            this.reservationStatusClass = 'reservation-table-conflict';
-          } else if (data.valueOf() === this.enumReservationTableStatus.allOccupied.valueOf()) {
-            this.reservationStatusText = 'All Tables Occupied';
-            this.reservationStatusClass = 'reservation-table-conflict';
-          } else if (data.valueOf() === this.enumReservationTableStatus.dateInPast.valueOf()) {
-            this.reservationStatusText = 'Date In The Past';
-            this.reservationStatusClass = 'reservation-table-conflict';
-          }
-        },
-        error: (error) => {
-          this.notificationService.handleError(error);
-        }, // error
-      });
-  } // onFieldChange
+    this.service.getAvailability(this.reservationCheckAvailabilityDto).subscribe({
+      next: (data) => {
+        if (data.valueOf() === this.enumReservationTableStatus.available.valueOf()) {
+          this.reservationStatusText = 'Tables available';
+          this.reservationStatusClass = 'reservation-table-available';
+        } else if (data.valueOf() === this.enumReservationTableStatus.closed.valueOf()) {
+          this.reservationStatusText = 'Location Closed This Day';
+          this.reservationStatusClass = 'reservation-table-conflict';
+        } else if (data.valueOf() === this.enumReservationTableStatus.outsideOpeningHours.valueOf()) {
+          this.reservationStatusText = 'Outside Of Opening Hours';
+          this.reservationStatusClass = 'reservation-table-conflict';
+        } else if (data.valueOf() === this.enumReservationTableStatus.respectClosingHour.valueOf()) {
+          this.reservationStatusText = 'Respect Closing Hour';
+          this.reservationStatusClass = 'reservation-table-conflict';
+        } else if (data.valueOf() === this.enumReservationTableStatus.tooManyPax.valueOf()) {
+          this.reservationStatusText = 'Too Many Pax for available tables (try advanced reservation)';
+          this.reservationStatusClass = 'reservation-table-conflict';
+        } else if (data.valueOf() === this.enumReservationTableStatus.allOccupied.valueOf()) {
+          this.reservationStatusText = 'All Tables Occupied';
+          this.reservationStatusClass = 'reservation-table-conflict';
+        } else if (data.valueOf() === this.enumReservationTableStatus.dateInPast.valueOf()) {
+          this.reservationStatusText = 'Date In The Past';
+          this.reservationStatusClass = 'reservation-table-conflict';
+        }
+      },
+      error: (error) => {
+        this.notificationService.showError('Failed to check availability. Please try again later.');
+      },
+    });
+  }
 
   onSubmit(form: NgForm) {
-    // 1. if logged in, fetch user details and update DTO
-    if (this.authService.isLoggedIn() == true) {
+    if (this.authService.isLoggedIn()) {
       this.currentUser = this.authService.getCurrentUser();
       this.reservationCreateDto.firstName = this.currentUser.firstName;
       this.reservationCreateDto.lastName = this.currentUser.lastName;
@@ -104,25 +100,52 @@ export class HomeComponent implements OnInit {
       this.reservationCreateDto.mobileNumber = Number(this.currentUser.mobileNumber);
     }
 
-    // 2. send request to backend
     if (form.valid) {
       let observable: Observable<Reservation>;
       observable = this.service.createReservation(this.reservationCreateDto);
       observable.subscribe({
         next: (data) => {
           if (data == null) {
-            // TODO: handle this case (table was booked in the meantime)
-            console.log("null"); // TODO remove after testing
+            this.notificationService.showError('The table was booked in the meantime. Please try again.');
           } else {
-            this.notificationService.handleSuccess('reservation created successfully');
-            // TODO: route to reservation detail view?
-            console.log("not null");
+            this.notificationService.showSuccess('Reservation created successfully.');
+            this.resetForm(form);
           }
         },
         error: (error) => {
-          this.notificationService.handleError(error);
-        }, // error
-      }); // observable.subscribe
+          this.notificationService.showError('Failed to create reservation. Please try again later.');
+        },
+      });
+    } else {
+      this.showFormErrors();
     }
-  } // onSubmit
+  }
+
+  private resetForm(form: NgForm) {
+    form.resetForm();
+    this.reservationCreateDto = {
+      user: undefined,
+      startTime: undefined,
+      endTime: undefined,
+      date: undefined,
+      pax: undefined,
+      firstName: undefined,
+      lastName: undefined,
+      notes: undefined,
+      email: undefined,
+      mobileNumber: undefined
+    };
+  }
+
+  private showFormErrors(): void {
+    if (!this.reservationCreateDto.startTime) {
+      this.notificationService.showError('Start time is required.');
+    }
+    if (!this.reservationCreateDto.date) {
+      this.notificationService.showError('Date is required.');
+    }
+    if (!this.reservationCreateDto.pax) {
+      this.notificationService.showError('Number of people (pax) is required.');
+    }
+  }
 }

@@ -1,0 +1,23 @@
+.alert {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 250px;
+  max-width: 500px;  /* You can adjust this width as necessary */
+  padding: 1rem;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  white-space: pre-wrap;  /* Ensures text will wrap to the next line if it's too long */
+}
+
+.alert.show {
+  opacity: 1;
+}
+
+.alert .btn-close {
+  margin-left: 1rem;
+}

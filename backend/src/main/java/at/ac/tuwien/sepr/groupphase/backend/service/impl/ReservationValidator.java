@@ -6,6 +6,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
+import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
 import org.slf4j.Logger;
@@ -135,7 +136,9 @@ public class ReservationValidator {
         ApplicationUser currentUser = userService.getCurrentUser();
 
         // 4. validate reservation
-        if (reservation.getApplicationUser() != null && !reservation.getApplicationUser().equals(currentUser)) {
+        if (currentUser != null && reservation.getApplicationUser() != null && !reservation.getApplicationUser().equals(currentUser)) {
+            //TODO: currentUser != null as if a user is not logged in and clicks on the link, the currentUser is not Guest but null, change to Guest?
+
             // this way an unauthorized user does not get any information about the existence of a reservation
             throw new ValidationException("Only the customer booking a reservation can delete it", validationErrors);
         } else if (reservation.getDate().isBefore(LocalDate.now())) {

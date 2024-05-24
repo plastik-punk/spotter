@@ -1,6 +1,105 @@
-/* Global styles */
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container-fluid {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.custom-card {
+  position: relative;
+  border-radius: 20px 20px 0 0;
+  background: white;
+  margin-top: 2vh;
+  height: 96vh; /* Adjust height to fill screen */
+  width: 100%;
+  padding: 2vh;
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.top-banner {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  z-index: 100;
+  border-radius: 20px 20px 0 0;
+  border: 2vh;
+  margin: -2vh 0 2vh 0; /* Adjust margins to cover the top of the card */
+}
+.font-heading {
+  font-family: "Leckerli One", cursive;
+  font-size: 3vw;
+  text-align: center;
+}
+
+.top-left-logo {
+  position: absolute;
+  margin-top: 3vh;
+  margin-left: 3vw;
+  top: 0;
+  left: 0;
+  height: 6em;
+  width: auto;
+  z-index: 1000;
+}
+
+.top-left-logo img {
+  height: 100%;
+  width: auto;
+}
+
+@media (max-width: 1000px) {
+  .top-left-logo {
+    display: none; /* This hides the logo on screens with width 1000px or less */
+  }
+}
+
+.hr {
+  opacity: 100%;
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2vh 0;
+}
+
+.column {
+  flex: 1;
+  padding: 2vh;
+  box-sizing: border-box;
+}
+
+.btn-group {
+  display: flex;
+  gap: 0.5rem;
+}
 
 .table th, .table td {
-  text-align: center;
   vertical-align: middle;
+  text-align: center;
+}
+
+.my-4 {
+  margin: 2vh 0;
+}
+
+.row .column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.h3{
+  letter-spacing: -0.02em;
 }

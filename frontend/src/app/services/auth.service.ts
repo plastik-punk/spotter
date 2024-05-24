@@ -1,11 +1,12 @@
-import {Injectable} from '@angular/core';
-import {AuthRequest} from '../dtos/auth-request';
-import {Observable} from 'rxjs';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
-import {tap} from 'rxjs/operators';
-import {jwtDecode} from 'jwt-decode';
-import {Globals} from '../global/globals';
-import {UserOverviewDto} from "../dtos/app-user";
+import { Injectable } from '@angular/core';
+import { AuthRequest } from '../dtos/auth-request';
+import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { tap } from 'rxjs/operators';
+import { jwtDecode } from 'jwt-decode';
+import { Globals } from '../global/globals';
+import { UserOverviewDto } from '../dtos/app-user';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +15,11 @@ export class AuthService {
 
   private authBaseUri: string = this.globals.backendUri + '/authentication';
 
-  constructor(private httpClient: HttpClient, private globals: Globals) {
-  }
+  constructor(
+    private httpClient: HttpClient,
+    private globals: Globals,
+    private notificationService: NotificationService // Import the NotificationService
+  ) { }
 
   /**
    * Login in the user. If it was successful, a valid JWT token will be stored
@@ -23,30 +27,28 @@ export class AuthService {
    * @param authRequest User data
    */
   loginUser(authRequest: AuthRequest): Observable<string> {
-    return this.httpClient.post(this.authBaseUri, authRequest, {responseType: 'text'})
+    return this.httpClient.post(this.authBaseUri, authRequest, { responseType: 'text' })
       .pipe(
         tap((authResponse: string) => {
           this.setToken(authResponse);
           this.fetchUserDetails();
+          this.notificationService.showSuccess('Login erfolgreich!');
         })
       );
   }
 
-
   /**
    * Get the details of the current logged in user and put them in the Localstorage(Password excluded)
-   *
    */
   fetchUserDetails(): void {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${this.getToken()}`
     });
-    this.httpClient.get<UserOverviewDto>(`${this.authBaseUri}`, {headers}).subscribe({
+    this.httpClient.get<UserOverviewDto>(`${this.authBaseUri}`, { headers }).subscribe({
       next: (user: UserOverviewDto) => this.setUser(user),
       error: (error) => console.error('Error fetching user details', error)
     });
   }
-
 
   /**
    * Check if a valid JWT token is saved in the localStorage
@@ -59,6 +61,7 @@ export class AuthService {
     console.log('Logout');
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
+    this.notificationService.showSuccess('Logout erfolgreich!');
   }
 
   getToken() {
@@ -98,7 +101,6 @@ export class AuthService {
   }
 
   private getTokenExpirationDate(token: string): Date {
-
     const decoded: any = jwtDecode(token);
     if (decoded.exp === undefined) {
       return null;
@@ -108,6 +110,4 @@ export class AuthService {
     date.setUTCSeconds(decoded.exp);
     return date;
   }
-
-
 }

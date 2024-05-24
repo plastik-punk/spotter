@@ -1,5 +1,6 @@
 <!-- Parent container to conditionally apply classes -->
-<div id="sidebar" [ngClass]="{'sidebar-visible': isSidebarVisible, 'sidebar-hidden': !isSidebarVisible}">  <!-- Toggle Button for the Sidebar -->
+<div id="sidebar" [ngClass]="{'sidebar-visible': isSidebarVisible, 'sidebar-hidden': !isSidebarVisible}">
+  <!-- Toggle Button for the Sidebar -->
   <button id="sidebar-toggle-button" class="btn toggle-btn" (click)="toggleSidebar()">
     <i class="arrow" [class.arrow-right]="!isSidebarVisible" [class.arrow-left]="isSidebarVisible"></i>
   </button>
@@ -11,25 +12,25 @@
     <a class="navbar-brand text-center" href="#">Spotter</a>
     <ul class="nav flex-column">
       <li class="nav-item">
-        <a class="nav-link"  routerLink="/home" routerLinkActive="active">Home</a>
+        <a class="nav-link" routerLink="/home" routerLinkActive="active">Home</a>
       </li>
-      <li class="nav-item"*ngIf="authService.isLoggedIn()">
-        <a class="nav-link"  routerLink="/message" routerLinkActive="active">Message</a>
+      <li class="nav-item" *ngIf="authService.isLoggedIn()">
+        <a class="nav-link" routerLink="/reservations-overview" routerLinkActive="active">Reservations</a>
       </li>
-      <li class="nav-item" *ngIf="authService.isLoggedIn()" >
-        <a class="nav-link"routerLink="/reservations-overview" routerLinkActive="active">Your Reservations</a>
+      <li class="nav-item" *ngIf="authService.isLoggedIn()">
+        <a class="nav-link" routerLink="/message" routerLinkActive="active">Message</a>
       </li>
-      <li class="nav-item"  *ngIf="!authService.isLoggedIn()">
+      <li class="nav-item" *ngIf="!authService.isLoggedIn()">
         <a class="nav-link" routerLink="/login" routerLinkActive="active">Login</a>
       </li>
-      <li class="nav-item"*ngIf="authService.isLoggedIn()">
-        <a class="nav-link"  routerLink="/login" (click)="authService.logoutUser()">Logout</a>
+      <li class="nav-item" *ngIf="authService.getUserRole() === 'ADMIN'">
+        <a class="nav-link" routerLink="/registration" routerLinkActive="active">Add Employee Account</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" *ngIf="authService.getUserRole() === 'ADMIN'" routerLink="/registration" routerLinkActive="active">Add Employee Account</a>
+      <li class="nav-item" *ngIf="authService.getUserRole() === 'ADMIN'">
+        <a class="nav-link" routerLink="/employees" routerLinkActive="active">Staff Accounts</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" *ngIf="authService.getUserRole() === 'ADMIN'" routerLink="/employees" routerLinkActive="active">Staff Accounts</a>
+      <li class="nav-item" *ngIf="authService.isLoggedIn()">
+        <a class="nav-link" routerLink="/login" (click)="authService.logoutUser()">Logout</a>
       </li>
     </ul>
   </div>

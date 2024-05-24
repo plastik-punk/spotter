@@ -1,9 +1,10 @@
-import {Component, OnInit} from '@angular/core';
-import {UserOverviewDto, UserRole} from "../../dtos/app-user";
-import {NgClass, NgForOf, NgIf} from "@angular/common";
-import {ConfirmDialogComponent} from "../confirm-dialog/confirm-dialog.component";
-import {AuthService} from "../../services/auth.service";
-import {UserService} from "../../services/user.service";
+import { Component, OnInit } from '@angular/core';
+import { UserOverviewDto, UserRole } from "../../dtos/app-user";
+import { NgClass, NgForOf, NgIf } from "@angular/common";
+import { ConfirmDialogComponent } from "../confirm-dialog/confirm-dialog.component";
+import { AuthService } from "../../services/auth.service";
+import { UserService } from "../../services/user.service";
+import { NotificationService } from "../../services/notification.service";
 
 @Component({
   selector: 'app-user-management',
@@ -24,12 +25,16 @@ export class StaffAccountsComponent implements OnInit {
   confirmedAdmins: UserOverviewDto[] = [];
   confirmedEmployees: UserOverviewDto[] = [];
   changeWhat: UserOverviewDto;
+  confirmHeader = '?';
   doWhat = '?';
   yesWhat = '?';
   whatRole: string;
 
-  constructor(private authService: AuthService, private userService: UserService) {
-  }
+  constructor(
+    private authService: AuthService,
+    private userService: UserService,
+    private notificationService: NotificationService
+  ) { }
 
   ngOnInit(): void {
     this.fetchUsers();
@@ -42,7 +47,7 @@ export class StaffAccountsComponent implements OnInit {
         this.categorizeUsers();
       },
       error: (error) => {
-        console.error('Failed to fetch users', error);
+        this.notificationService.showError('Failed to fetch users. Please try again later.');
       }
     });
   }
@@ -62,7 +67,6 @@ export class StaffAccountsComponent implements OnInit {
       .sort((a, b) => a.firstName.localeCompare(b.firstName));
   }
 
-
   confirmUser(user: UserOverviewDto): void {
     let userRole = user.role;
     if (userRole === UserRole.UNCONFIRMED_ADMIN) {
@@ -72,11 +76,11 @@ export class StaffAccountsComponent implements OnInit {
     }
     this.userService.updateUser(user).subscribe({
       next: (updatedUser) => {
-        console.log('User confirmed successfully', updatedUser);
+        this.notificationService.showSuccess('User confirmed successfully.');
         this.fetchUsers();
       },
       error: (error) => {
-        console.error('Failed to update user role', error);
+        this.notificationService.showError('Failed to update user role. Please try again later.');
       }
     });
   }
@@ -90,24 +94,23 @@ export class StaffAccountsComponent implements OnInit {
     }
     this.userService.updateUser(user).subscribe({
       next: (updatedUser) => {
-        console.log('User role updated successfully', updatedUser);
+        this.notificationService.showSuccess('User role updated successfully.');
         this.fetchUsers();
       },
       error: (error) => {
-        console.error('Failed to update user role', error);
+        this.notificationService.showError('Failed to update user role. Please try again later.');
       }
     });
-
   }
 
   deleteUser(user: UserOverviewDto): void {
     this.userService.deleteUser(user.id).subscribe({
       next: (deletedUser) => {
-        console.log('User ' + user.firstName + ' ' + user.lastName + 'deleted successfully', deletedUser);
+        this.notificationService.showSuccess(`User ${user.firstName} ${user.lastName} deleted successfully.`);
         this.fetchUsers();
       },
       error: (error) => {
-        console.error('Failed to update user role', error);
+        this.notificationService.showError('Failed to delete user. Please try again later.');
       }
     });
   }
@@ -119,35 +122,37 @@ export class StaffAccountsComponent implements OnInit {
   setDoWhat(action: number) {
     switch (action) {
       case 0:
+        this.confirmHeader = "Delete";
         this.doWhat = "delete";
         this.yesWhat = "delete";
         this.whatRole = "?";
-
-        break
+        break;
       case 1:
+        this.confirmHeader = "Change role";
         this.doWhat = "change the role of";
-        this.yesWhat = "change role"
+        this.yesWhat = "change role";
         if (this.changeWhat.role == "ADMIN") {
-          this.whatRole = "from Admin to Employee?"
+          this.whatRole = "from Admin to Employee?";
         } else if (this.changeWhat.role == "EMPLOYEE") {
-          this.whatRole = "from Employee to Admin?"
+          this.whatRole = "from Employee to Admin?";
         }
         break;
       case 2:
+        this.confirmHeader = "Confirm";
         this.doWhat = "confirm";
         this.yesWhat = 'confirm';
         if (this.changeWhat.role == "UNCONFIRMED_ADMIN") {
-          this.whatRole = "as Admin?"
+          this.whatRole = "as Admin?";
         } else if (this.changeWhat.role == "UNCONFIRMED_EMPLOYEE") {
-          this.whatRole = "as Employee?"
+          this.whatRole = "as Employee?";
         }
         break;
       default:
+        this.confirmHeader = '?';
         this.doWhat = '?';
         this.yesWhat = '?';
     }
   }
-
 
   makeAction(action: String, user: UserOverviewDto) {
     if (action === "change the role of") {
@@ -156,7 +161,6 @@ export class StaffAccountsComponent implements OnInit {
     if (action === "confirm") {
       this.confirmUser(user);
     }
-
     if (action === "delete") {
       this.deleteUser(user);
     }

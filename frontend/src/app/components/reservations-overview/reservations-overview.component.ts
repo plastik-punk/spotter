@@ -1,10 +1,12 @@
-import {Component, OnInit} from '@angular/core';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {AuthService} from '../../services/auth.service';
-import {ReservationListDto, ReservationSearch} from "../../dtos/reservation";
-import {debounceTime, Subject} from "rxjs";
-import {ReservationService} from "../../services/reservation.service";
-import {Router} from "@angular/router";
+import { Component, OnInit } from '@angular/core';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { AuthService } from '../../services/auth.service';
+import { ReservationEditDto, ReservationListDto, ReservationSearch } from "../../dtos/reservation";
+import { debounceTime, Observable, Subject } from "rxjs";
+import { ReservationService } from "../../services/reservation.service";
+import { Router } from "@angular/router";
+import { HttpResponse } from "@angular/common/http";
+import { NotificationService } from "../../services/notification.service";
 
 @Component({
   selector: 'app-reservations-overview',
@@ -12,8 +14,6 @@ import {Router} from "@angular/router";
   styleUrl: './reservations-overview.component.scss'
 })
 export class ReservationsOverviewComponent implements OnInit {
-  error = false;
-  errorMessage = '';
   reservations: ReservationListDto[] = [];
   displayedReservations: ReservationListDto[] = [];
   searchParams: ReservationSearch = {};
@@ -22,11 +22,13 @@ export class ReservationsOverviewComponent implements OnInit {
   searchEarliestDate: string | null = null;
   searchLatestDate: string | null = null;
   searchChangedObservable = new Subject<void>();
+  deleteWhat: ReservationEditDto = null;
 
   constructor(
     private authService: AuthService,
     private modalService: NgbModal,
     private reservationService: ReservationService,
+    private notificationService: NotificationService,
     private router: Router) {
   }
 
@@ -34,27 +36,17 @@ export class ReservationsOverviewComponent implements OnInit {
     this.loadReservations();
     this.searchChangedObservable
       .pipe(debounceTime(300))
-      .subscribe({next: () => this.loadReservations()});
-  }
-
-  /**
-   * Error flag will be deactivated, which clears the error message
-   */
-  vanishError() {
-    this.error = false;
+      .subscribe({ next: () => this.loadReservations() });
   }
 
   showMore() {
     let newLength = this.displayedReservations.length + 5;
     if (newLength > this.reservations.length) {
-      newLength = this.reservations.length
+      newLength = this.reservations.length;
     }
     this.displayedReservations = this.reservations.slice(0, newLength);
   }
 
-  /**
-   * Returns true if the authenticated user is an admin
-   */
   isAdmin(): boolean {
     return this.authService.getUserRole() === 'ADMIN';
   }
@@ -88,7 +80,7 @@ export class ReservationsOverviewComponent implements OnInit {
           this.displayedReservations = this.reservations.slice(0, 10);
         },
         error: error => {
-          this.defaultServiceErrorHandling(error);
+          this.notificationService.showError('Failed to load reservations. Please try again later.');
         }
       });
   }
@@ -97,13 +89,35 @@ export class ReservationsOverviewComponent implements OnInit {
     this.searchChangedObservable.next();
   }
 
-  private defaultServiceErrorHandling(error: any) {
-    console.log(error);
-    this.error = true;
-    if (typeof error.error === 'object') {
-      this.errorMessage = error.error.error;
-    } else {
-      this.errorMessage = error.error;
+  openConfirmationDialog(hashId: string): void {
+    this.reservationService.getByHashedId(hashId).subscribe({
+      next: data => {
+        this.deleteWhat = data;
+      },
+      error: error => {
+        this.notificationService.showError('Failed to load reservation details. Please try again later.');
+      }
+    });
+  }
+
+  onDelete(): void {
+    if (!this.deleteWhat) {
+      this.notificationService.showError('No reservation selected for deletion.');
+      return;
     }
+
+    let observable: Observable<HttpResponse<void>>;
+    observable = this.reservationService.delete(this.deleteWhat.reservationId);
+    observable.subscribe({
+      next: (response) => {
+        if (response.status === 204) {
+          this.notificationService.showSuccess('Reservation cancelled successfully');
+          this.loadReservations();
+        }
+      },
+      error: (error) => {
+        this.notificationService.showError('Failed to cancel reservation. Please try again later.');
+      }
+    });
   }
 }
