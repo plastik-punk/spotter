@@ -1,10 +1,12 @@
 import {Component, OnInit} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AuthService} from '../../services/auth.service';
-import {ReservationListDto, ReservationSearch} from "../../dtos/reservation";
-import {debounceTime, Subject} from "rxjs";
+import {ReservationEditDto, ReservationListDto, ReservationSearch} from "../../dtos/reservation";
+import {debounceTime, Observable, Subject} from "rxjs";
 import {ReservationService} from "../../services/reservation.service";
 import {Router} from "@angular/router";
+import {HttpResponse} from "@angular/common/http";
+import {NotificationService} from "../../services/notification.service";
 
 @Component({
   selector: 'app-reservations-overview',
@@ -22,11 +24,13 @@ export class ReservationsOverviewComponent implements OnInit {
   searchEarliestDate: string | null = null;
   searchLatestDate: string | null = null;
   searchChangedObservable = new Subject<void>();
+  deleteWhat: ReservationEditDto = null;
 
   constructor(
     private authService: AuthService,
     private modalService: NgbModal,
     private reservationService: ReservationService,
+    private notificationService: NotificationService,
     private router: Router) {
   }
 
@@ -95,6 +99,36 @@ export class ReservationsOverviewComponent implements OnInit {
 
   searchChanged(): void {
     this.searchChangedObservable.next();
+  }
+
+  openConfirmationDialog(hashId: string): void {
+    this.reservationService.getByHashedId(hashId).subscribe({
+      next: data => {
+        this.deleteWhat = data;
+      },
+      error: error => {
+        //TODO: correct error?
+        this.notificationService.handleError(error);
+      }
+    })
+  }
+
+  onDelete(): void {
+    let observable: Observable<HttpResponse<void>>;
+    observable = this.reservationService.delete(this.deleteWhat.reservationId);
+    observable.subscribe({
+      next: (response) => {
+        if (response.status == 204) {
+          this.notificationService.handleSuccess('reservation cancelled successfully');
+          this.loadReservations();
+        } else {
+          // TODO: depending on final implementation, handle already deleted reservation, logged out user or ended session here. All other cases are handled in error handler below.
+        }
+      },
+      error: (error) => {
+        this.notificationService.handleError(error);
+      }
+    });
   }
 
   private defaultServiceErrorHandling(error: any) {

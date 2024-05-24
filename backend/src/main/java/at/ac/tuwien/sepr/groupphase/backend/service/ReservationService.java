@@ -58,9 +58,10 @@ public interface ReservationService {
     List<ReservationListDto> search(ReservationSearchDto reservationSearchDto);
 
     /**
-     * Delete a reservation specified by its id.
+     * Cancel a reservation.
      *
      * @param id the id of the reservation
      */
-    void delete(Long id) throws ValidationException;
+    void cancel(Long id) throws ValidationException;
+
 }
