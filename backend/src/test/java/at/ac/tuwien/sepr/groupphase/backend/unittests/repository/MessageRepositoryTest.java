@@ -1,0 +1,51 @@
+package at.ac.tuwien.sepr.groupphase.backend.unittests.repository;
+
+import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Message;
+import at.ac.tuwien.sepr.groupphase.backend.repository.MessageRepository;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+@ExtendWith(SpringExtension.class)
+// This test slice annotation is used instead of @SpringBootTest to load only entity beans instead of
+// the entire application context
+@DataJpaTest
+@ActiveProfiles("test")
+public class MessageRepositoryTest implements TestData {
+
+    @Autowired
+    private MessageRepository messageRepository;
+
+    @Test
+    @Transactional
+    public void givenNothing_whenSaveMessage_thenFindListWithOneElementAndFindMessageById() {
+        messageRepository.save(TEST_MESSAGE_1);
+
+        assertAll(
+            () -> assertEquals(1, messageRepository.findAll().size()),
+            () -> assertNotNull(messageRepository.findById(TEST_MESSAGE_1.getId()))
+        );
+    }
+
+    @Test
+    @Transactional
+    public void givenNothing_whenFindAllByOrderByPublishedAtDesc_thenReturnOrdered() {
+        messageRepository.save(TEST_MESSAGE_1);
+        messageRepository.save(TEST_MESSAGE_3);
+
+        assertAll(
+            () -> assertEquals(2, messageRepository.findAllByOrderByPublishedAtDesc().size()),
+            () -> assertEquals(TEST_MESSAGE_3, messageRepository.findAllByOrderByPublishedAtDesc().get(0)),
+            () -> assertEquals(TEST_MESSAGE_1, messageRepository.findAllByOrderByPublishedAtDesc().get(1))
+        );
+    }
+}

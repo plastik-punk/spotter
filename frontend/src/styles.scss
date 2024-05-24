@@ -1,4 +1,123 @@
 /* You can add global styles to this file, and also import other style files */
-body {
-  background-color: whitesmoke;
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: visible;  // Prevents horizontal scrollbars
 }
+body {
+  background-image: url('assets/images/background.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+.login-background {
+  background-image: url('assets/images/loginBackground.png') !important;
+}
+app-root {
+  background: none; /* Clear any background styles */
+}
+
+// Global settings
+$primary-font-family: 'Lexend Giga', sans-serif;
+$secondary-font-family: 'Inter', sans-serif;
+$accent-font-family: "Leckerli One", cursive;
+
+$primary-color: white;
+$secondary-color: black;
+$accent-color: #f0f0f0; // Adjust as needed
+
+// Reusable Mixins
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Body & Defaults
+body {
+  font-family: $secondary-font-family;
+  color: $secondary-color;
+  background-color: $accent-color;
+}
+
+// Card Styles
+.card-custom {
+  border-radius: 15px;
+  background: $primary-color;
+  width: 100%;
+  max-width: 600px;
+}
+
+// Headings
+h1, h2, h3, .font-heading {
+  font-family: $primary-font-family;
+  font-size: 2vw; // Consider using rem for better scalability across devices
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  padding: 0 10px;
+}
+
+// Special Fonts
+.font-text {
+  font-family: $secondary-font-family;
+}
+
+.leckerli-one-regular {
+  font-family: $accent-font-family;
+  font-size: 8vw;
+}
+
+// Logo Style
+.logo {
+  height: 8vw;
+  width: auto;
+  margin-right: 2em;
+}
+
+// Layout Adjustments
+.left-col, .right-col {
+  @include flex-center;
+
+  &.left-col {
+    margin-left: -8vw;
+  }
+
+  &.right-col {
+    margin-left: 2vw;
+  }
+}
+
+// Separator Styles
+.separator {
+  @include flex-center;
+  margin: 2rem 0;
+
+  .line {
+    flex: 1;
+    height: 1px;
+    background-color: $secondary-color;
+  }
+}
+
+.toast-top-right {
+  top: 0;
+  right: 0;
+  position: fixed !important;
+}
+.top-left-logo {
+  position: absolute;
+  margin-top: 3vh;
+  margin-left: 3vw;
+  top: 0;
+  left: 0;
+  height: 6em;
+  width: auto;
+  z-index: 1000;
+}
+
+.table > :not(:first-child) {
+  border-top: 2px solid lightgrey !important;
+}
+

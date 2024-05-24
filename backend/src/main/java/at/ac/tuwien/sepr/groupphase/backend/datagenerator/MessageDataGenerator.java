@@ -2,17 +2,19 @@ package at.ac.tuwien.sepr.groupphase.backend.datagenerator;
 
 import at.ac.tuwien.sepr.groupphase.backend.entity.Message;
 import at.ac.tuwien.sepr.groupphase.backend.repository.MessageRepository;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.PostConstruct;
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDateTime;
 
-@Profile("generateData")
+@Profile({"generateData"})
 @Component
+@Order(0)
 public class MessageDataGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -29,6 +31,8 @@ public class MessageDataGenerator {
 
     @PostConstruct
     private void generateMessage() {
+        LOGGER.trace("generateMessages");
+
         if (messageRepository.findAll().size() > 0) {
             LOGGER.debug("message already generated");
         } else {

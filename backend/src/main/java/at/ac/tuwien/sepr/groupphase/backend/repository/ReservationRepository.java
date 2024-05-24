@@ -1,0 +1,44 @@
+package at.ac.tuwien.sepr.groupphase.backend.repository;
+
+import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
+/**
+ * Repository for the entity Reservation.
+ * Extends JpaRepository to have basic CRUD operations.
+ */
+@Repository
+public interface ReservationRepository extends JpaRepository<Reservation, Long> {
+
+    @Query("SELECT r.place FROM Reservation r WHERE r.date = :date AND ((r.startTime < :startTime AND r.endTime > :startTime) OR (r.startTime < :endTime AND r.endTime > :endTime) OR (r.startTime >= :startTime AND r.endTime <= :endTime))")
+    List<Place> findOccupiedPlacesAtSpecifiedTime(@Param("date") LocalDate date, @Param("startTime") LocalTime startTime, @Param("endTime") LocalTime endTime);
+
+
+    @Query(value = "SELECT r.* FROM reservation r "
+        + "JOIN app_user u ON r.user_id = u.id "
+        + "WHERE u.email = :email "
+        + "AND (:startDate IS NULL OR r.date >= :startDate) "
+        + "AND (:endDate IS NULL OR r.date <= :endDate) "
+        + "AND (:startTime IS NULL OR r.start_time >= :startTime) "
+        + "AND (:endTime IS NULL OR r.end_time <= :endTime)"
+        + "AND (u.role != 3)", nativeQuery = true)
+    List<Reservation> findReservationsByDate(
+        @Param("email") String email,
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate,
+        @Param("startTime") LocalTime startTime,
+        @Param("endTime") LocalTime endTime);
+
+    List<Reservation> findByHashValue(String hashValue);
+
+    @Query("SELECT r FROM Reservation r WHERE r.applicationUser.id = :userId")
+    List<Reservation> findByUserId(@Param("userId") Long userId);
+}
