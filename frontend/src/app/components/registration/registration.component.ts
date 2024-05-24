@@ -4,7 +4,7 @@ import { RegistrationService } from '../../services/registration.service';
 import { UserRegistrationDTO, UserRole } from '../../dtos/app-user';
 import { NgIf } from "@angular/common";
 import { CommonModule } from "@angular/common";
-import { Router } from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
 import { AuthService } from "../../services/auth.service";
 
 @Component({
@@ -14,7 +14,8 @@ import { AuthService } from "../../services/auth.service";
   imports: [
     ReactiveFormsModule,
     NgIf,
-    CommonModule
+    CommonModule,
+    RouterLink
   ],
   styleUrls: ['./registration.component.scss']
 })
@@ -45,7 +46,7 @@ export class RegistrationComponent implements OnInit {
 
   adjustFormBasedOnUserRole(): void {
     if (this.isAdmin) {
-      this.title = 'Register new Employee or Admin';  // Change title for admin
+      this.title = 'Register Employee';  // Change title for admin
     }
   }
 

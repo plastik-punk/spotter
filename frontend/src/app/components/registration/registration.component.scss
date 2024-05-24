@@ -1,0 +1,90 @@
+body {
+  background: none;
+}
+
+.container-fluid.full-height {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.custom-card {
+  border-radius: 15px;
+  background: white;
+  width: 30%; // or another appropriate width value
+}
+
+.font-heading {
+  font-family: 'Lexend Giga', sans-serif;
+  font-size: 2vw;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  padding: 0 10px;
+  margin-top: 2vh;
+}
+
+.font-text {
+  font-family: 'Inter', sans-serif;
+}
+
+.full-height {
+  height: 100vh;
+}
+
+.leckerli-one-regular {
+  font-family: "Leckerli One", cursive;
+  font-size: 8vw;
+}
+
+.logo {
+  height: 8vw;
+  width: auto;
+  margin-right: 2em;
+}
+
+.btn-outline-custom {
+  color: white;
+  border-color: white;
+  background-color: transparent;
+  font-size: 1.5vw;
+}
+
+.btn-outline-custom:hover {
+  background-color: white;
+  color: black;
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.separator .line {
+  flex: 1;
+  height: 1px;
+  background-color: black;
+}
+
+.custom-btn {
+  background-color: transparent;
+  border: 3px solid black;
+  color: black;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 1.5rem;
+  line-height: 2;
+  cursor: pointer;
+  border-radius: 0.75rem;
+  margin: 1rem 0;
+  transition: background-color 0.3s ease;
+}
+
+.custom-btn:hover {
+  background-color: black;
+  color: white;
+}

@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Lexend+Giga:wght@500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Lexend+Giga:wght@500&display=swap"
+        rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Leckerli+One&display=swap" rel="stylesheet">
@@ -14,42 +15,44 @@
 <div class="container-fluid">
   <div class="col-12 col-lg-10 mx-auto">
     <div class="card custom-card">
-      <form #form="ngForm" (ngSubmit)="onSubmit(form)">
+      <form #form="ngForm" (ngSubmit)="onSubmit(form)" novalidate>
         <!-- Start row with Title, startTime and Date -->
-        <div class="row">
-          <div class="column">
-            <h1 class="font-heading">Reserve</h1>
+        <div class="top-banner">
+          <div class="row">
+            <div class="column">
+              <h1 class="font-heading">Reserve</h1>
+            </div>
+            <div class="column">
+              <input
+                type="time"
+                id="reservationStartTime"
+                name="reservationStartTime"
+                placeholder="hh:mm"
+                class="form-control"
+                [(ngModel)]="reservationCreateDto.startTime"
+                #reservationStartTimeModel="ngModel"
+                (ngModelChange)="onFieldChange()"
+                required
+              />
+            </div>
+            <div class="column">
+              <input
+                type="date"
+                id="reservationDate"
+                name="reservationDate"
+                pattern="\d{4}-\d{2}-\d{2}"
+                placeholder="dd-mm-yyyy"
+                class="form-control"
+                [(ngModel)]="reservationCreateDto.date"
+                #reservationDateModel="ngModel"
+                (ngModelChange)="onFieldChange()"
+                required
+              />
+            </div>
           </div>
-          <div class="column">
-            <input
-              type="time"
-              id="reservationStartTime"
-              name="reservationStartTime"
-              placeholder="hh:mm"
-              class="form-control"
-              [(ngModel)]="reservationCreateDto.startTime"
-              #reservationStartTimeModel="ngModel"
-              (ngModelChange)="onFieldChange()"
-              required
-            />
-          </div>
-          <div class="column">
-            <input
-              type="date"
-              id="reservationDate"
-              name="reservationDate"
-              pattern="\d{4}-\d{2}-\d{2}"
-              placeholder="dd-mm-yyyy"
-              class="form-control"
-              [(ngModel)]="reservationCreateDto.date"
-              #reservationDateModel="ngModel"
-              (ngModelChange)="onFieldChange()"
-              required
-            />
-          </div>
-        </div>
 
-        <hr class="my-4">
+          <hr class="my-4">
+        </div>
 
         <!-- Start row with notification -->
         <div class="row">
@@ -65,7 +68,7 @@
 
         <!-- Start row with advanced view -->
         <div class="row" style="justify-content: center; padding: 2vh">
-          <button class="btn av-btn" routerLink="">Advanced View -></button>
+          <button type="button" class="btn av-btn" routerLink="">Advanced View -></button>
         </div>
         <!-- End row with advanced view -->
 
@@ -92,7 +95,7 @@
         <!-- Start row with (firstName, lastName, Mail, Phone), Notes -->
         <div class="row">
           <div class="column" *ngIf="!authService.isLoggedIn()">
-            <div >
+            <div>
               <!-- start guest fields -->
               <input
                 type="text"
@@ -117,7 +120,7 @@
               />
 
               <input
-                type="text"
+                type="email"
                 id="reservationEmail"
                 name="reservationEmail"
                 placeholder="Email"
@@ -155,9 +158,11 @@
 
         <div class="row">
           <div class="column">
-            <button type="submit" class="btn btn-danger" [disabled]="!form.valid">
-              Book
-            </button>
+            <div class="btn-group">
+              <button type="submit" class="btn btn-danger btn-sm" [disabled]="!form.valid">
+                Book
+              </button>
+            </div>
           </div>
         </div>
       </form>

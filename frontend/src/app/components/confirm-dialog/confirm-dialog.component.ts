@@ -8,6 +8,7 @@ import {Component, EventEmitter, HostBinding, Input, OnInit, Output} from '@angu
 })
 export class ConfirmDialogComponent implements OnInit {
 
+  @Input() confirmHeader='?';
   @Input() changeWhatFirstName = '?';
   @Input() changeWhatLastName = '?';
   @Input() makeWhat = '?';
@@ -16,7 +17,6 @@ export class ConfirmDialogComponent implements OnInit {
   @Output() confirm = new EventEmitter<void>();
 
   @HostBinding('class') cssClass = 'modal fade';
-
   constructor() {
   }
 

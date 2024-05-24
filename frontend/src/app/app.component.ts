@@ -22,7 +22,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   updateBodyClass(url: string) {
-    if (url.includes('/login')) {
+    if (url.includes('/login') || url.includes('/registration')) {
       this.renderer.setStyle(this.document.body, 'background-image', 'url("assets/images/loginBackground.png")');
     } else {
       this.renderer.setStyle(this.document.body, 'background-image', 'url("assets/images/background.png")');

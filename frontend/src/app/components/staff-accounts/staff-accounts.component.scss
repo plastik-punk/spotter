@@ -15,6 +15,7 @@ body {
 }
 
 .custom-card {
+  position: relative;
   border-radius: 20px 20px 0 0;
   background: white;
   margin-top: 2vh;
@@ -24,6 +25,17 @@ body {
   overflow-y: auto; /* Enable vertical scrolling */
 }
 
+.top-banner {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  z-index: 100;
+  border-radius: 20px 20px 0 0;
+  border: 2vh;
+  margin: -2vh 0 2vh 0; /* Adjust margins to cover the top of the card */
+}
 .font-heading {
   font-family: "Leckerli One", cursive;
   font-size: 3vw;
@@ -74,10 +86,6 @@ body {
   gap: 0.5rem;
 }
 
-.table {
-  margin-bottom: 4vh;
-}
-
 .table th, .table td {
   vertical-align: middle;
   text-align: center;
@@ -87,13 +95,11 @@ body {
   margin: 2vh 0;
 }
 
-.notes-textarea {
-  height: calc(4 * 38px + 3 * 1vh); /* adjust height as needed */
-  resize: none;
-}
-
 .row .column {
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+.h3{
+  letter-spacing: -0.02em;
 }

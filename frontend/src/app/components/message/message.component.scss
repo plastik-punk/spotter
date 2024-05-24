@@ -1,17 +1,40 @@
-body, html {
-  height: 100%;
-  width: 100%;
+body {
   margin: 0;
   padding: 0;
-  background: none;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container-fluid {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .custom-card {
+  position: relative;
   border-radius: 20px 20px 0 0;
   background: white;
   margin-top: 2vh;
-  margin-bottom: -1vh;
-  height: 97vh;
+  height: 96vh; /* Adjust height to fill screen */
+  width: 100%;
+  padding: 2vh;
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.top-banner {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  z-index: 100;
+  border-radius: 20px 20px 0 0;
+  border: 2vh;
+  margin: -2vh 0 2vh 0; /* Adjust margins to cover the top of the card */
 }
 
 .top-left-logo {
