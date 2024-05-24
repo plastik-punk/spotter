@@ -8,6 +8,7 @@ import {SimpleViewReservationStatusEnum} from "../../dtos/status-enum";
 import {UserOverviewDto} from "../../dtos/app-user";
 import {ToastrService} from "ngx-toastr";
 import {NotificationService} from "../../services/notification.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-home',
@@ -47,6 +48,7 @@ export class HomeComponent implements OnInit {
     private service: ReservationService,
     private notification: ToastrService,
     private notificationService: NotificationService,
+    private router: Router
     ) { } // constructor
 
   ngOnInit() { }
@@ -116,7 +118,11 @@ export class HomeComponent implements OnInit {
             // TODO: handle this case (table was booked in the meantime)
           } else {
             this.notificationService.handleSuccess('reservation created successfully');
-            // TODO: route to reservation detail view?
+            if (this.authService.isLoggedIn()) {
+              this.router.navigate(['/reservations-overview']);
+            } else {
+              this.router.navigate(['/home']);
+            }
           }
         },
         error: (error) => {
