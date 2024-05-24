@@ -1,45 +1,32 @@
 import { Injectable } from '@angular/core';
-import {ToastrService} from "ngx-toastr";
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
-
 export class NotificationService {
-    constructor(
-      private notification: ToastrService,
-    ) { }
+  private notificationSubject = new Subject<NotificationMessage>();
+  notifications$ = this.notificationSubject.asObservable();
 
-    public handleError(error: any): void {
-      this.notification.error(
-        error.error.errors,
-        error.error.message,
-        {
-          enableHtml: true,
-          timeOut: 5000,
-        },
-      );
-    }
+  showSuccess(message: string) {
+    this.notificationSubject.next({ type: 'success', message });
+  }
 
-    public handleSuccess(message: string): void {
-      this.notification.success(
-        message,
-        null,
-        {
-          timeOut: 5000,
-          enableHtml: true,
-        },
-      );
-    }
+  showError(message: string) {
+    this.notificationSubject.next({ type: 'error', message });
+  }
 
-    public handleInfo(message: string): void {
-      this.notification.info(
-        message,
-        null,
-        {
-          timeOut: 5000,
-          enableHtml: true,
-        },
-      );
-    }
+  handleError(error: any) {
+    this.showError(error.message || 'An error occurred');
+  }
+
+  handleSuccess(message: string) {
+    this.showSuccess(message);
+  }
+}
+
+export interface NotificationMessage {
+  type: 'success' | 'error';
+  message: string;
+  show?: boolean;
 }

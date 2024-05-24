@@ -4,8 +4,9 @@ import { RegistrationService } from '../../services/registration.service';
 import { UserRegistrationDTO, UserRole } from '../../dtos/app-user';
 import { NgIf } from "@angular/common";
 import { CommonModule } from "@angular/common";
-import {Router, RouterLink} from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 import { AuthService } from "../../services/auth.service";
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-register',
@@ -21,13 +22,16 @@ import { AuthService } from "../../services/auth.service";
 })
 export class RegistrationComponent implements OnInit {
   registrationForm: FormGroup;
-  error = false;
-  errorMessage = '';
-  errorMessages: string[] = [];
   title = 'Register';  // Default title
   isAdmin: boolean = false;
 
-  constructor(private fb: FormBuilder, private registrationService: RegistrationService, private authService: AuthService, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private registrationService: RegistrationService,
+    private authService: AuthService,
+    private router: Router,
+    private notificationService: NotificationService
+  ) {
     // Initialize the form with all fields
     this.registrationForm = this.fb.group({
       firstName: ['', Validators.required],
@@ -70,20 +74,43 @@ export class RegistrationComponent implements OnInit {
 
       this.registrationService.registerUser(userData).subscribe({
         next: () => {
-          console.log('Registration successful!');
+          this.notificationService.showSuccess('Registration successful!');
           this.router.navigate(['/login']);
         },
         error: (error) => {
-          console.error('Registration failed with status:', error.status);
-          this.errorMessages = error.error.errors;
-          this.error = true;
+          const errorMessages = error.error.errors || [error.message || 'Registration failed'];
+          errorMessages.forEach(msg => this.notificationService.showError(msg));
         }
       });
+    } else {
+      this.showFormErrors();
     }
   }
 
-  vanishError(): void {
-    this.error = false;
-    this.errorMessages = [];
+  private showFormErrors(): void {
+    const controls = this.registrationForm.controls;
+    if (controls.firstName.invalid) {
+      this.notificationService.showError('First name is required.');
+    }
+    if (controls.lastName.invalid) {
+      this.notificationService.showError('Last name is required.');
+    }
+    if (controls.email.invalid) {
+      if (controls.email.errors.required) {
+        this.notificationService.showError('Email is required.');
+      } else if (controls.email.errors.email) {
+        this.notificationService.showError('Invalid email format.');
+      }
+    }
+    if (controls.password.invalid) {
+      if (controls.password.errors.required) {
+        this.notificationService.showError('Password is required.');
+      } else if (controls.password.errors.minlength) {
+        this.notificationService.showError('Password must be at least 8 characters long.');
+      }
+    }
+    if (controls.role.invalid) {
+      this.notificationService.showError('Role is required.');
+    }
   }
 }
