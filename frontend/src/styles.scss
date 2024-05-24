@@ -116,3 +116,8 @@ h1, h2, h3, .font-heading {
   width: auto;
   z-index: 1000;
 }
+
+.table > :not(:first-child) {
+  border-top: 2px solid lightgrey !important;
+}
+

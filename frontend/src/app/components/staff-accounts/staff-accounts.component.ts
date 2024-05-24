@@ -24,6 +24,7 @@ export class StaffAccountsComponent implements OnInit {
   confirmedAdmins: UserOverviewDto[] = [];
   confirmedEmployees: UserOverviewDto[] = [];
   changeWhat: UserOverviewDto;
+  confirmHeader = '?';
   doWhat = '?';
   yesWhat = '?';
   whatRole: string;
@@ -119,12 +120,14 @@ export class StaffAccountsComponent implements OnInit {
   setDoWhat(action: number) {
     switch (action) {
       case 0:
+        this.confirmHeader = "Delete";
         this.doWhat = "delete";
         this.yesWhat = "delete";
         this.whatRole = "?";
 
         break
       case 1:
+        this.confirmHeader = "Change role";
         this.doWhat = "change the role of";
         this.yesWhat = "change role"
         if (this.changeWhat.role == "ADMIN") {
@@ -134,6 +137,7 @@ export class StaffAccountsComponent implements OnInit {
         }
         break;
       case 2:
+        this.confirmHeader = "Confirm";
         this.doWhat = "confirm";
         this.yesWhat = 'confirm';
         if (this.changeWhat.role == "UNCONFIRMED_ADMIN") {
@@ -143,6 +147,7 @@ export class StaffAccountsComponent implements OnInit {
         }
         break;
       default:
+        this.confirmHeader = '?';
         this.doWhat = '?';
         this.yesWhat = '?';
     }

@@ -26,7 +26,11 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    if (this.authService.isLoggedIn()) {
+      this.authService.logoutUser();
+    }
+  }
 
   loginUser(): void {
     if (this.loginForm.valid) {
