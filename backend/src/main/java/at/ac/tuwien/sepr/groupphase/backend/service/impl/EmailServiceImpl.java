@@ -41,6 +41,17 @@ public class EmailServiceImpl implements EmailService {
         sendHtmlMessage(to, subject, htmlBody);
     }
 
+    @Override
+    public void sendUpdateMessageUsingThymeleafTemplate(String to, String subject, Map<String, Object> templateModel) throws MessagingException {
+
+        Context thymeleafContext = new Context();
+        thymeleafContext.setVariables(templateModel);
+
+        String htmlBody = thymeleafTemplateEngine.process("update-template.html", thymeleafContext);
+
+        sendHtmlMessage(to, subject, htmlBody);
+    }
+
     private void sendHtmlMessage(String to, String subject, String htmlBody) throws MessagingException {
 
         MimeMessage message = emailSender.createMimeMessage();

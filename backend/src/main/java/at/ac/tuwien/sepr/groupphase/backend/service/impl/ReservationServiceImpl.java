@@ -333,7 +333,7 @@ public class ReservationServiceImpl implements ReservationService {
         // 6. send confirmation mail
         Map<String, Object> templateModel = constructMailTemplateModel(updatedReservation, currentUser);
         try {
-            emailService.sendMessageUsingThymeleafTemplate(currentUser.getEmail(),
+            emailService.sendUpdateMessageUsingThymeleafTemplate(currentUser.getEmail(),
                 "Reservation Update Confirmation", templateModel);
         } catch (MessagingException e) {
             throw new RuntimeException(e);
