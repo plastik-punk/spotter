@@ -6,6 +6,7 @@ import {Observable} from "rxjs";
 import {ActivatedRoute, Router} from "@angular/router";
 import {HttpResponse} from "@angular/common/http";
 import {ToastrService} from "ngx-toastr";
+
 import {NotificationService} from "../../../services/notification.service";
 import {ReservationEditComponent} from "../reservation-edit/reservation-edit.component";
 
@@ -24,16 +25,16 @@ export class ReservationDetailComponent implements OnInit {
     date: undefined,
     pax: undefined,
     notes: undefined,
-    placeId: undefined
+    placeIds: undefined
   };
 
   constructor(
     public authService: AuthService,
     private service: ReservationService,
+    private router: Router,
     private notification: ToastrService,
     private notificationService: NotificationService,
     private route: ActivatedRoute,
-    private router: Router
   ) {
   } // constructor
 
@@ -53,12 +54,12 @@ export class ReservationDetailComponent implements OnInit {
             this.reservationDetailDto.date = data.date;
             this.reservationDetailDto.pax = data.pax;
             this.reservationDetailDto.notes = data.notes;
-            this.reservationDetailDto.placeId = data.placeId;
+            this.reservationDetailDto.placeIds = data.placeIds;
           }
         },
         error: (error) => {
           this.notificationService.handleError(error);
-          this.router.navigate(['/reservations-overview']);
+          this.router.navigate(['/reservation-overview']);
         }, // error
       }); // subscribe
     } // ngOnInit
@@ -66,9 +67,9 @@ export class ReservationDetailComponent implements OnInit {
 
   onSubmit() {
     if (this.authService.isLoggedIn()) {
-      this.router.navigate(['/reservations-overview']);
+      this.router.navigate(['/reservation-overview']);
     } else {
-      this.router.navigate(['/home']);
+      this.router.navigate(['/reservation-simple']);
     }
   } // onSubmit
 
@@ -85,9 +86,9 @@ export class ReservationDetailComponent implements OnInit {
         if (response.status == 204) {
           this.notificationService.handleSuccess('reservation canceled successfully');
           if (this.authService.isLoggedIn()) {
-            this.router.navigate(['/reservations-overview']);
+            this.router.navigate(['/reservation-overview']);
           } else {
-            this.router.navigate(['/home']);
+            this.router.navigate(['/reservation-simple']);
           }
         } else {
           // TODO: depending on final implementation, handle already deleted reservation, logged out user or ended session here. All other cases are handled in error handler below.

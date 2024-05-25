@@ -1,19 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { AuthService } from '../../services/auth.service';
-import { ReservationEditDto, ReservationListDto, ReservationSearch } from "../../dtos/reservation";
+import { AuthService } from '../../../services/auth.service';
+import { ReservationEditDto, ReservationListDto, ReservationSearch } from "../../../dtos/reservation";
 import { debounceTime, Observable, Subject } from "rxjs";
-import { ReservationService } from "../../services/reservation.service";
+import { ReservationService } from "../../../services/reservation.service";
 import { Router } from "@angular/router";
 import { HttpResponse } from "@angular/common/http";
-import { NotificationService } from "../../services/notification.service";
+import { NotificationService } from "../../../services/notification.service";
 
 @Component({
-  selector: 'app-reservations-overview',
-  templateUrl: './reservations-overview.component.html',
-  styleUrl: './reservations-overview.component.scss'
+  selector: 'app-reservation-overview',
+  templateUrl: './reservation-overview.component.html',
+  styleUrl: './reservation-overview.component.scss'
 })
-export class ReservationsOverviewComponent implements OnInit {
+export class ReservationOverviewComponent implements OnInit {
   reservations: ReservationListDto[] = [];
   displayedReservations: ReservationListDto[] = [];
   searchParams: ReservationSearch = {};

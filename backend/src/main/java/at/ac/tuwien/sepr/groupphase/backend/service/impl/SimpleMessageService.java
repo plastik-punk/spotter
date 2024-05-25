@@ -4,7 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Message;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.MessageRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.MessageService;
-import at.ac.tuwien.sepr.groupphase.backend.service.mail.EmailService;
+import at.ac.tuwien.sepr.groupphase.backend.service.EmailService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

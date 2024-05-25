@@ -1,7 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.mapper;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DetailedMessageDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SimpleMessageDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.MessageDetailedSimpleDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.MessageSimpleDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.MessageInquiryDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Message;
 import org.mapstruct.IterableMapping;
@@ -14,18 +14,18 @@ import java.util.List;
 public interface MessageMapper {
 
     @Named("simpleMessage")
-    SimpleMessageDto messageToSimpleMessageDto(Message message);
+    MessageSimpleDto messageToSimpleMessageDto(Message message);
 
     /**
-     * This is necessary since the SimpleMessageDto misses the text property and the collection mapper can't handle
+     * This is necessary since the MessageSimpleDto misses the text property and the collection mapper can't handle
      * missing fields.
      **/
     @IterableMapping(qualifiedByName = "simpleMessage")
-    List<SimpleMessageDto> messageToSimpleMessageDto(List<Message> message);
+    List<MessageSimpleDto> messageToSimpleMessageDto(List<Message> message);
 
-    DetailedMessageDto messageToDetailedMessageDto(Message message);
+    MessageDetailedSimpleDto messageToDetailedMessageDto(Message message);
 
-    Message detailedMessageDtoToMessage(DetailedMessageDto detailedMessageDto);
+    Message detailedMessageDtoToMessage(MessageDetailedSimpleDto messageDetailedDto);
 
     Message messageInquiryDtoToMessage(MessageInquiryDto messageInquiryDto);
 

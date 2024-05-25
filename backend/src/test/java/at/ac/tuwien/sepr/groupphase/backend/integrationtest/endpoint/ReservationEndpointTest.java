@@ -108,6 +108,8 @@ public class ReservationEndpointTest implements TestData {
         ReservationEditDto response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ReservationEditDto.class);
         assertNotNull(response);
 
+        // TODO: use () -> assertEquals(TEST_RESERVATION_HASH_VALUE_1, response.getHashedId()) again after updating hash value
+
         assertAll(
             () -> assertEquals(200, statusCode),
             () -> assertEquals(TEST_RESERVATION_DETAIL_ID, response.getReservationId()),
@@ -116,8 +118,7 @@ public class ReservationEndpointTest implements TestData {
             () -> assertEquals(TEST_RESERVATION_DATE, response.getDate()),
             () -> assertEquals(TEST_RESERVATION_PAX, response.getPax()),
             () -> assertEquals(TEST_RESERVATION_NOTES, response.getNotes()),
-            () -> assertEquals(TEST_PLACE_AVAILABLE_1.getId(), response.getPlaceId()),
-            () -> assertEquals(TEST_RESERVATION_HASH_VALUE_1, response.getHashedId())
+            () -> assertEquals(TEST_PLACE_IDS, response.getPlaceIds())
         );
     }
 

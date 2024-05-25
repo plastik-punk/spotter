@@ -10,6 +10,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Message;
 import at.ac.tuwien.sepr.groupphase.backend.entity.OpeningHours;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ReservationPlace;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Restaurant;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
@@ -142,7 +143,7 @@ public interface TestData {
 
     String TEST_APPLICATION_USER_FIRST_NAME = "Otter";
     String TEST_APPLICATION_USER_LAST_NAME = "McOtterface";
-    String TEST_APPLICATION_USER_EMAIL = "otter@spotter.at";
+    String TEST_APPLICATION_USER_EMAIL = "otter@example.at";
     String TEST_APPLICATION_USER_MOBILE_NUMBER = "06501234567";
     String TEST_APPLICATION_USER_PASSWORD = "naughtyotter";
     RoleEnum TEST_APPLICATION_USER_ROLE = RoleEnum.CUSTOMER;
@@ -223,6 +224,14 @@ public interface TestData {
         .withMobileNumber(TEST_APPLICATION_USER_GUEST.getMobileNumber())
         .build();
 
+
+    List<Long> TEST_PLACE_IDS = new ArrayList<>() {
+        {
+            add(TEST_PLACE_AVAILABLE_1.getId());
+            add(TEST_PLACE_AVAILABLE_2.getId());
+        }
+    };
+
     ReservationEditDto TEST_RESERVATION_EDIT_DTO = ReservationEditDto.ReservationEditDtoBuilder.aReservationEditDto()
         .withReservationId(TEST_RESERVATION_DETAIL_ID)
         .withUser(TEST_APPLICATION_USER_CUSTOMER_1)
@@ -232,7 +241,7 @@ public interface TestData {
         .withPax(TEST_RESERVATION_PAX)
         .withNotes(TEST_RESERVATION_NOTES)
         .withHashedId(TEST_RESERVATION_HASH_VALUE)
-        .withPlaceId(TEST_PLACE_AVAILABLE_1.getId())
+        .withPlaceIds(TEST_PLACE_IDS)
         .build();
 
     ReservationDetailDto TEST_RESERVATION_DETAIL_DTO = ReservationDetailDto.ReservationDetailDtoBuilder.aReservationDetailDto()
@@ -242,7 +251,7 @@ public interface TestData {
         .withDate(TEST_RESERVATION_DATE)
         .withPax(TEST_RESERVATION_PAX)
         .withNotes(TEST_RESERVATION_NOTES)
-        .withPlaceId(TEST_PLACE_AVAILABLE_1.getId())
+        .withPlaceIds(TEST_PLACE_IDS)
         .build();
 
     Reservation TEST_RESERVATION_1 = Reservation.ReservationBuilder.aReservation()
@@ -253,7 +262,6 @@ public interface TestData {
         .withDate(TEST_RESERVATION_DATE)
         .withPax(TEST_RESERVATION_PAX)
         .withNotes(TEST_RESERVATION_NOTES)
-        .withPlace(TEST_PLACE_AVAILABLE_1)
         .build();
 
     Reservation TEST_RESERVATION_2 = Reservation.ReservationBuilder.aReservation()
@@ -264,7 +272,6 @@ public interface TestData {
         .withDate(TEST_RESERVATION_DATE)
         .withPax(TEST_RESERVATION_PAX)
         .withNotes(TEST_RESERVATION_NOTES)
-        .withPlace(TEST_PLACE_AVAILABLE_1)
         .build();
 
     Reservation TEST_RESERVATION_TO_DELETE = Reservation.ReservationBuilder.aReservation()
@@ -274,7 +281,6 @@ public interface TestData {
         .withDate(TEST_RESERVATION_DATE)
         .withPax(TEST_RESERVATION_PAX)
         .withNotes(TEST_RESERVATION_NOTES)
-        .withPlace(TEST_PLACE_AVAILABLE_1)
         .withHashValue(TEST_RESERVATION_HASH_VALUE)
         .build();
 
@@ -284,8 +290,7 @@ public interface TestData {
         + ", date=" + TEST_RESERVATION_DATE
         + ", endTime=" + TEST_RESERVATION_END_TIME
         + ", pax=" + TEST_RESERVATION_PAX
-        + ", notes='" + TEST_RESERVATION_NOTES
-        + "', place=" + TEST_PLACE_AVAILABLE_1.toString() + "}";
+        + ", notes='" + TEST_RESERVATION_NOTES + "'}";
 
     LocalTime TEST_RESERVATION_AVAILABILITY_START_TIME = LocalDateTime.of(2024, 7, 1, 18, 0, 0, 0).toLocalTime();
     LocalDate TEST_RESERVATION_AVAILABILITY_DATE = LocalDate.of(2024, 7, 1);
@@ -296,6 +301,15 @@ public interface TestData {
         .withDate(TEST_RESERVATION_AVAILABILITY_DATE)
         .withPax(4L)
         .withIdToExclude(-1L)
+        .build();
+
+    // ---------------------------------------------
+    // RESERVATIONPLACE TEST DATA
+    // ---------------------------------------------
+
+    ReservationPlace TEST_RESERVATIONPLACE = ReservationPlace.ReservationPlaceBuilder.aReservationPlace()
+        .withReservation(TEST_RESERVATION_1)
+        .withPlace(TEST_PLACE_AVAILABLE_1)
         .build();
 
     // ---------------------------------------------

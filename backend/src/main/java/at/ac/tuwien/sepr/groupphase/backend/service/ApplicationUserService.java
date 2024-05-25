@@ -1,8 +1,8 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserOverviewDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserRegistrationDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ApplicationUserLoginDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ApplicationUserOverviewDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ApplicationUserRegistrationDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
@@ -14,7 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.List;
 
-public interface UserService extends UserDetailsService {
+public interface ApplicationUserService extends UserDetailsService {
 
     /**
      * Get the current Spring Security Authentication of the current user.
@@ -28,7 +28,7 @@ public interface UserService extends UserDetailsService {
      *
      * @return The ApplicationUser who is currently logged in.
      */
-    public ApplicationUser getCurrentUser();
+    public ApplicationUser getCurrentApplicationUser();
 
     /**
      * Find all staff accounts ((un)confirmed Admins and Employees) entries ordered by name (descending).
@@ -61,11 +61,11 @@ public interface UserService extends UserDetailsService {
     /**
      * Log in a user.
      *
-     * @param userLoginDto login credentials
+     * @param applicationUserLoginDto login credentials
      * @return the JWT, if successful
      * @throws org.springframework.security.authentication.BadCredentialsException if credentials are bad
      */
-    String login(UserLoginDto userLoginDto);
+    String login(ApplicationUserLoginDto applicationUserLoginDto);
 
 
     //TODO: ADD validation Exception
@@ -73,10 +73,10 @@ public interface UserService extends UserDetailsService {
     /**
      * Register a user.
      *
-     * @param userRegistrationDto registration Data
+     * @param applicationUserRegistrationDto registration Data
      * @throws ValidationException if data used for the registration is invalid
      */
-    void register(UserRegistrationDto userRegistrationDto) throws ValidationException;
+    void register(ApplicationUserRegistrationDto applicationUserRegistrationDto) throws ValidationException;
 
     /**
      * Updates a user.
@@ -84,7 +84,7 @@ public interface UserService extends UserDetailsService {
      * @param toUpdate Data to update the user with
      * @throws NotFoundException if the user doesn't exist in the persistent data storage.
      */
-    void update(UserOverviewDto toUpdate) throws NotFoundException;
+    void update(ApplicationUserOverviewDto toUpdate) throws NotFoundException;
 
     /**
      * Delete the user with the given ID from the data storage.

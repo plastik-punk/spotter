@@ -2,8 +2,8 @@ package at.ac.tuwien.sepr.groupphase.backend.integrationtest.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DetailedMessageDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SimpleMessageDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.MessageDetailedSimpleDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.MessageSimpleDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.MessageInquiryDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Message;
 import at.ac.tuwien.sepr.groupphase.backend.repository.MessageRepository;
@@ -91,10 +91,10 @@ public class MessageEndpointTest implements TestData {
         assertEquals(HttpStatus.OK.value(), response.getStatus());
         assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType());
 
-        List<SimpleMessageDto> simpleMessageDtos = Arrays.asList(objectMapper.readValue(response.getContentAsString(),
-            SimpleMessageDto[].class));
+        List<MessageSimpleDto> messageSimpleDtos = Arrays.asList(objectMapper.readValue(response.getContentAsString(),
+            MessageSimpleDto[].class));
 
-        assertEquals(0, simpleMessageDtos.size());
+        assertEquals(0, messageSimpleDtos.size());
     }
 
     @Test
@@ -112,16 +112,16 @@ public class MessageEndpointTest implements TestData {
         assertEquals(HttpStatus.OK.value(), response.getStatus());
         assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType());
 
-        List<SimpleMessageDto> simpleMessageDtos = Arrays.asList(objectMapper.readValue(response.getContentAsString(),
-            SimpleMessageDto[].class));
+        List<MessageSimpleDto> messageSimpleDtos = Arrays.asList(objectMapper.readValue(response.getContentAsString(),
+            MessageSimpleDto[].class));
 
-        assertEquals(1, simpleMessageDtos.size());
-        SimpleMessageDto simpleMessageDto = simpleMessageDtos.get(0);
+        assertEquals(1, messageSimpleDtos.size());
+        MessageSimpleDto messageSimpleDto = messageSimpleDtos.get(0);
         assertAll(
-            () -> assertEquals(message.getId(), simpleMessageDto.getId()),
-            () -> assertEquals(TEST_NEWS_TITLE, simpleMessageDto.getTitle()),
-            () -> assertEquals(TEST_NEWS_SUMMARY, simpleMessageDto.getSummary()),
-            () -> assertEquals(TEST_NEWS_PUBLISHED_AT, simpleMessageDto.getPublishedAt())
+            () -> assertEquals(message.getId(), messageSimpleDto.getId()),
+            () -> assertEquals(TEST_NEWS_TITLE, messageSimpleDto.getTitle()),
+            () -> assertEquals(TEST_NEWS_SUMMARY, messageSimpleDto.getSummary()),
+            () -> assertEquals(TEST_NEWS_PUBLISHED_AT, messageSimpleDto.getPublishedAt())
         );
     }
 
@@ -141,10 +141,10 @@ public class MessageEndpointTest implements TestData {
             () -> assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType())
         );
 
-        DetailedMessageDto detailedMessageDto = objectMapper.readValue(response.getContentAsString(),
-            DetailedMessageDto.class);
+        MessageDetailedSimpleDto messageDetailedDto = objectMapper.readValue(response.getContentAsString(),
+            MessageDetailedSimpleDto.class);
 
-        assertEquals(message, messageMapper.detailedMessageDtoToMessage(detailedMessageDto));
+        assertEquals(message, messageMapper.detailedMessageDtoToMessage(messageDetailedDto));
     }
 
     @Test
@@ -178,8 +178,8 @@ public class MessageEndpointTest implements TestData {
         assertEquals(HttpStatus.CREATED.value(), response.getStatus());
         assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType());
 
-        DetailedMessageDto messageResponse = objectMapper.readValue(response.getContentAsString(),
-            DetailedMessageDto.class);
+        MessageDetailedSimpleDto messageResponse = objectMapper.readValue(response.getContentAsString(),
+            MessageDetailedSimpleDto.class);
 
         assertNotNull(messageResponse.getId());
         assertNotNull(messageResponse.getPublishedAt());

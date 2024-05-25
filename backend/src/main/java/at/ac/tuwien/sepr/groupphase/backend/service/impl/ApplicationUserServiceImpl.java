@@ -1,8 +1,8 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserLoginDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserOverviewDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserRegistrationDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ApplicationUserLoginDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ApplicationUserOverviewDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ApplicationUserRegistrationDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -11,8 +11,8 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
-import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
-import at.ac.tuwien.sepr.groupphase.backend.service.mapper.UserMapper;
+import at.ac.tuwien.sepr.groupphase.backend.service.ApplicationUserService;
+import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ApplicationUserMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,25 +33,25 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class CustomUserDetailService implements UserService {
+public class ApplicationUserServiceImpl implements ApplicationUserService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final ApplicationUserRepository applicationUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenizer jwtTokenizer;
-    private final UserDataValidator userDataValidator;
-    private final UserMapper userMapper;
+    private final ApplicationUserValidator applicationUserValidator;
+    private final ApplicationUserMapper applicationUserMapper;
     private final ReservationRepository reservationRepository;
 
     @Autowired
-    public CustomUserDetailService(ApplicationUserRepository applicationUserRepository, PasswordEncoder passwordEncoder,
-                                   JwtTokenizer jwtTokenizer, UserDataValidator userDataValidator, UserMapper userMapper,
-                                   ReservationRepository reservationRepository) {
+    public ApplicationUserServiceImpl(ApplicationUserRepository applicationUserRepository, PasswordEncoder passwordEncoder,
+                                      JwtTokenizer jwtTokenizer, ApplicationUserValidator applicationUserValidator, ApplicationUserMapper applicationUserMapper,
+                                      ReservationRepository reservationRepository) {
         this.applicationUserRepository = applicationUserRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenizer = jwtTokenizer;
-        this.userDataValidator = userDataValidator;
-        this.userMapper = userMapper;
+        this.applicationUserValidator = applicationUserValidator;
+        this.applicationUserMapper = applicationUserMapper;
         this.reservationRepository = reservationRepository;
     }
 
@@ -65,7 +65,7 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
-    public ApplicationUser getCurrentUser() {
+    public ApplicationUser getCurrentApplicationUser() {
         Authentication currentAuthentication = getCurrentUserAuthentication();
         if (currentAuthentication == null) {
             return null;
@@ -120,13 +120,13 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
-    public String login(UserLoginDto userLoginDto) throws BadCredentialsException {
-        UserDetails userDetails = loadUserByUsername(userLoginDto.getEmail());
+    public String login(ApplicationUserLoginDto applicationUserLoginDto) throws BadCredentialsException {
+        UserDetails userDetails = loadUserByUsername(applicationUserLoginDto.getEmail());
         if (userDetails != null
             && userDetails.isAccountNonExpired()
             && userDetails.isAccountNonLocked()
             && userDetails.isCredentialsNonExpired()
-            && passwordEncoder.matches(userLoginDto.getPassword(), userDetails.getPassword())
+            && passwordEncoder.matches(applicationUserLoginDto.getPassword(), userDetails.getPassword())
         ) {
             List<String> roles = userDetails.getAuthorities()
                 .stream()
@@ -138,16 +138,16 @@ public class CustomUserDetailService implements UserService {
     }
 
     @Override
-    public void register(UserRegistrationDto userRegistrationDto) throws ValidationException {
-        LOGGER.trace("register ({})", userRegistrationDto);
-        userDataValidator.validateRegistration(userRegistrationDto);
-        ApplicationUser applicationUser = userMapper.userRegistrationDtoToApplicationUser(userRegistrationDto);
-        applicationUser.setPassword(passwordEncoder.encode(userRegistrationDto.getPassword()));
+    public void register(ApplicationUserRegistrationDto applicationUserRegistrationDto) throws ValidationException {
+        LOGGER.trace("register ({})", applicationUserRegistrationDto);
+        applicationUserValidator.validateRegistration(applicationUserRegistrationDto);
+        ApplicationUser applicationUser = applicationUserMapper.userRegistrationDtoToApplicationUser(applicationUserRegistrationDto);
+        applicationUser.setPassword(passwordEncoder.encode(applicationUserRegistrationDto.getPassword()));
         applicationUserRepository.save(applicationUser);
     }
 
     @Override
-    public void update(UserOverviewDto toUpdate) throws NotFoundException {
+    public void update(ApplicationUserOverviewDto toUpdate) throws NotFoundException {
         LOGGER.trace("update ({})", toUpdate);
         ApplicationUser existingUser = applicationUserRepository.findById(toUpdate.getId())
             .orElseThrow(() -> new NotFoundException("User not found with id: " + toUpdate.getId()));
@@ -164,7 +164,7 @@ public class CustomUserDetailService implements UserService {
     @Override
     public void delete(Long id) throws NotFoundException, ConflictException {
         LOGGER.trace("delete ({})", id);
-        if (reservationRepository.findByUserId(id).size() != 0) {
+        if (reservationRepository.findByApplicationUserId(id).size() != 0) {
             throw new ConflictException("Error upon deleting user",
                 Arrays.asList("Couldn't delete user with id " + id + " because the user have open reservations."));
         }

@@ -1,24 +1,24 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
-import {HomeComponent} from './home.component';
+import {ReservationSimpleComponent} from './reservation-simple.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import {RouterTestingModule} from '@angular/router/testing';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 
-describe('HomeComponent', () => {
-  let component: HomeComponent;
-  let fixture: ComponentFixture<HomeComponent>;
+describe('ReservationSimpleComponent', () => {
+  let component: ReservationSimpleComponent;
+  let fixture: ComponentFixture<ReservationSimpleComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, RouterTestingModule, ReactiveFormsModule],
-      declarations: [ HomeComponent ]
+      declarations: [ ReservationSimpleComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(HomeComponent);
+    fixture = TestBed.createComponent(ReservationSimpleComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

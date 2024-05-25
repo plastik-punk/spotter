@@ -1,6 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserRegistrationDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ApplicationUserRegistrationDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -15,11 +15,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
-public class UserDataValidator {
+public class ApplicationUserValidator {
     private static final Logger LOG = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 
-    public void validateRegistration(UserRegistrationDto registrationDto) throws ValidationException {
+    public void validateRegistration(ApplicationUserRegistrationDto registrationDto) throws ValidationException {
         LOG.trace("validateRegistration({})", registrationDto);
         List<String> validationErrors = new ArrayList<>();
 

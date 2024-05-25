@@ -7,20 +7,17 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
-import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
+import at.ac.tuwien.sepr.groupphase.backend.service.ApplicationUserService;
 import at.ac.tuwien.sepr.groupphase.backend.service.impl.ReservationValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ActiveProfiles;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
@@ -38,12 +35,12 @@ public class ReservationValidatorTest implements TestData {
     private ReservationRepository reservationRepository;
 
     @Mock
-    private UserService userService;
+    private ApplicationUserService applicationUserService;
 
     @BeforeEach
     public void beforeEach() {
         MockitoAnnotations.openMocks(this);
-        this.reservationValidator = new ReservationValidator(reservationRepository, userService);
+        this.reservationValidator = new ReservationValidator(reservationRepository, applicationUserService);
     }
 
     @Test
@@ -120,20 +117,6 @@ public class ReservationValidatorTest implements TestData {
         assertThrows(ValidationException.class, () -> reservationValidator.validateReservation(reservation));
     }
 
-   @Test
-   public void givenNoPlace_whenValidateReservation_thenValidationException() {
-       Reservation reservation = TEST_RESERVATION_1.copy();
-       reservation.setPlace(null);
-       assertThrows(ValidationException.class, () -> reservationValidator.validateReservation(reservation));
-    }
-
-    @Test
-    public void givenNoPlace_whenValidateReservationDetailDto_thenValidationException() {
-        ReservationDetailDto dto = TEST_RESERVATION_DETAIL_DTO.copy();
-        dto.setPlaceId(null);
-        assertThrows(ValidationException.class, () -> reservationValidator.validateReservationDetailDto(dto));
-    }
-
     @Test
     public void givenNoStartTime_whenValidateReservationDetailDto_thenValidationException() {
         ReservationDetailDto dto = TEST_RESERVATION_DETAIL_DTO.copy();
@@ -207,7 +190,7 @@ public class ReservationValidatorTest implements TestData {
         Reservation reservation = TEST_RESERVATION_1.copy();
         reservation.setId(TEST_VALID_ID);
         when(reservationRepository.findById(TEST_VALID_ID)).thenReturn(Optional.of(reservation));
-        when(userService.getCurrentUser()).thenReturn(reservation.getApplicationUser());
+        when(applicationUserService.getCurrentApplicationUser()).thenReturn(reservation.getApplicationUser());
         assertDoesNotThrow(() -> reservationValidator.validateReservationDelete(TEST_VALID_ID));
     }
 
@@ -229,7 +212,7 @@ public class ReservationValidatorTest implements TestData {
         ApplicationUser anotherUser = new ApplicationUser();
         anotherUser.setId(2L);
         when(reservationRepository.findById(TEST_VALID_ID)).thenReturn(Optional.of(reservation));
-        when(userService.getCurrentUser()).thenReturn(anotherUser);
+        when(applicationUserService.getCurrentApplicationUser()).thenReturn(anotherUser);
         assertThrows(ValidationException.class, () -> reservationValidator.validateReservationDelete(TEST_VALID_ID));
     }
 
@@ -239,7 +222,7 @@ public class ReservationValidatorTest implements TestData {
         reservation.setId(TEST_VALID_ID);
         reservation.setDate(LocalDate.now().minusDays(1));
         when(reservationRepository.findById(TEST_VALID_ID)).thenReturn(Optional.of(reservation));
-        when(userService.getCurrentUser()).thenReturn(reservation.getApplicationUser());
+        when(applicationUserService.getCurrentApplicationUser()).thenReturn(reservation.getApplicationUser());
         assertThrows(ValidationException.class, () -> reservationValidator.validateReservationDelete(TEST_VALID_ID));
     }
 
@@ -250,7 +233,7 @@ public class ReservationValidatorTest implements TestData {
         tempReservation.setStartTime(LocalTime.now()); // set start time to 30 minutes from now
         tempReservation.setDate(LocalDate.now());
         when(reservationRepository.findById(TEST_VALID_ID)).thenReturn(Optional.of(tempReservation));
-        when(userService.getCurrentUser()).thenReturn(tempReservation.getApplicationUser());
+        when(applicationUserService.getCurrentApplicationUser()).thenReturn(tempReservation.getApplicationUser());
         assertThrows(ValidationException.class, () -> reservationValidator.validateReservationDelete(TEST_VALID_ID));
     }
 }

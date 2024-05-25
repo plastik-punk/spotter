@@ -38,10 +38,6 @@ public class Reservation {
     @Column(length = 100000)
     private String notes;
 
-    @ManyToOne
-    @JoinColumn(name = "place_id", nullable = false, referencedColumnName = "id")
-    private Place place;
-
     @Column(nullable = false)
     private String hashValue;
 
@@ -57,8 +53,8 @@ public class Reservation {
         return applicationUser;
     }
 
-    public void setUser(ApplicationUser user) {
-        this.applicationUser = user;
+    public void setUser(ApplicationUser applicationUser) {
+        this.applicationUser = applicationUser;
     }
 
     public LocalTime getStartTime() {
@@ -101,14 +97,6 @@ public class Reservation {
         this.notes = notes;
     }
 
-    public Place getPlace() {
-        return place;
-    }
-
-    public void setPlace(Place place) {
-        this.place = place;
-    }
-
     public String getHashValue() {
         return hashValue;
     }
@@ -131,11 +119,13 @@ public class Reservation {
             && Objects.equals(date, reservation.date)
             && Objects.equals(endTime, reservation.endTime)
             && Objects.equals(pax, reservation.pax)
-            && Objects.equals(notes, reservation.notes)
-            && Objects.equals(place, reservation.place)
-            && Objects.equals(hashValue, reservation.hashValue);
+            && Objects.equals(notes, reservation.notes);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, applicationUser, startTime, date, endTime, pax, notes);
+    }
 
     @Override
     public String toString() {
@@ -147,7 +137,6 @@ public class Reservation {
             + ", endTime=" + endTime
             + ", pax=" + pax
             + ", notes='" + notes + '\''
-            + ", place=" + place
             + '}';
     }
 
@@ -160,7 +149,6 @@ public class Reservation {
             .withEndTime(this.endTime)
             .withPax(this.pax)
             .withNotes(this.notes)
-            .withPlace(this.place)
             .withHashValue(this.hashValue)
             .build();
     }
@@ -173,7 +161,6 @@ public class Reservation {
         private LocalTime endTime;
         private Long pax;
         private String notes;
-        private Place place;
         private String hashValue;
 
         private ReservationBuilder() {
@@ -218,11 +205,6 @@ public class Reservation {
             return this;
         }
 
-        public ReservationBuilder withPlace(Place place) {
-            this.place = place;
-            return this;
-        }
-
         public ReservationBuilder withHashValue(String hashValue) {
             this.hashValue = hashValue;
             return this;
@@ -237,7 +219,6 @@ public class Reservation {
             reservation.setEndTime(endTime);
             reservation.setPax(pax);
             reservation.setNotes(notes);
-            reservation.setPlace(place);
             reservation.setHashValue(hashValue);
             return reservation;
         }

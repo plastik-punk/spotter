@@ -1,19 +1,19 @@
-import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
-import { NgForm } from "@angular/forms";
-import { Reservation, ReservationCheckAvailabilityDto, ReservationCreateDto } from "../../dtos/reservation";
-import { Observable } from "rxjs";
-import { ReservationService } from "../../services/reservation.service";
-import { SimpleViewReservationStatusEnum } from "../../dtos/status-enum";
-import { UserOverviewDto } from "../../dtos/app-user";
-import { NotificationService } from "../../services/notification.service";
+import {Component, OnInit} from '@angular/core';
+import {AuthService} from '../../../services/auth.service';
+import {NgForm} from "@angular/forms";
+import {Reservation, ReservationCheckAvailabilityDto, ReservationCreateDto} from "../../../dtos/reservation";
+import {Observable} from "rxjs";
+import {ReservationService} from "../../../services/reservation.service";
+import {SimpleViewReservationStatusEnum} from "../../../dtos/status-enum";
+import {UserOverviewDto} from "../../../dtos/app-user";
+import {NotificationService} from "../../../services/notification.service";
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.scss']
+  selector: 'app-reservation-simple',
+  templateUrl: './reservation-simple.component.html',
+  styleUrls: ['./reservation-simple.component.scss']
 })
-export class HomeComponent implements OnInit {
+export class ReservationSimpleComponent implements OnInit {
 
   reservationCreateDto: ReservationCreateDto = {
     user: undefined,
