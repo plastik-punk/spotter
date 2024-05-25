@@ -93,10 +93,10 @@ export class ReservationService {
   /**
    * Deletes a reservation
    *
-   * @param id the id of the reservation to delete
+   * @param hash the hashed id of the reservation to delete
    * @return an Observable for the HttpResponse
    */
-  delete(id: number): Observable<HttpResponse<void>> {
-    return this.httpClient.delete<void>(this.reservationBaseUri + "/" + id, { observe: 'response' });
+  delete(hash: string): Observable<HttpResponse<void>> {
+    return this.httpClient.delete<void>(this.reservationBaseUri, { observe: 'response' , body: hash});
   }
 }

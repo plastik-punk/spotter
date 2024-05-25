@@ -106,11 +106,11 @@ public class ReservationEndpoint {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PermitAll
-    @DeleteMapping("/{id}")
+    @DeleteMapping
     @Operation(summary = "Delete a reservation")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) throws ValidationException {
-        LOGGER.info("DELETE /api/v1/reservations body: {}", id);
-        service.cancel(id);
+    public ResponseEntity<Void> delete(@RequestBody String hashedId) throws ValidationException {
+        LOGGER.info("DELETE /api/v1/reservations body: {}", hashedId);
+        service.cancel(hashedId);
         return ResponseEntity.noContent().build();
 
     }

@@ -28,6 +28,8 @@ public class ReservationCreateDto {
 
     private String mobileNumber;
 
+    private String restaurantName;
+
     public ApplicationUser getUser() {
         return applicationUser;
     }
@@ -108,6 +110,14 @@ public class ReservationCreateDto {
         this.mobileNumber = mobileNumber;
     }
 
+    public String getRestaurantName() {
+        return restaurantName;
+    }
+
+    public void setRestaurantName(String restaurantName) {
+        this.restaurantName = restaurantName;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -125,12 +135,13 @@ public class ReservationCreateDto {
             && Objects.equals(pax, that.pax)
             && Objects.equals(notes, that.notes)
             && Objects.equals(email, that.email)
-            && Objects.equals(mobileNumber, that.mobileNumber);
+            && Objects.equals(mobileNumber, that.mobileNumber)
+            && Objects.equals(restaurantName, that.restaurantName);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(applicationUser, firstName, lastName, startTime, endTime, date, pax, notes, email, mobileNumber);
+        return Objects.hash(applicationUser, firstName, lastName, startTime, endTime, date, pax, notes, email, mobileNumber, restaurantName);
     }
 
     @Override
@@ -146,6 +157,7 @@ public class ReservationCreateDto {
             + ", notes='" + notes + '\''
             + ", email='" + email + '\''
             + ", mobileNumber=" + mobileNumber
+            + ", restaurantName=" + restaurantName
             + '}';
     }
 
@@ -161,6 +173,7 @@ public class ReservationCreateDto {
             .withNotes(this.notes)
             .withEmail(this.email)
             .withMobileNumber(this.mobileNumber)
+            .withRestaurantName(this.restaurantName)
             .build();
     }
 
@@ -175,6 +188,7 @@ public class ReservationCreateDto {
         private String notes;
         private String email;
         private String mobileNumber;
+        private String restaurantName;
 
         private ReservationCreateDtoBuilder() {
         }
@@ -233,6 +247,11 @@ public class ReservationCreateDto {
             return this;
         }
 
+        public ReservationCreateDtoBuilder withRestaurantName(String restaurantName) {
+            this.restaurantName = restaurantName;
+            return this;
+        }
+
         public ReservationCreateDto build() {
             ReservationCreateDto reservationCreateDto = new ReservationCreateDto();
             reservationCreateDto.setUser(applicationUser);
@@ -245,6 +264,7 @@ public class ReservationCreateDto {
             reservationCreateDto.setNotes(notes);
             reservationCreateDto.setEmail(email);
             reservationCreateDto.setMobileNumber(mobileNumber);
+            reservationCreateDto.setRestaurantName(restaurantName);
             return reservationCreateDto;
         }
     }

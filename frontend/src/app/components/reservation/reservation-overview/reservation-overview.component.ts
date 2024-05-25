@@ -22,7 +22,7 @@ export class ReservationOverviewComponent implements OnInit {
   searchEarliestDate: string | null = null;
   searchLatestDate: string | null = null;
   searchChangedObservable = new Subject<void>();
-  deleteWhat: ReservationEditDto = null;
+  deleteWhat: string = null;
 
   constructor(
     private authService: AuthService,
@@ -92,7 +92,7 @@ export class ReservationOverviewComponent implements OnInit {
   openConfirmationDialog(hashId: string): void {
     this.reservationService.getByHashedId(hashId).subscribe({
       next: data => {
-        this.deleteWhat = data;
+        this.deleteWhat = hashId;
       },
       error: error => {
         this.notificationService.showError('Failed to load reservation details. Please try again later.');
@@ -102,12 +102,12 @@ export class ReservationOverviewComponent implements OnInit {
 
   onDelete(): void {
     if (!this.deleteWhat) {
-      this.notificationService.showError('No reservation selected for deletion.');
+      this.notificationService.showError('No reservation selected for cancellation.');
       return;
     }
 
     let observable: Observable<HttpResponse<void>>;
-    observable = this.reservationService.delete(this.deleteWhat.reservationId);
+    observable = this.reservationService.delete(this.deleteWhat);
     observable.subscribe({
       next: (response) => {
         if (response.status === 204) {

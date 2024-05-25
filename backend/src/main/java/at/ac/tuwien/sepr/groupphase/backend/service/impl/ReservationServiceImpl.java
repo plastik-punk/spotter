@@ -35,11 +35,7 @@ import java.lang.invoke.MethodHandles;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -149,19 +145,16 @@ public class ReservationServiceImpl implements ReservationService {
 
 
         // 7. send conformation Mail
-        // TODO activate again
-        /*
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("recipientName", reservationCreateDto.getFirstName() + " " + reservationCreateDto.getLastName());
         templateModel.put("text", reservationCreateDto.getNotes());
         templateModel.put("persons", reservationCreateDto.getPax());
-        templateModel.put("restaurantName", "--SpotterEssen--"); //TODO: change to restaurant name
+        templateModel.put("restaurantName", reservationCreateDto.getRestaurantName());
         templateModel.put("reservationDate", reservationCreateDto.getDate());
         templateModel.put("reservationTime", reservationCreateDto.getStartTime());
         templateModel.put("link", "http://localhost:4200/#/reservation-detail/" + savedReservation.getHashValue()); //TODO: change away from localhost
         emailService.sendMessageUsingThymeleafTemplate(reservationCreateDto.getUser().getEmail(),
             "Reservation Confirmation", templateModel);
-         */
 
         // 8. save ReservationPlace in database
         ReservationPlace reservationPlace = ReservationPlace.ReservationPlaceBuilder.aReservationPlace()
@@ -256,7 +249,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationEditDto getByHashedId(String hashValue) throws NotFoundException {
+    public ReservationEditDto getByHashedId(String hashValue) throws NotFoundException, ValidationException {
         LOGGER.trace("getDetail ({})", hashValue);
 
         // TODO: this should not be a list, but a single reservation
@@ -269,15 +262,12 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = reservationList.getFirst();
         ApplicationUser currentUser = applicationUserService.getCurrentApplicationUser();
 
-        // TODO: activate this check again
-        /*
         if (currentUser == null || !currentUser.getRole().equals(RoleEnum.ADMIN)) {
             if (!reservation.getApplicationUser().equals(currentUser)) {
                 // TODO: throw a fitting exception (create a new exception ideally)
                 throw new ValidationException("You are not allowed to view this reservation", new ArrayList<>());
             }
         }
-         */
 
         // fetch places for reservation
         ReservationEditDto reservationEditDto = mapper.reservationToReservationEditDto(reservation);
@@ -341,24 +331,13 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         // 6. send confirmation mail
-        // TODO: activate mailing at some point
-        /*
-        Map<String, Object> templateModel = constructMailTemplateModel(reservation, currentUser);
-        templateModel.put("recipientName", currentUser.getFirstName() + " " + currentUser.getLastName());
-        templateModel.put("text", reservation.getNotes());
-        templateModel.put("persons", reservation.getPax());
-        templateModel.put("restaurantName", "--SpotterEssen--"); //TODO: change to restaurant name
-        templateModel.put("reservationDate", reservation.getDate());
-        templateModel.put("reservationTime", reservation.getStartTime());
-        templateModel.put("link", "http://localhost:4200/#/reservation-detail/" + reservation.getHashValue()); //TODO: change away from localhost
-
+        Map<String, Object> templateModel = constructMailTemplateModel(updatedReservation, currentUser);
         try {
             emailService.sendMessageUsingThymeleafTemplate(currentUser.getEmail(),
-                "Reservation Confirmation", templateModel);
+                "Reservation Update Confirmation", templateModel);
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
-         */
 
         // 7. map updated reservation to DTO and return it
         ReservationEditDto dto = mapper.reservationToReservationEditDto(updatedReservation);
@@ -367,6 +346,8 @@ public class ReservationServiceImpl implements ReservationService {
             .map(reservationPlace -> reservationPlace.getPlace().getId())
             .collect(Collectors.toList());
         dto.setPlaceIds(placeIds);
+
+        LOGGER.debug("Updated reservation: {}", dto.toString());
 
         return dto;
     }
@@ -381,7 +362,9 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public void cancel(Long id) throws ValidationException {
+    public void cancel(String hashId) throws ValidationException {
+        ReservationEditDto reservationEditDto = getByHashedId(hashId);
+        Long id = reservationEditDto.getReservationId();
         LOGGER.trace("cancel ({})", id);
 
         //validate reservation
@@ -412,7 +395,7 @@ public class ReservationServiceImpl implements ReservationService {
             throw new RuntimeException(e);
         }
 
-        LOGGER.info("Canceled reservation: " + id); // TODO REMOVE AFTER TESTING
+        LOGGER.debug("Canceled reservation: {}", id);
     }
 
     private Map<String, Object> constructMailTemplateModel(Reservation reservation, ApplicationUser currentUser) {

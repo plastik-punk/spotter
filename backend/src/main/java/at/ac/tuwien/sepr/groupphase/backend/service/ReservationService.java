@@ -60,8 +60,8 @@ public interface ReservationService {
     /**
      * Cancel a reservation.
      *
-     * @param id the id of the reservation
+     * @param hashId the Hashed id of the reservation.
+     * @throws ValidationException if the reservation is not found.
      */
-    void cancel(Long id) throws ValidationException;
-
+    void cancel(String hashId) throws ValidationException;
 }
