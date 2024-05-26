@@ -47,6 +47,20 @@ export class ReservationService {
   }
 
   /**
+   * Get the next available tables for a reservation
+   *
+   * @param reservationCheckAvailabilityDto the reservation to get the next available tables for
+   * @return an Observable for the next available tables
+   */
+  getNextAvailableTables(reservationCheckAvailabilityDto: ReservationCheckAvailabilityDto) : Observable<ReservationCreateDto[]> {
+   let params = new HttpParams();
+    Object.keys(reservationCheckAvailabilityDto).forEach((key) => {
+      params = params.append(key, reservationCheckAvailabilityDto[key]);
+    });
+    return this.httpClient.get<ReservationCreateDto[]>(this.reservationBaseUri + "/next", { params });
+  }
+
+  /**
    * Get a reservation (detail) by its id
    *
    * @param id the hashed id of the reservation
@@ -99,4 +113,6 @@ export class ReservationService {
   delete(hash: string): Observable<HttpResponse<void>> {
     return this.httpClient.delete<void>(this.reservationBaseUri, { observe: 'response' , body: hash});
   }
+
+
 }

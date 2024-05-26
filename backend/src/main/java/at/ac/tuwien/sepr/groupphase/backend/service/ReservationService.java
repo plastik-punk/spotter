@@ -34,6 +34,14 @@ public interface ReservationService {
     ReservationResponseEnum getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) throws ValidationException;
 
     /**
+     * Get the next three available tables for a reservation.
+     *
+     * @param reservationCheckAvailabilityDto the reservation data
+     * @return the next three available tables
+     */
+    ReservationCreateDto[] getNextAvailableTables(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto);
+
+    /**
      * Get the details of a reservation specified by its Hashed id.
      *
      * @param id the Hashed id of the reservation

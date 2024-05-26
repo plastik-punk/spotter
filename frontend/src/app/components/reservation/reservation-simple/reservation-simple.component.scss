@@ -178,6 +178,21 @@ body {
   color: white;
 }
 
+.available-btn {
+  background-color: transparent;
+  border: 2px solid darkgreen;
+  color: darkgreen;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  width: 30%;
+}
+
+.available-btn:hover {
+  background-color: darkgreen;
+  color: white;
+}
+
 .pax-container {
   display: flex;
 }

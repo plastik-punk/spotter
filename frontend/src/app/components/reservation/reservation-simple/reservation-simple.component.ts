@@ -14,6 +14,8 @@ import {NotificationService} from "../../../services/notification.service";
   styleUrls: ['./reservation-simple.component.scss']
 })
 export class ReservationSimpleComponent implements OnInit {
+  unavailable: boolean = true;
+  nextAvailableTables: ReservationCreateDto[] = [];
 
   reservationCreateDto: ReservationCreateDto = {
     user: undefined,
@@ -65,30 +67,50 @@ export class ReservationSimpleComponent implements OnInit {
         if (data.valueOf() === this.enumReservationTableStatus.available.valueOf()) {
           this.reservationStatusText = 'Tables available';
           this.reservationStatusClass = 'reservation-table-available';
+          this.unavailable = false;
         } else if (data.valueOf() === this.enumReservationTableStatus.closed.valueOf()) {
           this.reservationStatusText = 'Location Closed This Day';
           this.reservationStatusClass = 'reservation-table-conflict';
+          this.unavailable = true;
         } else if (data.valueOf() === this.enumReservationTableStatus.outsideOpeningHours.valueOf()) {
           this.reservationStatusText = 'Outside Of Opening Hours';
           this.reservationStatusClass = 'reservation-table-conflict';
+          this.unavailable = true;
         } else if (data.valueOf() === this.enumReservationTableStatus.respectClosingHour.valueOf()) {
           this.reservationStatusText = 'Respect Closing Hour';
           this.reservationStatusClass = 'reservation-table-conflict';
+          this.unavailable = true;
         } else if (data.valueOf() === this.enumReservationTableStatus.tooManyPax.valueOf()) {
           this.reservationStatusText = 'Too Many Pax for available tables (try advanced reservation)';
           this.reservationStatusClass = 'reservation-table-conflict';
+          this.unavailable = true;
         } else if (data.valueOf() === this.enumReservationTableStatus.allOccupied.valueOf()) {
           this.reservationStatusText = 'All Tables Occupied';
           this.reservationStatusClass = 'reservation-table-conflict';
+          this.unavailable = true;
         } else if (data.valueOf() === this.enumReservationTableStatus.dateInPast.valueOf()) {
           this.reservationStatusText = 'Date In The Past';
           this.reservationStatusClass = 'reservation-table-conflict';
+          this.unavailable = true;
         }
       },
       error: (error) => {
         this.notificationService.showError('Failed to check availability. Please try again later.');
       },
-    });
+    })
+
+    if (this.unavailable) {
+      let observable: Observable<ReservationCreateDto[]>;
+      observable = this.service.getNextAvailableTables(this.reservationCheckAvailabilityDto);
+      observable.subscribe({
+        next: (data) => {
+          this.nextAvailableTables = data;
+        },
+        error: (error) => {
+          this.notificationService.showError('Failed to get next available tables. Please try again later.');
+        },
+      });
+    }
   }
 
   onSubmit(form: NgForm) {
@@ -119,6 +141,11 @@ export class ReservationSimpleComponent implements OnInit {
     } else {
       this.showFormErrors();
     }
+  }
+
+  selectAvailable(reservationCreateDto: ReservationCreateDto) {
+    this.reservationCreateDto.date = reservationCreateDto.date;
+    this.reservationCreateDto.startTime = reservationCreateDto.startTime;
   }
 
   private resetForm(form: NgForm) {

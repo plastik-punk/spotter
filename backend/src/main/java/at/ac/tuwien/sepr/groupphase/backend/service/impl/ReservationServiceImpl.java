@@ -35,7 +35,12 @@ import java.lang.invoke.MethodHandles;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Collections;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @Service
@@ -145,14 +150,7 @@ public class ReservationServiceImpl implements ReservationService {
 
 
         // 7. send conformation Mail
-        Map<String, Object> templateModel = new HashMap<>();
-        templateModel.put("recipientName", reservationCreateDto.getFirstName() + " " + reservationCreateDto.getLastName());
-        templateModel.put("text", reservationCreateDto.getNotes());
-        templateModel.put("persons", reservationCreateDto.getPax());
-        templateModel.put("restaurantName", reservationCreateDto.getRestaurantName());
-        templateModel.put("reservationDate", reservationCreateDto.getDate());
-        templateModel.put("reservationTime", reservationCreateDto.getStartTime());
-        templateModel.put("link", "http://localhost:4200/#/reservation-detail/" + savedReservation.getHashValue()); //TODO: change away from localhost
+        Map<String, Object> templateModel = constructMailTemplateModel(savedReservation, reservationCreateDto.getUser());
         emailService.sendMessageUsingThymeleafTemplate(reservationCreateDto.getUser().getEmail(),
             "Reservation Confirmation", templateModel);
 
@@ -246,6 +244,24 @@ public class ReservationServiceImpl implements ReservationService {
 
         // 8. if no check succeeded, return available
         return ReservationResponseEnum.AVAILABLE;
+    }
+
+    @Override
+    public ReservationCreateDto[] getNextAvailableTables(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) {
+        //TODO: implement
+        ReservationCreateDto table1 = new ReservationCreateDto();
+        table1.setStartTime(LocalTime.of(12, 0));
+        table1.setEndTime(LocalTime.of(14, 0));
+        table1.setDate(LocalDate.now());
+        ReservationCreateDto table2 = new ReservationCreateDto();
+        table2.setStartTime(LocalTime.of(14, 0));
+        table2.setEndTime(LocalTime.of(16, 0));
+        table2.setDate(LocalDate.now());
+        ReservationCreateDto table3 = new ReservationCreateDto();
+        table3.setStartTime(LocalTime.of(16, 0));
+        table3.setEndTime(LocalTime.of(18, 0));
+        table3.setDate(LocalDate.now());
+        return new ReservationCreateDto[]{table1, table2, table3};
     }
 
     @Override
