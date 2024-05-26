@@ -15,7 +15,7 @@ import {NotificationService} from "../../../services/notification.service";
 })
 export class ReservationSimpleComponent implements OnInit {
   unavailable: boolean = true;
-  nextAvailableTables: ReservationCreateDto[] = [];
+  nextAvailableTables: ReservationCheckAvailabilityDto[] = [];
 
   reservationCreateDto: ReservationCreateDto = {
     user: undefined,
@@ -83,7 +83,7 @@ export class ReservationSimpleComponent implements OnInit {
         } else if (data.valueOf() === this.enumReservationTableStatus.tooManyPax.valueOf()) {
           this.reservationStatusText = 'Too Many Pax for available tables (try advanced reservation)';
           this.reservationStatusClass = 'reservation-table-conflict';
-          this.unavailable = true;
+          this.unavailable = false;
         } else if (data.valueOf() === this.enumReservationTableStatus.allOccupied.valueOf()) {
           this.reservationStatusText = 'All Tables Occupied';
           this.reservationStatusClass = 'reservation-table-conflict';
@@ -100,11 +100,16 @@ export class ReservationSimpleComponent implements OnInit {
     })
 
     if (this.unavailable) {
-      let observable: Observable<ReservationCreateDto[]>;
+      let observable: Observable<ReservationCheckAvailabilityDto[]>;
       observable = this.service.getNextAvailableTables(this.reservationCheckAvailabilityDto);
       observable.subscribe({
         next: (data) => {
-          this.nextAvailableTables = data;
+          if (data.length > 0) {
+            this.nextAvailableTables = data;
+          } else {
+            this.notificationService.showError('No tables available anymore for this day. Please try another.')
+          }
+
         },
         error: (error) => {
           this.notificationService.showError('Failed to get next available tables. Please try again later.');
@@ -146,6 +151,7 @@ export class ReservationSimpleComponent implements OnInit {
   selectAvailable(reservationCreateDto: ReservationCreateDto) {
     this.reservationCreateDto.date = reservationCreateDto.date;
     this.reservationCreateDto.startTime = reservationCreateDto.startTime;
+    this.onFieldChange();
   }
 
   private resetForm(form: NgForm) {

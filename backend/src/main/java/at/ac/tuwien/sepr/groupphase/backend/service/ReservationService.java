@@ -39,7 +39,7 @@ public interface ReservationService {
      * @param reservationCheckAvailabilityDto the reservation data
      * @return the next three available tables
      */
-    ReservationCreateDto[] getNextAvailableTables(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto);
+    ReservationCheckAvailabilityDto[] getNextAvailableTables(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) throws ValidationException;
 
     /**
      * Get the details of a reservation specified by its Hashed id.

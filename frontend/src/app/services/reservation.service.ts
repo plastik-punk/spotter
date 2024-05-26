@@ -52,12 +52,12 @@ export class ReservationService {
    * @param reservationCheckAvailabilityDto the reservation to get the next available tables for
    * @return an Observable for the next available tables
    */
-  getNextAvailableTables(reservationCheckAvailabilityDto: ReservationCheckAvailabilityDto) : Observable<ReservationCreateDto[]> {
+  getNextAvailableTables(reservationCheckAvailabilityDto: ReservationCheckAvailabilityDto) : Observable<ReservationCheckAvailabilityDto[]> {
    let params = new HttpParams();
     Object.keys(reservationCheckAvailabilityDto).forEach((key) => {
       params = params.append(key, reservationCheckAvailabilityDto[key]);
     });
-    return this.httpClient.get<ReservationCreateDto[]>(this.reservationBaseUri + "/next", { params });
+    return this.httpClient.get<ReservationCheckAvailabilityDto[]>(this.reservationBaseUri + "/next", { params });
   }
 
   /**

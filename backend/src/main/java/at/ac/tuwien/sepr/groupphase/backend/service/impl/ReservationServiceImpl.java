@@ -35,6 +35,7 @@ import java.lang.invoke.MethodHandles;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -247,21 +248,59 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationCreateDto[] getNextAvailableTables(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) {
-        //TODO: implement
-        ReservationCreateDto table1 = new ReservationCreateDto();
-        table1.setStartTime(LocalTime.of(12, 0));
-        table1.setEndTime(LocalTime.of(14, 0));
-        table1.setDate(LocalDate.now());
-        ReservationCreateDto table2 = new ReservationCreateDto();
-        table2.setStartTime(LocalTime.of(14, 0));
-        table2.setEndTime(LocalTime.of(16, 0));
-        table2.setDate(LocalDate.now());
-        ReservationCreateDto table3 = new ReservationCreateDto();
-        table3.setStartTime(LocalTime.of(16, 0));
-        table3.setEndTime(LocalTime.of(18, 0));
-        table3.setDate(LocalDate.now());
-        return new ReservationCreateDto[]{table1, table2, table3};
+    public ReservationCheckAvailabilityDto[] getNextAvailableTables(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) throws ValidationException {
+        LOGGER.trace("getNextAvailableTables ({})", reservationCheckAvailabilityDto.toString());
+        //TODO: Validator
+        LocalDate date = reservationCheckAvailabilityDto.getDate();
+        LocalTime startTime = reservationCheckAvailabilityDto.getStartTime();
+        LocalTime endTime = reservationCheckAvailabilityDto.getEndTime();
+        LocalTime endOfDay = LocalTime.of(23, 59);
+
+        // if in simple view, no end time is given so we set it to 2 hours after start time by default
+        long duration;
+        if (endTime == null) {
+            duration = 120;
+        } else {
+            duration = startTime.until(endTime, ChronoUnit.MINUTES);
+        }
+
+        startTime = roundToNearest15Minutes(startTime).minusMinutes(60);
+
+        List<ReservationCheckAvailabilityDto> nextTables = new ArrayList<>();
+
+        while (nextTables.size() < 3){
+            endTime = startTime.plusMinutes(duration).isAfter(endOfDay) && startTime.plusMinutes(duration).isBefore(LocalTime.of(6, 0)) ? endOfDay : startTime.plusMinutes(duration);
+            ReservationCheckAvailabilityDto newReservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+                .withDate(date)
+                .withStartTime(startTime)
+                .withEndTime(endTime)
+                .withPax(reservationCheckAvailabilityDto.getPax())
+                .build();
+            ReservationResponseEnum tableStatus = getAvailability(newReservationCheckAvailabilityDto);
+
+            if (tableStatus == ReservationResponseEnum.AVAILABLE) {
+                nextTables.add(newReservationCheckAvailabilityDto);
+            }
+
+            startTime = startTime.plusMinutes(30);
+
+            if (startTime.isAfter(endOfDay) && startTime.isBefore(LocalTime.of(6, 0))) {
+                break;
+            }
+        }
+
+        return nextTables.toArray(new ReservationCheckAvailabilityDto[0]);
+    }
+
+    private LocalTime roundToNearest15Minutes(LocalTime time) {
+        int minute = time.getMinute();
+        int roundedMinute = (minute + 7) / 15 * 15;
+        if (roundedMinute >= 60) {
+            time = time.plusHours(1).withMinute(0);
+        } else {
+            time = time.withMinute(roundedMinute);
+        }
+        return time.withSecond(0).withNano(0);
     }
 
     @Override

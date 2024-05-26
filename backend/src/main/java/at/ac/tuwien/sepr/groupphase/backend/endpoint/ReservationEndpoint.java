@@ -81,7 +81,7 @@ public class ReservationEndpoint {
     @PermitAll
     @GetMapping({"/next"})
     @Operation(summary = "Get the next three available reservations")
-    public ReservationCreateDto[] getNextAvailableTables(@RequestParam("startTime") String startTime,
+    public ReservationCheckAvailabilityDto[] getNextAvailableTables(@RequestParam("startTime") String startTime,
                                                        @RequestParam("date") String date,
                                                        @RequestParam("pax") Long pax,
                                                        @RequestParam("idToExclude") Long idToExclude)
