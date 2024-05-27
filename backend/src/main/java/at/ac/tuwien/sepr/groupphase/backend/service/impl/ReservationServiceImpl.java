@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import java.lang.invoke.MethodHandles;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
@@ -170,6 +171,7 @@ public class ReservationServiceImpl implements ReservationService {
         LOGGER.trace("getAvailability ({})", reservationCheckAvailabilityDto.toString());
         reservationValidator.validateReservationCheckAvailabilityDto(reservationCheckAvailabilityDto);
         LocalDate date = reservationCheckAvailabilityDto.getDate();
+        LocalTime startTime = reservationCheckAvailabilityDto.getStartTime();
         LocalTime endTime = reservationCheckAvailabilityDto.getEndTime();
 
         // 1. set endTime depending on context
@@ -178,7 +180,7 @@ public class ReservationServiceImpl implements ReservationService {
             endTime = reservationCheckAvailabilityDto.getStartTime().plusHours(2);
         }
         // b. if endTime is after midnight and before 6am, set it to just before midnight to guarantee check-safety
-        if (!endTime.isBefore(LocalTime.of(0, 0)) && endTime.isBefore(LocalTime.of(6, 0))) {
+        if (!endTime.isBefore(LocalTime.of(0, 0)) && endTime.isBefore(LocalTime.of(6, 0)) && startTime.isBefore(LocalTime.of(23, 59)) && startTime.isAfter(LocalTime.of(6, 0))) {
             endTime = LocalTime.of(23, 59);
         }
 
@@ -202,7 +204,6 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         // 5. check if reservation is within opening hours
-        LocalTime startTime = reservationCheckAvailabilityDto.getStartTime();
         for (OpeningHours openingHours : openingHoursList) {
             if (!startTime.isAfter(openingHours.getClosingTime())
                 && !startTime.isBefore(openingHours.getOpeningTime())
@@ -254,26 +255,44 @@ public class ReservationServiceImpl implements ReservationService {
         LocalDate date = reservationCheckAvailabilityDto.getDate();
         LocalTime startTime = reservationCheckAvailabilityDto.getStartTime();
         LocalTime endTime = reservationCheckAvailabilityDto.getEndTime();
-        LocalTime endOfDay = LocalTime.of(23, 59);
 
-        // if in simple view, no end time is given so we set it to 2 hours after start time by default
-        long duration;
+        LocalDateTime start = LocalDateTime.of(date, startTime);
+        LocalDateTime end;
         if (endTime == null) {
-            duration = 120;
+            end = start.plusHours(2);
+        } else if (endTime.isBefore(startTime)) {
+            end = LocalDateTime.of(date.plusDays(1), endTime);
         } else {
-            duration = startTime.until(endTime, ChronoUnit.MINUTES);
+            end = LocalDateTime.of(date, endTime);
         }
 
-        startTime = roundToNearest15Minutes(startTime).minusMinutes(60);
+        long duration = ChronoUnit.MINUTES.between(start, end);
+
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+        List<OpeningHours> openingHoursList = openingHoursRepository.findByDayOfWeek(dayOfWeek);
+        if (openingHoursList.isEmpty()) {
+            return new ReservationCheckAvailabilityDto[0];
+        }
+
+        LocalTime latest = openingHoursList.getFirst().getClosingTime();
+        for (OpeningHours openingHours : openingHoursList) {
+            if (openingHours.getClosingTime().isAfter(latest)) {
+                latest = openingHours.getClosingTime();
+            }
+        }
+
+        LocalDateTime endOfDay = LocalDateTime.of(date, latest);
+
+        LocalDateTime tryStart = roundToNearest15Minutes(start).minusMinutes(60);
 
         List<ReservationCheckAvailabilityDto> nextTables = new ArrayList<>();
 
-        while (nextTables.size() < 3){
-            endTime = startTime.plusMinutes(duration).isAfter(endOfDay) && startTime.plusMinutes(duration).isBefore(LocalTime.of(6, 0)) ? endOfDay : startTime.plusMinutes(duration);
+        while (nextTables.size() < 3 && tryStart.isBefore(endOfDay)){
+            LocalDateTime tryEnd = tryStart.plusMinutes(duration);
             ReservationCheckAvailabilityDto newReservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
-                .withDate(date)
-                .withStartTime(startTime)
-                .withEndTime(endTime)
+                .withDate(tryStart.toLocalDate())
+                .withStartTime(tryStart.toLocalTime())
+                .withEndTime(tryEnd.toLocalTime())
                 .withPax(reservationCheckAvailabilityDto.getPax())
                 .build();
             ReservationResponseEnum tableStatus = getAvailability(newReservationCheckAvailabilityDto);
@@ -282,17 +301,13 @@ public class ReservationServiceImpl implements ReservationService {
                 nextTables.add(newReservationCheckAvailabilityDto);
             }
 
-            startTime = startTime.plusMinutes(30);
-
-            if (startTime.isAfter(endOfDay) && startTime.isBefore(LocalTime.of(6, 0))) {
-                break;
-            }
+            tryStart = tryStart.plusMinutes(30);
         }
 
         return nextTables.toArray(new ReservationCheckAvailabilityDto[0]);
     }
 
-    private LocalTime roundToNearest15Minutes(LocalTime time) {
+    private LocalDateTime roundToNearest15Minutes(LocalDateTime time) {
         int minute = time.getMinute();
         int roundedMinute = (minute + 7) / 15 * 15;
         if (roundedMinute >= 60) {
@@ -300,7 +315,7 @@ public class ReservationServiceImpl implements ReservationService {
         } else {
             time = time.withMinute(roundedMinute);
         }
-        return time.withSecond(0).withNano(0);
+        return time;
     }
 
     @Override

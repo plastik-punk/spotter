@@ -47,14 +47,18 @@ export class ReservationSimpleComponent implements OnInit {
     public authService: AuthService,
     private service: ReservationService,
     private notificationService: NotificationService,
-  ) { }
+  ) {
+  }
 
-  ngOnInit() { }
+  ngOnInit() {
+  }
 
   onFieldChange() {
     this.reservationCheckAvailabilityDto.startTime = this.reservationCreateDto.startTime;
     this.reservationCheckAvailabilityDto.date = this.reservationCreateDto.date;
     this.reservationCheckAvailabilityDto.pax = this.reservationCreateDto.pax;
+
+    this.nextAvailableTables = [];
 
     if (this.reservationCheckAvailabilityDto.startTime == null || this.reservationCheckAvailabilityDto.pax == null || this.reservationCheckAvailabilityDto.date == null) {
       this.reservationStatusText = 'Provide Time, Date and Pax';
@@ -71,7 +75,7 @@ export class ReservationSimpleComponent implements OnInit {
         } else if (data.valueOf() === this.enumReservationTableStatus.closed.valueOf()) {
           this.reservationStatusText = 'Location Closed This Day';
           this.reservationStatusClass = 'reservation-table-conflict';
-          this.unavailable = true;
+          this.unavailable = false;
         } else if (data.valueOf() === this.enumReservationTableStatus.outsideOpeningHours.valueOf()) {
           this.reservationStatusText = 'Outside Of Opening Hours';
           this.reservationStatusClass = 'reservation-table-conflict';
@@ -91,7 +95,7 @@ export class ReservationSimpleComponent implements OnInit {
         } else if (data.valueOf() === this.enumReservationTableStatus.dateInPast.valueOf()) {
           this.reservationStatusText = 'Date In The Past';
           this.reservationStatusClass = 'reservation-table-conflict';
-          this.unavailable = true;
+          this.unavailable = false;
         }
       },
       error: (error) => {
@@ -104,12 +108,10 @@ export class ReservationSimpleComponent implements OnInit {
       observable = this.service.getNextAvailableTables(this.reservationCheckAvailabilityDto);
       observable.subscribe({
         next: (data) => {
-          if (data.length > 0) {
-            this.nextAvailableTables = data;
-          } else {
+          this.nextAvailableTables = data;
+          if (data.length < 1) {
             this.notificationService.showError('No tables available anymore for this day. Please try another.')
           }
-
         },
         error: (error) => {
           this.notificationService.showError('Failed to get next available tables. Please try again later.');
@@ -148,9 +150,9 @@ export class ReservationSimpleComponent implements OnInit {
     }
   }
 
-  selectAvailable(reservationCreateDto: ReservationCreateDto) {
-    this.reservationCreateDto.date = reservationCreateDto.date;
-    this.reservationCreateDto.startTime = reservationCreateDto.startTime;
+  selectAvailable(availabilityDto: ReservationCheckAvailabilityDto) {
+    this.reservationCreateDto.date = availabilityDto.date;
+    this.reservationCreateDto.startTime = availabilityDto.startTime;
     this.onFieldChange();
   }
 
