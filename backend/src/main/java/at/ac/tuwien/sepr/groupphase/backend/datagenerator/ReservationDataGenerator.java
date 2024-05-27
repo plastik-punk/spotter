@@ -18,6 +18,7 @@ import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Random;
 
 @Profile({"generateData", "test"})
 @Component
@@ -25,7 +26,7 @@ import java.util.List;
 public class ReservationDataGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private static final int NUMBER_OF_RESERVATIONS_TO_GENERATE = 5;
+    private static final int NUMBER_OF_RESERVATIONS_TO_GENERATE = 20;
 
     private final ReservationRepository reservationRepository;
     private final PlaceRepository placeRepository;
@@ -54,23 +55,51 @@ public class ReservationDataGenerator {
             LOGGER.warn("Cannot generate reservations: No places or users found");
         } else {
             LOGGER.debug("Generating {} reservation entries", NUMBER_OF_RESERVATIONS_TO_GENERATE);
-            for (int i = 0; i < NUMBER_OF_RESERVATIONS_TO_GENERATE; i++) {
-                Place place = places.get(i % places.size());
-                ApplicationUser applicationUser = applicationUsers.get(i % applicationUsers.size());
+            Random random = new Random();
 
-                Reservation reservation = Reservation.ReservationBuilder.aReservation()
-                    .withUser(applicationUser)
-                    .withStartTime(LocalTime.of(17, 0))
-                    .withDate(LocalDate.of(2024, 6, 1))
-                    .withEndTime(LocalTime.of(19, 0))
-                    .withPax(2L + (i % 2))
-                    .withNotes("This is a note for reservation " + i)
-                    .withHashValue(hashService.hashSha256("" + i))
-                    .build();
+            // Generate 5 reservations for today
+            LocalDate today = LocalDate.now();
+            for (int i = 0; i < 5; i++) {
+                createReservation(today, places.get(i % places.size()), applicationUsers.get(i % applicationUsers.size()), i);
+            }
 
-                LOGGER.debug("Saving reservation {}", reservation);
-                reservationRepository.save(reservation);
+            // Generate 10 reservations for the next 7 days
+            for (int i = 5; i < 15; i++) {
+                LocalDate date = today.plusDays(random.nextInt(7) + 1);
+                createReservation(date, places.get(i % places.size()), applicationUsers.get(i % applicationUsers.size()), i);
+            }
+
+            // Generate 5 reservations for the next week
+            for (int i = 15; i < 20; i++) {
+                LocalDate date = today.plusWeeks(1).plusDays(random.nextInt(7) + 1);
+                createReservation(date, places.get(i % places.size()), applicationUsers.get(i % applicationUsers.size()), i);
+            }
+            //10 Reservations in the past
+            for (int i = 0; i < 10; i++) {
+                LocalDate date = today.minusWeeks(3).minusDays(random.nextInt(7) + 1);
+                createReservation(date, places.get(i % places.size()), applicationUsers.get(i % applicationUsers.size()), i);
+            }
+            //100 filler reservations in the future to test search limiting
+            for (int i = 0; i < 100; i++) {
+                LocalDate date = today.plusMonths(1 + random.nextInt(11)).plusDays(random.nextInt(7) + 1);
+                createReservation(date, places.get(i % places.size()), applicationUsers.get(i % applicationUsers.size()), i);
             }
         }
+
+    }
+
+    private void createReservation(LocalDate date, Place place, ApplicationUser applicationUser, int index) {
+        Reservation reservation = Reservation.ReservationBuilder.aReservation()
+            .withUser(applicationUser)
+            .withStartTime(LocalTime.of(17, 0))
+            .withDate(date)
+            .withEndTime(LocalTime.of(19, 0))
+            .withPax(2L + (index % 2))
+            .withNotes("This is a note for reservation " + index)
+            .withHashValue(hashService.hashSha256("" + index))
+            .build();
+
+        LOGGER.debug("Saving reservation {}", reservation);
+        reservationRepository.save(reservation);
     }
 }

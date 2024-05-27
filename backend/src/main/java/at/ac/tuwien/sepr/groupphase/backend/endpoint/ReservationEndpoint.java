@@ -20,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -73,7 +72,7 @@ public class ReservationEndpoint {
             .withIdToExclude(idToExclude)
             .build();
 
-        LOGGER.info("GET /api/v1/reservations body: {}", reservationCheckAvailabilityDto.toString());
+        LOGGER.info("GET /api/v1/reservations body: {}", reservationCheckAvailabilityDto);
         return service.getAvailability(reservationCheckAvailabilityDto);
     }
 
@@ -82,9 +81,9 @@ public class ReservationEndpoint {
     @GetMapping({"/next"})
     @Operation(summary = "Get the next three available reservations")
     public ReservationCheckAvailabilityDto[] getNextAvailableTables(@RequestParam("startTime") String startTime,
-                                                       @RequestParam("date") String date,
-                                                       @RequestParam("pax") Long pax,
-                                                       @RequestParam("idToExclude") Long idToExclude)
+                                                                    @RequestParam("date") String date,
+                                                                    @RequestParam("pax") Long pax,
+                                                                    @RequestParam("idToExclude") Long idToExclude)
         throws ValidationException {
 
         ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
@@ -117,12 +116,14 @@ public class ReservationEndpoint {
         return service.update(reservationEditDto);
     }
 
-    @Secured("ROLE_USER")
-    @Operation(summary = "Get list of reservations that match the given parameters", security = @SecurityRequirement(name = "apiKey"))
+
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_USER"})
+    @Operation(summary = "Get list of all reservations for admins and employees", security = @SecurityRequirement(name = "apiKey"))
     @GetMapping({"/search"})
-    public List<ReservationListDto> searchReservations(ReservationSearchDto searchParameters) {
-        LOGGER.info("POST /api/v1/reservations");
+    public List<ReservationListDto> searchAllReservationsForAdmin(ReservationSearchDto searchParameters) {
+        LOGGER.info("GET /api/v1/reservations/admin-search");
         LOGGER.debug("request parameters: {}", searchParameters);
+
         return service.search(searchParameters);
     }
 

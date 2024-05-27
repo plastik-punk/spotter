@@ -44,4 +44,15 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     @Query("SELECT r FROM Reservation r WHERE r.applicationUser.id = :applicationUserId")
     List<Reservation> findByApplicationUserId(@Param("applicationUserId") Long applicationUserId);
+
+    @Query("SELECT r FROM Reservation r "
+        + "WHERE (:startDate IS NULL OR r.date >= :startDate) "
+        + "AND (:endDate IS NULL OR r.date <= :endDate) "
+        + "AND (:startTime IS NULL OR r.startTime >= :startTime) "
+        + "AND (:endTime IS NULL OR r.endTime <= :endTime)")
+    List<Reservation> findReservationsWithoutUserId(
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate,
+        @Param("startTime") LocalTime startTime,
+        @Param("endTime") LocalTime endTime);
 }
