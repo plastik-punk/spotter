@@ -1,5 +1,11 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Event;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.EventRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.EventService;
@@ -11,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 
 @Service
 public class EventServiceImpl implements EventService {
@@ -35,5 +42,26 @@ public class EventServiceImpl implements EventService {
         this.hashService = hashService;
         this.eventValidator = eventValidator;
         this.applicationUserService = applicationUserService;
+    }
+
+    @Override
+    public List<EventListDto> search(EventSearchDto searchParameters) {
+        LOGGER.trace("search({})", searchParameters);
+        List<Event> events = eventRepository.findEventsByDate(searchParameters.getEarliestDate(),
+            searchParameters.getLatestDate(), searchParameters.getEarliestStartTime(),
+            searchParameters.getLatestEndTime());
+        return mapper.eventToEventListDto(events);
+    }
+
+    @Override
+    public EventDetailDto getByHashId(String hashId) throws NotFoundException {
+        LOGGER.trace("getByHashId({})", hashId);
+
+        Event event = eventRepository.findByHashId(hashId);
+        if (event == null) {
+            throw new NotFoundException("Event not found");
+        }
+
+        return mapper.eventToEventDetailDto(event);
     }
 }

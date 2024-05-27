@@ -25,7 +25,7 @@ public class Event {
     private String description;
 
     @Column(nullable = false)
-    private String hashValue;
+    private String hashId;
 
     public Long getId() {
         return id;
@@ -67,12 +67,12 @@ public class Event {
         this.description = description;
     }
 
-    public String getHashValue() {
-        return hashValue;
+    public String getHashId() {
+        return hashId;
     }
 
-    public void setHashValue(String hashValue) {
-        this.hashValue = hashValue;
+    public void setHashId(String hashValue) {
+        this.hashId = hashValue;
     }
 
     @Override
@@ -112,7 +112,7 @@ public class Event {
         private LocalDateTime end;
         private String name;
         private String description;
-        private String hashValue;
+        private String hashId;
 
         private EventBuilder() {
         }
@@ -146,8 +146,8 @@ public class Event {
             return this;
         }
 
-        public EventBuilder withHashValue(String hashValue) {
-            this.hashValue = hashValue;
+        public EventBuilder withHashId(String hashId) {
+            this.hashId = hashId;
             return this;
         }
 
@@ -158,7 +158,7 @@ public class Event {
             event.setEnd(end);
             event.setName(name);
             event.setDescription(description);
-            event.setHashValue(hashValue);
+            event.setHashId(hashId);
             return event;
         }
     }

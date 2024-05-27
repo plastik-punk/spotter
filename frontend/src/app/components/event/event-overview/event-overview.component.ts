@@ -102,7 +102,7 @@ export class EventOverviewComponent implements OnInit {
   }
 
   openConfirmationDialog(hashId: string): void {
-    this.eventService.getByHashedId(hashId).subscribe({
+    this.eventService.getByHashId(hashId).subscribe({
       next: data => {
         this.deleteWhat = hashId;
       },

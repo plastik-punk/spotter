@@ -32,7 +32,7 @@ export class EventService {
     return this.httpClient.get<EventListDto[]>(this.eventBaseUri + "/search", { params });
   }
 
-  getByHashedId(hashId: string): Observable<EventDetailDto> {
+  getByHashId(hashId: string): Observable<EventDetailDto> {
     let params = new HttpParams().set('hashId', hashId);
     return this.httpClient.get<EventDetailDto>(this.eventBaseUri + '/detail', {params: params});
   }
