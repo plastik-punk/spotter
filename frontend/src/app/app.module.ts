@@ -20,30 +20,33 @@ import { BrowserAnimationsModule, NoopAnimationsModule } from '@angular/platform
 import { NotificationComponent } from './components/notification/notification.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    SidebarComponent,
-    FooterComponent,
-    ReservationSimpleComponent,
-    LoginComponent,
-    MessageComponent,
-    ReservationDetailComponent,
-    ReservationOverviewComponent,
-    ConfirmationDialogDeleteComponent,
-    NotificationComponent
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    NgbModule,
-    FormsModule,
-    ToastrModule.forRoot(),
-    BrowserAnimationsModule,
-    NoopAnimationsModule
-  ],
-  providers: [httpInterceptorProviders],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        SidebarComponent,
+        FooterComponent,
+        ReservationSimpleComponent,
+        LoginComponent,
+        MessageComponent,
+        ReservationDetailComponent,
+        ReservationOverviewComponent,
+        ConfirmationDialogDeleteComponent,
+        NotificationComponent
+    ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        ReactiveFormsModule,
+        HttpClientModule,
+        NgbModule,
+        FormsModule,
+        ToastrModule.forRoot(),
+        BrowserAnimationsModule,
+        NoopAnimationsModule
+    ],
+    providers: [httpInterceptorProviders],
+    exports: [
+        ConfirmationDialogDeleteComponent
+    ],
+    bootstrap: [AppComponent]
 })
 export class AppModule { }
