@@ -251,7 +251,8 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public ReservationCheckAvailabilityDto[] getNextAvailableTables(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) throws ValidationException {
         LOGGER.trace("getNextAvailableTables ({})", reservationCheckAvailabilityDto.toString());
-        //TODO: Validator
+        reservationValidator.validateReservationCheckAvailabilityDto(reservationCheckAvailabilityDto);
+
         LocalDate date = reservationCheckAvailabilityDto.getDate();
         LocalTime startTime = reservationCheckAvailabilityDto.getStartTime();
         LocalTime endTime = reservationCheckAvailabilityDto.getEndTime();

@@ -57,6 +57,7 @@ export class ReservationSimpleComponent implements OnInit {
     this.reservationCheckAvailabilityDto.startTime = this.reservationCreateDto.startTime;
     this.reservationCheckAvailabilityDto.date = this.reservationCreateDto.date;
     this.reservationCheckAvailabilityDto.pax = this.reservationCreateDto.pax;
+    this.unavailable = true;
 
     this.nextAvailableTables = [];
 
