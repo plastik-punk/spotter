@@ -19,7 +19,7 @@ export interface EventListDto {
   name: string;
 }
 
-export interface EventSearch {
+export interface EventSearchDto {
   name?: string;
   earliestDate?: Date;
   latestDate?: Date;
@@ -39,6 +39,6 @@ export interface EventEditDto {
   hashId: string;
   startTime: Date;
   endTime: Date;
-  notes: string;
+  name: string;
   description: string;
 }

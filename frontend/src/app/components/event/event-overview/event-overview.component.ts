@@ -7,7 +7,7 @@ import {AuthService} from "../../../services/auth.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {NotificationService} from "../../../services/notification.service";
 import {Router, RouterLink} from "@angular/router";
-import {EventListDto, EventSearch} from "../../../dtos/event";
+import {EventListDto, EventSearchDto} from "../../../dtos/event";
 import {EventService} from "../../../services/event.service";
 import {AppModule} from "../../../app.module";
 
@@ -28,7 +28,7 @@ export class EventOverviewComponent implements OnInit {
 
   events: EventListDto[] = [];
   displayedEvents: EventListDto[] = [];
-  searchParams: EventSearch = {};
+  searchParams: EventSearchDto = {};
   searchLatestEndTime: Date | null = null;
   searchEarliestStartTime: Date | null = null;
   searchEarliestDate: Date | null = null;

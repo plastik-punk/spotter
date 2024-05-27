@@ -3,7 +3,7 @@ import {ESLint} from "eslint";
 import {Globals} from '../global/globals';
 import {HttpClient, HttpParams, HttpResponse} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {EventDetailDto, EventListDto, EventSearch} from "../dtos/event";
+import {EventDetailDto, EventListDto, EventSearchDto} from "../dtos/event";
 import {formatIsoDate} from "../util/date-helper";
 
 @Injectable({
@@ -15,7 +15,7 @@ export class EventService {
 
   constructor(private httpClient: HttpClient, private globals: Globals) {}
 
-  search(searchParams: EventSearch): Observable<EventListDto[]> {
+  search(searchParams: EventSearchDto): Observable<EventListDto[]> {
     let params = new HttpParams();
     if (searchParams.earliestDate) {
       params = params.append('earliestDate', formatIsoDate(searchParams.earliestDate));
