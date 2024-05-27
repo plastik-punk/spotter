@@ -288,7 +288,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         List<ReservationCheckAvailabilityDto> nextTables = new ArrayList<>();
 
-        while (nextTables.size() < 3 && tryStart.isBefore(endOfDay)){
+        while (nextTables.size() < 3 && tryStart.isBefore(endOfDay)) {
             LocalDateTime tryEnd = tryStart.plusMinutes(duration);
             ReservationCheckAvailabilityDto newReservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
                 .withDate(tryStart.toLocalDate())
