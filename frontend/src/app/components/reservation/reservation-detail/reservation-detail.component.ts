@@ -79,7 +79,7 @@ export class ReservationDetailComponent implements OnInit {
 
   onDelete() {
     let observable: Observable<HttpResponse<void>>;
-    observable = this.service.delete(this.reservationDetailDto.id);
+    observable = this.service.delete(this.hashID);
 
     observable.subscribe({
       next: (response) => {

@@ -79,6 +79,28 @@ public class ReservationEndpoint {
 
     @ResponseStatus(HttpStatus.OK)
     @PermitAll
+    @GetMapping({"/next"})
+    @Operation(summary = "Get the next three available reservations")
+    public ReservationCheckAvailabilityDto[] getNextAvailableTables(@RequestParam("startTime") String startTime,
+                                                       @RequestParam("date") String date,
+                                                       @RequestParam("pax") Long pax,
+                                                       @RequestParam("idToExclude") Long idToExclude)
+        throws ValidationException {
+
+        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+            .withStartTime(LocalTime.parse(startTime))
+            .withEndTime(LocalTime.parse(startTime).plusHours(2))
+            .withDate(LocalDate.parse(date))
+            .withPax(pax)
+            .withIdToExclude(idToExclude)
+            .build();
+
+        LOGGER.info("GET /api/v1/reservations body: {}", reservationCheckAvailabilityDto);
+        return service.getNextAvailableTables(reservationCheckAvailabilityDto);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PermitAll
     @GetMapping({"/detail"})
     @Operation(summary = "Get detail information for a single reservation")
     public ReservationEditDto getByHashedId(@RequestParam("id") String id) throws ValidationException {
@@ -106,12 +128,11 @@ public class ReservationEndpoint {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PermitAll
-    @DeleteMapping("/{id}")
+    @DeleteMapping
     @Operation(summary = "Delete a reservation")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) throws ValidationException {
-        LOGGER.info("DELETE /api/v1/reservations body: {}", id);
-        service.cancel(id);
+    public ResponseEntity<Void> delete(@RequestBody String hashedId) throws ValidationException {
+        LOGGER.info("DELETE /api/v1/reservations body: {}", hashedId);
+        service.cancel(hashedId);
         return ResponseEntity.noContent().build();
-
     }
 }

@@ -14,6 +14,8 @@ import {NotificationService} from "../../../services/notification.service";
   styleUrls: ['./reservation-simple.component.scss']
 })
 export class ReservationSimpleComponent implements OnInit {
+  unavailable: boolean = true;
+  nextAvailableTables: ReservationCheckAvailabilityDto[] = [];
 
   reservationCreateDto: ReservationCreateDto = {
     user: undefined,
@@ -45,14 +47,19 @@ export class ReservationSimpleComponent implements OnInit {
     public authService: AuthService,
     private service: ReservationService,
     private notificationService: NotificationService,
-  ) { }
+  ) {
+  }
 
-  ngOnInit() { }
+  ngOnInit() {
+  }
 
   onFieldChange() {
     this.reservationCheckAvailabilityDto.startTime = this.reservationCreateDto.startTime;
     this.reservationCheckAvailabilityDto.date = this.reservationCreateDto.date;
     this.reservationCheckAvailabilityDto.pax = this.reservationCreateDto.pax;
+    this.unavailable = true;
+
+    this.nextAvailableTables = [];
 
     if (this.reservationCheckAvailabilityDto.startTime == null || this.reservationCheckAvailabilityDto.pax == null || this.reservationCheckAvailabilityDto.date == null) {
       this.reservationStatusText = 'Provide Time, Date and Pax';
@@ -65,30 +72,53 @@ export class ReservationSimpleComponent implements OnInit {
         if (data.valueOf() === this.enumReservationTableStatus.available.valueOf()) {
           this.reservationStatusText = 'Tables available';
           this.reservationStatusClass = 'reservation-table-available';
+          this.unavailable = false;
         } else if (data.valueOf() === this.enumReservationTableStatus.closed.valueOf()) {
           this.reservationStatusText = 'Location Closed This Day';
           this.reservationStatusClass = 'reservation-table-conflict';
+          this.unavailable = false;
         } else if (data.valueOf() === this.enumReservationTableStatus.outsideOpeningHours.valueOf()) {
           this.reservationStatusText = 'Outside Of Opening Hours';
           this.reservationStatusClass = 'reservation-table-conflict';
+          this.unavailable = true;
         } else if (data.valueOf() === this.enumReservationTableStatus.respectClosingHour.valueOf()) {
           this.reservationStatusText = 'Respect Closing Hour';
           this.reservationStatusClass = 'reservation-table-conflict';
+          this.unavailable = true;
         } else if (data.valueOf() === this.enumReservationTableStatus.tooManyPax.valueOf()) {
           this.reservationStatusText = 'Too Many Pax for available tables (try advanced reservation)';
           this.reservationStatusClass = 'reservation-table-conflict';
+          this.unavailable = false;
         } else if (data.valueOf() === this.enumReservationTableStatus.allOccupied.valueOf()) {
           this.reservationStatusText = 'All Tables Occupied';
           this.reservationStatusClass = 'reservation-table-conflict';
+          this.unavailable = true;
         } else if (data.valueOf() === this.enumReservationTableStatus.dateInPast.valueOf()) {
           this.reservationStatusText = 'Date In The Past';
           this.reservationStatusClass = 'reservation-table-conflict';
+          this.unavailable = false;
         }
       },
       error: (error) => {
         this.notificationService.showError('Failed to check availability. Please try again later.');
       },
-    });
+    })
+
+    if (this.unavailable) {
+      let observable: Observable<ReservationCheckAvailabilityDto[]>;
+      observable = this.service.getNextAvailableTables(this.reservationCheckAvailabilityDto);
+      observable.subscribe({
+        next: (data) => {
+          this.nextAvailableTables = data;
+          if (data.length < 1) {
+            this.notificationService.showError('No tables available anymore for this day. Please try another.')
+          }
+        },
+        error: (error) => {
+          this.notificationService.showError('Failed to get next available tables. Please try again later.');
+        },
+      });
+    }
   }
 
   onSubmit(form: NgForm) {
@@ -119,6 +149,12 @@ export class ReservationSimpleComponent implements OnInit {
     } else {
       this.showFormErrors();
     }
+  }
+
+  selectAvailable(availabilityDto: ReservationCheckAvailabilityDto) {
+    this.reservationCreateDto.date = availabilityDto.date;
+    this.reservationCreateDto.startTime = availabilityDto.startTime;
+    this.onFieldChange();
   }
 
   private resetForm(form: NgForm) {

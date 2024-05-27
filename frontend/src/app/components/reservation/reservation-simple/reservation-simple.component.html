@@ -66,6 +66,21 @@
         </div>
         <!-- End row with notification -->
 
+
+        <!-- Start row with available tables -->
+        <div class="row" *ngIf="unavailable">
+          <div class="column">
+            <div class="col-lg-12 justify-content-center">
+              <div class="d-flex flex-row justify-content-between w-100" >
+                <button type="button" class="btn available-btn" *ngFor="let table of nextAvailableTables" (click)="selectAvailable(table)">
+                  {{ table.startTime }}, {{ table.date }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- End row with available tables -->
+
         <hr class="my-4">
 
         <!-- Start row with advanced view -->

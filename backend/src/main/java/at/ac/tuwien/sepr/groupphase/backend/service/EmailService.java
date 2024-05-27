@@ -32,4 +32,14 @@ public interface EmailService {
      * @throws MessagingException if the email cannot be sent
      */
     void sendCancellationMessageUsingThymeleafTemplate(String to, String subject, Map<String, Object> templateModel) throws MessagingException;
+
+    /**
+     * Sends an update email using a Thymeleaf template.
+     *
+     * @param to            recipient email address
+     * @param subject       email subject
+     * @param templateModel map for the Thymeleaf template
+     * @throws MessagingException if the email cannot be sent
+     */
+    void sendUpdateMessageUsingThymeleafTemplate(String to, String subject, Map<String, Object> templateModel) throws MessagingException;
 }
