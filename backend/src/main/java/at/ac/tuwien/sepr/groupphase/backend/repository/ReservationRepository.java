@@ -32,7 +32,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
         + "AND (:endDate IS NULL OR r.date <= :endDate) "
         + "AND (:startTime IS NULL OR r.start_time >= :startTime) "
         + "AND (:endTime IS NULL OR r.end_time <= :endTime)"
-        + "AND (u.role != 3)", nativeQuery = true)
+        + "AND (u.role != 3) ORDER BY r.date, r.start_time ASC", nativeQuery = true)
     List<Reservation> findReservationsByDate(
         @Param("email") String email,
         @Param("startDate") LocalDate startDate,
@@ -49,7 +49,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
         + "WHERE (:startDate IS NULL OR r.date >= :startDate) "
         + "AND (:endDate IS NULL OR r.date <= :endDate) "
         + "AND (:startTime IS NULL OR r.startTime >= :startTime) "
-        + "AND (:endTime IS NULL OR r.endTime <= :endTime)")
+        + "AND (:endTime IS NULL OR r.endTime <= :endTime) "
+        + "ORDER BY r.date, r.startTime ASC")
     List<Reservation> findReservationsWithoutUserId(
         @Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate,

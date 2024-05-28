@@ -89,14 +89,23 @@ public class ReservationDataGenerator {
     }
 
     private void createReservation(LocalDate date, Place place, ApplicationUser applicationUser, int index) {
+        Random random = new Random();
+        LocalTime startTime = LocalTime.of(12 + random.nextInt(8), random.nextInt(59));
+        LocalTime endTime = LocalTime.of(20 + random.nextInt(3), random.nextInt(59));
+        Long pax = 2L + (index % 2);
+
+        String hashedValue = hashService.hashSha256(date.toString()
+            + startTime.toString() + endTime.toString()
+            + pax);
+
         Reservation reservation = Reservation.ReservationBuilder.aReservation()
             .withUser(applicationUser)
-            .withStartTime(LocalTime.of(17, 0))
+            .withStartTime(startTime)
             .withDate(date)
-            .withEndTime(LocalTime.of(19, 0))
-            .withPax(2L + (index % 2))
+            .withEndTime(endTime)
+            .withPax(pax)
             .withNotes("This is a note for reservation " + index)
-            .withHashValue(hashService.hashSha256("" + index))
+            .withHashValue(hashedValue)
             .build();
 
         LOGGER.debug("Saving reservation {}", reservation);

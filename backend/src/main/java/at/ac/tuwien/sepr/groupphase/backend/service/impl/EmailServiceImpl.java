@@ -53,7 +53,9 @@ public class EmailServiceImpl implements EmailService {
     }
 
     private void sendHtmlMessage(String to, String subject, String htmlBody) throws MessagingException {
-
+        if (to.endsWith("@example.com")) {
+            to = "spottersepm@gmail.com";
+        }
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
         helper.setFrom("sepr.spotter@outlook.com");

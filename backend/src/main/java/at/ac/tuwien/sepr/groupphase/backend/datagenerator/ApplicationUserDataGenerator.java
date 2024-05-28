@@ -21,7 +21,8 @@ public class ApplicationUserDataGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final PasswordEncoder passwordEncoder;
     private static final int NUMBER_OF_USERS_TO_GENERATE = 6;
-    private static final String[] FIRST_NAMES = {"Admin", "Employee", "Customer", "Guest", "UnconfirmedA", "UnconfirmedE"};
+    private static final String[] FIRST_NAMES = {"AdminSpotter", "EmployeeSpotter", "CustomerSpotter", "GuestSpotter",
+        "UnconfirmedA", "UnconfirmedE"};
     private static final String[] LAST_NAMES = {"Smith", "Johnson", "Williams", "Brown", "Jones", "Gitti"};
     private static final String EMAIL_DOMAIN = "@example.com";
     private static final String[] MOBILE_NUMBERS = {"123456789", "987654321", "112233445", "556677889", "998877665", null};
