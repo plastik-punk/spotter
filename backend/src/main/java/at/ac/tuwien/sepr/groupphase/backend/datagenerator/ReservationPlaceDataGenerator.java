@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.datagenerator;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ReservationPlace;
+import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationPlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
@@ -14,6 +15,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Optional;
 
 @Profile({"generateData", "test"})
 @Order(6)
@@ -21,11 +23,11 @@ import java.lang.invoke.MethodHandles;
 public class ReservationPlaceDataGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private static final int NUMBER_OF_RESERVATIONPLACES_TO_GENERATE = 5;
 
     private final ReservationPlaceRepository reservationPlaceRepository;
     private final ReservationRepository reservationRepository;
     private final PlaceRepository placeRepository;
+
 
     public ReservationPlaceDataGenerator(ReservationPlaceRepository reservationPlaceRepository,
                                          ReservationRepository reservationRepository,
@@ -45,40 +47,31 @@ public class ReservationPlaceDataGenerator {
         if (reservationPlaceRepository.count() > 0) {
             LOGGER.debug("ReservationPlaces have already been generated");
         } else {
-            LOGGER.debug("Generating {} reservation place entries", NUMBER_OF_RESERVATIONPLACES_TO_GENERATE);
-            int placeId = 1;
-            long reservationId = 1;
+            LOGGER.debug("Generating reservation place entries");
 
-            for (int i = 1; i <= 10; i++) {
-                // ReservationPlace.ReservationPlaceId id = new ReservationPlace.ReservationPlaceId();
-                // id.setPlaceId((long) placeId);
-                // id.setReservationId(reservationId);
+            for (int i = 0; i < reservationRepository.findAll().size(); i++) {
+                Optional<Reservation> reservation = reservationRepository.findById((long) i);
+                Optional<Place> place;
+                if (reservation.isPresent()) {
+                    Reservation newReservation = reservation.get();
+                    place = placeRepository.findFreePlaceForReservation(newReservation.getDate(),
+                        newReservation.getStartTime(),
+                        newReservation.getEndTime(),
 
-                // Fetch or create the Reservation and Place objects
-                Reservation reservation = reservationRepository.findById(reservationId).orElse(null);
-                Place place = placeRepository.findById((long) placeId).orElse(null);
-
-                // Check if the Reservation and Place objects exist
-                if (reservation != null && place != null) {
-                    ReservationPlace reservationPlace = ReservationPlace.ReservationPlaceBuilder.aReservationPlace()
-                        .withReservation(reservation)
-                        .withPlace(place)
-                        .build();
-                    reservationPlaceRepository.save(reservationPlace);
+                        newReservation.getPax(),
+                        StatusEnum.AVAILABLE);
+                    if (place.isPresent()) {
+                        Place p = place.get();
+                        ReservationPlace reservationPlace = ReservationPlace.ReservationPlaceBuilder.aReservationPlace()
+                            .withReservation(newReservation)
+                            .withPlace(p)
+                            .build();
+                        reservationPlaceRepository.save(reservationPlace);
+                    } else {
+                        LOGGER.warn("No fitting Place could be found for Reservation with ID {}", i);
+                    }
                 } else {
-                    // Handle the case where the Reservation or Place objects do not exist
-                    LOGGER.warn("Reservation or Place with id {} does not exist", i);
-                }
-
-                // Increment placeId and reset to 1 if it exceeds 5
-                placeId++;
-                if (placeId > 5) {
-                    placeId = 1;
-                }
-
-                // Increment reservationId every other step
-                if (i % 2 == 0) {
-                    reservationId++;
+                    LOGGER.warn("Reservation with id {} does not exist", i);
                 }
             }
         }

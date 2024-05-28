@@ -412,7 +412,7 @@ public class ReservationServiceImpl implements ReservationService {
             throw new RuntimeException(e);
         }
 
-        LOGGER.info("Canceled reservation: " + id); // TODO REMOVE AFTER TESTING
+        LOGGER.debug("Canceled reservation: " + id); // TODO REMOVE AFTER TESTING
     }
 
     private Map<String, Object> constructMailTemplateModel(Reservation reservation, ApplicationUser currentUser) {

@@ -53,23 +53,29 @@ public class ReservationDataGenerator {
         } else if (places.isEmpty() || applicationUsers.isEmpty()) {
             LOGGER.warn("Cannot generate reservations: No places or users found");
         } else {
-            LOGGER.debug("Generating {} reservation entries", NUMBER_OF_RESERVATIONS_TO_GENERATE);
-            for (int i = 0; i < NUMBER_OF_RESERVATIONS_TO_GENERATE; i++) {
-                Place place = places.get(i % places.size());
-                ApplicationUser applicationUser = applicationUsers.get(i % applicationUsers.size());
+            LOGGER.debug("Generating reservations for the last month");
 
-                Reservation reservation = Reservation.ReservationBuilder.aReservation()
-                    .withUser(applicationUser)
-                    .withStartTime(LocalTime.of(17, 0))
-                    .withDate(LocalDate.of(2024, 6, 1))
-                    .withEndTime(LocalTime.of(19, 0))
-                    .withPax(2L + (i % 2))
-                    .withNotes("This is a note for reservation " + i)
-                    .withHashValue(hashService.hashSha256("" + i))
-                    .build();
+            LocalDate endDate = LocalDate.now(); // current date
+            LocalDate startDate = endDate.minusMonths(1); // one month ago
 
-                LOGGER.debug("Saving reservation {}", reservation);
-                reservationRepository.save(reservation);
+            for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+                for (int i = 0; i < NUMBER_OF_RESERVATIONS_TO_GENERATE; i++) {
+                    Place place = places.get(i % places.size());
+                    ApplicationUser applicationUser = applicationUsers.get(i % applicationUsers.size());
+
+                    Reservation reservation = Reservation.ReservationBuilder.aReservation()
+                        .withUser(applicationUser)
+                        .withStartTime(LocalTime.of(17, 0))
+                        .withDate(date)
+                        .withEndTime(LocalTime.of(19, 0))
+                        .withPax(2L + (i % 2))
+                        .withNotes("This is a note for reservation " + i)
+                        .withHashValue(hashService.hashSha256("" + i))
+                        .build();
+
+                    LOGGER.debug("Saving reservation {}", reservation);
+                    reservationRepository.save(reservation);
+                }
             }
         }
     }
