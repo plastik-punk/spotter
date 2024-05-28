@@ -139,10 +139,11 @@ public class ReservationValidator {
         if (currentUser != null && reservation.getApplicationUser() != null && !reservation.getApplicationUser().equals(currentUser)) {
             //TODO: currentUser != null as if a user is not logged in and clicks on the link, the currentUser is not Guest but null, change to Guest?
 
-            if (!applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.EMPLOYEE)
-                && !applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.ADMIN)) {
-                // this way an unauthorized user does not get any information about the existence of a reservation
-                throw new ValidationException("Only the customer booking a reservation can delete it", validationErrors);
+            if (applicationUserService.getCurrentApplicationUser() != null && applicationUserService.getCurrentApplicationUser().getRole() != null) {
+                if (!applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.EMPLOYEE) && !applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.ADMIN)) {
+                    // this way an unauthorized user does not get any information about the existence of a reservation
+                    throw new ValidationException("Only the customer booking a reservation can delete it", validationErrors);
+                }
             }
         } else if (reservation.getDate().isBefore(LocalDate.now())) {
             validationErrors.add("Reservation is in the past and cannot be deleted");
