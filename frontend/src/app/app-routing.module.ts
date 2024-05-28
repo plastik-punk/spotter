@@ -9,6 +9,8 @@ import { RegistrationComponent } from "./components/registration/registration.co
 import { StaffAccountsComponent } from "./components/staff-accounts/staff-accounts.component";
 import { ReservationDetailComponent } from "./components/reservation/reservation-detail/reservation-detail.component";
 import { ReservationEditComponent } from "./components/reservation/reservation-edit/reservation-edit.component";
+import {AdminViewComponent} from "./components/admin-view/admin-view.component";
+import {PredictionComponent} from "./components/admin-view/prediction/prediction.component";
 
 const routes: Routes = [
   {path: '', redirectTo: 'login', pathMatch: 'full'},
@@ -18,7 +20,9 @@ const routes: Routes = [
   {path: 'registration', component: RegistrationComponent},
   {path: 'employees', component: StaffAccountsComponent},
   {path: 'reservation-detail/:id', component: ReservationDetailComponent},
-  {path: 'reservation-edit/:id', component: ReservationEditComponent}
+  {path: 'reservation-edit/:id', component: ReservationEditComponent},
+  {path: 'admin-view', component: AdminViewComponent},
+  {path: 'admin-view/prediction', component: PredictionComponent}
 
 ];
 

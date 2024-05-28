@@ -21,9 +21,9 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.OpeningHoursRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationPlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
+import at.ac.tuwien.sepr.groupphase.backend.service.EmailService;
 import at.ac.tuwien.sepr.groupphase.backend.service.HashService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
-import at.ac.tuwien.sepr.groupphase.backend.service.EmailService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ReservationMapper;
 import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
@@ -138,9 +138,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         // TODO: add Restaurant name to DTO
 
-        String hashedValue = hashService.hashSha256(reservation.getDate().toString()
-            + reservation.getStartTime().toString() + reservation.getEndTime().toString()
-            + reservation.getPax().toString());
+        String hashedValue = hashService.hashSha256(reservation.toString());
         reservation.setHashValue(hashedValue);
 
         // 6. save Reservation in database and return it mapped to a DTO
@@ -150,7 +148,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         // 7. send conformation Mail
         // TODO activate again
-        /*
+
         Map<String, Object> templateModel = new HashMap<>();
         templateModel.put("recipientName", reservationCreateDto.getFirstName() + " " + reservationCreateDto.getLastName());
         templateModel.put("text", reservationCreateDto.getNotes());
@@ -161,7 +159,7 @@ public class ReservationServiceImpl implements ReservationService {
         templateModel.put("link", "http://localhost:4200/#/reservation-detail/" + savedReservation.getHashValue()); //TODO: change away from localhost
         emailService.sendMessageUsingThymeleafTemplate(reservationCreateDto.getUser().getEmail(),
             "Reservation Confirmation", templateModel);
-         */
+
 
         // 8. save ReservationPlace in database
         ReservationPlace reservationPlace = ReservationPlace.ReservationPlaceBuilder.aReservationPlace()
@@ -342,7 +340,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         // 6. send confirmation mail
         // TODO: activate mailing at some point
-        /*
+
         Map<String, Object> templateModel = constructMailTemplateModel(reservation, currentUser);
         templateModel.put("recipientName", currentUser.getFirstName() + " " + currentUser.getLastName());
         templateModel.put("text", reservation.getNotes());
@@ -358,7 +356,7 @@ public class ReservationServiceImpl implements ReservationService {
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
-         */
+
 
         // 7. map updated reservation to DTO and return it
         ReservationEditDto dto = mapper.reservationToReservationEditDto(updatedReservation);

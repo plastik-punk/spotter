@@ -57,7 +57,6 @@ public class ReservationPlaceDataGenerator {
                     place = placeRepository.findFreePlaceForReservation(newReservation.getDate(),
                         newReservation.getStartTime(),
                         newReservation.getEndTime(),
-
                         newReservation.getPax(),
                         StatusEnum.AVAILABLE);
                     if (place.isPresent()) {
