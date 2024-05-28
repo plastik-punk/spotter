@@ -12,8 +12,10 @@ import java.util.List;
  * Service for operations on events (e.g. creating a new Event).
  */
 public interface EventService {
+
     /**
-     * Search for events based on the search parameters.
+     * Search for events fitting the parameters..
+     *
      * @param searchParameters the search parameters
      * @return the list of events that match the search parameters
      */
@@ -21,9 +23,10 @@ public interface EventService {
 
     /**
      * Get the details of an event specified by its Hashed id.
+     *
      * @param hashId the Hashed id of the event
      * @return the event details
-     * @throws NotFoundException if the event is not found
+     * @throws NotFoundException if the event with the given hashId does not exist
      */
     EventDetailDto getByHashId(String hashId) throws NotFoundException;
 }

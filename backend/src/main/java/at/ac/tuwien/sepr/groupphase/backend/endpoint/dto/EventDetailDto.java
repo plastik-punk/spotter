@@ -72,13 +72,13 @@ public class EventDetailDto {
 
     @Override
     public String toString() {
-        return "EventDetailDto{" +
-            "hashId=" + hashId +
-            ", startTime=" + startTime +
-            ", endTime=" + endTime +
-            ", name='" + name + '\'' +
-            ", description='" + description + '\'' +
-            '}';
+        return "EventDetailDto{"
+            + "hashId=" + hashId
+            + ", startTime=" + startTime
+            + ", endTime=" + endTime
+            + ", name='" + name + '\''
+            + ", description='" + description + '\''
+            + '}';
     }
 
     public EventDetailDto copy() {

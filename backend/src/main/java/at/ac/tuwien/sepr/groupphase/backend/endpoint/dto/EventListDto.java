@@ -62,12 +62,12 @@ public class EventListDto {
 
     @Override
     public String toString() {
-        return "EventListDto{" +
-            "hashId=" + hashId +
-            ", startTime=" + startTime +
-            ", endTime=" + endTime +
-            ", name='" + name + '\'' +
-            '}';
+        return "EventListDto{"
+            + "hashId=" + hashId
+            + ", startTime=" + startTime
+            + ", endTime=" + endTime
+            + ", name='" + name + '\''
+            + '}';
     }
 
     public static final class EventListDtoBuilder {

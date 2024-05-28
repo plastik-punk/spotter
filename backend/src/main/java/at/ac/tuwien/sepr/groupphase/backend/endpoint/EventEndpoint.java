@@ -12,7 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
@@ -28,14 +33,16 @@ public class EventEndpoint {
         this.service = service;
     }
 
+    @PermitAll
     @Operation(summary = "Get list of events that match the given parameters", security = @SecurityRequirement(name = "apiKey"))
     @GetMapping({"/search"})
-    public List<EventListDto> searchEvents (EventSearchDto searchParameters) {
+    public List<EventListDto> searchEvents(EventSearchDto searchParameters) {
         LOGGER.info("GET /api/v1/events");
         LOGGER.debug("request parameters: {}", searchParameters.toString());
         return service.search(searchParameters);
     }
 
+    @PermitAll
     @ResponseStatus(HttpStatus.OK)
     @GetMapping({"/detail"})
     @Operation(summary = "Get details of a specific event")

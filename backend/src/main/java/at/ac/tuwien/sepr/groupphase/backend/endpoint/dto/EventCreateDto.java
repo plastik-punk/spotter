@@ -56,12 +56,12 @@ public class EventCreateDto {
 
     @Override
     public String toString() {
-        return "EventCreateDto{" +
-            "startTime=" + startTime +
-            ", endTime=" + endTime +
-            ", name='" + name + '\'' +
-            ", description='" + description + '\'' +
-            '}';
+        return "EventCreateDto{"
+            + "startTime=" + startTime
+            + ", endTime=" + endTime
+            + ", name='" + name + '\''
+            + ", description='" + description + '\''
+            + '}';
     }
 
     public EventCreateDto copy() {

@@ -63,12 +63,12 @@ public class EventSearchDto {
 
     @Override
     public String toString() {
-        return "EventSearchDto{" +
-            "earliestDate=" + earliestDate +
-            ", latestDate=" + latestDate +
-            ", earliestStartTime=" + earliestStartTime +
-            ", latestEndTime=" + latestEndTime +
-            '}';
+        return "EventSearchDto{"
+            + "earliestDate=" + earliestDate
+            + ", latestDate=" + latestDate
+            + ", earliestStartTime=" + earliestStartTime
+            + ", latestEndTime=" + latestEndTime
+            + '}';
     }
 
     public static final class EventSearchDtoBuilder {

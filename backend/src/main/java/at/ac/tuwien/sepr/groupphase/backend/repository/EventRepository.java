@@ -19,8 +19,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
         + "WHERE (:startDate IS NULL OR e.date >= :startDate) "
         + "AND (:endDate IS NULL OR e.date <= :endDate) "
         + "AND (:startTime IS NULL OR e.start_time >= :startTime) "
-        + "AND (:endTime IS NULL OR e.end_time <= :endTime)"
-        , nativeQuery = true)
+        + "AND (:endTime IS NULL OR e.end_time <= :endTime)",
+        nativeQuery = true)
     List<Event> findEventsByDate(
         @Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate,

@@ -67,13 +67,13 @@ public class EventEditDto {
 
     @Override
     public String toString() {
-        return "EventEditDto{" +
-            "hashId='" + hashId + '\'' +
-            ", startTime=" + startTime +
-            ", endTime=" + endTime +
-            ", name='" + name + '\'' +
-            ", description='" + description + '\'' +
-            '}';
+        return "EventEditDto{"
+            + "hashId='" + hashId + '\''
+            + ", startTime=" + startTime
+            + ", endTime=" + endTime
+            + ", name='" + name + '\''
+            + ", description='" + description + '\''
+            + '}';
     }
 
     @Override
