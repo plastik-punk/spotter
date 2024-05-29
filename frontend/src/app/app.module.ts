@@ -18,6 +18,7 @@ import { ConfirmationDialogDeleteComponent } from './components/confirmation-dia
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule, NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NotificationComponent } from './components/notification/notification.component';
+import {GroupByDatePipe} from "./pipes/group-by-date.pipe";
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { NotificationComponent } from './components/notification/notification.co
     FormsModule,
     ToastrModule.forRoot(),
     BrowserAnimationsModule,
-    NoopAnimationsModule
+    NoopAnimationsModule,
+    GroupByDatePipe
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]

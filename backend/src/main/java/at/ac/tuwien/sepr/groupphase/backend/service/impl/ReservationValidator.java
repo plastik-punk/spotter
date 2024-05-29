@@ -6,13 +6,14 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
+import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.ApplicationUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
@@ -138,8 +139,12 @@ public class ReservationValidator {
         if (currentUser != null && reservation.getApplicationUser() != null && !reservation.getApplicationUser().equals(currentUser)) {
             //TODO: currentUser != null as if a user is not logged in and clicks on the link, the currentUser is not Guest but null, change to Guest?
 
-            // this way an unauthorized user does not get any information about the existence of a reservation
-            throw new ValidationException("Only the customer booking a reservation can delete it", validationErrors);
+            if (applicationUserService.getCurrentApplicationUser() != null && applicationUserService.getCurrentApplicationUser().getRole() != null) {
+                if (!applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.EMPLOYEE) && !applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.ADMIN)) {
+                    // this way an unauthorized user does not get any information about the existence of a reservation
+                    throw new ValidationException("Only the customer booking a reservation can delete it", validationErrors);
+                }
+            }
         } else if (reservation.getDate().isBefore(LocalDate.now())) {
             validationErrors.add("Reservation is in the past and cannot be deleted");
         } else if (Objects.equals(reservation.getDate(), LocalDate.now()) && reservation.getStartTime().isBefore(LocalTime.now().plusHours(1))) {
