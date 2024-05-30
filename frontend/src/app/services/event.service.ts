@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {ESLint} from "eslint";
 import {Globals} from '../global/globals';
-import {HttpClient, HttpParams, HttpResponse} from "@angular/common/http";
+import {HttpClient, HttpParams, HttpResponse, HttpHeaders} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {EventDetailDto, EventListDto, EventSearchDto} from "../dtos/event";
 import {formatIsoDate} from "../util/date-helper";
@@ -39,5 +39,15 @@ export class EventService {
 
   delete(hashId: string): Observable<HttpResponse<void>> {
     return this.httpClient.delete<void>(this.eventBaseUri, {observe: 'response', body: hashId});
+  }
+  uploadIcsFile(file: File): Observable<any> {
+    const formData: FormData = new FormData();
+    formData.append('file', file, file.name);
+
+    return this.httpClient.post(`${this.eventBaseUri}/import-ics`, formData, {
+      headers: new HttpHeaders({
+        'Accept': 'application/json'
+      })
+    });
   }
 }

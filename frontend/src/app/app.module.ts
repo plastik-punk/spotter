@@ -21,6 +21,7 @@ import { NotificationComponent } from './components/notification/notification.co
 import {EventOverviewComponent} from "./components/event/event-overview/event-overview.component";
 import {EventDetailComponent} from "./components/event/event-detail/event-detail.component";
 import {EventEditComponent} from "./components/event/event-edit/event-edit.component";
+import {EventImportComponent} from "./components/event/event-import/event-import.component";
 
 @NgModule({
     declarations: [
@@ -36,7 +37,8 @@ import {EventEditComponent} from "./components/event/event-edit/event-edit.compo
         NotificationComponent,
         EventOverviewComponent,
         EventDetailComponent,
-        EventEditComponent
+        EventEditComponent,
+        EventImportComponent
     ],
     imports: [
         BrowserModule,
