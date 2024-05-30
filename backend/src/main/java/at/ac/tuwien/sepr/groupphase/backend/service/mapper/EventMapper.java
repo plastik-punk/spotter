@@ -10,25 +10,36 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Mapper
 public interface EventMapper {
-    @Mapping(source = "startDate", target = "startTime.date")
-    @Mapping(source = "startTime", target = "startTime.time")
-    @Mapping(source = "endDate", target = "endTime.date")
-    @Mapping(source = "endTime", target = "endTime.time")
-    @Mapping(source = "name", target = "name")
-    @Mapping(source = "description", target = "description")
+    @Mapping(target = "startTime", expression = "java(combineDateTime(eventCreateDto.getStartDate(), eventCreateDto.getStartTime()))")
+    @Mapping(target = "endTime", expression = "java(combineDateTime(eventCreateDto.getEndDate(), eventCreateDto.getEndTime()))")
     Event eventCreateDtoToEvent(EventCreateDto eventCreateDto);
 
-    @Mapping(source = "startTime.date", target = "startDate")
-    @Mapping(source = "startTime.time", target = "startTime")
-    @Mapping(source = "endTime.date", target = "endDate")
-    @Mapping(source = "endTime.time", target = "endTime")
-    @Mapping(source = "name", target = "name")
-    @Mapping(source = "description", target = "description")
+    @Mapping(target = "startDate", source = "startTime", qualifiedByName = "extractDate")
+    @Mapping(target = "startTime", source = "startTime", qualifiedByName = "extractTime")
+    @Mapping(target = "endDate", source = "endTime", qualifiedByName = "extractDate")
+    @Mapping(target = "endTime", source = "endTime", qualifiedByName = "extractTime")
     EventCreateDto eventToEventCreateDto(Event event);
+
+    default LocalDateTime combineDateTime(LocalDate date, LocalTime time) {
+        return LocalDateTime.of(date, time);
+    }
+
+    @Named("extractDate")
+    static LocalDate extractDate(LocalDateTime dateTime) {
+        return dateTime.toLocalDate();
+    }
+
+    @Named("extractTime")
+    static LocalTime extractTime(LocalDateTime dateTime) {
+        return dateTime.toLocalTime();
+    }
 
     EventDetailDto eventToEventDetailDto(Event event);
 

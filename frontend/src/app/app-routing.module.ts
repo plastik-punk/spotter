@@ -12,6 +12,8 @@ import { ReservationEditComponent } from "./components/reservation/reservation-e
 import {EventOverviewComponent} from "./components/event/event-overview/event-overview.component";
 import {EventDetailComponent} from "./components/event/event-detail/event-detail.component";
 import {EventEditComponent} from "./components/event/event-edit/event-edit.component";
+import {EventImportComponent} from "./components/event/event-import/event-import.component";
+
 import {EventCreateComponent} from "./components/event/event-create/event-create.component";
 
 const routes: Routes = [
@@ -28,7 +30,10 @@ const routes: Routes = [
   {path: 'event-overview', canActivate: mapToCanActivate([AuthGuard]), component: EventOverviewComponent},
   {path: 'event-detail/:id', canActivate: mapToCanActivate([AuthGuard]), component: EventDetailComponent},
   {path: 'event-edit/:id', canActivate: mapToCanActivate([AuthGuard]), component: EventEditComponent},
-  {path: 'event-create', canActivate: mapToCanActivate([AuthGuard]), component: EventCreateComponent}
+  {path: 'event-create', canActivate: mapToCanActivate([AuthGuard]), component: EventCreateComponent},
+  {path: 'event-import', canActivate: mapToCanActivate([AuthGuard]), component: EventImportComponent},
+
+
 ];
 
 @NgModule({

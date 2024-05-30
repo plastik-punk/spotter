@@ -12,11 +12,16 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.EventRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.EventService;
 import at.ac.tuwien.sepr.groupphase.backend.service.HashService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.EventMapper;
+import net.fortuna.ical4j.data.CalendarBuilder;
+import net.fortuna.ical4j.model.Calendar;
+import net.fortuna.ical4j.model.Component;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -103,4 +108,17 @@ public class EventServiceImpl implements EventService {
 
         return mapper.eventToEventCreateDto(savedEvent);
     }
+
+    @Override
+    public void importIcsFile(MultipartFile file) throws Exception {
+        try (InputStream is = file.getInputStream()) {
+            CalendarBuilder builder = new CalendarBuilder();
+            Calendar calendar = builder.build(is);
+
+            for (Component component : calendar.getComponents(Component.VEVENT)) {
+                System.out.println("Event: " + component);
+            }
+        }
+    }
+
 }
