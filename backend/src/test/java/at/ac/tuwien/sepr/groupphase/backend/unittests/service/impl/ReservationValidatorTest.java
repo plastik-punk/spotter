@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailab
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
+import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.ApplicationUserService;
@@ -15,7 +16,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.context.ActiveProfiles;
+
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDate;
@@ -210,6 +213,7 @@ public class ReservationValidatorTest implements TestData {
         Reservation reservation = TEST_RESERVATION_1.copy();
         reservation.setId(TEST_VALID_ID);
         ApplicationUser anotherUser = new ApplicationUser();
+        anotherUser.setRole(RoleEnum.CUSTOMER);
         anotherUser.setId(2L);
         when(reservationRepository.findById(TEST_VALID_ID)).thenReturn(Optional.of(reservation));
         when(applicationUserService.getCurrentApplicationUser()).thenReturn(anotherUser);

@@ -34,6 +34,14 @@ public interface ReservationService {
     ReservationResponseEnum getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) throws ValidationException;
 
     /**
+     * Get the next three available tables for a reservation.
+     *
+     * @param reservationCheckAvailabilityDto the reservation data
+     * @return the next three available tables
+     */
+    ReservationCheckAvailabilityDto[] getNextAvailableTables(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) throws ValidationException;
+
+    /**
      * Get the details of a reservation specified by its Hashed id.
      *
      * @param id the Hashed id of the reservation
@@ -57,11 +65,12 @@ public interface ReservationService {
      */
     List<ReservationListDto> search(ReservationSearchDto reservationSearchDto);
 
+
     /**
      * Cancel a reservation.
      *
-     * @param id the id of the reservation
+     * @param hashId the Hashed id of the reservation.
+     * @throws ValidationException if the reservation is not found.
      */
-    void cancel(Long id) throws ValidationException;
-
+    void cancel(String hashId) throws ValidationException;
 }

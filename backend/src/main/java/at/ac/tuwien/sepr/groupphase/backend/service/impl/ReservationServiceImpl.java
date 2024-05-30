@@ -21,9 +21,9 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.OpeningHoursRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationPlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
+import at.ac.tuwien.sepr.groupphase.backend.service.EmailService;
 import at.ac.tuwien.sepr.groupphase.backend.service.HashService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
-import at.ac.tuwien.sepr.groupphase.backend.service.EmailService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ReservationMapper;
 import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
@@ -34,7 +34,10 @@ import org.springframework.stereotype.Service;
 import java.lang.invoke.MethodHandles;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -149,19 +152,9 @@ public class ReservationServiceImpl implements ReservationService {
 
 
         // 7. send conformation Mail
-        // TODO activate again
-        /*
-        Map<String, Object> templateModel = new HashMap<>();
-        templateModel.put("recipientName", reservationCreateDto.getFirstName() + " " + reservationCreateDto.getLastName());
-        templateModel.put("text", reservationCreateDto.getNotes());
-        templateModel.put("persons", reservationCreateDto.getPax());
-        templateModel.put("restaurantName", "--SpotterEssen--"); //TODO: change to restaurant name
-        templateModel.put("reservationDate", reservationCreateDto.getDate());
-        templateModel.put("reservationTime", reservationCreateDto.getStartTime());
-        templateModel.put("link", "http://localhost:4200/#/reservation-detail/" + savedReservation.getHashValue()); //TODO: change away from localhost
+        Map<String, Object> templateModel = constructMailTemplateModel(savedReservation, reservationCreateDto.getUser());
         emailService.sendMessageUsingThymeleafTemplate(reservationCreateDto.getUser().getEmail(),
             "Reservation Confirmation", templateModel);
-         */
 
         // 8. save ReservationPlace in database
         ReservationPlace reservationPlace = ReservationPlace.ReservationPlaceBuilder.aReservationPlace()
@@ -178,6 +171,7 @@ public class ReservationServiceImpl implements ReservationService {
         LOGGER.trace("getAvailability ({})", reservationCheckAvailabilityDto.toString());
         reservationValidator.validateReservationCheckAvailabilityDto(reservationCheckAvailabilityDto);
         LocalDate date = reservationCheckAvailabilityDto.getDate();
+        LocalTime startTime = reservationCheckAvailabilityDto.getStartTime();
         LocalTime endTime = reservationCheckAvailabilityDto.getEndTime();
 
         // 1. set endTime depending on context
@@ -186,7 +180,7 @@ public class ReservationServiceImpl implements ReservationService {
             endTime = reservationCheckAvailabilityDto.getStartTime().plusHours(2);
         }
         // b. if endTime is after midnight and before 6am, set it to just before midnight to guarantee check-safety
-        if (!endTime.isBefore(LocalTime.of(0, 0)) && endTime.isBefore(LocalTime.of(6, 0))) {
+        if (!endTime.isBefore(LocalTime.of(0, 0)) && endTime.isBefore(LocalTime.of(6, 0)) && startTime.isBefore(LocalTime.of(23, 59)) && startTime.isAfter(LocalTime.of(6, 0))) {
             endTime = LocalTime.of(23, 59);
         }
 
@@ -210,7 +204,6 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         // 5. check if reservation is within opening hours
-        LocalTime startTime = reservationCheckAvailabilityDto.getStartTime();
         for (OpeningHours openingHours : openingHoursList) {
             if (!startTime.isAfter(openingHours.getClosingTime())
                 && !startTime.isBefore(openingHours.getOpeningTime())
@@ -256,7 +249,78 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationEditDto getByHashedId(String hashValue) throws NotFoundException {
+    public ReservationCheckAvailabilityDto[] getNextAvailableTables(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) throws ValidationException {
+        LOGGER.trace("getNextAvailableTables ({})", reservationCheckAvailabilityDto.toString());
+        reservationValidator.validateReservationCheckAvailabilityDto(reservationCheckAvailabilityDto);
+
+        LocalDate date = reservationCheckAvailabilityDto.getDate();
+        LocalTime startTime = reservationCheckAvailabilityDto.getStartTime();
+        LocalTime endTime = reservationCheckAvailabilityDto.getEndTime();
+
+        LocalDateTime start = LocalDateTime.of(date, startTime);
+        LocalDateTime end;
+        if (endTime == null) {
+            end = start.plusHours(2);
+        } else if (endTime.isBefore(startTime)) {
+            end = LocalDateTime.of(date.plusDays(1), endTime);
+        } else {
+            end = LocalDateTime.of(date, endTime);
+        }
+
+        long duration = ChronoUnit.MINUTES.between(start, end);
+
+        DayOfWeek dayOfWeek = date.getDayOfWeek();
+        List<OpeningHours> openingHoursList = openingHoursRepository.findByDayOfWeek(dayOfWeek);
+        if (openingHoursList.isEmpty()) {
+            return new ReservationCheckAvailabilityDto[0];
+        }
+
+        LocalTime latest = openingHoursList.getFirst().getClosingTime();
+        for (OpeningHours openingHours : openingHoursList) {
+            if (openingHours.getClosingTime().isAfter(latest)) {
+                latest = openingHours.getClosingTime();
+            }
+        }
+
+        LocalDateTime endOfDay = LocalDateTime.of(date, latest);
+
+        LocalDateTime tryStart = roundToNearest15Minutes(start).minusMinutes(60);
+
+        List<ReservationCheckAvailabilityDto> nextTables = new ArrayList<>();
+
+        while (nextTables.size() < 3 && tryStart.isBefore(endOfDay)) {
+            LocalDateTime tryEnd = tryStart.plusMinutes(duration);
+            ReservationCheckAvailabilityDto newReservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+                .withDate(tryStart.toLocalDate())
+                .withStartTime(tryStart.toLocalTime())
+                .withEndTime(tryEnd.toLocalTime())
+                .withPax(reservationCheckAvailabilityDto.getPax())
+                .build();
+            ReservationResponseEnum tableStatus = getAvailability(newReservationCheckAvailabilityDto);
+
+            if (tableStatus == ReservationResponseEnum.AVAILABLE) {
+                nextTables.add(newReservationCheckAvailabilityDto);
+            }
+
+            tryStart = tryStart.plusMinutes(30);
+        }
+
+        return nextTables.toArray(new ReservationCheckAvailabilityDto[0]);
+    }
+
+    private LocalDateTime roundToNearest15Minutes(LocalDateTime time) {
+        int minute = time.getMinute();
+        int roundedMinute = (minute + 7) / 15 * 15;
+        if (roundedMinute >= 60) {
+            time = time.plusHours(1).withMinute(0);
+        } else {
+            time = time.withMinute(roundedMinute);
+        }
+        return time;
+    }
+
+    @Override
+    public ReservationEditDto getByHashedId(String hashValue) throws NotFoundException, ValidationException {
         LOGGER.trace("getDetail ({})", hashValue);
 
         // TODO: this should not be a list, but a single reservation
@@ -266,18 +330,16 @@ public class ReservationServiceImpl implements ReservationService {
             throw new NotFoundException("Reservation with not found");
         }
 
+
         Reservation reservation = reservationList.getFirst();
         ApplicationUser currentUser = applicationUserService.getCurrentApplicationUser();
 
-        // TODO: activate this check again
-        /*
         if (currentUser == null || !currentUser.getRole().equals(RoleEnum.ADMIN)) {
             if (!reservation.getApplicationUser().equals(currentUser)) {
                 // TODO: throw a fitting exception (create a new exception ideally)
                 throw new ValidationException("You are not allowed to view this reservation", new ArrayList<>());
             }
         }
-         */
 
         // fetch places for reservation
         ReservationEditDto reservationEditDto = mapper.reservationToReservationEditDto(reservation);
@@ -341,24 +403,13 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         // 6. send confirmation mail
-        // TODO: activate mailing at some point
-        /*
-        Map<String, Object> templateModel = constructMailTemplateModel(reservation, currentUser);
-        templateModel.put("recipientName", currentUser.getFirstName() + " " + currentUser.getLastName());
-        templateModel.put("text", reservation.getNotes());
-        templateModel.put("persons", reservation.getPax());
-        templateModel.put("restaurantName", "--SpotterEssen--"); //TODO: change to restaurant name
-        templateModel.put("reservationDate", reservation.getDate());
-        templateModel.put("reservationTime", reservation.getStartTime());
-        templateModel.put("link", "http://localhost:4200/#/reservation-detail/" + reservation.getHashValue()); //TODO: change away from localhost
-
+        Map<String, Object> templateModel = constructMailTemplateModel(updatedReservation, currentUser);
         try {
-            emailService.sendMessageUsingThymeleafTemplate(currentUser.getEmail(),
-                "Reservation Confirmation", templateModel);
+            emailService.sendUpdateMessageUsingThymeleafTemplate(currentUser.getEmail(),
+                "Reservation Update Confirmation", templateModel);
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
-         */
 
         // 7. map updated reservation to DTO and return it
         ReservationEditDto dto = mapper.reservationToReservationEditDto(updatedReservation);
@@ -368,20 +419,33 @@ public class ReservationServiceImpl implements ReservationService {
             .collect(Collectors.toList());
         dto.setPlaceIds(placeIds);
 
+        LOGGER.debug("Updated reservation: {}", dto.toString());
+
         return dto;
     }
 
     @Override
     public List<ReservationListDto> search(ReservationSearchDto reservationSearchDto) {
         LOGGER.trace("search ({})", reservationSearchDto.toString());
+
+        if (applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.ADMIN)
+            || applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.EMPLOYEE)) {
+            List<Reservation> reservations = reservationRepository.findReservationsWithoutUserId(reservationSearchDto.getEarliestDate(),
+                reservationSearchDto.getLatestDate(), reservationSearchDto.getEarliestStartTime(), reservationSearchDto.getLatestEndTime());
+            LOGGER.debug("Found {} reservations for the given params", reservations.size());
+            return mapper.reservationToReservationListDto(reservations);
+        }
         String email = applicationUserService.getCurrentUserAuthentication().getName();
         List<Reservation> reservations = reservationRepository.findReservationsByDate(email, reservationSearchDto.getEarliestDate(),
             reservationSearchDto.getLatestDate(), reservationSearchDto.getEarliestStartTime(), reservationSearchDto.getLatestEndTime());
+        LOGGER.debug("Found {} reservations for the given params", reservations.size());
         return mapper.reservationToReservationListDto(reservations);
     }
 
     @Override
-    public void cancel(Long id) throws ValidationException {
+    public void cancel(String hashId) throws ValidationException {
+        ReservationEditDto reservationEditDto = getByHashedId(hashId);
+        Long id = reservationEditDto.getReservationId();
         LOGGER.trace("cancel ({})", id);
 
         //validate reservation
@@ -412,7 +476,7 @@ public class ReservationServiceImpl implements ReservationService {
             throw new RuntimeException(e);
         }
 
-        LOGGER.info("Canceled reservation: " + id); // TODO REMOVE AFTER TESTING
+        LOGGER.debug("Canceled reservation: {}", id);
     }
 
     private Map<String, Object> constructMailTemplateModel(Reservation reservation, ApplicationUser currentUser) {

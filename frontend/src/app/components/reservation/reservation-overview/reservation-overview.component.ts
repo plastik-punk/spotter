@@ -1,28 +1,35 @@
-import { Component, OnInit } from '@angular/core';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { AuthService } from '../../../services/auth.service';
-import { ReservationEditDto, ReservationListDto, ReservationSearch } from "../../../dtos/reservation";
-import { debounceTime, Observable, Subject } from "rxjs";
-import { ReservationService } from "../../../services/reservation.service";
-import { Router } from "@angular/router";
-import { HttpResponse } from "@angular/common/http";
-import { NotificationService } from "../../../services/notification.service";
+import {Component, OnInit} from '@angular/core';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {AuthService} from '../../../services/auth.service';
+import {ReservationEditDto, ReservationListDto, ReservationSearch} from "../../../dtos/reservation";
+import {debounceTime, Observable, Subject} from "rxjs";
+import {ReservationService} from "../../../services/reservation.service";
+import {Router} from "@angular/router";
+import {HttpResponse} from "@angular/common/http";
+import {NotificationService} from "../../../services/notification.service";
+import moment from 'moment';
 
 @Component({
   selector: 'app-reservation-overview',
   templateUrl: './reservation-overview.component.html',
-  styleUrl: './reservation-overview.component.scss'
+  styleUrls: ['./reservation-overview.component.scss']
 })
 export class ReservationOverviewComponent implements OnInit {
   reservations: ReservationListDto[] = [];
-  displayedReservations: ReservationListDto[] = [];
+  todaysReservations: ReservationListDto[] = [];
+  upcomingReservations: ReservationListDto[] = [];
+  displayedUpcomingReservations: ReservationListDto[] = [];
   searchParams: ReservationSearch = {};
-  searchLatestEndTime: string | null = null;
-  searchEarliestStartTime: string | null = null;
-  searchEarliestDate: string | null = null;
-  searchLatestDate: string | null = null;
+  searchEarliestDate: string | null = null; // Add these variable definitions
+  searchLatestDate: string | null = null;   // Add these variable definitions
+  searchEarliestStartTime: string | null = null; // Add these variable definitions
+  searchLatestEndTime: string | null = null; // Add these variable definitions
   searchChangedObservable = new Subject<void>();
-  deleteWhat: ReservationEditDto = null;
+  deleteWhat: ReservationEditDto | null = null;
+
+  currentPage = 1;
+  pageSize = 50;
+  totalUpcomingReservations = 0;
 
   constructor(
     private authService: AuthService,
@@ -36,56 +43,88 @@ export class ReservationOverviewComponent implements OnInit {
     this.loadReservations();
     this.searchChangedObservable
       .pipe(debounceTime(300))
-      .subscribe({ next: () => this.loadReservations() });
-  }
-
-  showMore() {
-    let newLength = this.displayedReservations.length + 5;
-    if (newLength > this.reservations.length) {
-      newLength = this.reservations.length;
-    }
-    this.displayedReservations = this.reservations.slice(0, newLength);
+      .subscribe({next: () => this.loadReservations()});
   }
 
   isAdmin(): boolean {
     return this.authService.getUserRole() === 'ADMIN';
   }
 
+  isEmployee(): boolean {
+    return this.authService.getUserRole() === 'EMPLOYEE';
+  }
+
   loadReservations() {
+    const today = moment().startOf('day');
+    const nextWeek = moment().add(7, 'days').endOf('day');
+
     if (this.searchEarliestDate == null || this.searchEarliestDate === "") {
-      delete this.searchParams.earliestDate;
+      this.searchParams.earliestDate = null;
     } else {
       this.searchParams.earliestDate = new Date(this.searchEarliestDate);
     }
+
     if (this.searchLatestDate == null || this.searchLatestDate === "") {
-      delete this.searchParams.latestDate;
+      this.searchParams.latestDate = null;
     } else {
       this.searchParams.latestDate = new Date(this.searchLatestDate);
     }
+
     if (this.searchEarliestStartTime == null || this.searchEarliestStartTime === "") {
-      delete this.searchParams.earliestStartTime;
+      this.searchParams.earliestStartTime = null;
     } else {
       this.searchParams.earliestStartTime = this.searchEarliestStartTime;
     }
+
     if (this.searchLatestEndTime == null || this.searchLatestEndTime === "") {
-      delete this.searchParams.latestEndTime;
+      this.searchParams.latestEndTime = null;
     } else {
       this.searchParams.latestEndTime = this.searchLatestEndTime;
     }
 
+    // If all fields are null, set default values
+    if (!this.searchParams.earliestDate && !this.searchParams.latestDate &&
+      !this.searchParams.earliestStartTime && !this.searchParams.latestEndTime) {
+      this.searchParams.earliestDate = today.toDate();
+      this.searchParams.latestDate = nextWeek.toDate();
+      this.searchParams.earliestStartTime = today.format('HH:mm');
+      this.searchParams.latestEndTime = nextWeek.format('HH:mm');
+    }
     this.reservationService.search(this.searchParams)
       .subscribe({
-        next: (reservation: ReservationListDto[]) => {
-          this.reservations = reservation;
-          this.displayedReservations = this.reservations.slice(0, 10);
+        next: (reservations: ReservationListDto[]) => {
+          this.reservations = reservations;
+          this.filterReservations();
         },
         error: error => {
           this.notificationService.showError('Failed to load reservations. Please try again later.');
         }
       });
+    console.log(this.reservations);
+  }
+
+  filterReservations() {
+    const today = moment().startOf('day');
+    this.todaysReservations = this.reservations.filter(reservation =>
+      moment(reservation.date).isSame(today, 'day')
+    );
+
+    this.upcomingReservations = this.reservations.filter(reservation =>
+      moment(reservation.date).isAfter(today, 'day') && moment(reservation.date).isBefore(today.clone().add(8, 'days'), 'day')
+    );
+
+    this.totalUpcomingReservations = this.upcomingReservations.length;
+    this.displayReservations();
+  }
+
+  displayReservations() {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.displayedUpcomingReservations = this.upcomingReservations.slice(startIndex, endIndex);
   }
 
   searchChanged(): void {
+    this.currentPage = 1;
     this.searchChangedObservable.next();
   }
 
@@ -107,7 +146,7 @@ export class ReservationOverviewComponent implements OnInit {
     }
 
     let observable: Observable<HttpResponse<void>>;
-    observable = this.reservationService.delete(this.deleteWhat.reservationId);
+    observable = this.reservationService.delete(this.deleteWhat.hashedId);
     observable.subscribe({
       next: (response) => {
         if (response.status === 204) {
@@ -120,4 +159,14 @@ export class ReservationOverviewComponent implements OnInit {
       }
     });
   }
+
+  changePage(newPage: number): void {
+    if (newPage < 1 || newPage > Math.ceil(this.totalUpcomingReservations / this.pageSize)) {
+      return;
+    }
+    this.currentPage = newPage;
+    this.displayReservations();
+  }
+
+  protected readonly Math = Math;
 }

@@ -2,21 +2,51 @@
 @import "../../../../../node_modules/bootstrap/scss/functions";
 @import "../../../../../node_modules/bootstrap/scss/variables";
 @import "../../../../../node_modules/bootstrap/scss/mixins";
-.jumbotron {
-  background: none
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
+
+.container-fluid {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
 .custom-card {
+  position: relative;
   border-radius: 20px 20px 0 0;
   background: white;
   margin-top: 2vh;
-  margin-bottom: -1vh;
-  height: 97vh;
+  height: 96vh;
+  width: 100%;
   padding: 2vh;
+  overflow-y: auto;
 }
+
+.top-banner {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  z-index: 100;
+  border-radius: 20px 20px 0 0;
+  border: 2vh;
+  margin: -2vh 0 2vh 0;
+}
+
 .font-heading {
   font-family: 'Lexend Giga', sans-serif;
   font-size: 2vw;
 }
+
 .top-left-logo {
   position: absolute;
   margin-top: 3vh;
@@ -33,17 +63,64 @@
   width: auto;
 }
 
-.responsive-info-button, .responsive-warning-button, .responsive-danger-button, .responsive-dark-button, .responsive-tree-button {
+.responsive-info-button,
+.responsive-warning-button,
+.responsive-danger-button,
+.responsive-dark-button,
+.responsive-tree-button {
   @include button-variant($light, $light);
 }
+
 @each $color in (info, warning, danger) {
   $value: map.get($theme-colors, $color);
   tr:hover .responsive-#{$color}-button {
     @include button-variant($value, $value);
   }
 }
-@media (max-width: 1250px) {
+
+@media (max-width: 1000px) {
   .top-left-logo {
-    display: none; /* This hides the logo on screens with width 768px or less */
+    display: none;
   }
+}
+
+.hr {
+  opacity: 100%;
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2vh 0;
+}
+
+.column {
+  flex: 1;
+  padding: 2vh;
+  box-sizing: border-box;
+}
+
+.btn-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.table th, .table td {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.my-4 {
+  margin: 2vh 0;
+}
+
+.row .column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.h3 {
+  letter-spacing: -0.02em;
 }
