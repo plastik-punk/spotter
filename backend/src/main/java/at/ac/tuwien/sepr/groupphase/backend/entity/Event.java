@@ -19,10 +19,10 @@ public class Event {
     private Long id;
 
     @Column(nullable = false)
-    private LocalDateTime start;
+    private LocalDateTime startTime;
 
     @Column(nullable = false)
-    private LocalDateTime end;
+    private LocalDateTime endTime;
 
     @Column(nullable = false)
     private String name;
@@ -41,20 +41,20 @@ public class Event {
         this.id = id;
     }
 
-    public LocalDateTime getStart() {
-        return start;
+    public LocalDateTime getStartTime() {
+        return startTime;
     }
 
-    public void setStart(LocalDateTime start) {
-        this.start = start;
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 
-    public LocalDateTime getEnd() {
-        return end;
+    public LocalDateTime getEndTime() {
+        return endTime;
     }
 
-    public void setEnd(LocalDateTime end) {
-        this.end = end;
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
     public String getName() {
@@ -90,23 +90,23 @@ public class Event {
             return false;
         }
         return Objects.equals(id, event.id)
-            && start.equals(event.start)
-            && end.equals(event.end)
+            && startTime.equals(event.startTime)
+            && endTime.equals(event.endTime)
             && name.equals(event.name)
             && description.equals(event.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, start, end, name, description);
+        return Objects.hash(id, startTime, endTime, name, description);
     }
 
     @Override
     public String toString() {
         return "Event{"
             + "id=" + id
-            + ", start=" + start
-            + ", end=" + end
+            + ", startTime=" + startTime
+            + ", endTime=" + endTime
             + ", name='" + name + '\''
             + ", description='" + description + '\''
             + '}';
@@ -114,8 +114,8 @@ public class Event {
 
     public static final class EventBuilder {
         private Long id;
-        private LocalDateTime start;
-        private LocalDateTime end;
+        private LocalDateTime startTime;
+        private LocalDateTime endTime;
         private String name;
         private String description;
         private String hashId;
@@ -132,13 +132,13 @@ public class Event {
             return this;
         }
 
-        public EventBuilder withStart(LocalDateTime start) {
-            this.start = start;
+        public EventBuilder withStartTime(LocalDateTime startTime) {
+            this.startTime = startTime;
             return this;
         }
 
-        public EventBuilder withEnd(LocalDateTime end) {
-            this.end = end;
+        public EventBuilder withEndTime(LocalDateTime endTime) {
+            this.endTime = endTime;
             return this;
         }
 
@@ -160,8 +160,8 @@ public class Event {
         public Event build() {
             Event event = new Event();
             event.setId(id);
-            event.setStart(start);
-            event.setEnd(end);
+            event.setStartTime(startTime);
+            event.setEndTime(endTime);
             event.setName(name);
             event.setDescription(description);
             event.setHashId(hashId);

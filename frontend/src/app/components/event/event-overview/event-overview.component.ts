@@ -9,18 +9,9 @@ import {NotificationService} from "../../../services/notification.service";
 import {Router, RouterLink} from "@angular/router";
 import {EventListDto, EventSearchDto} from "../../../dtos/event";
 import {EventService} from "../../../services/event.service";
-import {AppModule} from "../../../app.module";
 
 @Component({
   selector: 'app-event-overview',
-  standalone: true,
-  imports: [
-    FormsModule,
-    NgForOf,
-    NgIf,
-    RouterLink,
-    AppModule
-  ],
   templateUrl: './event-overview.component.html',
   styleUrl: './event-overview.component.scss'
 })
@@ -29,10 +20,10 @@ export class EventOverviewComponent implements OnInit {
   events: EventListDto[] = [];
   displayedEvents: EventListDto[] = [];
   searchParams: EventSearchDto = {};
-  searchLatestEndTime: Date | null = null;
-  searchEarliestStartTime: Date | null = null;
   searchEarliestDate: Date | null = null;
   searchLatestDate: Date | null = null;
+  searchEarliestStartTime: Date | null = null;
+  searchLatestEndTime: Date | null = null;
   searchChangedObservable = new Subject<void>();
   deleteWhat: string = null;
 
@@ -65,14 +56,14 @@ export class EventOverviewComponent implements OnInit {
 
   loadEvents() {
     if (this.searchEarliestDate == null) {
-      delete this.searchParams.earliestDate;
+      delete this.searchParams.earliestStartDate;
     } else {
-      this.searchParams.earliestDate = this.searchEarliestDate;
+      this.searchParams.earliestStartDate = this.searchEarliestDate;
     }
     if (this.searchLatestDate == null) {
-      delete this.searchParams.latestDate;
+      delete this.searchParams.latestEndDate;
     } else {
-      this.searchParams.latestDate = this.searchLatestDate;
+      this.searchParams.latestEndDate = this.searchLatestDate;
     }
     if (this.searchEarliestStartTime == null) {
       delete this.searchParams.earliestStartTime;

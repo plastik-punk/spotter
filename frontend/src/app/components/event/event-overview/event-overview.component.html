@@ -29,7 +29,7 @@
                  pattern="\d{4}-\d{2}-\d{2}"
                  placeholder="yyyy-mm-dd"
                  class="form-control"
-                 [(ngModel)]="searchEarliestDate"
+                 [(ngModel)]="searchEarliestStartTime"
                  (ngModelChange)="searchChanged()"
           >
         </div>
@@ -44,7 +44,7 @@
                  pattern="\d{4}-\d{2}-\d{2}"
                  placeholder="yyyy-mm-dd"
                  class="form-control"
-                 [(ngModel)]="searchLatestDate"
+                 [(ngModel)]="searchLatestEndTime"
                  (ngModelChange)="searchChanged()"
           >
         </div>

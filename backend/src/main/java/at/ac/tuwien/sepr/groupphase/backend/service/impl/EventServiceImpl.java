@@ -5,7 +5,6 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Event;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
-import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.EventRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.EventService;
@@ -17,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -47,9 +47,21 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventListDto> search(EventSearchDto searchParameters) {
         LOGGER.trace("search({})", searchParameters);
-        List<Event> events = eventRepository.findEventsByDate(searchParameters.getEarliestDate(),
-            searchParameters.getLatestDate(), searchParameters.getEarliestStartTime(),
-            searchParameters.getLatestEndTime());
+        LocalDateTime startTime;
+        if (searchParameters.getEarliestDate() == null || searchParameters.getEarliestStartTime() == null) {
+            startTime = null;
+        } else {
+            startTime = LocalDateTime.of(searchParameters.getEarliestDate(), searchParameters.getEarliestStartTime());
+        }
+
+        LocalDateTime endTime;
+        if (searchParameters.getLatestDate() == null || searchParameters.getLatestEndTime() == null) {
+            endTime = null;
+        } else {
+            endTime = LocalDateTime.of(searchParameters.getLatestDate(), searchParameters.getLatestEndTime());
+        }
+
+        List<Event> events = eventRepository.findEventsByDate(startTime, endTime);
         return mapper.eventToEventListDto(events);
     }
 
