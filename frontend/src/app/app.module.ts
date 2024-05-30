@@ -18,6 +18,9 @@ import { ConfirmationDialogDeleteComponent } from './components/confirmation-dia
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule, NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NotificationComponent } from './components/notification/notification.component';
+import {EventOverviewComponent} from "./components/event/event-overview/event-overview.component";
+import {EventDetailComponent} from "./components/event/event-detail/event-detail.component";
+import {EventEditComponent} from "./components/event/event-edit/event-edit.component";
 
 @NgModule({
     declarations: [
@@ -30,7 +33,10 @@ import { NotificationComponent } from './components/notification/notification.co
         ReservationDetailComponent,
         ReservationOverviewComponent,
         ConfirmationDialogDeleteComponent,
-        NotificationComponent
+        NotificationComponent,
+        EventOverviewComponent,
+        EventDetailComponent,
+        EventEditComponent
     ],
     imports: [
         BrowserModule,

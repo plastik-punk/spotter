@@ -21,8 +21,8 @@ export interface EventListDto {
 
 export interface EventSearchDto {
   name?: string;
-  earliestDate?: Date;
-  latestDate?: Date;
+  earliestStartDate?: Date;
+  latestEndDate?: Date;
   earliestStartTime?: Date;
   latestEndTime?: Date;
 }

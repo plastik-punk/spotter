@@ -17,11 +17,11 @@ export class EventService {
 
   search(searchParams: EventSearchDto): Observable<EventListDto[]> {
     let params = new HttpParams();
-    if (searchParams.earliestDate) {
-      params = params.append('earliestDate', formatIsoDate(searchParams.earliestDate));
+    if (searchParams.earliestStartDate) {
+      params = params.append('earliestDate', formatIsoDate(searchParams.earliestStartDate));
     }
-    if (searchParams.latestDate) {
-      params = params.append('latestDate', formatIsoDate(searchParams.latestDate));
+    if (searchParams.latestEndDate) {
+      params = params.append('latestDate', formatIsoDate(searchParams.latestEndDate));
     }
     if (searchParams.earliestStartTime) {
       params = params.append('earliestStartTime', formatIsoDate(searchParams.earliestStartTime))

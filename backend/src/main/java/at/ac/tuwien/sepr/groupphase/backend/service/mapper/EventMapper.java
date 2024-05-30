@@ -20,8 +20,8 @@ public interface EventMapper {
 
     EventDetailDto eventToEventDetailDto(Event event);
 
-    @Mapping(source = "start", target = "startTime")
-    @Mapping(source = "end", target = "endTime")
+    @Mapping(source = "startTime", target = "startTime")
+    @Mapping(source = "endTime", target = "endTime")
     @Mapping(source = "name", target = "name")
     @Mapping(source = "hashId", target = "hashId")
     @Named("eventList")
@@ -30,8 +30,8 @@ public interface EventMapper {
     @IterableMapping(qualifiedByName = "eventList")
     List<EventListDto> eventToEventListDto(List<Event> event);
 
-    @Mapping(source = "start", target = "startTime")
-    @Mapping(source = "end", target = "endTime")
+    @Mapping(source = "startTime", target = "startTime")
+    @Mapping(source = "endTime", target = "endTime")
     @Mapping(source = "name", target = "name")
     @Mapping(source = "description", target = "description")
     @Mapping(source = "hashId", target = "hashId")

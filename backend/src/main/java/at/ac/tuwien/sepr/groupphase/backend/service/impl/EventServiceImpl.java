@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -51,9 +52,21 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventListDto> search(EventSearchDto searchParameters) {
         LOGGER.trace("search({})", searchParameters);
-        List<Event> events = eventRepository.findEventsByDate(searchParameters.getEarliestDate(),
-            searchParameters.getLatestDate(), searchParameters.getEarliestStartTime(),
-            searchParameters.getLatestEndTime());
+        LocalDateTime startTime;
+        if (searchParameters.getEarliestDate() == null || searchParameters.getEarliestStartTime() == null) {
+            startTime = null;
+        } else {
+            startTime = LocalDateTime.of(searchParameters.getEarliestDate(), searchParameters.getEarliestStartTime());
+        }
+
+        LocalDateTime endTime;
+        if (searchParameters.getLatestDate() == null || searchParameters.getLatestEndTime() == null) {
+            endTime = null;
+        } else {
+            endTime = LocalDateTime.of(searchParameters.getLatestDate(), searchParameters.getLatestEndTime());
+        }
+
+        List<Event> events = eventRepository.findEventsByDate(startTime, endTime);
         return mapper.eventToEventListDto(events);
     }
 
