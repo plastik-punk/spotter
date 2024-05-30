@@ -19,7 +19,8 @@ interface Place {
   id: number;
   coordinates: Coordinate[];
   seats: number;
-  status: number; // 0 for free, 1 for booked
+  reserved: number; // 0 for free, 1 for booked
+  status: number;
 }
 
 @Component({
@@ -55,7 +56,6 @@ export class ReservationLayoutComponent implements OnInit {
     startTime: undefined,
     date: undefined,
     pax: undefined,
-    idToExclude: -1
   }
 
   currentUser: UserOverviewDto;
@@ -112,20 +112,21 @@ export class ReservationLayoutComponent implements OnInit {
 
     // Define places with their properties
     const places: Place[] = [
-      { id: 1, coordinates: [{ x: 1, y: 3 }, { x: 2, y: 3 }], seats: 6, status: 0 },
-      { id: 2, coordinates: [{ x: 1, y: 5 }, { x: 2, y: 5 }], seats: 6, status: 0 },
-      { id: 3, coordinates: [{ x: 1, y: 7 }, { x: 2, y: 7 }], seats: 6, status: 0 },
-      { id: 4, coordinates: [{ x: 5, y: 3 }, { x: 6, y: 3 }], seats: 6, status: 0 },
-      { id: 5, coordinates: [{ x: 5, y: 5 }, { x: 6, y: 5 }], seats: 6, status: 0 },
-      { id: 6, coordinates: [{ x: 5, y: 7 }, { x: 6, y: 7 }], seats: 6, status: 0 },
-      { id: 7, coordinates: [{ x: 11, y: 3 }, { x: 12, y: 3 }], seats: 6, status: 0 },
-      { id: 8, coordinates: [{ x: 11, y: 5 }, { x: 12, y: 5 }], seats: 6, status: 0 },
-      { id: 9, coordinates: [{ x: 11, y: 7 }, { x: 12, y: 7 }], seats: 6, status: 0 },
-      { id: 10, coordinates: [{ x: 12, y: 0 }], seats: 3, status: 1 },
-      { id: 11, coordinates: [{ x: 14, y: 0 }, { x: 15, y: 0 }, { x: 15, y: 1 }, { x: 15, y: 2 }], seats: 5, status: 1 }, // L-shaped table
-      { id: 13, coordinates: [{ x: 15, y: 4 }], seats: 3, status: 1 },
-      { id: 14, coordinates: [{ x: 15, y: 6 }], seats: 3, status: 1 },
-      { id: 16, coordinates: [{ x: 2, y: 0 }, { x: 3, y: 0 }, { x: 4, y: 0 }, { x: 5, y: 0 }, { x: 6, y: 0 }, { x: 7, y: 0 }, { x: 8, y: 0 }, { x: 9, y: 0 }, { x: 10, y: 0 }], seats: 20, status: 0 }, // Bar
+      { id: 1, coordinates: [{ x: 1, y: 3 }, { x: 2, y: 3 }], seats: 6, reserved: 0, status: 0},
+      { id: 2, coordinates: [{ x: 1, y: 5 }, { x: 2, y: 5 }], seats: 6, reserved: 0, status: 0},
+      { id: 3, coordinates: [{ x: 1, y: 7 }, { x: 2, y: 7 }], seats: 6, reserved: 0, status: 0},
+      { id: 4, coordinates: [{ x: 5, y: 3 }, { x: 6, y: 3 }], seats: 6, reserved: 0, status: 1},
+      { id: 5, coordinates: [{ x: 5, y: 5 }, { x: 6, y: 5 }], seats: 6, reserved: 0, status: 1},
+
+      { id: 6, coordinates: [{ x: 5, y: 7 }, { x: 6, y: 7 }], seats: 6, reserved: 0, status: 1},
+      { id: 7, coordinates: [{ x: 11, y: 3 }, { x: 12, y: 3 }], seats: 6, reserved: 0, status: 1},
+      { id: 8, coordinates: [{ x: 11, y: 5 }, { x: 12, y: 5 }], seats: 6, reserved: 0, status: 1},
+      { id: 9, coordinates: [{ x: 11, y: 7 }, { x: 12, y: 7 }], seats: 6, reserved: 0, status: 1},
+      { id: 10, coordinates: [{ x: 12, y: 0 }], seats: 3, reserved: 1, status: 1},
+      { id: 11, coordinates: [{ x: 14, y: 0 }, { x: 15, y: 0 }, { x: 15, y: 1 }, { x: 15, y: 2 }], seats: 5, reserved: 1, status: 1}, // L-shaped table
+      { id: 13, coordinates: [{ x: 15, y: 4 }], seats: 3, reserved: 1, status: 1},
+      { id: 14, coordinates: [{ x: 15, y: 6 }], seats: 3, reserved: 1, status: 1},
+      { id: 16, coordinates: [{ x: 2, y: 0 }, { x: 3, y: 0 }, { x: 4, y: 0 }, { x: 5, y: 0 }, { x: 6, y: 0 }, { x: 7, y: 0 }, { x: 8, y: 0 }, { x: 9, y: 0 }, { x: 10, y: 0 }], seats: 20, reserved: 0, status: 1}, // Bar
     ];
 
     // Add places to SVG
@@ -135,7 +136,7 @@ export class ReservationLayoutComponent implements OnInit {
       .append('g')
       .on('click', (event, d) => {
         event.stopPropagation(); // Prevent triggering the document click event
-        if (d.status === 0) { // Only allow selection of available places
+        if (d.reserved === 0 && d.status === 1) { // Only allow selection of available places
           this.onPlaceClick(d.id);
         }
       })
@@ -257,7 +258,10 @@ export class ReservationLayoutComponent implements OnInit {
     if (place.id === this.selectedPlaceId) {
       return '#377eb8'; // Selected color
     }
-    return place.status === 0 ? '#4daf4a' : '#e41a1c'; // Green for free, Red for booked
+    if(place.status === 0) {
+      return '#767676FF'; // Closed color
+    }
+    return place.reserved === 0 ? '#4daf4a' : '#e41a1c'; // Green for free, Red for booked
   }
 
   private onPlaceClick(placeId: number) {
@@ -283,7 +287,7 @@ export class ReservationLayoutComponent implements OnInit {
     tooltip.style('display', 'block')
       .style('left', `${event.pageX + 10}px`)
       .style('top', `${event.pageY + 10}px`)
-      .html(`ID: ${place.id}<br>Seats: ${place.seats}<br>Status: ${place.status === 0 ? 'Free' : 'Booked'}`);
+      .html(`ID: ${place.id}<br>Seats: ${place.seats}<br>Status: ${place.reserved === 0 ? 'Free' : 'Booked'}`);
   }
 
   private hideTooltip() {
