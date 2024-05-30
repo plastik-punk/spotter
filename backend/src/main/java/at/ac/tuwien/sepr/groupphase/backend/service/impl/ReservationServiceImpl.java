@@ -1,31 +1,25 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaLayoutDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ClosedDay;
-import at.ac.tuwien.sepr.groupphase.backend.entity.OpeningHours;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ReservationPlace;
+import at.ac.tuwien.sepr.groupphase.backend.entity.*;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
+import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
-import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
-import at.ac.tuwien.sepr.groupphase.backend.repository.ClosedDayRepository;
-import at.ac.tuwien.sepr.groupphase.backend.repository.OpeningHoursRepository;
-import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
-import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationPlaceRepository;
-import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.*;
 import at.ac.tuwien.sepr.groupphase.backend.service.EmailService;
 import at.ac.tuwien.sepr.groupphase.backend.service.HashService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ReservationMapper;
 import jakarta.mail.MessagingException;
+import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +54,9 @@ public class ReservationServiceImpl implements ReservationService {
     private final HashService hashService;
     private final ReservationValidator reservationValidator;
     private final ApplicationUserServiceImpl applicationUserService;
+    private final AreaRepository areaRepository;
+    private final SegmentRepository segmentRepository;
+    private final AreaPlaceSegmentRepository areaPlaceSegmentRepository;
 
     @Autowired
     public ReservationServiceImpl(ReservationMapper mapper,
@@ -72,7 +69,10 @@ public class ReservationServiceImpl implements ReservationService {
                                   ReservationPlaceRepository reservationPlaceRepository,
                                   ClosedDayRepository closedDayRepository,
                                   HashService hashService,
-                                  ApplicationUserServiceImpl applicationUserService) {
+                                  ApplicationUserServiceImpl applicationUserService,
+                                  AreaRepository areaRepository,
+                                  SegmentRepository segmentRepository,
+                                  AreaPlaceSegmentRepository areaPlaceSegmentRepository) {
         this.mapper = mapper;
         this.reservationRepository = reservationRepository;
         this.applicationUserRepository = applicationUserRepository;
@@ -84,6 +84,9 @@ public class ReservationServiceImpl implements ReservationService {
         this.closedDayRepository = closedDayRepository;
         this.hashService = hashService;
         this.applicationUserService = applicationUserService;
+        this.areaRepository = areaRepository;
+        this.segmentRepository = segmentRepository;
+        this.areaPlaceSegmentRepository = areaPlaceSegmentRepository;
     }
 
     @Override
@@ -185,7 +188,7 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         // 2. check if date is in the past
-        if (date.isBefore(java.time.LocalDate.now())) {
+        if (date.isBefore(LocalDate.now())) {
             return ReservationResponseEnum.DATE_IN_PAST;
         }
 
@@ -477,6 +480,49 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         LOGGER.debug("Canceled reservation: {}", id);
+    }
+
+    @Override
+    @Transactional
+public AreaLayoutDto getAreaLayout(ReservationLayoutCheckAvailabilityDto dto) throws ValidationException {
+        var area = areaRepository.getReferenceById(dto.getAreaId());
+
+        List<AreaPlaceSegment> areaPlaceSegments = areaPlaceSegmentRepository.findByAreaId(area.getId());
+        List<Long> placeIds = areaPlaceSegments.stream().map(aps -> aps.getPlace().getId()).collect(Collectors.toList());
+        List<Place> places = placeRepository.findAllById(placeIds);
+        List<Long> reservationIds = reservationRepository.findReservationsAtSpecifiedTime(
+            dto.getDate(), dto.getStartTime(), dto.getEndTime());
+        List<Long> reservedPlaceIds = reservationPlaceRepository.findPlaceIdsByReservationIds(reservationIds);
+
+        List<AreaLayoutDto.PlaceVisualDto> placeVisuals = places.stream().map(place -> {
+            AreaLayoutDto.PlaceVisualDto placeVisual = new AreaLayoutDto.PlaceVisualDto();
+            placeVisual.setPlaceId(place.getId());
+            placeVisual.setStatus(place.getStatus() == StatusEnum.AVAILABLE);
+            placeVisual.setReservation(reservedPlaceIds.contains(place.getId()));
+            placeVisual.setNumberOfSeats(place.getPax());
+
+            List<Segment> segments = areaPlaceSegments.stream()
+                .filter(aps -> aps.getPlace().getId().equals(place.getId()))
+                .map(AreaPlaceSegment::getSegment)
+                .toList();
+            List<AreaLayoutDto.PlaceVisualDto.CoordinateDto> coordinates = segments.stream().map(segment -> {
+                AreaLayoutDto.PlaceVisualDto.CoordinateDto coordinate = new AreaLayoutDto.PlaceVisualDto.CoordinateDto();
+                coordinate.setX(segment.getX());
+                coordinate.setY(segment.getY());
+                return coordinate;
+            }).collect(Collectors.toList());
+
+            placeVisual.setCoordinates(coordinates);
+            return placeVisual;
+        }).collect(Collectors.toList());
+
+        AreaLayoutDto areaLayoutDto = new AreaLayoutDto();
+        areaLayoutDto.setWidth(area.getWidth());
+        areaLayoutDto.setHeight(area.getHeight());
+        areaLayoutDto.setPlaceVisuals(placeVisuals);
+        LOGGER.debug("Built areaLayout: {}", areaLayoutDto.toString());
+
+        return areaLayoutDto;
     }
 
     private Map<String, Object> constructMailTemplateModel(Reservation reservation, ApplicationUser currentUser) {

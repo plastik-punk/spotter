@@ -21,7 +21,6 @@ export interface ReservationCreateDto {
   notes: string;
   email: string;
   mobileNumber: number;
-  places?: PlaceVisual[];
 }
 export interface ReservationListDto {
   id: number,
@@ -33,7 +32,6 @@ export interface ReservationListDto {
   pax: number;
   placeId: number;
   hashId: string;
-  places?: PlaceVisual[]
 }
 
 export interface ReservationSearch {
@@ -58,15 +56,6 @@ export interface ReservationDetailDto {
   pax: number;
   notes: string;
   placeIds: number[];
-}
-export interface ReservationVisualDetailDto {
-  id: number;
-  startTime: Date;
-  endTime: Date;
-  date: Date;
-  pax: number;
-  notes: string;
-  places: PlaceVisual[];
 }
 
 export interface ReservationEditDto {
