@@ -10,12 +10,14 @@ import { ReservationService } from "../../../services/reservation.service";
 import { NotificationService } from "../../../services/notification.service";
 import * as d3 from 'd3';
 
-interface Place {
-  id: number;
+interface Coordinate {
   x: number;
   y: number;
-  width: number;
-  height: number;
+}
+
+interface Place {
+  id: number;
+  coordinates: Coordinate[];
   seats: number;
   status: number; // 0 for free, 1 for booked
 }
@@ -110,21 +112,20 @@ export class ReservationLayoutComponent implements OnInit {
 
     // Define places with their properties
     const places: Place[] = [
-      { id: 1, x: 1, y: 3, width: 2, height: 1, seats: 6, status: 0 },
-      { id: 2, x: 1, y: 5, width: 2, height: 1, seats: 6, status: 0 },
-      { id: 3, x: 1, y: 7, width: 2, height: 1, seats: 6, status: 0 },
-      { id: 4, x: 5, y: 3, width: 2, height: 1, seats: 6, status: 0 },
-      { id: 5, x: 5, y: 5, width: 2, height: 1, seats: 6, status: 0 },
-      { id: 6, x: 5, y: 7, width: 2, height: 1, seats: 6, status: 0 },
-      { id: 7, x: 11, y: 3, width: 2, height: 1, seats: 6, status: 0 },
-      { id: 8, x: 11, y: 5, width: 2, height: 1, seats: 6, status: 0 },
-      { id: 9, x: 11, y: 7, width: 2, height: 1, seats: 6, status: 0 },
-      { id: 10, x: 12, y: 0, width: 1, height: 1, seats: 3, status: 1 },
-      { id: 11, x: 14, y: 0, width: 2, height: 1, seats: 5, status: 1 },
-      { id: 12, x: 15, y: 1, width: 1, height: 2, seats: 4, status: 1 },
-      { id: 13, x: 15, y: 4, width: 1, height: 1, seats: 3, status: 1 },
-      { id: 14, x: 15, y: 6, width: 1, height: 1, seats: 3, status: 1 },
-      { id: 16, x: 2, y: 0, width: 9, height: 1, seats: 20, status: 0 }, // Bar
+      { id: 1, coordinates: [{ x: 1, y: 3 }, { x: 2, y: 3 }], seats: 6, status: 0 },
+      { id: 2, coordinates: [{ x: 1, y: 5 }, { x: 2, y: 5 }], seats: 6, status: 0 },
+      { id: 3, coordinates: [{ x: 1, y: 7 }, { x: 2, y: 7 }], seats: 6, status: 0 },
+      { id: 4, coordinates: [{ x: 5, y: 3 }, { x: 6, y: 3 }], seats: 6, status: 0 },
+      { id: 5, coordinates: [{ x: 5, y: 5 }, { x: 6, y: 5 }], seats: 6, status: 0 },
+      { id: 6, coordinates: [{ x: 5, y: 7 }, { x: 6, y: 7 }], seats: 6, status: 0 },
+      { id: 7, coordinates: [{ x: 11, y: 3 }, { x: 12, y: 3 }], seats: 6, status: 0 },
+      { id: 8, coordinates: [{ x: 11, y: 5 }, { x: 12, y: 5 }], seats: 6, status: 0 },
+      { id: 9, coordinates: [{ x: 11, y: 7 }, { x: 12, y: 7 }], seats: 6, status: 0 },
+      { id: 10, coordinates: [{ x: 12, y: 0 }], seats: 3, status: 1 },
+      { id: 11, coordinates: [{ x: 14, y: 0 }, { x: 15, y: 0 }, { x: 15, y: 1 }, { x: 15, y: 2 }], seats: 5, status: 1 }, // L-shaped table
+      { id: 13, coordinates: [{ x: 15, y: 4 }], seats: 3, status: 1 },
+      { id: 14, coordinates: [{ x: 15, y: 6 }], seats: 3, status: 1 },
+      { id: 16, coordinates: [{ x: 2, y: 0 }, { x: 3, y: 0 }, { x: 4, y: 0 }, { x: 5, y: 0 }, { x: 6, y: 0 }, { x: 7, y: 0 }, { x: 8, y: 0 }, { x: 9, y: 0 }, { x: 10, y: 0 }], seats: 20, status: 0 }, // Bar
     ];
 
     // Add places to SVG
@@ -132,7 +133,6 @@ export class ReservationLayoutComponent implements OnInit {
       .data(places)
       .enter()
       .append('g')
-      .attr('transform', d => `translate(${d.x * gridSize},${d.y * gridSize})`)
       .on('click', (event, d) => {
         event.stopPropagation(); // Prevent triggering the document click event
         if (d.status === 0) { // Only allow selection of available places
@@ -142,24 +142,52 @@ export class ReservationLayoutComponent implements OnInit {
       .on('mouseover', (event, d) => this.showTooltip(event, d))
       .on('mouseout', () => this.hideTooltip());
 
-    // Add rectangles for places
-    group.append('rect')
-      .attr('width', d => d.width * gridSize)
-      .attr('height', d => d.height * gridSize)
-      .attr('rx', 10) // Rounded corners
-      .attr('ry', 10)
-      .attr('fill', d => this.getPlaceColor(d))
+    // Add shapes for places based on coordinates
+    group.each((d, i, nodes) => {
+      const g = d3.select(nodes[i]);
 
-    // Add text to places
-    group.append('text')
-      .attr('x', d => (d.width / 2) * gridSize)
-      .attr('y', d => (d.height / 2) * gridSize)
-      .attr('dy', '.35em')
-      .attr('text-anchor', 'middle')
-      .attr('fill', 'white')
-      .attr('font-size', '35px')
-      .attr('font-family', 'Arial')
-      .text(d => d.seats.toString());
+      // Generate the polygon points by connecting the outer edges of the squares
+      const polygonPoints = [];
+      d.coordinates.forEach(coord => {
+        const x = coord.x * gridSize;
+        const y = coord.y * gridSize;
+        polygonPoints.push([x, y], [x + gridSize, y], [x + gridSize, y + gridSize], [x, y + gridSize]);
+      });
+
+      // Count the occurrences of each point
+      const pointCounts: Record<string, number> = {};
+      polygonPoints.forEach(point => {
+        const key = point.join(',');
+        pointCounts[key] = (pointCounts[key] || 0) + 1;
+      });
+
+      // Filter and remove duplicates based on occurrences
+      const uniqueFilteredPoints = Object.entries(pointCounts)
+        .filter(([key, count]) => count % 2 === 1)  // Keep points with odd occurrences
+        .map(([key]) => key.split(',').map(Number)); // Convert back to number arrays
+
+      // Order points correctly to form the polygon
+      const orderedPoints = this.orderPoints(uniqueFilteredPoints);
+
+      // Create the path for the polygon with rounded corners
+      const pathData = this.polygonWithRoundedCorners(orderedPoints, 10); // Adjust the radius as needed
+
+      g.append('path')
+        .attr('d', pathData)
+        .attr('fill', () => this.getPlaceColor(d));
+
+      // Add text to places
+      const textPosition = this.getTextPosition(d.coordinates, gridSize);
+      g.append('text')
+        .attr('x', textPosition.x)
+        .attr('y', textPosition.y)
+        .attr('dy', '.35em')
+        .attr('text-anchor', 'middle')
+        .attr('fill', 'white')
+        .attr('font-size', '35px')
+        .attr('font-family', 'Arial')
+        .text(d.seats.toString());
+    });
 
     // Add tooltip element
     d3.select('body').append('div')
@@ -169,6 +197,60 @@ export class ReservationLayoutComponent implements OnInit {
       .style('border', '1px solid #ccc')
       .style('padding', '10px')
       .style('display', 'none');
+  }
+
+  private orderPoints(points: number[][]): number[][] {
+    if (points.length <= 1) return points;
+
+    const orderedPoints = [points[0]];
+    points.splice(0, 1);
+
+    while (points.length > 0) {
+      const lastPoint = orderedPoints[orderedPoints.length - 1];
+      let found = false;
+
+      for (let i = 0; i < points.length; i++) {
+        if (points[i][0] === lastPoint[0] || points[i][1] === lastPoint[1]) {
+          orderedPoints.push(points[i]);
+          points.splice(i, 1);
+          found = true;
+          break;
+        }
+      }
+
+      if (!found) {
+        orderedPoints.push(points.shift());
+      }
+    }
+
+    return orderedPoints;
+  }
+
+  private polygonWithRoundedCorners(points: number[][], r: number): string {
+    let d = "";
+    for (let i = 0; i < points.length; i++) {
+      let previous = i - 1 >= 0 ? i - 1 : points.length - 1;
+      let next = i + 1 < points.length ? i + 1 : 0;
+      let c = { x: points[i][0], y: points[i][1] };
+      let l1 = { x: points[previous][0], y: points[previous][1] };
+      let l2 = { x: points[next][0], y: points[next][1] };
+      let a1 = this.getAngle(c, l1);
+      let a2 = this.getAngle(c, l2);
+
+      let x1 = (c.x + r * Math.cos(a1)).toFixed(3);
+      let y1 = (c.y + r * Math.sin(a1)).toFixed(3);
+      let x2 = (c.x + r * Math.cos(a2)).toFixed(3);
+      let y2 = (c.y + r * Math.sin(a2)).toFixed(3);
+      d += "L" + x1 + "," + y1 + " Q" + c.x + "," + c.y + " " + x2 + "," + y2;
+    }
+    d += "Z"; // close the path
+    return d.replace("L", "M"); // the first command is "M"
+  }
+
+  private getAngle(c: { x: number, y: number }, l: { x: number, y: number }): number {
+    let delta_x = l.x - c.x;
+    let delta_y = l.y - c.y;
+    return Math.atan2(delta_y, delta_x);
   }
 
   private getPlaceColor(place: Place): string {
@@ -191,7 +273,8 @@ export class ReservationLayoutComponent implements OnInit {
   }
 
   private updatePlaceColors() {
-    d3.select(this.d3Container.nativeElement).selectAll('rect')
+    const element = this.d3Container.nativeElement;
+    d3.select(element).selectAll('path')
       .attr('fill', (d: Place) => this.getPlaceColor(d));
   }
 
@@ -205,6 +288,30 @@ export class ReservationLayoutComponent implements OnInit {
 
   private hideTooltip() {
     d3.select('#tooltip').style('display', 'none');
+  }
+
+  private getTextPosition(coordinates: Coordinate[], gridSize: number): { x: number, y: number } {
+    // Find the best square or half-square for placing the text
+    for (const coord of coordinates) {
+      const x = coord.x * gridSize + gridSize / 2;
+      const y = coord.y * gridSize + gridSize / 2;
+
+      const covered = coordinates.some(c => c.x === coord.x && c.y === coord.y + 1);
+      if (covered) {
+        return { x, y: y + gridSize / 2 };
+      }
+    }
+
+    // Fallback to centroid if no suitable position found
+    let x = 0, y = 0;
+    coordinates.forEach(coord => {
+      x += coord.x * gridSize + gridSize / 2;
+      y += coord.y * gridSize + gridSize / 2;
+    });
+    x /= coordinates.length;
+    y /= coordinates.length;
+
+    return { x, y };
   }
 
   onFieldChange() {

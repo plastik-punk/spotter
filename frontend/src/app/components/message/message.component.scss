@@ -27,14 +27,14 @@ body {
 
 .top-banner {
   position: sticky;
-  top: 0;
+  top: -2vh;
   left: 0;
   right: 0;
   background: white;
   z-index: 100;
   border-radius: 20px 20px 0 0;
-  border: 2vh;
-  margin: -2vh 0 2vh 0; /* Adjust margins to cover the top of the card */
+  padding-top: 2vh;
+  margin: -2vh 0 2vh 0;
 }
 
 .top-left-logo {
@@ -52,7 +52,7 @@ body {
   height: 100%;
   width: auto;
 }
-@media (max-width: 1000px) {
+@media (max-width: 1250px) {
   .top-left-logo {
     display: none; /* This hides the logo on screens with width 1000 or less */
   }
