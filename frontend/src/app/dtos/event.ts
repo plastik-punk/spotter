@@ -1,3 +1,5 @@
+import {Time} from "@angular/common";
+
 export interface Event {
   hashId: string;
   startTime: Date;
@@ -7,8 +9,10 @@ export interface Event {
 }
 
 export interface EventCreateDto {
-  startTime: Date;
-  endTime: Date;
+  startDate: Date;
+  startTime: Time;
+  endDate: Date;
+  endTime: Time;
   name: string;
   description: string;
 }
