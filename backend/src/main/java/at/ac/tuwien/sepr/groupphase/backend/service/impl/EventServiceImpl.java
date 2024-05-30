@@ -88,7 +88,6 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventCreateDto create(EventCreateDto eventCreateDto) throws ValidationException {
         LOGGER.trace("create({})", eventCreateDto);
-        eventValidator.validateEventCreateDto(eventCreateDto);
 
         //if no time is set, set it to 00:00 and 23:59
         if (eventCreateDto.getStartTime() == null) {
@@ -97,6 +96,8 @@ public class EventServiceImpl implements EventService {
         if (eventCreateDto.getEndTime() == null) {
             eventCreateDto.setEndTime(LocalTime.of(23, 59));
         }
+
+        eventValidator.validateEventCreateDto(eventCreateDto);
 
         Event event = mapper.eventCreateDtoToEvent(eventCreateDto);
         event.setDescription(event.getDescription() != null ? event.getDescription().trim() : event.getDescription());
