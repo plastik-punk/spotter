@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventSearchDto;
@@ -12,11 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.*;
 
 
 import java.lang.invoke.MethodHandles;
@@ -46,10 +44,21 @@ public class EventEndpoint {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping({"/detail"})
     @Operation(summary = "Get details of a specific event")
-    public EventDetailDto getByHashId(@RequestParam("hashId") String hashId) throws ValidationException {
+    public EventDetailDto getByHashId(@RequestParam("hashId") String hashId) {
         LOGGER.info("GET /api/v1/events/detail body: {}", hashId);
         return service.getByHashId(hashId);
     }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @Secured("ROLE_ADMIN")
+    @PostMapping
+    @Operation(summary = "Create a new event")
+    public EventCreateDto create(@RequestBody EventCreateDto eventCreateDto) throws ValidationException {
+        LOGGER.info("POST /api/v1/events body: {}", eventCreateDto.toString());
+        return service.create(eventCreateDto);
+    }
+
+    //TODO: update
 
     //TODO: delete
 

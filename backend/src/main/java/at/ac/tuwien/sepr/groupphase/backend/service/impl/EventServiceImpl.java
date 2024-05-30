@@ -1,10 +1,12 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Event;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.EventRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.EventService;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -75,5 +78,29 @@ public class EventServiceImpl implements EventService {
         }
 
         return mapper.eventToEventDetailDto(event);
+    }
+
+    @Override
+    public EventCreateDto create(EventCreateDto eventCreateDto) throws ValidationException {
+        LOGGER.trace("create({})", eventCreateDto);
+        eventValidator.validateEventCreateDto(eventCreateDto);
+
+        //if no time is set, set it to 00:00 and 23:59
+        if (eventCreateDto.getStartTime() == null) {
+            eventCreateDto.setStartTime(LocalTime.of(0, 0));
+        }
+        if (eventCreateDto.getEndTime() == null) {
+            eventCreateDto.setEndTime(LocalTime.of(23, 59));
+        }
+
+        Event event = mapper.eventCreateDtoToEvent(eventCreateDto);
+        event.setDescription(event.getDescription() != null ? event.getDescription().trim() : event.getDescription());
+        String hashId = hashService.hashSha256(event.getName() + event.getStartTime().toString() + event.getEndTime().toString() + event.getDescription());
+        event.setHashId(hashId);
+
+        Event savedEvent = eventRepository.save(event);
+        eventValidator.validateEvent(savedEvent);
+
+        return mapper.eventToEventCreateDto(savedEvent);
     }
 }

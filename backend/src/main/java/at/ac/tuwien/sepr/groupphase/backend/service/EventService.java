@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventSearchDto;
@@ -29,4 +30,13 @@ public interface EventService {
      * @throws NotFoundException if the event with the given hashId does not exist
      */
     EventDetailDto getByHashId(String hashId) throws NotFoundException;
+
+    /**
+     * Create a new event.
+     *
+     * @param eventCreateDto the event to create
+     * @return the created event
+     * @throws ValidationException if the eventCreateDto is invalid
+     */
+    EventCreateDto create(EventCreateDto eventCreateDto) throws ValidationException;
 }
