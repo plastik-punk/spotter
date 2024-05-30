@@ -14,70 +14,75 @@
 <div class="container-fluid align-items-center justify-content-center">
   <div class="col-12 col-lg-10 mx-auto h-90 py-3">
     <div class="card custom-card">
-      <form class="d-flex flex-row w-auto mb-3" (submit)="loadEvents()">
-        <!-- this button is here, just so that simple submitting of this form
-             to reload the reservations, is possible -->
-        <button type="submit" hidden="hidden">submit</button>
-        <div class="ms-1">
-          <label for="searchEarliestEvent" class="col-form-label">
-            Earliest Date
-          </label>
-          <!-- pattern and placeholder are fallbacks for browser, that use a simple text input for type="date"
-               The date format of the plain HTML date input, in browser that support it is, sadly, not changeable in a cross-browser way
-            -->
-          <input type="date" id="searchEarliestEvent" name="searchEarliestEvent"
-                 pattern="\d{4}-\d{2}-\d{2}"
-                 placeholder="yyyy-mm-dd"
-                 class="form-control"
-                 [(ngModel)]="searchEarliestStartTime"
-                 (ngModelChange)="searchChanged()"
-          >
-        </div>
-        <div class="ms-1">
-          <label for="searchLatestEvent" class="col-form-label">
-            Latest Date
-          </label>
-          <!-- pattern and placeholder are fallbacks for browser, that use a simple text input for type="date"
-               The date format of the plain HTML date input, in browser that support it is, sadly, not changeable in a cross-browser way
-            -->
-          <input type="date" id="searchLatestEvent" name="searchLatestEvent"
-                 pattern="\d{4}-\d{2}-\d{2}"
-                 placeholder="yyyy-mm-dd"
-                 class="form-control"
-                 [(ngModel)]="searchLatestEndTime"
-                 (ngModelChange)="searchChanged()"
-          >
-        </div>
-        <div class="ms-1">
-          <label for="searchEarliestStartTime" class="col-form-label">
-            Earliest Start Time
-          </label>
-          <!-- pattern and placeholder are fallbacks for browser, that use a simple text input for type="date"
-               The date format of the plain HTML date input, in browser that support it is, sadly, not changeable in a cross-browser way
-            -->
-          <input type="time" id="searchEarliestStartTime" name="searchEarliestStartTime"
-                 pattern="\d{2}:\d{2}"
-                 placeholder="HH:mm"
-                 class="form-control"
-                 [(ngModel)]="searchEarliestStartTime"
-                 (ngModelChange)="searchChanged()">
-        </div>
-        <div class="ms-1">
-          <label for="searchLatestEndTime" class="col-form-label">
-            Latest End Time
-          </label>
-          <!-- pattern and placeholder are fallbacks for browser, that use a simple text input for type="date"
-               The date format of the plain HTML date input, in browser that support it is, sadly, not changeable in a cross-browser way
-            -->
-          <input type="time" id="searchLatestEndTime" name="searchLatestEndTime"
-                 pattern="\d{2}:\d{2}"
-                 placeholder="HH:mm"
-                 class="form-control"
-                 [(ngModel)]="searchLatestEndTime"
-                 (ngModelChange)="searchChanged()">
-        </div>
+      <div class="d-flex flex-row justify-content-around">
+        <form class="d-flex flex-row w-auto mb-3" (submit)="loadEvents()">
+          <!-- this button is here, just so that simple submitting of this form
+               to reload the reservations, is possible -->
+          <button type="submit" hidden="hidden">submit</button>
+          <div class="ms-1">
+            <label for="searchEarliestEvent" class="col-form-label">
+              Earliest Date
+            </label>
+            <!-- pattern and placeholder are fallbacks for browser, that use a simple text input for type="date"
+                 The date format of the plain HTML date input, in browser that support it is, sadly, not changeable in a cross-browser way
+              -->
+            <input type="date" id="searchEarliestEvent" name="searchEarliestEvent"
+                   pattern="\d{4}-\d{2}-\d{2}"
+                   placeholder="yyyy-mm-dd"
+                   class="form-control"
+                   [(ngModel)]="searchEarliestStartTime"
+                   (ngModelChange)="searchChanged()"
+            >
+          </div>
+          <div class="ms-1">
+            <label for="searchLatestEvent" class="col-form-label">
+              Latest Date
+            </label>
+            <!-- pattern and placeholder are fallbacks for browser, that use a simple text input for type="date"
+                 The date format of the plain HTML date input, in browser that support it is, sadly, not changeable in a cross-browser way
+              -->
+            <input type="date" id="searchLatestEvent" name="searchLatestEvent"
+                   pattern="\d{4}-\d{2}-\d{2}"
+                   placeholder="yyyy-mm-dd"
+                   class="form-control"
+                   [(ngModel)]="searchLatestEndTime"
+                   (ngModelChange)="searchChanged()"
+            >
+          </div>
+          <div class="ms-1">
+            <label for="searchEarliestStartTime" class="col-form-label">
+              Earliest Start Time
+            </label>
+            <!-- pattern and placeholder are fallbacks for browser, that use a simple text input for type="date"
+                 The date format of the plain HTML date input, in browser that support it is, sadly, not changeable in a cross-browser way
+              -->
+            <input type="time" id="searchEarliestStartTime" name="searchEarliestStartTime"
+                   pattern="\d{2}:\d{2}"
+                   placeholder="HH:mm"
+                   class="form-control"
+                   [(ngModel)]="searchEarliestStartTime"
+                   (ngModelChange)="searchChanged()">
+          </div>
+          <div class="ms-1">
+            <label for="searchLatestEndTime" class="col-form-label">
+              Latest End Time
+            </label>
+            <!-- pattern and placeholder are fallbacks for browser, that use a simple text input for type="date"
+                 The date format of the plain HTML date input, in browser that support it is, sadly, not changeable in a cross-browser way
+              -->
+            <input type="time" id="searchLatestEndTime" name="searchLatestEndTime"
+                   pattern="\d{2}:\d{2}"
+                   placeholder="HH:mm"
+                   class="form-control"
+                   [(ngModel)]="searchLatestEndTime"
+                   (ngModelChange)="searchChanged()">
+          </div>
 
-      </form>
+        </form>
+        <div class="align-content-center">
+          <button class="btn btn-primary" [routerLink]="['/event-create']">Create Event</button>
+        </div>
+      </div>
 
       <table class="table table-hover">
         <thead>
