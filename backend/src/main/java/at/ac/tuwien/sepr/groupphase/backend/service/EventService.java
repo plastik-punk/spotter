@@ -4,7 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
-import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -29,4 +29,12 @@ public interface EventService {
      * @throws NotFoundException if the event with the given hashId does not exist
      */
     EventDetailDto getByHashId(String hashId) throws NotFoundException;
+
+    /**
+     * Import an ICS file.
+     *
+     * @param file the ICS file
+     * @throws Exception if the file could not be imported
+     */
+    void importIcsFile(MultipartFile file) throws Exception;
 }
