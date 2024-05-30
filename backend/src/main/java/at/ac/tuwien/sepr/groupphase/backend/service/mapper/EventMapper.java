@@ -14,8 +14,20 @@ import java.util.List;
 
 @Mapper
 public interface EventMapper {
+    @Mapping(source = "startDate", target = "startTime.date")
+    @Mapping(source = "startTime", target = "startTime.time")
+    @Mapping(source = "endDate", target = "endTime.date")
+    @Mapping(source = "endTime", target = "endTime.time")
+    @Mapping(source = "name", target = "name")
+    @Mapping(source = "description", target = "description")
     Event eventCreateDtoToEvent(EventCreateDto eventCreateDto);
 
+    @Mapping(source = "startTime.date", target = "startDate")
+    @Mapping(source = "startTime.time", target = "startTime")
+    @Mapping(source = "endTime.date", target = "endDate")
+    @Mapping(source = "endTime.time", target = "endTime")
+    @Mapping(source = "name", target = "name")
+    @Mapping(source = "description", target = "description")
     EventCreateDto eventToEventCreateDto(Event event);
 
     EventDetailDto eventToEventDetailDto(Event event);
