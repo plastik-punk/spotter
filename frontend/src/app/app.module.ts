@@ -18,34 +18,45 @@ import { ConfirmationDialogDeleteComponent } from './components/confirmation-dia
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule, NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NotificationComponent } from './components/notification/notification.component';
-import {GroupByDatePipe} from "./pipes/group-by-date.pipe";
+import {EventOverviewComponent} from "./components/event/event-overview/event-overview.component";
+import {EventDetailComponent} from "./components/event/event-detail/event-detail.component";
+import {EventEditComponent} from "./components/event/event-edit/event-edit.component";
+import {EventCreateComponent} from "./components/event/event-create/event-create.component";
+import {EventImportComponent} from "./components/event/event-import/event-import.component";
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    SidebarComponent,
-    FooterComponent,
-    ReservationSimpleComponent,
-    LoginComponent,
-    MessageComponent,
-    ReservationDetailComponent,
-    ReservationOverviewComponent,
-    ConfirmationDialogDeleteComponent,
-    NotificationComponent
-  ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    NgbModule,
-    FormsModule,
-    ToastrModule.forRoot(),
-    BrowserAnimationsModule,
-    NoopAnimationsModule,
-    GroupByDatePipe
-  ],
-  providers: [httpInterceptorProviders],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        SidebarComponent,
+        FooterComponent,
+        ReservationSimpleComponent,
+        LoginComponent,
+        MessageComponent,
+        ReservationDetailComponent,
+        ReservationOverviewComponent,
+        ConfirmationDialogDeleteComponent,
+        NotificationComponent,
+        EventOverviewComponent,
+        EventDetailComponent,
+        EventEditComponent,
+        EventCreateComponent,
+        EventImportComponent
+    ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        ReactiveFormsModule,
+        HttpClientModule,
+        NgbModule,
+        FormsModule,
+        ToastrModule.forRoot(),
+        BrowserAnimationsModule,
+        NoopAnimationsModule
+    ],
+    providers: [httpInterceptorProviders],
+    exports: [
+        ConfirmationDialogDeleteComponent
+    ],
+    bootstrap: [AppComponent]
 })
 export class AppModule { }
