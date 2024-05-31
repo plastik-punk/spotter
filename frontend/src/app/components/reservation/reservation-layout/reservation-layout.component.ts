@@ -2,13 +2,20 @@ import { Component, OnInit, ElementRef, ViewChild, HostListener } from '@angular
 import { FormsModule, NgForm, ReactiveFormsModule } from "@angular/forms";
 import { NgIf } from "@angular/common";
 import { RouterLink } from "@angular/router";
-import { ReservationCheckAvailabilityDto, ReservationCreateDto } from "../../../dtos/reservation";
+import {
+  ReservationLayoutCheckAvailabilityDto,
+  ReservationCreateDto,
+  AreaLayoutDto,
+  PlaceVisualDto, CoordinateDto, Reservation
+} from "../../../dtos/reservation";
 import { UserOverviewDto } from "../../../dtos/app-user";
 import { SimpleViewReservationStatusEnum } from "../../../dtos/status-enum";
 import { AuthService } from "../../../services/auth.service";
 import { ReservationService } from "../../../services/reservation.service";
 import { NotificationService } from "../../../services/notification.service";
 import * as d3 from 'd3';
+import {formatIsoDate} from "../../../util/date-helper";
+import {Observable} from "rxjs";
 
 interface Coordinate {
   x: number;
@@ -16,11 +23,11 @@ interface Coordinate {
 }
 
 interface Place {
-  id: number;
+  placeId: number;
   coordinates: Coordinate[];
-  seats: number;
-  reserved: number; // 0 for free, 1 for booked
-  status: number;
+  numberOfSeats: number;
+  reservation: boolean; // 0 for free, 1 for booked
+  status: boolean;
 }
 
 @Component({
@@ -32,8 +39,8 @@ interface Place {
     ReactiveFormsModule,
     RouterLink
   ],
-  templateUrl: './component-reservation-layout.component.html',
-  styleUrls: ['./component-reservation-layout.component.scss']
+  templateUrl: './reservation-layout.component.html',
+  styleUrls: ['./reservation-layout.component.scss']
 })
 export class ReservationLayoutComponent implements OnInit {
 
@@ -52,17 +59,22 @@ export class ReservationLayoutComponent implements OnInit {
     mobileNumber: undefined
   };
 
-  reservationCheckAvailabilityDto: ReservationCheckAvailabilityDto = {
-    startTime: undefined,
-    date: undefined,
-    pax: undefined,
+  hours = new Date().getHours().toString().padStart(2, '0');
+  minutes = new Date().getMinutes().toString().padStart(2, '0');
+  nowTime= this.hours + ':' + this.minutes;
+  now = formatIsoDate(new Date());
+
+
+
+  reservationLayoutCheckAvailabilityDto: ReservationLayoutCheckAvailabilityDto = {
+    startTime:this.nowTime,
+    date: this.now,
+    areaId: 1,
+    idToExclude: -1
   }
 
   currentUser: UserOverviewDto;
-
-  enumReservationTableStatus = SimpleViewReservationStatusEnum;
-  reservationStatusText: string = 'Provide Time, Date and Pax';
-  reservationStatusClass: string = 'reservation-table-incomplete';
+  areaLayout: AreaLayoutDto;
   selectedPlaceId: number | null = null; // Track the selected place
 
   constructor(
@@ -72,6 +84,7 @@ export class ReservationLayoutComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.fetchLayoutAvailability();
     this.createSeatingPlan();
     this.onResize(); // Adjust the size on initialization
 
@@ -107,37 +120,59 @@ export class ReservationLayoutComponent implements OnInit {
       .attr('preserveAspectRatio', 'xMidYMid meet')
       .attr('width', width)
       .attr('height', height);
+  }
+
+  private fetchLayoutAvailability() {
+
+      console.log('ngDoCheck called');
+
+
+    this.service.getLayoutAvailability(this.reservationLayoutCheckAvailabilityDto).subscribe({
+      next: (data: AreaLayoutDto) => {
+        this.areaLayout = data;
+        this.updateSeatingPlan();
+      },
+      error: (error) => {
+        this.notificationService.showError('Failed to fetch layout availability. Please try again later.');
+      },
+    });
+  }
+
+  private updateSeatingPlan() {
+    const element = this.d3Container.nativeElement;
+    const svg = d3.select(element).select('svg');
+    svg.selectAll('*').remove(); // Clear existing elements
 
     const gridSize = 100;
 
     // Define places with their properties
     const places: Place[] = [
-      { id: 1, coordinates: [{ x: 1, y: 3 }, { x: 2, y: 3 }], seats: 6, reserved: 0, status: 0},
-      { id: 2, coordinates: [{ x: 1, y: 5 }, { x: 2, y: 5 }], seats: 6, reserved: 0, status: 0},
-      { id: 3, coordinates: [{ x: 1, y: 7 }, { x: 2, y: 7 }], seats: 6, reserved: 0, status: 0},
-      { id: 4, coordinates: [{ x: 5, y: 3 }, { x: 6, y: 3 }], seats: 6, reserved: 0, status: 1},
-      { id: 5, coordinates: [{ x: 5, y: 5 }, { x: 6, y: 5 }], seats: 6, reserved: 0, status: 1},
+      { placeId: 1, coordinates: [{ x: 1, y: 3 }, { x: 2, y: 3 }], numberOfSeats: 6, reservation: false, status: false},
+      { placeId: 2, coordinates: [{ x: 1, y: 5 }, { x: 2, y: 5 }], numberOfSeats: 6, reservation: false, status: false},
+      { placeId: 3, coordinates: [{ x: 1, y: 7 }, { x: 2, y: 7 }], numberOfSeats: 6, reservation: false, status: false},
+      { placeId: 4, coordinates: [{ x: 5, y: 3 }, { x: 6, y: 3 }], numberOfSeats: 6, reservation: false, status: true},
+      { placeId: 5, coordinates: [{ x: 5, y: 5 }, { x: 6, y: 5 }], numberOfSeats: 6, reservation: false, status: true},
 
-      { id: 6, coordinates: [{ x: 5, y: 7 }, { x: 6, y: 7 }], seats: 6, reserved: 0, status: 1},
-      { id: 7, coordinates: [{ x: 11, y: 3 }, { x: 12, y: 3 }], seats: 6, reserved: 0, status: 1},
-      { id: 8, coordinates: [{ x: 11, y: 5 }, { x: 12, y: 5 }], seats: 6, reserved: 0, status: 1},
-      { id: 9, coordinates: [{ x: 11, y: 7 }, { x: 12, y: 7 }], seats: 6, reserved: 0, status: 1},
-      { id: 10, coordinates: [{ x: 12, y: 0 }], seats: 3, reserved: 1, status: 1},
-      { id: 11, coordinates: [{ x: 14, y: 0 }, { x: 15, y: 0 }, { x: 15, y: 1 }, { x: 15, y: 2 }], seats: 5, reserved: 1, status: 1}, // L-shaped table
-      { id: 13, coordinates: [{ x: 15, y: 4 }], seats: 3, reserved: 1, status: 1},
-      { id: 14, coordinates: [{ x: 15, y: 6 }], seats: 3, reserved: 1, status: 1},
-      { id: 16, coordinates: [{ x: 2, y: 0 }, { x: 3, y: 0 }, { x: 4, y: 0 }, { x: 5, y: 0 }, { x: 6, y: 0 }, { x: 7, y: 0 }, { x: 8, y: 0 }, { x: 9, y: 0 }, { x: 10, y: 0 }], seats: 20, reserved: 0, status: 1}, // Bar
+      { placeId: 6, coordinates: [{ x: 5, y: 7 }, { x: 6, y: 7 }], numberOfSeats: 6, reservation: false, status: true},
+      { placeId: 7, coordinates: [{ x: 11, y: 3 }, { x: 12, y: 3 }], numberOfSeats: 6, reservation: false, status: true},
+      { placeId: 8, coordinates: [{ x: 11, y: 5 }, { x: 12, y: 5 }], numberOfSeats: 6, reservation: false, status: true},
+      { placeId: 9, coordinates: [{ x: 11, y: 7 }, { x: 12, y: 7 }], numberOfSeats: 6, reservation: false, status: true},
+      { placeId: 10, coordinates: [{ x: 12, y: 0 }], numberOfSeats: 3, reservation: true, status: true},
+      { placeId: 11, coordinates: [{ x: 14, y: 0 }, { x: 15, y: 0 }, { x: 15, y: 1 }, { x: 15, y: 2 }], numberOfSeats: 5, reservation: true, status: true}, // L-shaped table
+      { placeId: 13, coordinates: [{ x: 15, y: 4 }], numberOfSeats: 3, reservation: true, status: true},
+      { placeId: 14, coordinates: [{ x: 15, y: 6 }], numberOfSeats: 3, reservation: true, status: true},
+      { placeId: 16, coordinates: [{ x: 2, y: 0 }, { x: 3, y: 0 }, { x: 4, y: 0 }, { x: 5, y: 0 }, { x: 6, y: 0 }, { x: 7, y: 0 }, { x: 8, y: 0 }, { x: 9, y: 0 }, { x: 10, y: 0 }], numberOfSeats: 20, reservation: false, status: true}, // Bar
     ];
 
     // Add places to SVG
     const group = svg.selectAll('g')
-      .data(places)
+      .data(this.areaLayout.placeVisuals)
       .enter()
       .append('g')
       .on('click', (event, d) => {
         event.stopPropagation(); // Prevent triggering the document click event
-        if (d.reserved === 0 && d.status === 1) { // Only allow selection of available places
-          this.onPlaceClick(d.id);
+        if (!d.reservation && d.status) { // Only allow selection of available places
+          this.onPlaceClick(d.placeId);
         }
       })
       .on('mouseover', (event, d) => this.showTooltip(event, d))
@@ -187,7 +222,7 @@ export class ReservationLayoutComponent implements OnInit {
         .attr('fill', 'white')
         .attr('font-size', '35px')
         .attr('font-family', 'Arial')
-        .text(d.seats.toString());
+        .text(d.numberOfSeats.toString());
     });
 
     // Add tooltip element
@@ -254,14 +289,14 @@ export class ReservationLayoutComponent implements OnInit {
     return Math.atan2(delta_y, delta_x);
   }
 
-  private getPlaceColor(place: Place): string {
-    if (place.id === this.selectedPlaceId) {
+  private getPlaceColor(place: PlaceVisualDto): string {
+    if (place.placeId === this.selectedPlaceId) {
       return '#377eb8'; // Selected color
     }
-    if(place.status === 0) {
+    if(!place.status) {
       return '#767676FF'; // Closed color
     }
-    return place.reserved === 0 ? '#4daf4a' : '#e41a1c'; // Green for free, Red for booked
+    return !place.reservation? '#4daf4a' : '#e41a1c'; // Green for free, Red for booked
   }
 
   private onPlaceClick(placeId: number) {
@@ -279,22 +314,22 @@ export class ReservationLayoutComponent implements OnInit {
   private updatePlaceColors() {
     const element = this.d3Container.nativeElement;
     d3.select(element).selectAll('path')
-      .attr('fill', (d: Place) => this.getPlaceColor(d));
+      .attr('fill', (d: PlaceVisualDto) => this.getPlaceColor(d));
   }
 
-  private showTooltip(event: MouseEvent, place: Place) {
+  private showTooltip(event: MouseEvent, place: PlaceVisualDto) {
     const tooltip = d3.select('#tooltip');
     tooltip.style('display', 'block')
       .style('left', `${event.pageX + 10}px`)
       .style('top', `${event.pageY + 10}px`)
-      .html(`ID: ${place.id}<br>Seats: ${place.seats}<br>Status: ${place.reserved === 0 ? 'Free' : 'Booked'}`);
+      .html(`ID: ${place.placeId}<br>Seats: ${place.numberOfSeats}<br>Status: ${!place.reservation ? 'Free' : 'Booked'}`);
   }
 
   private hideTooltip() {
     d3.select('#tooltip').style('display', 'none');
   }
 
-  private getTextPosition(coordinates: Coordinate[], gridSize: number): { x: number, y: number } {
+  private getTextPosition(coordinates: CoordinateDto[], gridSize: number): { x: number, y: number } {
     // Find the best square or half-square for placing the text
     for (const coord of coordinates) {
       const x = coord.x * gridSize + gridSize / 2;
@@ -319,48 +354,30 @@ export class ReservationLayoutComponent implements OnInit {
   }
 
   onFieldChange() {
-    this.reservationCheckAvailabilityDto.startTime = this.reservationCreateDto.startTime;
-    this.reservationCheckAvailabilityDto.date = this.reservationCreateDto.date;
-    this.reservationCheckAvailabilityDto.pax = this.reservationCreateDto.pax;
-
-    if (this.reservationCheckAvailabilityDto.startTime == null || this.reservationCheckAvailabilityDto.pax == null || this.reservationCheckAvailabilityDto.date == null) {
-      this.reservationStatusText = 'Provide Time, Date and Pax';
-      this.reservationStatusClass = 'reservation-table-incomplete';
-      return;
+    console.log('onFieldChange called');
+    if (this.reservationCreateDto.startTime) {
+      this.reservationLayoutCheckAvailabilityDto.startTime = this.reservationCreateDto.startTime.toString();
     }
-
-    this.service.getAvailability(this.reservationCheckAvailabilityDto).subscribe({
-      next: (data) => {
-        if (data.valueOf() === this.enumReservationTableStatus.available.valueOf()) {
-          this.reservationStatusText = 'Tables available';
-          this.reservationStatusClass = 'reservation-table-available';
-        } else if (data.valueOf() === this.enumReservationTableStatus.closed.valueOf()) {
-          this.reservationStatusText = 'Location Closed This Day';
-          this.reservationStatusClass = 'reservation-table-conflict';
-        } else if (data.valueOf() === this.enumReservationTableStatus.outsideOpeningHours.valueOf()) {
-          this.reservationStatusText = 'Outside Of Opening Hours';
-          this.reservationStatusClass = 'reservation-table-conflict';
-        } else if (data.valueOf() === this.enumReservationTableStatus.respectClosingHour.valueOf()) {
-          this.reservationStatusText = 'Respect Closing Hour';
-          this.reservationStatusClass = 'reservation-table-conflict';
-        } else if (data.valueOf() === this.enumReservationTableStatus.tooManyPax.valueOf()) {
-          this.reservationStatusText = 'Too Many Pax for available tables (try advanced reservation)';
-          this.reservationStatusClass = 'reservation-table-conflict';
-        } else if (data.valueOf() === this.enumReservationTableStatus.allOccupied.valueOf()) {
-          this.reservationStatusText = 'All Tables Occupied';
-          this.reservationStatusClass = 'reservation-table-conflict';
-        } else if (data.valueOf() === this.enumReservationTableStatus.dateInPast.valueOf()) {
-          this.reservationStatusText = 'Date In The Past';
-          this.reservationStatusClass = 'reservation-table-conflict';
-        }
-      },
-      error: (error) => {
-        this.notificationService.showError('Failed to check availability. Please try again later.');
-      },
-    });
+    if (this.reservationCreateDto.date) {
+      this.reservationLayoutCheckAvailabilityDto.date = this.reservationCreateDto.date.toString();
+    }
+    this.reservationLayoutCheckAvailabilityDto.areaId = 1; // Hardcoded areaId for now
+    this.fetchLayoutAvailability();
+  }
+  private formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
-  onSubmit(form: NgForm) {
+  private formatTime(time: Date): string {
+    const hours = time.getHours().toString().padStart(2, '0');
+    const minutes = time.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+  }
+
+    onSubmit(form: NgForm) {
     if (this.authService.isLoggedIn()) {
       this.currentUser = this.authService.getCurrentUser();
       this.reservationCreateDto.firstName = this.currentUser.firstName;
@@ -369,13 +386,50 @@ export class ReservationLayoutComponent implements OnInit {
       this.reservationCreateDto.mobileNumber = Number(this.currentUser.mobileNumber);
     }
 
-    this.service.createReservation(this.reservationCreateDto).subscribe({
-      next: (response) => {
-        this.notificationService.showSuccess('Reservation created successfully.');
-      },
-      error: (error) => {
-        this.notificationService.showError('Failed to create reservation. Please try again later.');
-      }
-    });
+    if (form.valid) {
+      let observable: Observable<Reservation>;
+      observable = this.service.createReservation(this.reservationCreateDto);
+      observable.subscribe({
+        next: (data) => {
+          if (data == null) {
+            this.notificationService.showError('Location Closed');
+          } else {
+            this.notificationService.showSuccess('Reservation created successfully.');
+            this.resetForm(form);
+          }
+        },
+        error: (error) => {
+          this.notificationService.showError('Failed to create reservation. Please try again later.');
+        },
+      });
+    } else {
+      this.showFormErrors();
+    }
+  }
+  private resetForm(form: NgForm) {
+    form.resetForm();
+    this.reservationCreateDto = {
+      user: undefined,
+      startTime: undefined,
+      endTime: undefined,
+      date: undefined,
+      pax: undefined,
+      firstName: undefined,
+      lastName: undefined,
+      notes: undefined,
+      email: undefined,
+      mobileNumber: undefined
+    };
+  }
+  private showFormErrors(): void {
+    if (!this.reservationCreateDto.startTime) {
+      this.notificationService.showError('Start time is required.');
+    }
+    if (!this.reservationCreateDto.date) {
+      this.notificationService.showError('Date is required.');
+    }
+    if (!this.reservationCreateDto.pax) {
+      this.notificationService.showError('Number of people (pax) is required.');
+    }
   }
 }

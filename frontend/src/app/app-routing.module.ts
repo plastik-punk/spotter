@@ -9,9 +9,10 @@ import { RegistrationComponent } from "./components/registration/registration.co
 import { StaffAccountsComponent } from "./components/staff-accounts/staff-accounts.component";
 import { ReservationDetailComponent } from "./components/reservation/reservation-detail/reservation-detail.component";
 import { ReservationEditComponent } from "./components/reservation/reservation-edit/reservation-edit.component";
+
 import {
-  ReservationLayoutComponent
-} from "./components/reservation/component-reservation-layout/component-reservation-layout.component";
+    ReservationLayoutComponent
+} from "./components/reservation/reservation-layout/reservation-layout.component";
 
 const routes: Routes = [
   {path: '', redirectTo: 'login', pathMatch: 'full'},
@@ -24,7 +25,7 @@ const routes: Routes = [
   {path: 'employees', component: StaffAccountsComponent},
   {path: 'reservation-detail/:id', component: ReservationDetailComponent},
   {path: 'reservation-edit/:id', component: ReservationEditComponent},
-  {path: 'reservation-layout', canActivate: mapToCanActivate([AuthGuard]), component: ReservationLayoutComponent}
+  {path: 'reservation-layout', component: ReservationLayoutComponent}
 
 ];
 

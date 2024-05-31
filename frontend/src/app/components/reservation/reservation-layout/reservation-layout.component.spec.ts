@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ComponentReservationLayoutComponent } from './component-reservation-layout.component';
+import { ReservationLayoutComponent } from './reservation-layout.component';
 
 describe('ComponentReservationLayoutComponent', () => {
-  let component: ComponentReservationLayoutComponent;
-  let fixture: ComponentFixture<ComponentReservationLayoutComponent>;
+  let component: ReservationLayoutComponent;
+  let fixture: ComponentFixture<ReservationLayoutComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ComponentReservationLayoutComponent]
+      imports: [ReservationLayoutComponent]
     })
     .compileComponents();
-    
-    fixture = TestBed.createComponent(ComponentReservationLayoutComponent);
+
+    fixture = TestBed.createComponent(ReservationLayoutComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

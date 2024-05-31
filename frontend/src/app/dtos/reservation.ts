@@ -69,15 +69,30 @@ export interface ReservationEditDto {
   user: AppUser;
   placeIds: number[];
 }
-export interface Coordinate {
+
+export interface ReservationLayoutCheckAvailabilityDto {
+  startTime: string;
+  date: string;
+  areaId: number;
+  idToExclude: number;
+}
+
+export interface AreaLayoutDto {
+  width: number;
+  height: number;
+  placeVisuals: PlaceVisualDto[];
+}
+
+export interface PlaceVisualDto {
+  placeId: number;
+  status: boolean;
+  reservation: boolean;
+  numberOfSeats: number;
+  coordinates: CoordinateDto[];
+}
+
+export interface CoordinateDto {
   x: number;
   y: number;
 }
 
-export interface PlaceVisual {
-  id: number;
-  coordinates: Coordinate[];
-  seats: number;
-  reserved: number; // 0 for free, 1 for booked
-  status: number;
-}

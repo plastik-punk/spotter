@@ -143,7 +143,7 @@ export class ReservationSimpleComponent implements OnInit {
           }
         },
         error: (error) => {
-          this.notificationService.showError('Failed to create reservation. Please try again later.');
+          this.notificationService.showError('Location Closed');
         },
       });
     } else {

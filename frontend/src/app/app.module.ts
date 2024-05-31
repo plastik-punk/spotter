@@ -15,6 +15,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { httpInterceptorProviders } from './interceptors';
 import { ReservationDetailComponent } from './components/reservation/reservation-detail/reservation-detail.component';
 import { ConfirmationDialogDeleteComponent } from './components/confirmation-dialog/confirmation-dialog-delete/confirmation-dialog-delete.component';
+import { ReservationLayoutComponent} from './components/reservation/reservation-layout/reservation-layout.component';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule, NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NotificationComponent } from './components/notification/notification.component';
@@ -31,7 +32,8 @@ import {GroupByDatePipe} from "./pipes/group-by-date.pipe";
     ReservationDetailComponent,
     ReservationOverviewComponent,
     ConfirmationDialogDeleteComponent,
-    NotificationComponent
+    NotificationComponent,
+
   ],
   imports: [
     BrowserModule,
@@ -43,7 +45,8 @@ import {GroupByDatePipe} from "./pipes/group-by-date.pipe";
     ToastrModule.forRoot(),
     BrowserAnimationsModule,
     NoopAnimationsModule,
-    GroupByDatePipe
+    GroupByDatePipe,
+    ReservationLayoutComponent
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]
