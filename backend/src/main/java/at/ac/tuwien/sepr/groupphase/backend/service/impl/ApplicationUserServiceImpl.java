@@ -96,7 +96,9 @@ public class ApplicationUserServiceImpl implements ApplicationUserService {
 
             List<GrantedAuthority> grantedAuthorities;
             if (applicationUser.getRole() == RoleEnum.ADMIN) {
-                grantedAuthorities = AuthorityUtils.createAuthorityList("ROLE_ADMIN", "ROLE_USER");
+                grantedAuthorities = AuthorityUtils.createAuthorityList("ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_USER");
+            } else if (applicationUser.getRole() == RoleEnum.EMPLOYEE) {
+                grantedAuthorities = AuthorityUtils.createAuthorityList("ROLE_EMPLOYEE", "ROLE_USER");
             } else {
                 grantedAuthorities = AuthorityUtils.createAuthorityList("ROLE_USER");
             }
@@ -132,6 +134,7 @@ public class ApplicationUserServiceImpl implements ApplicationUserService {
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList();
+            LOGGER.debug("[LOGIN] Security Roles: {}", roles);
             return jwtTokenizer.getAuthToken(userDetails.getUsername(), roles);
         }
         throw new BadCredentialsException("Username or password is incorrect or account is locked");

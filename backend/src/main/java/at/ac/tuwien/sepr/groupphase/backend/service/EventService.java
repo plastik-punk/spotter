@@ -1,8 +1,10 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventCreateDto;
+
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventEditDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -42,10 +44,27 @@ public interface EventService {
     EventCreateDto create(EventCreateDto eventCreateDto) throws ValidationException;
 
     /**
+     * Update an existing event.
+     *
+     * @param eventEditDto the event to update
+     * @return the updated event
+     * @throws ValidationException if the eventEditDto is invalid
+     */
+    EventEditDto update(EventEditDto eventEditDto) throws ValidationException;
+
+    /**
+     * Delete an event.
+     *
+     * @param hashId the Hashed id of the event to delete
+     * @throws NotFoundException if the event with the given hashId does not exist
+     */
+    void delete(String hashId) throws NotFoundException;
+
+    /**
      * Import an ICS file.
      *
      * @param file the ICS file
-     * @throws Exception if the file could not be imported
+     * @throws IllegalArgumentException if the file could not be imported
      */
     void importIcsFile(MultipartFile file) throws IllegalArgumentException;
 }

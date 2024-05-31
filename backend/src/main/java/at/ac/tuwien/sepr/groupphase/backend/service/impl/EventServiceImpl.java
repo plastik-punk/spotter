@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Event;
@@ -29,6 +30,7 @@ import java.lang.invoke.MethodHandles;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EventServiceImpl implements EventService {
@@ -91,7 +93,6 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventCreateDto create(EventCreateDto eventCreateDto) throws ValidationException {
         LOGGER.trace("create({})", eventCreateDto);
-        eventValidator.validateEventCreateDto(eventCreateDto);
 
         //if no time is set, set it to 00:00 and 23:59
         if (eventCreateDto.getStartTime() == null) {
@@ -100,6 +101,8 @@ public class EventServiceImpl implements EventService {
         if (eventCreateDto.getEndTime() == null) {
             eventCreateDto.setEndTime(LocalTime.of(23, 59));
         }
+
+        eventValidator.validateEventCreateDto(eventCreateDto);
 
         Event event = mapper.eventCreateDtoToEvent(eventCreateDto);
         event.setDescription(event.getDescription() != null ? event.getDescription().trim() : event.getDescription());
@@ -144,4 +147,36 @@ public class EventServiceImpl implements EventService {
             throw new RuntimeException(e);
         }
     }
+    public EventEditDto update(EventEditDto eventEditDto) throws ValidationException {
+        LOGGER.trace("update({})", eventEditDto);
+        eventValidator.validateEventEditDto(eventEditDto);
+
+        Event event = eventRepository.findByHashId(eventEditDto.getHashId());
+        event.setName(eventEditDto.getName());
+        event.setDescription(eventEditDto.getDescription());
+        event.setStartTime(eventEditDto.getStartTime());
+        event.setEndTime(eventEditDto.getEndTime());
+
+        Event savedEvent = eventRepository.save(event);
+        eventValidator.validateEvent(savedEvent);
+
+        return mapper.eventToEventEditDto(savedEvent);
+    }
+
+    @Override
+    public void delete(String hashId) throws NotFoundException {
+        LOGGER.trace("delete({})", hashId);
+        Event event = eventRepository.findByHashId(hashId);
+
+        //TODO Validator
+
+        Optional<Event> optionalEvent = eventRepository.findById(event.getId());
+        if (optionalEvent.isEmpty()) {
+            throw new NotFoundException("Event not found");
+        }
+        Event eventToDelete = optionalEvent.get();
+        eventRepository.deleteById(eventToDelete.getId());
+        LOGGER.debug("Event with id {} deleted", eventToDelete.getId());
+    }
+
 }

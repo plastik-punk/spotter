@@ -5,6 +5,7 @@ import {NotificationService} from "../../../services/notification.service";
 import {NgForm} from "@angular/forms";
 import {Observable} from "rxjs";
 import {EventCreateDto} from "../../../dtos/event";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-event-create',
@@ -26,6 +27,7 @@ export class EventCreateComponent implements OnInit {
     public authService: AuthService,
     private service: EventService,
     private notificationService: NotificationService,
+    private router: Router
   ) {
   }
 
@@ -38,6 +40,8 @@ export class EventCreateComponent implements OnInit {
       observable.subscribe(
         (event: Event) => {
           this.notificationService.showSuccess('Event created successfully.');
+          this.router.navigate(['/event-overview'])
+
         },
         (error) => {
           this.notificationService.showError('Failed to create event. Please try again later.');

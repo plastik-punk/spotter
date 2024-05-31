@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Event;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.EventRepository;
@@ -81,4 +82,17 @@ public class EventValidator {
     }
 
 
+    public void validateEventEditDto(EventEditDto eventEditDto) throws ValidationException {
+        LOGGER.trace("validateEventEditDto({})", eventEditDto);
+        List<String> validationErrors = new ArrayList<>();
+
+        validateName(validationErrors, eventEditDto.getName());
+        validateDescription(validationErrors, eventEditDto.getDescription());
+        validateStartTime(validationErrors, eventEditDto.getStartTime());
+        validateEndTime(validationErrors, eventEditDto.getEndTime(), eventEditDto.getStartTime());
+
+        if (!validationErrors.isEmpty()) {
+            throw new ValidationException("Validation of event failed", validationErrors);
+        }
+    }
 }
