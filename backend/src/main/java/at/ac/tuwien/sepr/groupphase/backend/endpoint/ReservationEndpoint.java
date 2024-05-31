@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.annotation.security.PermitAll;
 import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.invoke.MethodHandles;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -58,20 +57,7 @@ public class ReservationEndpoint {
     @PermitAll
     @GetMapping
     @Operation(summary = "Check if any tables are available for requested time and pax")
-    public ReservationResponseEnum getAvailability(@RequestParam("startTime") String startTime,
-                                                   @RequestParam("date") String date,
-                                                   @RequestParam("pax") Long pax,
-                                                   @RequestParam("idToExclude") Long idToExclude)
-        throws ValidationException {
-
-        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
-            .withStartTime(LocalTime.parse(startTime))
-            .withEndTime(LocalTime.parse(startTime).plusHours(2))
-            .withDate(LocalDate.parse(date))
-            .withPax(pax)
-            .withIdToExclude(idToExclude)
-            .build();
-
+    public ReservationResponseEnum getAvailability(@Valid ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) throws ValidationException {
         LOGGER.info("GET /api/v1/reservations body: {}", reservationCheckAvailabilityDto);
         return service.getAvailability(reservationCheckAvailabilityDto);
     }
@@ -80,20 +66,8 @@ public class ReservationEndpoint {
     @PermitAll
     @GetMapping({"/next"})
     @Operation(summary = "Get the next three available reservations")
-    public ReservationCheckAvailabilityDto[] getNextAvailableTables(@RequestParam("startTime") String startTime,
-                                                                    @RequestParam("date") String date,
-                                                                    @RequestParam("pax") Long pax,
-                                                                    @RequestParam("idToExclude") Long idToExclude)
+    public ReservationCheckAvailabilityDto[] getNextAvailableTables(@Valid ReservationCheckAvailabilityDto reservationCheckAvailabilityDto)
         throws ValidationException {
-
-        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
-            .withStartTime(LocalTime.parse(startTime))
-            .withEndTime(LocalTime.parse(startTime).plusHours(2))
-            .withDate(LocalDate.parse(date))
-            .withPax(pax)
-            .withIdToExclude(idToExclude)
-            .build();
-
         LOGGER.info("GET /api/v1/reservations body: {}", reservationCheckAvailabilityDto);
         return service.getNextAvailableTables(reservationCheckAvailabilityDto);
     }

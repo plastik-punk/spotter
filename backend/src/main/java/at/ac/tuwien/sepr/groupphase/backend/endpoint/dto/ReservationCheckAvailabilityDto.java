@@ -1,19 +1,31 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;
 
 public class ReservationCheckAvailabilityDto {
 
+    @NotNull(message = "startTime is required")
     private LocalTime startTime;
 
     private LocalTime endTime;
 
+    @NotNull(message = "Date must not be null")
+    @FutureOrPresent(message = "Date cannot be in the past")
     private LocalDate date;
 
+    @NotNull(message = "Pax must not be null")
+    @Positive(message = "Pax should be greater than 0")
     private Long pax;
 
+    /**
+     * If a reservation is edited, its ID should be excluded from the availability check.
+     */
     private Long idToExclude;
 
     public LocalTime getStartTime() {

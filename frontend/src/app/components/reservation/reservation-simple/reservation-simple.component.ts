@@ -101,6 +101,7 @@ export class ReservationSimpleComponent implements OnInit {
       },
       error: (error) => {
         this.notificationService.showError('Failed to check availability. Please try again later.');
+        console.error('Error:', error); // Todo: remove after testing
       },
     })
 

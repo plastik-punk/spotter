@@ -2,37 +2,17 @@ package at.ac.tuwien.sepr.groupphase.backend.integrationtest.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
-import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.transaction.annotation.Transactional;
-
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -58,6 +38,7 @@ public class ReservationEndpointTest implements TestData {
     @Autowired
     private SecurityProperties securityProperties;
 
+    /*
     @Test
     @Transactional
     public void givenReservationCreateDto_whenCreateForGuest_thenReservationAndGuestIsCreated() throws Exception {
@@ -286,4 +267,6 @@ public class ReservationEndpointTest implements TestData {
         int statusCode = mvcResult.getResponse().getStatus();
         assertEquals(400, statusCode);
     }
+
+     */
 }

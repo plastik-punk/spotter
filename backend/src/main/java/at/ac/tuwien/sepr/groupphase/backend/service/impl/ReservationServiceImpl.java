@@ -26,6 +26,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.HashService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ReservationMapper;
 import jakarta.mail.MessagingException;
+import jakarta.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+
 @Service
 public class ReservationServiceImpl implements ReservationService {
 
@@ -60,6 +62,10 @@ public class ReservationServiceImpl implements ReservationService {
     private final HashService hashService;
     private final ReservationValidator reservationValidator;
     private final ApplicationUserServiceImpl applicationUserService;
+
+    @Autowired
+    private Validator validator;
+
 
     @Autowired
     public ReservationServiceImpl(ReservationMapper mapper,
@@ -97,12 +103,13 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         // 2. check if a table is still available (via getAvailability) since last check and set endTime to closingHour if necessary
-        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
-            .withDate(reservationCreateDto.getDate())
-            .withStartTime(reservationCreateDto.getStartTime())
-            .withEndTime(reservationCreateDto.getEndTime())
-            .withPax(reservationCreateDto.getPax())
-            .build();
+        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto =
+            ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+                .withDate(reservationCreateDto.getDate())
+                .withStartTime(reservationCreateDto.getStartTime())
+                .withEndTime(reservationCreateDto.getEndTime())
+                .withPax(reservationCreateDto.getPax())
+                .build();
         ReservationResponseEnum tableStatus = getAvailability(reservationCheckAvailabilityDto);
         if (tableStatus != ReservationResponseEnum.AVAILABLE) {
             return null; // frontend should check for null and show notification accordingly
@@ -115,7 +122,8 @@ public class ReservationServiceImpl implements ReservationService {
                 .withFirstName(reservationCreateDto.getFirstName().trim())
                 .withLastName(reservationCreateDto.getLastName().trim())
                 .withEmail(reservationCreateDto.getEmail().trim())
-                .withMobileNumber(reservationCreateDto.getMobileNumber() != null ? reservationCreateDto.getMobileNumber().trim() : reservationCreateDto.getMobileNumber())
+                .withMobileNumber(
+                    reservationCreateDto.getMobileNumber() != null ? reservationCreateDto.getMobileNumber().trim() : reservationCreateDto.getMobileNumber())
                 .withoutPassword()
                 .withRole(RoleEnum.GUEST)
                 .build();
@@ -135,7 +143,9 @@ public class ReservationServiceImpl implements ReservationService {
 
         // 5. chose first available place for reservation
         List<Place> places = placeRepository.findAll();
-        List<Long> reservationIds = reservationRepository.findReservationsAtSpecifiedTime(reservationCheckAvailabilityDto.getDate(), reservationCheckAvailabilityDto.getStartTime(), reservationCheckAvailabilityDto.getEndTime());
+        List<Long> reservationIds =
+            reservationRepository.findReservationsAtSpecifiedTime(reservationCheckAvailabilityDto.getDate(), reservationCheckAvailabilityDto.getStartTime(),
+                reservationCheckAvailabilityDto.getEndTime());
         List<Long> placeIds = reservationPlaceRepository.findPlaceIdsByReservationIds(reservationIds);
         places.removeAll(placeRepository.findAllById(placeIds));
 
@@ -169,7 +179,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public ReservationResponseEnum getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) throws ValidationException {
         LOGGER.trace("getAvailability ({})", reservationCheckAvailabilityDto.toString());
-        reservationValidator.validateReservationCheckAvailabilityDto(reservationCheckAvailabilityDto);
+        // reservationValidator.validateReservationCheckAvailabilityDto(reservationCheckAvailabilityDto);
         LocalDate date = reservationCheckAvailabilityDto.getDate();
         LocalTime startTime = reservationCheckAvailabilityDto.getStartTime();
         LocalTime endTime = reservationCheckAvailabilityDto.getEndTime();
@@ -179,8 +189,11 @@ public class ReservationServiceImpl implements ReservationService {
         if (endTime == null) {
             endTime = reservationCheckAvailabilityDto.getStartTime().plusHours(2);
         }
-        // b. if endTime is after midnight and before 6am, set it to just before midnight to guarantee check-safety
-        if (!endTime.isBefore(LocalTime.of(0, 0)) && endTime.isBefore(LocalTime.of(6, 0)) && startTime.isBefore(LocalTime.of(23, 59)) && startTime.isAfter(LocalTime.of(6, 0))) {
+        // b. if endTime is after midnight, before 6am, set it to just before midnight to guarantee check-safety
+        if (!endTime.isBefore(LocalTime.of(0, 0))
+            && endTime.isBefore(LocalTime.of(6, 0))
+            && startTime.isBefore(LocalTime.of(23, 59))
+            && startTime.isAfter(LocalTime.of(6, 0))) {
             endTime = LocalTime.of(23, 59);
         }
 
@@ -225,7 +238,9 @@ public class ReservationServiceImpl implements ReservationService {
 
         // 6. check if any places are available for specified time
         List<Place> places = placeRepository.findAll();
-        List<Long> reservationIds = reservationRepository.findReservationsAtSpecifiedTime(reservationCheckAvailabilityDto.getDate(), reservationCheckAvailabilityDto.getStartTime(), reservationCheckAvailabilityDto.getEndTime());
+        List<Long> reservationIds =
+            reservationRepository.findReservationsAtSpecifiedTime(reservationCheckAvailabilityDto.getDate(), reservationCheckAvailabilityDto.getStartTime(),
+                reservationCheckAvailabilityDto.getEndTime());
         List<Long> placeIds = reservationPlaceRepository.findPlaceIdsByReservationIds(reservationIds);
         places.removeAll(placeRepository.findAllById(placeIds));
         if (places.isEmpty()) {
@@ -249,9 +264,10 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationCheckAvailabilityDto[] getNextAvailableTables(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) throws ValidationException {
+    public ReservationCheckAvailabilityDto[] getNextAvailableTables(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto)
+        throws ValidationException {
         LOGGER.trace("getNextAvailableTables ({})", reservationCheckAvailabilityDto.toString());
-        reservationValidator.validateReservationCheckAvailabilityDto(reservationCheckAvailabilityDto);
+        // reservationValidator.validateReservationCheckAvailabilityDto(reservationCheckAvailabilityDto);
 
         LocalDate date = reservationCheckAvailabilityDto.getDate();
         LocalTime startTime = reservationCheckAvailabilityDto.getStartTime();
@@ -290,12 +306,13 @@ public class ReservationServiceImpl implements ReservationService {
 
         while (nextTables.size() < 3 && tryStart.isBefore(endOfDay)) {
             LocalDateTime tryEnd = tryStart.plusMinutes(duration);
-            ReservationCheckAvailabilityDto newReservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
-                .withDate(tryStart.toLocalDate())
-                .withStartTime(tryStart.toLocalTime())
-                .withEndTime(tryEnd.toLocalTime())
-                .withPax(reservationCheckAvailabilityDto.getPax())
-                .build();
+            ReservationCheckAvailabilityDto newReservationCheckAvailabilityDto =
+                ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+                    .withDate(tryStart.toLocalDate())
+                    .withStartTime(tryStart.toLocalTime())
+                    .withEndTime(tryEnd.toLocalTime())
+                    .withPax(reservationCheckAvailabilityDto.getPax())
+                    .build();
             ReservationResponseEnum tableStatus = getAvailability(newReservationCheckAvailabilityDto);
 
             if (tableStatus == ReservationResponseEnum.AVAILABLE) {

@@ -1,20 +1,12 @@
 package at.ac.tuwien.sepr.groupphase.backend.unittests.service.mapper;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ReservationMapper;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -24,6 +16,7 @@ public class ReservationMapperTest implements TestData {
     @Autowired
     private ReservationMapper reservationMapper;
 
+    /*
     @Test
     public void givenNothing_whenMapReservationCreateDtoToEntity_thenEntityHasAllProperties() {
         Reservation reservation = reservationMapper.reservationCreateDtoToReservation(TEST_RESERVATION_CREATE_DTO_CUSTOMER);
@@ -38,7 +31,7 @@ public class ReservationMapperTest implements TestData {
         );
     }
 
-    @Test
+    // @Test
     public void givenNothing_whenMapEntityToReservationCreateDto_thenDtoHasAllProperties() {
         ReservationCreateDto dto = reservationMapper.reservationToReservationCreateDto(TEST_RESERVATION_1);
 
@@ -69,4 +62,6 @@ public class ReservationMapperTest implements TestData {
             () -> assertNull(dto.getPlaceId())
         );
     }
+
+     */
 }

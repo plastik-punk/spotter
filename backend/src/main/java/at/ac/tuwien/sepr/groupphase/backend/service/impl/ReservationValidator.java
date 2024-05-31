@@ -1,6 +1,5 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
@@ -98,21 +97,6 @@ public class ReservationValidator {
         }
     }
 
-    public void validateReservationCheckAvailabilityDto(ReservationCheckAvailabilityDto dto) throws ValidationException {
-        LOGGER.trace("validateReservationCheckAvailabilityDto({})", dto);
-        List<String> validationErrors = new ArrayList<>();
-
-        validateStartTime(validationErrors, dto.getStartTime());
-        // validateEndTime(validationErrors, dto.getEndTime(), dto.getStartTime()); // TODO: activate after end time was implemented in frontend
-        validatePax(validationErrors, dto.getPax());
-        if (dto.getDate() == null) {
-            validationErrors.add("No date given");
-        }
-
-        if (!validationErrors.isEmpty()) {
-            throw new ValidationException("Validation of reservationCheckAvailabilityDto failed", validationErrors);
-        }
-    }
 
     public void validateReservationDelete(Long id) throws ValidationException {
         LOGGER.trace("validateReservationDelete({})", id);
@@ -140,7 +124,8 @@ public class ReservationValidator {
             //TODO: currentUser != null as if a user is not logged in and clicks on the link, the currentUser is not Guest but null, change to Guest?
 
             if (applicationUserService.getCurrentApplicationUser() != null && applicationUserService.getCurrentApplicationUser().getRole() != null) {
-                if (!applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.EMPLOYEE) && !applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.ADMIN)) {
+                if (!applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.EMPLOYEE)
+                    && !applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.ADMIN)) {
                     // this way an unauthorized user does not get any information about the existence of a reservation
                     throw new ValidationException("Only the customer booking a reservation can delete it", validationErrors);
                 }

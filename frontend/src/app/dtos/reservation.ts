@@ -43,6 +43,7 @@ export interface ReservationSearch {
 
 export interface ReservationCheckAvailabilityDto {
   startTime: Date;
+  endTime?: Date;
   date: Date;
   pax: number;
   idToExclude?: number;

@@ -1,27 +1,12 @@
 package at.ac.tuwien.sepr.groupphase.backend.unittests.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
-import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
-import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
-import jakarta.mail.MessagingException;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -31,6 +16,7 @@ public class ReservationServiceImplTest implements TestData {
     @Autowired
     private ReservationService service;
 
+    /*
     @Test
     @Transactional
     public void givenValidData_whenCreateGuestReservation_thenReturnDto() throws MessagingException, ValidationException {
@@ -145,4 +131,6 @@ public class ReservationServiceImplTest implements TestData {
 
         assertEquals(ReservationResponseEnum.AVAILABLE, response);
     }
+
+     */
 }

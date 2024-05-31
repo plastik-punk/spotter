@@ -7,6 +7,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -23,18 +27,24 @@ public class Reservation {
     @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")
     private ApplicationUser applicationUser;
 
+    @NotNull(message = "startTime is required")
     @Column(nullable = false)
     private LocalTime startTime;
 
+    @NotNull(message = "Date must not be null")
+    @FutureOrPresent(message = "Date cannot be in the past")
     @Column(nullable = false)
     private LocalDate date;
 
     @Column
     private LocalTime endTime;
 
+    @NotNull(message = "Pax must not be null")
+    @Positive(message = "Pax should be greater than 0")
     @Column(nullable = false)
     private Long pax;
 
+    @Size(max = 100000, message = "Notes shouldn't be longer than 100000 characters")
     @Column(length = 100000)
     private String notes;
 
