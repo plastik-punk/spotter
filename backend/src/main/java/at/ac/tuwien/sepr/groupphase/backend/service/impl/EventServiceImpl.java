@@ -13,6 +13,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.EventService;
 import at.ac.tuwien.sepr.groupphase.backend.service.HashService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.EventMapper;
 import net.fortuna.ical4j.data.CalendarBuilder;
+import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.component.VEvent;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDateTime;
@@ -112,22 +114,34 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public void importIcsFile(MultipartFile file) throws IllegalArgumentException {
-        try (InputStream is = file.getInputStream()) {
+        try {
+            InputStream is = file.getInputStream();
             CalendarBuilder builder = new CalendarBuilder();
             Calendar calendar = builder.build(is);
-
+            StringBuilder errorMessage = new StringBuilder();
             for (Component component : calendar.getComponents(Component.VEVENT)) {
                 LOGGER.debug("Mapping event: {}", component);
-                Event event = mapper.vEventToEvent((VEvent) component);
-                event.setDescription(event.getDescription() != null ? event.getDescription().trim() : "");
-                String hashId = hashService.hashSha256(event.getName() + event.getStartTime().toString() + event.getEndTime().toString() + event.getDescription());
-                event.setHashId(hashId);
-                LOGGER.debug("Saving event: {}", event);
-                eventRepository.save(event);
+                try {
+                    Event event = mapper.vEventToEvent((VEvent) component);
+                    event.setDescription(event.getDescription() != null ? event.getDescription().trim() : "");
+                    String hashId = hashService.hashSha256(event.getName() + event.getStartTime().toString() + event.getEndTime().toString() + event.getDescription());
+                    event.setHashId(hashId);
+                    LOGGER.debug("Saving event: {}", event);
+                    eventRepository.save(event);
+                } catch (Exception e) {
+                    LOGGER.warn("Error mapping event: ", e);
+                    errorMessage.append(e.getMessage());
+                }
             }
-        } catch (Exception e) {
-            LOGGER.error("Error importing file: ", e);
-            throw new IllegalArgumentException("Error importing file: " + e.getMessage());
+            if (!errorMessage.isEmpty()) {
+                throw new IllegalArgumentException(errorMessage.toString());
+            }
+        } catch (IOException e) {
+            LOGGER.error("Error reading file: ", e);
+            throw new RuntimeException(e);
+        } catch (ParserException e) {
+            LOGGER.error("Error parsing file: ", e);
+            throw new RuntimeException(e);
         }
     }
 }

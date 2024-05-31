@@ -122,8 +122,7 @@ public interface EventMapper {
             throw new Exception("unknown type of endDate Class: " + temporal.getClass());
         } catch (Exception e) {
             System.out.println("Error mapping end time: " + e.getMessage() + "\n");
-            return null;
-            //TODO: throw IllegalArgumentException
+            throw new IllegalArgumentException("Error mapping end time: " + e.getMessage());
         }
     }
 
@@ -133,8 +132,7 @@ public interface EventMapper {
             Summary summary = vevent.getSummary().get();
             return summary.getValue();
         } catch (Exception e) {
-            return "";
-            //TODO: throw IllegalArgumentException
+            throw new IllegalArgumentException("Error mapping name: " + e.getMessage());
         }
     }
 
