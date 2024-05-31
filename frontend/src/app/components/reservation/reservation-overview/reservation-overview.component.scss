@@ -6,12 +6,14 @@
   background: none
 }
 .custom-card {
+  position: relative;
   border-radius: 20px 20px 0 0;
   background: white;
   margin-top: 2vh;
-  margin-bottom: -1vh;
-  height: 97vh;
+  height: 96vh; /* Adjust height to fill screen */
+  width: 100%;
   padding: 2vh;
+  overflow-y: auto; /* Enable vertical scrolling */
 }
 .font-heading {
   font-family: 'Lexend Giga', sans-serif;

@@ -15,6 +15,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.mapper.EventMapper;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
+import net.fortuna.ical4j.model.component.VEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,14 +111,23 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void importIcsFile(MultipartFile file) throws Exception {
+    public void importIcsFile(MultipartFile file) throws IllegalArgumentException {
         try (InputStream is = file.getInputStream()) {
             CalendarBuilder builder = new CalendarBuilder();
             Calendar calendar = builder.build(is);
 
             for (Component component : calendar.getComponents(Component.VEVENT)) {
-                System.out.println("Event: " + component);
+                LOGGER.debug("Mapping event: {}", component);
+                Event event = mapper.vEventToEvent((VEvent) component);
+                event.setDescription(event.getDescription() != null ? event.getDescription().trim() : "");
+                String hashId = hashService.hashSha256(event.getName() + event.getStartTime().toString() + event.getEndTime().toString() + event.getDescription());
+                event.setHashId(hashId);
+                LOGGER.debug("Saving event: {}", event);
+                eventRepository.save(event);
             }
+        } catch (Exception e) {
+            LOGGER.error("Error importing file: ", e);
+            throw new IllegalArgumentException("Error importing file: " + e.getMessage());
         }
     }
 }
