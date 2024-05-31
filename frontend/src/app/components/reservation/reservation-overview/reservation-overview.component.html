@@ -54,13 +54,17 @@
                  [(ngModel)]="searchLatestEndTime"
                  (ngModelChange)="searchChanged()">
         </div>
+        <div class="ms-1 align-self-end">
+          <button type="button" class="btn btn-primary" (click)="resetSearchParams()"><i
+            class="bi bi-arrow-clockwise"></i></button>
+        </div>
       </form>
 
       <!-- Admin and Employee Views -->
       <div *ngIf="isEmployee() || isAdmin()">
-        <div>
+        <div class="text-center mb-5" *ngIf=" !(todaysReservations.length===0 && upcomingReservations.length!==0)">
           <h3>Todays Reservations</h3>
-          <table class="table table-hover">
+          <table *ngIf="todaysReservations.length!==0" class="table table-hover">
             <thead>
             <tr>
               <th>Date</th>
@@ -102,10 +106,11 @@
             </tr>
             </tbody>
           </table>
+          <h4 *ngIf="todaysReservations.length===0">No open reservations for today!</h4>
         </div>
 
         <div>
-          <h3>Upcoming Reservations</h3>
+          <h3 class="text-center mb-5">Upcoming Reservations</h3>
           <div *ngFor="let day of displayedUpcomingReservations | groupByDate">
             <h4>{{ day.key }}</h4>
             <table class="table table-hover">

@@ -366,7 +366,7 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = reservationList.getFirst();
         ApplicationUser currentUser = applicationUserService.getCurrentApplicationUser();
 
-        if (currentUser == null || !currentUser.getRole().equals(RoleEnum.ADMIN)) {
+        if (currentUser == null || (!currentUser.getRole().equals(RoleEnum.ADMIN) && !currentUser.getRole().equals(RoleEnum.EMPLOYEE))) {
             if (!reservation.getApplicationUser().equals(currentUser)) {
                 // TODO: throw a fitting exception (create a new exception ideally)
                 throw new ValidationException("You are not allowed to view this reservation", new ArrayList<>());
