@@ -35,8 +35,12 @@ public class AdminViewDto {
 
     @Override
     public boolean equals(Object object) {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
+        if (this == object) {
+            return true;
+        }
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
         AdminViewDto that = (AdminViewDto) object;
         return Objects.equals(area, that.area) && Objects.equals(startTime, that.startTime) && Objects.equals(date, that.date);
     }

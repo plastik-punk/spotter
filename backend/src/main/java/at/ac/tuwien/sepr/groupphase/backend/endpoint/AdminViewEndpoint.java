@@ -1,6 +1,5 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AdminViewDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PredictionDto;
 import at.ac.tuwien.sepr.groupphase.backend.service.AdminViewService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,6 +14,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.invoke.MethodHandles;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @RestController
 @RequestMapping(value = "/api/v1/adminView")
@@ -26,13 +27,18 @@ public class AdminViewEndpoint {
         this.service = service;
     }
 
+    /*String area;
+    LocalTime startTime;
+    LocalDate date;*/
     @ResponseStatus(HttpStatus.OK)
     @Secured("ROLE_ADMIN")
     @GetMapping
     @Operation(summary = "Get the prediction for the next week")
-    public PredictionDto getPrediction(@RequestParam AdminViewDto adminViewDto) {
+    public PredictionDto getPrediction(@RequestParam("area") String area,
+                                       @RequestParam("startTime") LocalTime startTime,
+                                       @RequestParam("date") LocalDate date) {
         LOGGER.info("GET /api/v1/admin-view");
-        LOGGER.debug("GET /api/v1/admin-view body: {}", adminViewDto.toString());
-        return service.getPrediction(adminViewDto);
+        LOGGER.debug("GET /api/v1/admin-view body: {} {}, {}", area, startTime, date);
+        return service.getPrediction(area, startTime, date);
     }
 }

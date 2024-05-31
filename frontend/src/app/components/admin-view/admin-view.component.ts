@@ -5,7 +5,7 @@ import {AdminViewDto} from "../../dtos/admin-view";
 import {ActivatedRoute, Router} from "@angular/router";
 import {getLocaleDateFormat} from "@angular/common";
 import {now} from "lodash";
-import {AdminViewService} from "../../services/admin-view.service";
+import {AdminViewService} from "../../services/adminView.service";
 
 @Component({
   selector: 'app-admin-view',

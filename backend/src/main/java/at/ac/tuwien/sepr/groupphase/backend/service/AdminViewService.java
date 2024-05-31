@@ -1,17 +1,21 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AdminViewDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PredictionDto;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 /**
  * Service for the admin view.
  */
 public interface AdminViewService {
     /**
-     * Get the prediction for the next game.
+     * Get the prediction for the next week.
      *
-     * @param adminViewDto the admin view dto
+     * @param area      the area
+     * @param startTime the start time
+     * @param date      the date
      * @return the prediction
      */
-    PredictionDto getPrediction(AdminViewDto adminViewDto);
+    PredictionDto getPrediction(String area, LocalTime startTime, LocalDate date);
 }

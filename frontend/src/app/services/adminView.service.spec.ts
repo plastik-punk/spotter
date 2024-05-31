@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 
-import { AdminViewService } from './admin-view.service';
+import { AdminViewService } from './adminView.service';
 
 describe('AdminViewService', () => {
   let service: AdminViewService;

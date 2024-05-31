@@ -1,6 +1,5 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AdminViewDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PredictionDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
@@ -39,9 +38,9 @@ public class AdminViewServiceImpl implements AdminViewService {
     }
 
     @Override
-    public PredictionDto getPrediction(AdminViewDto adminViewDto) {
-        LOGGER.info("Calculating Prediction for given Area and Time: {}", adminViewDto);
-        LocalDate dateToCalculate = adminViewDto.getDate();
+    public PredictionDto getPrediction(String area, LocalTime startTimeForPrediction, LocalDate dateForPrediction) {
+        LOGGER.info("Calculating Prediction for given Area and Time: {}, {}, {}", area, startTimeForPrediction, dateForPrediction);
+        LocalDate dateToCalculate = dateForPrediction;
 
         //TODO: distinguish between different Areas
         //TODO: Also Calculate Pax without Reservation
@@ -87,12 +86,12 @@ public class AdminViewServiceImpl implements AdminViewService {
         }
 
         //5. Calculate the maximum Pax per Hour same day
-        Map<LocalTime, Long> amountOfCustomersPerHourMap = new HashMap<>();
+        Map<Integer, Long> amountOfCustomersPerHourMap = new HashMap<>();
         for (Reservation reservation : reservationsListSameDay) {
             LocalTime startTime = reservation.getStartTime();
             LocalTime endTime = reservation.getEndTime();
             for (LocalTime time = startTime; time.isBefore(endTime); time = time.plusHours(1)) {
-                amountOfCustomersPerHourMap.put(LocalTime.ofSecondOfDay(time.getHour()), reservation.getPax());
+                amountOfCustomersPerHourMap.put(time.getHour(), reservation.getPax());
             }
         }
 
@@ -112,8 +111,9 @@ public class AdminViewServiceImpl implements AdminViewService {
         long maxPaxAtSameTimeLastYear = Collections.max(amountOfCustomersPerDayMapLastYear.values());
         long averagePaxLastYear = amountOfCustomersPerDayMapLastYear.values().stream().mapToLong(Long::longValue).sum() / amountOfCustomersPerDayMapLastYear.size();
 
-        float percentageOfEmployees = (float) totalEmployeeCount / (float) maxPaxAtSameTimeLastYear;
         float percentageOfPax = (float) maxPaxAtSameTimeCurrDay / (float) maxPaxAtSameTimeLastYear;
+        float percentageOfEmployees = (float) totalEmployeeCount * percentageOfPax;
+
 
         return null;
     }

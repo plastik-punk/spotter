@@ -4,7 +4,7 @@ import {now} from "lodash";
 import {NgForm} from "@angular/forms";
 import {Observable} from "rxjs";
 import {ActivatedRoute, Router} from "@angular/router";
-import {AdminViewService} from "../../../services/admin-view.service";
+import {AdminViewService} from "../../../services/adminView.service";
 import {ToastrService} from "ngx-toastr";
 import {NotificationService} from "../../../services/notification.service";
 import {AuthService} from "../../../services/auth.service";
