@@ -15,6 +15,10 @@ import {EventEditComponent} from "./components/event/event-edit/event-edit.compo
 
 import {EventCreateComponent} from "./components/event/event-create/event-create.component";
 
+import {
+    ReservationLayoutComponent
+} from "./components/reservation/reservation-layout/reservation-layout.component";
+
 const routes: Routes = [
   {path: '', redirectTo: 'login', pathMatch: 'full'},
   {path: 'login', component: LoginComponent},
@@ -26,6 +30,7 @@ const routes: Routes = [
   {path: 'employees', component: StaffAccountsComponent},
   {path: 'reservation-detail/:id', component: ReservationDetailComponent},
   {path: 'reservation-edit/:id', component: ReservationEditComponent},
+  {path: 'reservation-layout', component: ReservationLayoutComponent},
   {path: 'event-overview', canActivate: mapToCanActivate([AuthGuard]), component: EventOverviewComponent},
   {path: 'event-detail/:id', canActivate: mapToCanActivate([AuthGuard]), component: EventDetailComponent},
   {path: 'event-edit/:id', canActivate: mapToCanActivate([AuthGuard]), component: EventEditComponent},

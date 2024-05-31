@@ -1,8 +1,10 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaLayoutDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
@@ -74,6 +76,27 @@ public class ReservationEndpoint {
 
         LOGGER.info("GET /api/v1/reservations body: {}", reservationCheckAvailabilityDto);
         return service.getAvailability(reservationCheckAvailabilityDto);
+    }
+
+
+    @ResponseStatus(HttpStatus.OK)
+    @PermitAll
+    @GetMapping("/layout")
+    @Operation(summary = "Get layout of area for requested time and pax")
+    public AreaLayoutDto getAvailabilityLayout(@RequestParam("startTime") String startTime,
+                                               @RequestParam("date") String date,
+                                               @RequestParam("idToExclude") Long idToExclude,
+                                               @RequestParam("areaId") Long areaId)
+        throws ValidationException {
+        ReservationLayoutCheckAvailabilityDto reservationLayoutCheckAvailabilityDto = ReservationLayoutCheckAvailabilityDto.ReservationLayoutCheckAvailabilityDtoBuilder.aReservationLayoutCheckAvailabilityDto()
+            .withStartTime(LocalTime.parse(startTime))
+            .withEndTime(LocalTime.parse(startTime).plusHours(2))
+            .withDate(LocalDate.parse(date))
+            .withIdToExclude(idToExclude)
+            .withAreaId(areaId)
+            .build();
+        LOGGER.info("GET /api/v1/reservations body: {}", reservationLayoutCheckAvailabilityDto);
+        return service.getAreaLayout(reservationLayoutCheckAvailabilityDto);
     }
 
     @ResponseStatus(HttpStatus.OK)

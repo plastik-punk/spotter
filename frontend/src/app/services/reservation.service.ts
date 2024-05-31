@@ -3,12 +3,13 @@ import {HttpClient, HttpParams, HttpResponse} from "@angular/common/http";
 import {Globals} from '../global/globals';
 import {Observable,tap} from "rxjs";
 import {formatIsoDate} from '../util/date-helper';
-import {ReservationSearch, ReservationListDto, ReservationEditDto} from "../dtos/reservation";
+import {ReservationSearch, ReservationListDto, ReservationEditDto, AreaLayoutDto} from "../dtos/reservation";
 import {
   Reservation,
   ReservationCheckAvailabilityDto,
   ReservationCreateDto,
-  ReservationDetailDto
+  ReservationDetailDto,
+  ReservationLayoutCheckAvailabilityDto,
 } from "../dtos/reservation";
 import {SimpleViewReservationStatusEnum} from "../dtos/status-enum";
 
@@ -44,6 +45,18 @@ export class ReservationService {
       params = params.append(key, reservationCheckAvailabilityDto[key]);
     });
     return this.httpClient.get<SimpleViewReservationStatusEnum>(this.reservationBaseUri, { params });
+  }
+
+  /**
+   * Get the layout of an area and check the availability
+   * @param reservationLayoutCheckAvailabilityDto the time, date and area to check the availability for
+   */
+  getLayoutAvailability(reservationLayoutCheckAvailabilityDto: ReservationLayoutCheckAvailabilityDto) : Observable<AreaLayoutDto> {
+    let params = new HttpParams();
+    Object.keys(reservationLayoutCheckAvailabilityDto).forEach((key) => {
+      params = params.append(key, reservationLayoutCheckAvailabilityDto[key]);
+    });
+    return this.httpClient.get<AreaLayoutDto>(this.reservationBaseUri + "/layout", { params });
   }
 
   /**

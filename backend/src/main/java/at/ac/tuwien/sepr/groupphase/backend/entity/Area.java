@@ -5,7 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import java.time.LocalTime;
 import java.util.Objects;
 
@@ -19,14 +20,24 @@ public class Area {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
-    private boolean isOpen;
+    @Column(nullable = true)
+    private Boolean isOpen;
 
-    @Column
+    @Column(nullable = true)
     private LocalTime openingTime;
 
-    @Column
+    @Column(nullable = true)
     private LocalTime closingTime;
+
+    @Column(nullable = false)
+    @Min(0)
+    @Max(19)
+    private int width;
+
+    @Column(nullable = false)
+    @Min(0)
+    @Max(19)
+    private int height;
 
     // Getters and Setters
     public Long getId() {
@@ -69,6 +80,21 @@ public class Area {
         this.closingTime = closingTime;
     }
 
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -79,16 +105,18 @@ public class Area {
             return false;
         }
         Area area = (Area) o;
-        return isOpen == area.isOpen
+        return width == area.width
+            && height == area.height
             && Objects.equals(id, area.id)
             && Objects.equals(name, area.name)
+            && Objects.equals(isOpen, area.isOpen)
             && Objects.equals(openingTime, area.openingTime)
             && Objects.equals(closingTime, area.closingTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, isOpen, openingTime, closingTime);
+        return Objects.hash(id, name, isOpen, openingTime, closingTime, width, height);
     }
 
     @Override
@@ -108,6 +136,8 @@ public class Area {
         private boolean isOpen;
         private LocalTime openingTime;
         private LocalTime closingTime;
+        private int width;
+        private int height;
 
         private AreaBuilder() {
         }
@@ -141,6 +171,16 @@ public class Area {
             return this;
         }
 
+        public AreaBuilder withWidth(int width) {
+            this.width = width;
+            return this;
+        }
+
+        public AreaBuilder withHeight(int height) {
+            this.height = height;
+            return this;
+        }
+
         public Area build() {
             Area area = new Area();
             area.setId(id);
@@ -148,6 +188,8 @@ public class Area {
             area.setOpen(isOpen);
             area.setOpeningTime(openingTime);
             area.setClosingTime(closingTime);
+            area.setWidth(width);
+            area.setHeight(height);
             return area;
         }
     }

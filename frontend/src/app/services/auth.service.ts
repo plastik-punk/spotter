@@ -32,7 +32,6 @@ export class AuthService {
         tap((authResponse: string) => {
           this.setToken(authResponse);
           this.fetchUserDetails();
-          this.notificationService.showSuccess('Login erfolgreich!');
         })
       );
   }
@@ -61,7 +60,6 @@ export class AuthService {
     console.log('Logout');
     localStorage.removeItem('authToken');
     localStorage.removeItem('user');
-    this.notificationService.showSuccess('Logout erfolgreich!');
   }
 
   getToken() {

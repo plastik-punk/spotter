@@ -15,6 +15,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { httpInterceptorProviders } from './interceptors';
 import { ReservationDetailComponent } from './components/reservation/reservation-detail/reservation-detail.component';
 import { ConfirmationDialogDeleteComponent } from './components/confirmation-dialog/confirmation-dialog-delete/confirmation-dialog-delete.component';
+import { ReservationLayoutComponent} from './components/reservation/reservation-layout/reservation-layout.component';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule, NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NotificationComponent } from './components/notification/notification.component';
@@ -23,6 +24,8 @@ import {EventDetailComponent} from "./components/event/event-detail/event-detail
 import {EventEditComponent} from "./components/event/event-edit/event-edit.component";
 import {EventCreateComponent} from "./components/event/event-create/event-create.component";
 import {GroupByDatePipe} from "./pipes/group-by-date.pipe";
+import {NgIf} from "@angular/common";
+import {RouterLink} from "@angular/router";
 
 @NgModule({
     declarations: [
@@ -39,7 +42,8 @@ import {GroupByDatePipe} from "./pipes/group-by-date.pipe";
         EventOverviewComponent,
         EventDetailComponent,
         EventEditComponent,
-        EventCreateComponent
+        EventCreateComponent,
+        ReservationLayoutComponent
     ],
   imports: [
     BrowserModule,
@@ -51,7 +55,11 @@ import {GroupByDatePipe} from "./pipes/group-by-date.pipe";
     ToastrModule.forRoot(),
     BrowserAnimationsModule,
     NoopAnimationsModule,
-    GroupByDatePipe
+    GroupByDatePipe,
+    FormsModule,
+    NgIf,
+    ReactiveFormsModule,
+    RouterLink
   ],
     providers: [httpInterceptorProviders],
     exports: [
