@@ -22,6 +22,10 @@ public class ReservationCreateDto {
     @Pattern(regexp = "^[A-Za-z ]+$", message = "First name must consist of letters and spaces only")
     private String firstName;
 
+    @NotNull(message = "Last name is required")
+    @Size(min = 1, message = "Last name should not be empty")
+    @Size(max = 255, message = "Last name shouldn't be longer than 255 characters")
+    @Pattern(regexp = "^[A-Za-z ]+$", message = "Last name must consist of letters and spaces only")
     private String lastName;
 
     @NotNull(message = "startTime is required")
@@ -44,7 +48,6 @@ public class ReservationCreateDto {
     @Email(message = "Email must be valid")
     private String email;
 
-    @NotNull(message = "Mobile number is required")
     @Pattern(regexp = "^[0-9]{1,15}$", message = "Invalid mobile number. It must consist of max. 15 digits.")
     private String mobileNumber;
 

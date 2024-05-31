@@ -4,6 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ApplicationUserRegistra
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ApplicationUserService;
 import jakarta.annotation.security.PermitAll;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +29,7 @@ public class RegistrationEndpoint {
 
     @PostMapping
     @PermitAll
-    public ResponseEntity<Void> register(@RequestBody ApplicationUserRegistrationDto applicationUserRegistrationDto) throws ValidationException {
+    public ResponseEntity<Void> register(@Valid @RequestBody ApplicationUserRegistrationDto applicationUserRegistrationDto) throws ValidationException {
         LOGGER.info("POST /api/v1/registration body: {}", applicationUserRegistrationDto);
         applicationUserService.register(applicationUserRegistrationDto);
         return ResponseEntity.status(201).build();

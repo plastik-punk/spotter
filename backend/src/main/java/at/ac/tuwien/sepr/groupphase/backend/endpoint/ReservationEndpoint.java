@@ -48,7 +48,7 @@ public class ReservationEndpoint {
     @PermitAll
     @PostMapping
     @Operation(summary = "Create a new reservation")
-    public ReservationCreateDto create(@RequestBody ReservationCreateDto reservationCreateDto) throws MessagingException, ValidationException {
+    public ReservationCreateDto create(@Valid @RequestBody ReservationCreateDto reservationCreateDto) throws MessagingException, ValidationException {
         LOGGER.info("POST /api/v1/reservations body: {}", reservationCreateDto.toString());
         return service.create(reservationCreateDto);
     }
@@ -85,16 +85,15 @@ public class ReservationEndpoint {
     @PermitAll
     @PutMapping
     @Operation(summary = "Update a reservation")
-    public ReservationEditDto update(@RequestBody ReservationEditDto reservationEditDto) throws ValidationException {
+    public ReservationEditDto update(@Valid @RequestBody ReservationEditDto reservationEditDto) throws ValidationException {
         LOGGER.info("PUT /api/v1/reservations body: {}", reservationEditDto.toString());
         return service.update(reservationEditDto);
     }
-
-
+    
     @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_USER"})
     @Operation(summary = "Get list of all reservations for admins and employees", security = @SecurityRequirement(name = "apiKey"))
     @GetMapping({"/search"})
-    public List<ReservationListDto> searchAllReservationsForAdmin(ReservationSearchDto searchParameters) {
+    public List<ReservationListDto> searchAllReservationsForAdmin(@Valid ReservationSearchDto searchParameters) {
         LOGGER.info("GET /api/v1/reservations/admin-search");
         LOGGER.debug("request parameters: {}", searchParameters);
 

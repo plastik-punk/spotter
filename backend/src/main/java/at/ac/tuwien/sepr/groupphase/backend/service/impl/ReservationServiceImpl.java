@@ -63,7 +63,6 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationPlaceRepository reservationPlaceRepository;
     private final EmailService emailService;
     private final HashService hashService;
-    private final ReservationValidator reservationValidator;
     private final ApplicationUserServiceImpl applicationUserService;
 
     @Autowired
@@ -75,7 +74,6 @@ public class ReservationServiceImpl implements ReservationService {
                                   ApplicationUserRepository applicationUserRepository,
                                   PlaceRepository placeRepository,
                                   EmailService emailService,
-                                  ReservationValidator reservationValidator,
                                   OpeningHoursRepository openingHoursRepository,
                                   ReservationPlaceRepository reservationPlaceRepository,
                                   ClosedDayRepository closedDayRepository,
@@ -86,7 +84,6 @@ public class ReservationServiceImpl implements ReservationService {
         this.applicationUserRepository = applicationUserRepository;
         this.placeRepository = placeRepository;
         this.emailService = emailService;
-        this.reservationValidator = reservationValidator;
         this.openingHoursRepository = openingHoursRepository;
         this.reservationPlaceRepository = reservationPlaceRepository;
         this.closedDayRepository = closedDayRepository;
@@ -97,8 +94,6 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public ReservationCreateDto create(@Valid ReservationCreateDto reservationCreateDto) throws MessagingException, ValidationException {
         LOGGER.trace("create ({})", reservationCreateDto.toString());
-        // reservationValidator.validateReservationCreateDto(reservationCreateDto);
-
         Set<ConstraintViolation<ReservationCreateDto>> reservationCreateDtoViolations = validator.validate(reservationCreateDto);
         if (!reservationCreateDtoViolations.isEmpty()) {
             throw new ConstraintViolationException(reservationCreateDtoViolations);
@@ -170,9 +165,6 @@ public class ReservationServiceImpl implements ReservationService {
         if (!reservationViolations.isEmpty()) {
             throw new ConstraintViolationException(reservationViolations);
         }
-
-        // reservationValidator.validateReservation(savedReservation);
-
 
         // 7. send conformation Mail
         Map<String, Object> templateModel = constructMailTemplateModel(savedReservation, reservationCreateDto.getUser());
@@ -280,7 +272,6 @@ public class ReservationServiceImpl implements ReservationService {
     public ReservationCheckAvailabilityDto[] getNextAvailableTables(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto)
         throws ValidationException {
         LOGGER.trace("getNextAvailableTables ({})", reservationCheckAvailabilityDto.toString());
-        // reservationValidator.validateReservationCheckAvailabilityDto(reservationCheckAvailabilityDto);
 
         LocalDate date = reservationCheckAvailabilityDto.getDate();
         LocalTime startTime = reservationCheckAvailabilityDto.getStartTime();
@@ -360,7 +351,6 @@ public class ReservationServiceImpl implements ReservationService {
             throw new NotFoundException("Reservation with not found");
         }
 
-
         Reservation reservation = reservationList.getFirst();
         ApplicationUser currentUser = applicationUserService.getCurrentApplicationUser();
 
@@ -414,10 +404,6 @@ public class ReservationServiceImpl implements ReservationService {
         if (!violations.isEmpty()) {
             throw new ConstraintViolationException(violations);
         }
-
-
-        // this.reservationValidator.validateReservation(updatedReservation);
-
 
         // 4. update user data if user is a guest
         assert currentUser != null;
@@ -486,8 +472,7 @@ public class ReservationServiceImpl implements ReservationService {
         Long id = reservationEditDto.getReservationId();
         LOGGER.trace("cancel ({})", id);
 
-        //validate reservation
-        this.reservationValidator.validateReservationDelete(id);
+        // TODO: check if ID is positive, otherwise return a fitting exception for notification handler
 
         //fetch reservation
         Optional<Reservation> optionalReservation = reservationRepository.findById(id);
