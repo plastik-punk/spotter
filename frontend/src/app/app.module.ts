@@ -7,31 +7,44 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { FooterComponent } from './components/footer/footer.component';
-import { HomeComponent } from './components/home/home.component';
+import { ReservationSimpleComponent } from './components/reservation/reservation-simple/reservation-simple.component';
 import { LoginComponent } from './components/login/login.component';
 import { MessageComponent } from './components/message/message.component';
-import { ReservationsOverviewComponent } from './components/reservations-overview/reservations-overview.component';
+import { ReservationOverviewComponent } from './components/reservation/reservation-overview/reservation-overview.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { httpInterceptorProviders } from './interceptors';
 import { ReservationDetailComponent } from './components/reservation/reservation-detail/reservation-detail.component';
 import { ConfirmationDialogDeleteComponent } from './components/confirmation-dialog/confirmation-dialog-delete/confirmation-dialog-delete.component';
+import { ReservationLayoutComponent} from './components/reservation/reservation-layout/reservation-layout.component';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule, NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NotificationComponent } from './components/notification/notification.component';
+import {EventOverviewComponent} from "./components/event/event-overview/event-overview.component";
+import {EventDetailComponent} from "./components/event/event-detail/event-detail.component";
+import {EventEditComponent} from "./components/event/event-edit/event-edit.component";
+import {EventCreateComponent} from "./components/event/event-create/event-create.component";
+import {GroupByDatePipe} from "./pipes/group-by-date.pipe";
+import {NgIf} from "@angular/common";
+import {RouterLink} from "@angular/router";
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    SidebarComponent,
-    FooterComponent,
-    HomeComponent,
-    LoginComponent,
-    MessageComponent,
-    ReservationDetailComponent,
-    ReservationsOverviewComponent,
-    ConfirmationDialogDeleteComponent,
-    NotificationComponent
-  ],
+    declarations: [
+        AppComponent,
+        SidebarComponent,
+        FooterComponent,
+        ReservationSimpleComponent,
+        LoginComponent,
+        MessageComponent,
+        ReservationDetailComponent,
+        ReservationOverviewComponent,
+        ConfirmationDialogDeleteComponent,
+        NotificationComponent,
+        EventOverviewComponent,
+        EventDetailComponent,
+        EventEditComponent,
+        EventCreateComponent,
+        ReservationLayoutComponent
+    ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -41,9 +54,17 @@ import { NotificationComponent } from './components/notification/notification.co
     FormsModule,
     ToastrModule.forRoot(),
     BrowserAnimationsModule,
-    NoopAnimationsModule
+    NoopAnimationsModule,
+    GroupByDatePipe,
+    FormsModule,
+    NgIf,
+    ReactiveFormsModule,
+    RouterLink
   ],
-  providers: [httpInterceptorProviders],
-  bootstrap: [AppComponent]
+    providers: [httpInterceptorProviders],
+    exports: [
+        ConfirmationDialogDeleteComponent
+    ],
+    bootstrap: [AppComponent]
 })
 export class AppModule { }

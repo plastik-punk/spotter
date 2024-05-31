@@ -3,12 +3,13 @@ import {HttpClient, HttpParams, HttpResponse} from "@angular/common/http";
 import {Globals} from '../global/globals';
 import {Observable,tap} from "rxjs";
 import {formatIsoDate} from '../util/date-helper';
-import {ReservationSearch, ReservationListDto, ReservationEditDto} from "../dtos/reservation";
+import {ReservationSearch, ReservationListDto, ReservationEditDto, AreaLayoutDto} from "../dtos/reservation";
 import {
   Reservation,
   ReservationCheckAvailabilityDto,
   ReservationCreateDto,
-  ReservationDetailDto
+  ReservationDetailDto,
+  ReservationLayoutCheckAvailabilityDto,
 } from "../dtos/reservation";
 import {SimpleViewReservationStatusEnum} from "../dtos/status-enum";
 
@@ -44,6 +45,32 @@ export class ReservationService {
       params = params.append(key, reservationCheckAvailabilityDto[key]);
     });
     return this.httpClient.get<SimpleViewReservationStatusEnum>(this.reservationBaseUri, { params });
+  }
+
+  /**
+   * Get the layout of an area and check the availability
+   * @param reservationLayoutCheckAvailabilityDto the time, date and area to check the availability for
+   */
+  getLayoutAvailability(reservationLayoutCheckAvailabilityDto: ReservationLayoutCheckAvailabilityDto) : Observable<AreaLayoutDto> {
+    let params = new HttpParams();
+    Object.keys(reservationLayoutCheckAvailabilityDto).forEach((key) => {
+      params = params.append(key, reservationLayoutCheckAvailabilityDto[key]);
+    });
+    return this.httpClient.get<AreaLayoutDto>(this.reservationBaseUri + "/layout", { params });
+  }
+
+  /**
+   * Get the next available tables for a reservation
+   *
+   * @param reservationCheckAvailabilityDto the reservation to get the next available tables for
+   * @return an Observable for the next available tables
+   */
+  getNextAvailableTables(reservationCheckAvailabilityDto: ReservationCheckAvailabilityDto) : Observable<ReservationCheckAvailabilityDto[]> {
+   let params = new HttpParams();
+    Object.keys(reservationCheckAvailabilityDto).forEach((key) => {
+      params = params.append(key, reservationCheckAvailabilityDto[key]);
+    });
+    return this.httpClient.get<ReservationCheckAvailabilityDto[]>(this.reservationBaseUri + "/next", { params });
   }
 
   /**
@@ -93,10 +120,12 @@ export class ReservationService {
   /**
    * Deletes a reservation
    *
-   * @param id the id of the reservation to delete
+   * @param hash the hashed id of the reservation to delete
    * @return an Observable for the HttpResponse
    */
-  delete(id: number): Observable<HttpResponse<void>> {
-    return this.httpClient.delete<void>(this.reservationBaseUri + "/" + id, { observe: 'response' });
+  delete(hash: string): Observable<HttpResponse<void>> {
+    return this.httpClient.delete<void>(this.reservationBaseUri, { observe: 'response' , body: hash});
   }
+
+
 }

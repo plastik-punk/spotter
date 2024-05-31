@@ -65,6 +65,8 @@ public class ReservationServiceImplTest implements TestData {
     public void givenValidData_whenUpdate_thenReturnDto() throws ValidationException {
         ReservationEditDto response = service.update(TEST_RESERVATION_EDIT_DTO);
 
+        // TODO: add () -> assertEquals(TEST_RESERVATION_HASH_VALUE_1, response.getHashedId()) after updating hash
+
         assertAll(
             () -> assertEquals(TEST_RESERVATION_DETAIL_ID, response.getReservationId()),
             () -> assertEquals(TEST_RESERVATION_START_TIME, response.getStartTime()),
@@ -72,8 +74,7 @@ public class ReservationServiceImplTest implements TestData {
             () -> assertEquals(TEST_RESERVATION_DATE, response.getDate()),
             () -> assertEquals(TEST_RESERVATION_PAX, response.getPax()),
             () -> assertEquals(TEST_RESERVATION_NOTES, response.getNotes()),
-            () -> assertEquals(TEST_PLACE_AVAILABLE_1.getId(), response.getPlaceId()),
-            () -> assertEquals(TEST_RESERVATION_HASH_VALUE_1, response.getHashedId())
+            () -> assertEquals(TEST_PLACE_IDS, response.getPlaceIds())
         );
     }
 

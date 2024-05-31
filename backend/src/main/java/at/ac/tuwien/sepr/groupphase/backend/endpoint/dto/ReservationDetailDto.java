@@ -19,7 +19,7 @@ public class ReservationDetailDto {
 
     private String notes;
 
-    private Long placeId;
+    private List<Long> placeIds;
 
     public Long getId() {
         return id;
@@ -69,12 +69,12 @@ public class ReservationDetailDto {
         this.notes = notes;
     }
 
-    public Long getPlaceId() {
-        return placeId;
+    public List<Long> getPlaceIds() {
+        return placeIds;
     }
 
-    public void setPlaceId(Long placeId) {
-        this.placeId = placeId;
+    public void setPlaceIds(List<Long> placeIds) {
+        this.placeIds = placeIds;
     }
 
     @Override
@@ -91,12 +91,12 @@ public class ReservationDetailDto {
             && Objects.equals(date, that.date)
             && Objects.equals(pax, that.pax)
             && Objects.equals(notes, that.notes)
-            && Objects.equals(placeId, that.placeId);
+            && Objects.equals(placeIds, that.placeIds);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, startTime, endTime, date, pax, notes, placeId);
+        return Objects.hash(id, startTime, endTime, date, pax, notes, placeIds);
     }
 
     @Override
@@ -108,7 +108,7 @@ public class ReservationDetailDto {
             + ", date=" + date
             + ", pax=" + pax
             + ", notes='" + notes + '\''
-            + ", placeId=" + placeId
+            + ", placeIds=" + placeIds
             + '}';
     }
 
@@ -120,7 +120,7 @@ public class ReservationDetailDto {
             .withDate(date)
             .withPax(pax)
             .withNotes(notes)
-            .withPlaceId(placeId)
+            .withPlaceIds(placeIds)
             .build();
     }
 
@@ -131,7 +131,7 @@ public class ReservationDetailDto {
         private LocalDate date;
         private Long pax;
         private String notes;
-        private Long placeId;
+        private List<Long> placeIds;
 
         private ReservationDetailDtoBuilder() {
         }
@@ -170,8 +170,8 @@ public class ReservationDetailDto {
             return this;
         }
 
-        public ReservationDetailDtoBuilder withPlaceId(Long placeId) {
-            this.placeId = placeId;
+        public ReservationDetailDtoBuilder withPlaceIds(List<Long> placeIds) {
+            this.placeIds = placeIds;
             return this;
         }
 
@@ -183,7 +183,7 @@ public class ReservationDetailDto {
             reservationDetailDto.setDate(date);
             reservationDetailDto.setPax(pax);
             reservationDetailDto.setNotes(notes);
-            reservationDetailDto.setPlaceId(placeId);
+            reservationDetailDto.setPlaceIds(placeIds);
             return reservationDetailDto;
         }
     }

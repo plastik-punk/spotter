@@ -5,7 +5,6 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.IterableMapping;
@@ -37,20 +36,11 @@ public interface ReservationMapper {
 
     ReservationDetailDto reservationToReservationDetailDto(Reservation reservation);
 
-    @AfterMapping
-    default void mapEntityPlaceToDtoPlaceId(@MappingTarget ReservationDetailDto dto, Reservation entity) {
-        Place place = entity.getPlace();
-        if (place != null) {
-            dto.setPlaceId(place.getId());
-        }
-    }
-
     @Mapping(source = "applicationUser.firstName", target = "userFirstName")
     @Mapping(source = "applicationUser.lastName", target = "userLastName")
     @Mapping(source = "startTime", target = "startTime")
     @Mapping(source = "date", target = "date")
     @Mapping(source = "endTime", target = "endTime")
-    @Mapping(source = "place.id", target = "placeId")
     @Mapping(source = "hashValue", target = "hashId")
     @Named("reservationList")
     ReservationListDto reservationToReservationListDto(Reservation reservation);
@@ -62,6 +52,5 @@ public interface ReservationMapper {
     @Mapping(source = "reservation.id", target = "reservationId")
     @Mapping(source = "reservation.hashValue", target = "hashedId")
     @Mapping(source = "reservation.notes", target = "notes")
-    @Mapping(source = "reservation.place.id", target = "placeId")
     ReservationEditDto reservationToReservationEditDto(Reservation reservation);
 }

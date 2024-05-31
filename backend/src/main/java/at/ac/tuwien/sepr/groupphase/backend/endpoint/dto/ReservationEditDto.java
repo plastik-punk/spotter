@@ -4,6 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Objects;
 
 public class ReservationEditDto {
@@ -15,7 +16,7 @@ public class ReservationEditDto {
     private Long pax;
     private String notes;
     private String hashedId;
-    private Long placeId;
+    private List<Long> placeIds;
 
     public ApplicationUser getUser() {
         return user;
@@ -81,12 +82,12 @@ public class ReservationEditDto {
         this.hashedId = hashedId;
     }
 
-    public Long getPlaceId() {
-        return placeId;
+    public List<Long> getPlaceIds() {
+        return placeIds;
     }
 
-    public void setPlaceId(Long placeId) {
-        this.placeId = placeId;
+    public void setPlaceIds(List<Long> placeIds) {
+        this.placeIds = placeIds;
     }
 
     @Override
@@ -106,12 +107,12 @@ public class ReservationEditDto {
             && Objects.equals(pax, that.pax)
             && Objects.equals(notes, that.notes)
             && Objects.equals(hashedId, that.hashedId)
-            && Objects.equals(placeId, that.placeId);
+            && Objects.equals(placeIds, that.placeIds);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(user, reservationId, startTime, endTime, date, pax, notes, hashedId, placeId);
+        return Objects.hash(user, reservationId, startTime, endTime, date, pax, notes, hashedId, placeIds);
     }
 
     @Override
@@ -125,7 +126,7 @@ public class ReservationEditDto {
             + ", pax=" + pax
             + ", notes='" + notes + '\''
             + ", hashedId='" + hashedId + '\''
-            + ", placeId=" + placeId
+            + ", placeIds=" + placeIds
             + '}';
     }
 
@@ -139,7 +140,7 @@ public class ReservationEditDto {
             .withPax(pax)
             .withNotes(notes)
             .withHashedId(hashedId)
-            .withPlaceId(placeId)
+            .withPlaceIds(placeIds)
             .build();
     }
 
@@ -152,7 +153,7 @@ public class ReservationEditDto {
         private Long pax;
         private String notes;
         private String hashedId;
-        private Long placeId;
+        private List<Long> placeIds;
 
         public ReservationEditDtoBuilder() {
         }
@@ -201,8 +202,8 @@ public class ReservationEditDto {
             return this;
         }
 
-        public ReservationEditDtoBuilder withPlaceId(Long placeId) {
-            this.placeId = placeId;
+        public ReservationEditDtoBuilder withPlaceIds(List<Long> placeId) {
+            this.placeIds = placeId;
             return this;
         }
 
@@ -216,7 +217,7 @@ public class ReservationEditDto {
             reservationEditDto.setPax(pax);
             reservationEditDto.setNotes(notes);
             reservationEditDto.setHashedId(hashedId);
-            reservationEditDto.setPlaceId(placeId);
+            reservationEditDto.setPlaceIds(placeIds);
             return reservationEditDto;
         }
     }

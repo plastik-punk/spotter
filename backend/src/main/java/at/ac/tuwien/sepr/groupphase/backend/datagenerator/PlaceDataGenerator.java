@@ -18,7 +18,7 @@ import java.lang.invoke.MethodHandles;
 public class PlaceDataGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private static final int NUMBER_OF_PLACES_TO_GENERATE = 5;
+    private static final int NUMBER_OF_PLACES_TO_GENERATE = 16;
 
     private final PlaceRepository placeRepository;
 
@@ -36,10 +36,9 @@ public class PlaceDataGenerator {
             LOGGER.debug("Generating {} place entries", NUMBER_OF_PLACES_TO_GENERATE);
             for (int i = 0; i < NUMBER_OF_PLACES_TO_GENERATE; i++) {
                 Place place = Place.PlaceBuilder.aPlace()
-                    .withPax((long) (2 + i))
+                    .withPax((long) (2 + i % 4))  // Assuming a variety of pax values
                     .withStatus(StatusEnum.AVAILABLE)
                     .build();
-                LOGGER.debug("Saving place {}", place);
                 placeRepository.save(place);
             }
         }

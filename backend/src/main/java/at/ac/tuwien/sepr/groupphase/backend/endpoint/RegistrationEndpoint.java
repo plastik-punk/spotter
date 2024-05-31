@@ -1,8 +1,8 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UserRegistrationDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ApplicationUserRegistrationDto;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
-import at.ac.tuwien.sepr.groupphase.backend.service.UserService;
+import at.ac.tuwien.sepr.groupphase.backend.service.ApplicationUserService;
 import jakarta.annotation.security.PermitAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,17 +20,17 @@ public class RegistrationEndpoint {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final UserService userService;
+    private final ApplicationUserService applicationUserService;
 
-    public RegistrationEndpoint(UserService userService) {
-        this.userService = userService;
+    public RegistrationEndpoint(ApplicationUserService applicationUserService) {
+        this.applicationUserService = applicationUserService;
     }
 
     @PostMapping
     @PermitAll
-    public ResponseEntity<Void> register(@RequestBody UserRegistrationDto userRegistrationDto) throws ValidationException {
-        LOGGER.info("POST /api/v1/registration body: {}", userRegistrationDto);
-        userService.register(userRegistrationDto);
+    public ResponseEntity<Void> register(@RequestBody ApplicationUserRegistrationDto applicationUserRegistrationDto) throws ValidationException {
+        LOGGER.info("POST /api/v1/registration body: {}", applicationUserRegistrationDto);
+        applicationUserService.register(applicationUserRegistrationDto);
         return ResponseEntity.status(201).build();
     }
 }

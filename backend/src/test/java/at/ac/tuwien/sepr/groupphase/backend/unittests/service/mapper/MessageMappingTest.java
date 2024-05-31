@@ -1,8 +1,8 @@
 package at.ac.tuwien.sepr.groupphase.backend.unittests.service.mapper;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.DetailedMessageDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SimpleMessageDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.MessageDetailedSimpleDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.MessageSimpleDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Message;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.MessageMapper;
 import org.junit.jupiter.api.Test;
@@ -35,13 +35,13 @@ public class MessageMappingTest implements TestData {
 
     @Test
     public void givenNothing_whenMapDetailedMessageDtoToEntity_thenEntityHasAllProperties() {
-        DetailedMessageDto detailedMessageDto = messageMapper.messageToDetailedMessageDto(message);
+        MessageDetailedSimpleDto messageDetailedDto = messageMapper.messageToDetailedMessageDto(message);
         assertAll(
-            () -> assertEquals(TEST_MESSAGE_ID, detailedMessageDto.getId()),
-            () -> assertEquals(TEST_NEWS_TITLE, detailedMessageDto.getTitle()),
-            () -> assertEquals(TEST_NEWS_SUMMARY, detailedMessageDto.getSummary()),
-            () -> assertEquals(TEST_NEWS_TEXT, detailedMessageDto.getText()),
-            () -> assertEquals(TEST_NEWS_PUBLISHED_AT, detailedMessageDto.getPublishedAt())
+            () -> assertEquals(TEST_MESSAGE_ID, messageDetailedDto.getId()),
+            () -> assertEquals(TEST_NEWS_TITLE, messageDetailedDto.getTitle()),
+            () -> assertEquals(TEST_NEWS_SUMMARY, messageDetailedDto.getSummary()),
+            () -> assertEquals(TEST_NEWS_TEXT, messageDetailedDto.getText()),
+            () -> assertEquals(TEST_NEWS_PUBLISHED_AT, messageDetailedDto.getPublishedAt())
         );
     }
 
@@ -51,14 +51,14 @@ public class MessageMappingTest implements TestData {
         messages.add(message);
         messages.add(message);
 
-        List<SimpleMessageDto> simpleMessageDtos = messageMapper.messageToSimpleMessageDto(messages);
-        assertEquals(2, simpleMessageDtos.size());
-        SimpleMessageDto simpleMessageDto = simpleMessageDtos.get(0);
+        List<MessageSimpleDto> messageSimpleDtos = messageMapper.messageToSimpleMessageDto(messages);
+        assertEquals(2, messageSimpleDtos.size());
+        MessageSimpleDto messageSimpleDto = messageSimpleDtos.get(0);
         assertAll(
-            () -> assertEquals(TEST_MESSAGE_ID, simpleMessageDto.getId()),
-            () -> assertEquals(TEST_NEWS_TITLE, simpleMessageDto.getTitle()),
-            () -> assertEquals(TEST_NEWS_SUMMARY, simpleMessageDto.getSummary()),
-            () -> assertEquals(TEST_NEWS_PUBLISHED_AT, simpleMessageDto.getPublishedAt())
+            () -> assertEquals(TEST_MESSAGE_ID, messageSimpleDto.getId()),
+            () -> assertEquals(TEST_NEWS_TITLE, messageSimpleDto.getTitle()),
+            () -> assertEquals(TEST_NEWS_SUMMARY, messageSimpleDto.getSummary()),
+            () -> assertEquals(TEST_NEWS_PUBLISHED_AT, messageSimpleDto.getPublishedAt())
         );
     }
 

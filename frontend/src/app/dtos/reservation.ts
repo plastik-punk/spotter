@@ -8,8 +8,6 @@ export interface Reservation {
   endTime: Date;
   pax: number;
   notes: string;
-  placeId: number;
-  userId: number;
 }
 
 export interface ReservationCreateDto {
@@ -23,6 +21,7 @@ export interface ReservationCreateDto {
   notes: string;
   email: string;
   mobileNumber: number;
+  placeId?: number;
 }
 export interface ReservationListDto {
   id: number,
@@ -57,7 +56,7 @@ export interface ReservationDetailDto {
   date: Date;
   pax: number;
   notes: string;
-  placeId: number;
+  placeIds: number[];
 }
 
 export interface ReservationEditDto {
@@ -69,5 +68,32 @@ export interface ReservationEditDto {
   notes: string;
   hashedId: string;
   user: AppUser;
-  placeId: number;
+  placeIds: number[];
 }
+
+export interface ReservationLayoutCheckAvailabilityDto {
+  startTime: string;
+  date: string;
+  areaId: number;
+  idToExclude: number;
+}
+
+export interface AreaLayoutDto {
+  width: number;
+  height: number;
+  placeVisuals: PlaceVisualDto[];
+}
+
+export interface PlaceVisualDto {
+  placeId: number;
+  status: boolean;
+  reservation: boolean;
+  numberOfSeats: number;
+  coordinates: CoordinateDto[];
+}
+
+export interface CoordinateDto {
+  x: number;
+  y: number;
+}
+

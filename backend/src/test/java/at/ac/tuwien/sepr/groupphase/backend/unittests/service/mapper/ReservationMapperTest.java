@@ -34,8 +34,7 @@ public class ReservationMapperTest implements TestData {
             () -> assertEquals(TEST_RESERVATION_END_TIME, reservation.getEndTime()),
             () -> assertEquals(TEST_RESERVATION_DATE, reservation.getDate()),
             () -> assertEquals(TEST_RESERVATION_PAX, reservation.getPax()),
-            () -> assertEquals(TEST_RESERVATION_NOTES, reservation.getNotes()),
-            () -> assertNull(reservation.getPlace())
+            () -> assertEquals(TEST_RESERVATION_NOTES, reservation.getNotes())
         );
     }
 
@@ -67,7 +66,7 @@ public class ReservationMapperTest implements TestData {
             () -> assertEquals(TEST_RESERVATION_START_TIME, dto.getStartTime()),
             () -> assertEquals(TEST_RESERVATION_END_TIME, dto.getEndTime()),
             () -> assertEquals(TEST_RESERVATION_DATE, dto.getDate()),
-            () -> assertEquals(TEST_PLACE_AVAILABLE_1.getId(), dto.getPlaceId())
+            () -> assertNull(dto.getPlaceId())
         );
     }
 }

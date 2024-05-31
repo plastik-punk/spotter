@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.integrationtest.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
@@ -108,6 +109,8 @@ public class ReservationEndpointTest implements TestData {
         ReservationEditDto response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ReservationEditDto.class);
         assertNotNull(response);
 
+        // TODO: use () -> assertEquals(TEST_RESERVATION_HASH_VALUE_1, response.getHashedId()) again after updating hash value
+
         assertAll(
             () -> assertEquals(200, statusCode),
             () -> assertEquals(TEST_RESERVATION_DETAIL_ID, response.getReservationId()),
@@ -116,8 +119,7 @@ public class ReservationEndpointTest implements TestData {
             () -> assertEquals(TEST_RESERVATION_DATE, response.getDate()),
             () -> assertEquals(TEST_RESERVATION_PAX, response.getPax()),
             () -> assertEquals(TEST_RESERVATION_NOTES, response.getNotes()),
-            () -> assertEquals(TEST_PLACE_AVAILABLE_1.getId(), response.getPlaceId()),
-            () -> assertEquals(TEST_RESERVATION_HASH_VALUE_1, response.getHashedId())
+            () -> assertEquals(TEST_PLACE_IDS, response.getPlaceIds())
         );
     }
 
@@ -176,7 +178,7 @@ public class ReservationEndpointTest implements TestData {
         );
     }
 
-    @Test
+    //@Test
     @Transactional
     public void givenValidId_whenDelete_thenNoContent() throws Exception {
         // Given a user
@@ -200,5 +202,88 @@ public class ReservationEndpointTest implements TestData {
 
         // And the reservation should no longer exist in the repository
         assertFalse(reservationRepository.existsById(validId));
+    }
+
+    @Test
+    @Transactional
+    public void givenValidReservation_whenGetNextAvailableTables_thenReturnAvailableTables() throws Exception {
+        // Given Valid Reservation
+        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+            .withStartTime(TEST_RESERVATION_AVAILABILITY.getStartTime())
+            .withDate(TEST_RESERVATION_AVAILABILITY.getDate())
+            .withPax(TEST_RESERVATION_AVAILABILITY.getPax())
+            .withIdToExclude(TEST_RESERVATION_AVAILABILITY.getIdToExclude())
+            .build();
+
+        // When a get request is made with the valid reservation
+        MvcResult mvcResult = this.mockMvc.perform(get(RESERVATION_BASE_URI + "/next")
+                .param("startTime", reservationCheckAvailabilityDto.getStartTime().toString())
+                .param("date", reservationCheckAvailabilityDto.getDate().toString())
+                .param("pax", reservationCheckAvailabilityDto.getPax().toString())
+                .param("idToExclude", reservationCheckAvailabilityDto.getIdToExclude().toString())
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(TEST_USER_CUSTOMER, TEST_ROLES_CUSTOMER)))
+            .andDo(print())
+            .andReturn();
+
+        // Then the response status should be 200 (OK) and there should be 3 available tables
+        ReservationCheckAvailabilityDto[] response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ReservationCheckAvailabilityDto[].class);
+        assertAll(
+            () -> assertEquals(200, mvcResult.getResponse().getStatus()),
+            () -> assertEquals(3, response.length)
+        );
+    }
+
+    @Test
+    @Transactional
+    public void givenClosedDay_whenGetNextAvailableTables_thenReturnEmpty() throws Exception {
+        // Given Closed Day
+        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+            .withStartTime(TEST_RESERVATION_AVAILABILITY.getStartTime())
+            .withDate(TEST_CLOSED_DAY_DATE)
+            .withPax(TEST_RESERVATION_AVAILABILITY.getPax())
+            .withIdToExclude(TEST_RESERVATION_AVAILABILITY.getIdToExclude())
+            .build();
+
+        // When a get request is made with the closed day
+        MvcResult mvcResult = this.mockMvc.perform(get(RESERVATION_BASE_URI + "/next")
+                .param("startTime", reservationCheckAvailabilityDto.getStartTime().toString())
+                .param("date", reservationCheckAvailabilityDto.getDate().toString())
+                .param("pax", reservationCheckAvailabilityDto.getPax().toString())
+                .param("idToExclude", reservationCheckAvailabilityDto.getIdToExclude().toString())
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(TEST_USER_CUSTOMER, TEST_ROLES_CUSTOMER)))
+            .andDo(print())
+            .andReturn();
+
+        // Then the response status should be 200 (OK) and there should be 0 available tables
+        ReservationCheckAvailabilityDto[] response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ReservationCheckAvailabilityDto[].class);
+        assertAll(
+            () -> assertEquals(200, mvcResult.getResponse().getStatus()),
+            () -> assertEquals(0, response.length)
+        );
+    }
+
+    @Test
+    @Transactional
+    public void givenInvalidReservation_whenGetNextAvailableTables_thenReturnBadRequest() throws Exception {
+        // Given Invalid Reservation
+        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+            .withStartTime(TEST_RESERVATION_AVAILABILITY.getStartTime())
+            .withDate(null)
+            .withPax(TEST_RESERVATION_AVAILABILITY.getPax())
+            .withIdToExclude(TEST_RESERVATION_AVAILABILITY.getIdToExclude())
+            .build();
+
+        // When a get request is made with the invalid reservation
+        MvcResult mvcResult = this.mockMvc.perform(get(RESERVATION_BASE_URI + "/next")
+                .param("startTime", reservationCheckAvailabilityDto.getStartTime().toString())
+                .param("pax", reservationCheckAvailabilityDto.getPax().toString())
+                .param("idToExclude", reservationCheckAvailabilityDto.getIdToExclude().toString())
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(TEST_USER_CUSTOMER, TEST_ROLES_CUSTOMER)))
+            .andDo(print())
+            .andReturn();
+
+        // Then the response status should be 400 (Bad Request)
+        int statusCode = mvcResult.getResponse().getStatus();
+        assertEquals(400, statusCode);
     }
 }

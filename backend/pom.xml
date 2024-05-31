@@ -79,6 +79,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-properties-migrator</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.mnode.ical4j</groupId>
+            <artifactId>ical4j</artifactId>
+            <version>4.0.0-rc6</version>
+        </dependency>
         <!-- security -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -226,7 +231,8 @@
                 <configuration>
                     <useNativeGit>true</useNativeGit>
                     <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties
+                    </generateGitPropertiesFilename>
                     <verbose>true</verbose>
                 </configuration>
             </plugin>

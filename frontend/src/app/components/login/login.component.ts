@@ -42,7 +42,7 @@ export class LoginComponent implements OnInit {
       this.authService.loginUser(authRequest).subscribe({
         next: () => {
           this.notificationService.showSuccess('Login successful!');
-          this.router.navigate(['/home']);
+          this.router.navigate(['/reservation-simple']);
         },
         error: error => {
           const errorMessage = typeof error.error === 'object' ? error.error.error : error.error;
