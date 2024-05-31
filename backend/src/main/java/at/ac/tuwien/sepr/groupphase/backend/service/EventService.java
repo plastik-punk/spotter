@@ -48,6 +48,14 @@ public interface EventService {
     EventEditDto update(EventEditDto eventEditDto) throws ValidationException;
 
     /**
+     * Delete an event.
+     *
+     * @param hashId the Hashed id of the event to delete
+     * @throws NotFoundException if the event with the given hashId does not exist
+     */
+    void delete(String hashId) throws NotFoundException;
+
+    /**
      * Import an ICS file.
      *
      * @param file the ICS file

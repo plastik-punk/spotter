@@ -23,6 +23,7 @@ import java.lang.invoke.MethodHandles;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EventServiceImpl implements EventService {
@@ -122,6 +123,22 @@ public class EventServiceImpl implements EventService {
         eventValidator.validateEvent(savedEvent);
 
         return mapper.eventToEventEditDto(savedEvent);
+    }
+
+    @Override
+    public void delete(String hashId) throws NotFoundException {
+        LOGGER.trace("delete({})", hashId);
+        Event event = eventRepository.findByHashId(hashId);
+
+        //TODO Validator
+
+        Optional<Event> optionalEvent = eventRepository.findById(event.getId());
+        if (optionalEvent.isEmpty()) {
+            throw new NotFoundException("Event not found");
+        }
+        Event eventToDelete = optionalEvent.get();
+        eventRepository.deleteById(eventToDelete.getId());
+        LOGGER.debug("Event with id {} deleted", eventToDelete.getId());
     }
 
     @Override

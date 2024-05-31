@@ -74,7 +74,16 @@ public class EventEndpoint {
         return service.update(eventEditDto);
     }
 
-    //TODO: delete
+    @Secured("ROLE_ADMIN")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping
+    @Operation(summary = "Delete an existing event")
+    public ResponseEntity<Void> delete(@RequestBody String hashId) {
+        LOGGER.info("DELETE /api/v1/events body: {}", hashId);
+        service.delete(hashId);
+        return ResponseEntity.noContent().build();
+    }
+
 
     @Secured("ROLE_ADMIN")
     @ResponseStatus(HttpStatus.OK)
