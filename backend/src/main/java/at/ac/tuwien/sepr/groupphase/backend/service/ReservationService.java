@@ -65,6 +65,7 @@ public interface ReservationService {
      */
     List<ReservationListDto> search(ReservationSearchDto reservationSearchDto);
 
+
     /**
      * Cancel a reservation.
      *

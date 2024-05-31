@@ -85,9 +85,11 @@ export class AuthService {
       const authInfo: string[] = decoded.rol;
       if (authInfo.includes('ROLE_ADMIN')) {
         return 'ADMIN';
-      } else if (authInfo.includes('ROLE_USER')) {
-        return 'USER';
-      }
+      } else if (authInfo.includes('ROLE_EMPLOYEE')) {
+        return 'EMPLOYEE';
+    } else if (authInfo.includes('ROLE_USER')) {
+      return 'USER';
+    }
     }
     return 'UNDEFINED';
   }

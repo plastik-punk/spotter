@@ -21,9 +21,9 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.OpeningHoursRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationPlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
+import at.ac.tuwien.sepr.groupphase.backend.service.EmailService;
 import at.ac.tuwien.sepr.groupphase.backend.service.HashService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
-import at.ac.tuwien.sepr.groupphase.backend.service.EmailService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ReservationMapper;
 import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
@@ -37,12 +37,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Collections;
-import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @Service
@@ -330,10 +330,11 @@ public class ReservationServiceImpl implements ReservationService {
             throw new NotFoundException("Reservation with not found");
         }
 
+
         Reservation reservation = reservationList.getFirst();
         ApplicationUser currentUser = applicationUserService.getCurrentApplicationUser();
 
-        if (currentUser == null || !currentUser.getRole().equals(RoleEnum.ADMIN)) {
+        if (currentUser == null || (!currentUser.getRole().equals(RoleEnum.ADMIN) && !currentUser.getRole().equals(RoleEnum.EMPLOYEE))) {
             if (!reservation.getApplicationUser().equals(currentUser)) {
                 // TODO: throw a fitting exception (create a new exception ideally)
                 throw new ValidationException("You are not allowed to view this reservation", new ArrayList<>());
@@ -426,9 +427,18 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public List<ReservationListDto> search(ReservationSearchDto reservationSearchDto) {
         LOGGER.trace("search ({})", reservationSearchDto.toString());
+
+        if (applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.ADMIN)
+            || applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.EMPLOYEE)) {
+            List<Reservation> reservations = reservationRepository.findReservationsWithoutUserId(reservationSearchDto.getEarliestDate(),
+                reservationSearchDto.getLatestDate(), reservationSearchDto.getEarliestStartTime(), reservationSearchDto.getLatestEndTime());
+            LOGGER.debug("Found {} reservations for the given params", reservations.size());
+            return mapper.reservationToReservationListDto(reservations);
+        }
         String email = applicationUserService.getCurrentUserAuthentication().getName();
         List<Reservation> reservations = reservationRepository.findReservationsByDate(email, reservationSearchDto.getEarliestDate(),
             reservationSearchDto.getLatestDate(), reservationSearchDto.getEarliestStartTime(), reservationSearchDto.getLatestEndTime());
+        LOGGER.debug("Found {} reservations for the given params", reservations.size());
         return mapper.reservationToReservationListDto(reservations);
     }
 
