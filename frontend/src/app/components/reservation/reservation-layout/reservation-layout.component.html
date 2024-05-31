@@ -54,98 +54,110 @@
             </div>
           </div>
 
-    <hr class="my-4">
+          <hr class="my-4">
+        </div>
+
+        <!-- D§ JS CANVAS HERE -->
+        <div #d3Container style=" width: 70%; height: auto;"></div>
+
+        <hr class="my-4">
+
+        <!-- Start row with pax -->
+        <div class="row">
+          <div class="column pax-container">
+            <label for="reservationPax" style="margin-right: 10px;">Table for:</label>
+            <input
+              type="number"
+              id="reservationPax"
+              name="reservationPax"
+              placeholder="pax"
+              class="form-control pax-input"
+              [(ngModel)]="reservationCreateDto.pax"
+              #reservationPax="ngModel"
+              (ngModelChange)="onFieldChange()"
+              min="1"
+              required
+            />
+          </div>
+        </div>
+        <!-- End row with pax -->
+
+        <!-- Start row with (firstName, lastName, Mail, Phone), Notes -->
+        <div class="row">
+          <div class="column" *ngIf="!authService.isLoggedIn()">
+            <div>
+              <!-- start guest fields -->
+              <input
+                type="text"
+                id="reservationFirstName"
+                name="reservationFirstName"
+                placeholder="First Name"
+                class="form-control"
+                [(ngModel)]="reservationCreateDto.firstName"
+                #reservationFirstName="ngModel"
+                required
+              />
+
+              <input
+                type="text"
+                id="reservationLastName"
+                name="reservationLastName"
+                placeholder="Last Name"
+                class="form-control"
+                [(ngModel)]="reservationCreateDto.lastName"
+                #reservationLastName="ngModel"
+                required
+              />
+
+              <input
+                type="email"
+                id="reservationEmail"
+                name="reservationEmail"
+                placeholder="Email"
+                class="form-control"
+                [(ngModel)]="reservationCreateDto.email"
+                #reservationEmail="ngModel"
+                required
+              />
+
+              <input
+                type="tel"
+                id="reservationMobileNumber"
+                name="reservationMobileNumber"
+                placeholder="Phone (optional)"
+                class="form-control"
+                [(ngModel)]="reservationCreateDto.mobileNumber"
+                #reservationMobileNumber="ngModel"
+              />
+            </div>
+          </div>
+          <!-- End guest fields -->
+
+          <div class="column">
+              <textarea
+                id="reservationNotes"
+                name="reservationNotes"
+                placeholder="Notes (optional)"
+                class="form-control notes-textarea"
+                [(ngModel)]="reservationCreateDto.notes"
+                #reservationNotes="ngModel"
+              ></textarea>
+          </div>
+        </div>
+        <!-- End row with (firstName, lastName, Mail, Phone), Notes -->
+
+        <div class="row">
+          <div class="column">
+            <div class="btn-group">
+              <button type="submit" class="btn btn-danger btn-sm" [disabled]="!form.valid">
+                Book
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
   </div>
-<div class="row  justify-content-center">
-  <div #d3Container style="width: 70%; height: auto;"></div>
 </div>
-  <hr class="my-4">
-
-  <div class="row">
-    <div class="column pax-container">
-      <label for="reservationPax" style="margin-right: 10px;">Table for:</label>
-      <input
-        type="number"
-        id="reservationPax"
-        name="reservationPax"
-        placeholder="pax"
-        class="form-control pax-input"
-        [(ngModel)]="reservationCreateDto.pax"
-        #reservationPax="ngModel"
-        (ngModelChange)="onFieldChange()"
-        min="1"
-        required
-      />
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="column" *ngIf="!authService.isLoggedIn()">
-      <div>
-        <input
-          type="text"
-          id="reservationFirstName"
-          name="reservationFirstName"
-          placeholder="First Name"
-          class="form-control"
-          [(ngModel)]="reservationCreateDto.firstName"
-          #reservationFirstName="ngModel"
-          required
-        />
-
-        <input
-          type="text"
-          id="reservationLastName"
-          name="reservationLastName"
-          placeholder="Last Name"
-          class="form-control"
-          [(ngModel)]="reservationCreateDto.lastName"
-          #reservationLastName="ngModel"
-          required
-        />
-
-        <input
-          type="email"
-          id="reservationEmail"
-          name="reservationEmail"
-          placeholder="Email"
-          class="form-control"
-          [(ngModel)]="reservationCreateDto.email"
-          #reservationEmail="ngModel"
-          required
-        />
-
-        <input
-          type="tel"
-          id="reservationMobileNumber"
-          name="reservationMobileNumber"
-          placeholder="Phone (optional)"
-          class="form-control"
-          [(ngModel)]="reservationCreateDto.mobileNumber"
-          #reservationMobileNumber="ngModel"
-        />
-      </div>
-    </div>
-
-    <div class="column">
-      <textarea
-        id="reservationNotes"
-        name="reservationNotes"
-        placeholder="Notes (optional)"
-        class="form-control notes-textarea"
-        [(ngModel)]="reservationCreateDto.notes"
-        #reservationNotes="ngModel"
-      ></textarea>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="column">
-      <div class="btn-group">
-        <button type="submit" class="btn btn-danger btn-sm" [disabled]="!form.valid">
-          Book
-        </button>
-      </div>
-    </div>
-  </div>
-</form>
+</body>
+</html>
