@@ -4,14 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailab
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ClosedDay;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Message;
-import at.ac.tuwien.sepr.groupphase.backend.entity.OpeningHours;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ReservationPlace;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Restaurant;
+import at.ac.tuwien.sepr.groupphase.backend.entity.*;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
 
@@ -389,7 +382,34 @@ public interface TestData {
     // AREA TEST DATA
     // ---------------------------------------------
 
-    // TODO
+
+    Area TEST_AREA_1 = Area.AreaBuilder.anArea()
+        .withId(1L)
+        .withName("Area 1")
+        .withWidth(16)
+        .withHeight(9)
+        .build();
+
+
+    // ---------------------------------------------
+    // SEGMENT TEST DATA
+    // ---------------------------------------------
+
+    Segment TEST_SEGMENT_1 = Segment.SegmentBuilder.aSegment()
+        .withX(0)
+        .withY(0)
+        .build();
+
+    // ---------------------------------------------
+    // AREAPLACESEGMENT TEST DATA
+    // ---------------------------------------------
+
+    AreaPlaceSegment TEST_LOCATION_1 = AreaPlaceSegment.AreaPlaceSegmentBuilder.anAreaPlaceSegment()
+        .withArea(TEST_AREA_1)
+        .withPlace(TEST_PLACE_AVAILABLE_1)
+        .withSegment(TEST_SEGMENT_1)
+        .build();
+
 
     // ---------------------------------------------
     // ... TEST DATA

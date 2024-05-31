@@ -5,3 +5,4 @@ export interface Place {
   pax: number;
   status: StatusEnum;
 }
+

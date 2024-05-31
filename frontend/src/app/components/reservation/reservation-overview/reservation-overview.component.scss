@@ -24,10 +24,10 @@ body {
   border-radius: 20px 20px 0 0;
   background: white;
   margin-top: 2vh;
-  height: 96vh;
+  height: 96vh; /* Adjust height to fill screen */
   width: 100%;
   padding: 2vh;
-  overflow-y: auto;
+  overflow-y: auto; /* Enable vertical scrolling */
 }
 
 .top-banner {

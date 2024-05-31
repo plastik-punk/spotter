@@ -21,6 +21,7 @@ export interface ReservationCreateDto {
   notes: string;
   email: string;
   mobileNumber: number;
+  placeId?: number;
 }
 export interface ReservationListDto {
   id: number,
@@ -70,3 +71,30 @@ export interface ReservationEditDto {
   user: AppUser;
   placeIds: number[];
 }
+
+export interface ReservationLayoutCheckAvailabilityDto {
+  startTime: string;
+  date: string;
+  areaId: number;
+  idToExclude: number;
+}
+
+export interface AreaLayoutDto {
+  width: number;
+  height: number;
+  placeVisuals: PlaceVisualDto[];
+}
+
+export interface PlaceVisualDto {
+  placeId: number;
+  status: boolean;
+  reservation: boolean;
+  numberOfSeats: number;
+  coordinates: CoordinateDto[];
+}
+
+export interface CoordinateDto {
+  x: number;
+  y: number;
+}
+
