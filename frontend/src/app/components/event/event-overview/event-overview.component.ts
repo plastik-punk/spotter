@@ -26,6 +26,7 @@ export class EventOverviewComponent implements OnInit {
   searchLatestEndTime: Date | null = null;
   searchChangedObservable = new Subject<void>();
   deleteWhat: string = null;
+  selectedFile: File | null = null;
 
   constructor(
     private authService: AuthService,
@@ -123,5 +124,27 @@ export class EventOverviewComponent implements OnInit {
       }
     });
   }
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.selectedFile = input.files[0];
+    }
+  }
 
+  onUpload(): void {
+    if (this.selectedFile) {
+      this.eventService.uploadIcsFile(this.selectedFile).subscribe(
+        response => {
+          console.log('File uploaded successfully');
+          this.loadEvents();
+          this.notificationService.showSuccess('File uploaded successfully');
+        },
+        error => {
+          console.error('Error uploading file', error);
+          this.loadEvents();
+          this.notificationService.showError('Error uploading file');
+        }
+      );
+    }
+  }
 }

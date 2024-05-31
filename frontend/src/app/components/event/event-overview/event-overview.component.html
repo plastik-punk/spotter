@@ -123,9 +123,13 @@
             <button (click)="showMore()" *ngIf="displayedEvents.length < events.length">Show More</button>
           </td>
         </tr>
+
         </tbody>
       </table>
-      <button routerLink="/event-import" routerLinkActive="active">Import new Event Calendar</button>
+      <form (ngSubmit)="onUpload()" #uploadForm="ngForm">
+        <input type="file" name="file" (change)="onFileSelected($event)" accept=".ics" required>
+        <button type="submit" [disabled]="!selectedFile">Add new Event Calendar</button>
+      </form>
     </div>
   </div>
 </div>
