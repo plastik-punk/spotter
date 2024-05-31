@@ -147,6 +147,7 @@ public class EventServiceImpl implements EventService {
             throw new RuntimeException(e);
         }
     }
+
     public EventEditDto update(EventEditDto eventEditDto) throws ValidationException {
         LOGGER.trace("update({})", eventEditDto);
         eventValidator.validateEventEditDto(eventEditDto);

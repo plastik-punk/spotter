@@ -22,7 +22,6 @@ import {EventOverviewComponent} from "./components/event/event-overview/event-ov
 import {EventDetailComponent} from "./components/event/event-detail/event-detail.component";
 import {EventEditComponent} from "./components/event/event-edit/event-edit.component";
 import {EventCreateComponent} from "./components/event/event-create/event-create.component";
-import {EventImportComponent} from "./components/event/event-import/event-import.component";
 import {GroupByDatePipe} from "./pipes/group-by-date.pipe";
 
 @NgModule({
