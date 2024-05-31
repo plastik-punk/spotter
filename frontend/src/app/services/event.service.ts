@@ -3,7 +3,7 @@ import {ESLint} from "eslint";
 import {Globals} from '../global/globals';
 import {HttpClient, HttpParams, HttpResponse, HttpHeaders} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {EventCreateDto, EventDetailDto, EventListDto, EventSearchDto} from "../dtos/event";
+import {EventCreateDto, EventDetailDto, EventEditDto, EventListDto, EventSearchDto} from "../dtos/event";
 import {formatIsoDate} from "../util/date-helper";
 
 @Injectable({
@@ -41,6 +41,7 @@ export class EventService {
    * Get an event by its hashId
    *
    * @param hashId the hashId of the event
+   * @return an Observable for the event
    */
   getByHashId(hashId: string): Observable<EventDetailDto> {
     let params = new HttpParams().set('hashId', hashId);
@@ -51,13 +52,30 @@ export class EventService {
    * Delete an event by its hashId
    *
    * @param hashId
+   * @return an Observable for the HttpResponse
    */
   delete(hashId: string): Observable<HttpResponse<void>> {
     return this.httpClient.delete<void>(this.eventBaseUri, {observe: 'response', body: hashId});
   }
 
+  /**
+   * Create a new event
+   *
+   * @param eventCreateDto the event to create
+   * @return an Observable for the created event
+   */
   create(eventCreateDto: EventCreateDto): Observable<Event> {
     return this.httpClient.post<Event>(this.eventBaseUri, eventCreateDto);
+  }
+
+  /**
+   * Update an event
+   *
+   * @param eventEditDto the event to update
+   * @return an Observable for the updated event
+   */
+  update(eventEditDto: EventEditDto): Observable<EventEditDto> {
+    return this.httpClient.put<EventEditDto>(this.eventBaseUri, eventEditDto);
   }
 
   uploadIcsFile(file: File): Observable<any> {
