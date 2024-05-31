@@ -83,11 +83,10 @@ public class ReservationEndpoint {
     @PermitAll
     @GetMapping("/layout")
     @Operation(summary = "Get layout of area for requested time and pax")
-    public AreaLayoutDto getAvailability(@RequestParam("startTime") String startTime,
-                                         @RequestParam("date") String date,
-                                         @RequestParam("pax") Long pax,
-                                         @RequestParam("idToExclude") Long idToExclude,
-                                         @RequestParam("areaId") Long areaId)
+    public AreaLayoutDto getAvailabilityLayout(@RequestParam("startTime") String startTime,
+                                               @RequestParam("date") String date,
+                                               @RequestParam("idToExclude") Long idToExclude,
+                                               @RequestParam("areaId") Long areaId)
         throws ValidationException {
         ReservationLayoutCheckAvailabilityDto reservationLayoutCheckAvailabilityDto = ReservationLayoutCheckAvailabilityDto.ReservationLayoutCheckAvailabilityDtoBuilder.aReservationLayoutCheckAvailabilityDto()
             .withStartTime(LocalTime.parse(startTime))
