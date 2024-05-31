@@ -20,6 +20,8 @@ import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule, NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { NotificationComponent } from './components/notification/notification.component';
 import {GroupByDatePipe} from "./pipes/group-by-date.pipe";
+import {NgIf} from "@angular/common";
+import {RouterLink} from "@angular/router";
 
 @NgModule({
   declarations: [
@@ -33,7 +35,7 @@ import {GroupByDatePipe} from "./pipes/group-by-date.pipe";
     ReservationOverviewComponent,
     ConfirmationDialogDeleteComponent,
     NotificationComponent,
-
+    ReservationLayoutComponent
   ],
   imports: [
     BrowserModule,
@@ -46,7 +48,10 @@ import {GroupByDatePipe} from "./pipes/group-by-date.pipe";
     BrowserAnimationsModule,
     NoopAnimationsModule,
     GroupByDatePipe,
-    ReservationLayoutComponent
+    FormsModule,
+    NgIf,
+    ReactiveFormsModule,
+    RouterLink
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]

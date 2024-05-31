@@ -151,11 +151,24 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = mapper.reservationCreateDtoToReservation(reservationCreateDto);
         reservation.setNotes(reservation.getNotes() != null ? reservation.getNotes().trim() : reservation.getNotes());
 
-        // 5. chose first available place for reservation
-        List<Place> places = placeRepository.findAll();
-        List<Long> reservationIds = reservationRepository.findReservationsAtSpecifiedTime(reservationCheckAvailabilityDto.getDate(), reservationCheckAvailabilityDto.getStartTime(), reservationCheckAvailabilityDto.getEndTime());
-        List<Long> placeIds = reservationPlaceRepository.findPlaceIdsByReservationIds(reservationIds);
-        places.removeAll(placeRepository.findAllById(placeIds));
+        // 5. Choose the place for reservation
+        Place selectedPlace = null;
+        if (reservationCreateDto.getPlaceId() != null) {
+            Optional<Place> optionalPlace = placeRepository.findById(reservationCreateDto.getPlaceId());
+            if (optionalPlace.isPresent()) {
+                selectedPlace = optionalPlace.get();
+            }
+        }
+        if (selectedPlace == null) {
+            List<Place> places = placeRepository.findAll();
+            List<Long> reservationIds = reservationRepository.findReservationsAtSpecifiedTime(reservationCheckAvailabilityDto.getDate(), reservationCheckAvailabilityDto.getStartTime(), reservationCheckAvailabilityDto.getEndTime());
+            List<Long> placeIds = reservationPlaceRepository.findPlaceIdsByReservationIds(reservationIds);
+            places.removeAll(placeRepository.findAllById(placeIds));
+            if (places.isEmpty()) {
+                return null; // No available places
+            }
+            selectedPlace = places.get(0);
+        }
 
         // TODO: add Restaurant name to DTO
 
@@ -168,8 +181,7 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation savedReservation = reservationRepository.save(reservation);
         reservationValidator.validateReservation(savedReservation);
 
-
-        // 7. send conformation Mail
+        // 7. send confirmation Mail
         Map<String, Object> templateModel = constructMailTemplateModel(savedReservation, reservationCreateDto.getUser());
         emailService.sendMessageUsingThymeleafTemplate(reservationCreateDto.getUser().getEmail(),
             "Reservation Confirmation", templateModel);
@@ -177,12 +189,14 @@ public class ReservationServiceImpl implements ReservationService {
         // 8. save ReservationPlace in database
         ReservationPlace reservationPlace = ReservationPlace.ReservationPlaceBuilder.aReservationPlace()
             .withReservation(savedReservation)
-            .withPlace(places.getFirst())
+            .withPlace(selectedPlace)
             .build();
         reservationPlaceRepository.save(reservationPlace);
 
         return mapper.reservationToReservationCreateDto(savedReservation);
     }
+
+
 
     @Override
     public ReservationResponseEnum getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) throws ValidationException {

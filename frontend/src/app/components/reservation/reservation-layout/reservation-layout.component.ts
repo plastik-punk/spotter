@@ -14,19 +14,12 @@ import { AuthService } from "../../../services/auth.service";
 import { ReservationService } from "../../../services/reservation.service";
 import { NotificationService } from "../../../services/notification.service";
 import * as d3 from 'd3';
-import {formatIsoDate} from "../../../util/date-helper";
-import {Observable} from "rxjs";
+import { formatIsoDate } from "../../../util/date-helper";
+import { Observable } from "rxjs";
 
 
 @Component({
   selector: 'app-component-reservation-layout',
-  standalone: true,
-  imports: [
-    FormsModule,
-    NgIf,
-    ReactiveFormsModule,
-    RouterLink
-  ],
   templateUrl: './reservation-layout.component.html',
   styleUrls: ['./reservation-layout.component.scss']
 })
@@ -44,16 +37,17 @@ export class ReservationLayoutComponent implements OnInit {
     lastName: undefined,
     notes: undefined,
     email: undefined,
-    mobileNumber: undefined
+    mobileNumber: undefined,
+    placeId: undefined
   };
 
   hours = new Date().getHours().toString().padStart(2, '0');
   minutes = new Date().getMinutes().toString().padStart(2, '0');
-  nowTime= this.hours + ':' + this.minutes;
+  nowTime = this.hours + ':' + this.minutes;
   now = formatIsoDate(new Date());
 
   reservationLayoutCheckAvailabilityDto: ReservationLayoutCheckAvailabilityDto = {
-    startTime:this.nowTime,
+    startTime: this.nowTime,
     date: this.now,
     areaId: 1,
     idToExclude: -1
@@ -62,6 +56,7 @@ export class ReservationLayoutComponent implements OnInit {
   currentUser: UserOverviewDto;
   areaLayout: AreaLayoutDto;
   selectedPlaceId: number | null = null; // Track the selected place
+  selectedPlaceSeats: number | null = null; // Track the number of seats in the selected place
 
   layoutWidth: number = 1600; // Default width
   layoutHeight: number = 900; // Default height
@@ -76,9 +71,6 @@ export class ReservationLayoutComponent implements OnInit {
     this.fetchLayoutAvailability();
     this.createSeatingPlan();
     this.onResize(); // Adjust the size on initialization
-
-    // Add an event listener to handle clicks outside the SVG
-    document.addEventListener('click', this.onDocumentClick.bind(this));
   }
 
   @HostListener('window:resize', ['$event'])
@@ -142,7 +134,7 @@ export class ReservationLayoutComponent implements OnInit {
       .on('click', (event, d) => {
         event.stopPropagation(); // Prevent triggering the document click event
         if (!d.reservation && d.status) { // Only allow selection of available places
-          this.onPlaceClick(d.placeId);
+          this.onPlaceClick(d.placeId, d.numberOfSeats);
         }
       })
       .on('mouseover', (event, d) => this.showTooltip(event, d))
@@ -263,22 +255,20 @@ export class ReservationLayoutComponent implements OnInit {
     if (place.placeId === this.selectedPlaceId) {
       return '#377eb8'; // Selected color
     }
-    if(!place.status) {
+    if (!place.status) {
       return '#767676FF'; // Closed color
     }
-    return !place.reservation? '#4daf4a' : '#e41a1c'; // Green for free, Red for booked
+    return !place.reservation ? '#4daf4a' : '#e41a1c'; // Green for free, Red for booked
   }
 
-  private onPlaceClick(placeId: number) {
-    this.selectedPlaceId = placeId;
-    this.updatePlaceColors();
-  }
-
-  private onDocumentClick() {
-    if (this.selectedPlaceId !== null) {
-      this.selectedPlaceId = null;
-      this.updatePlaceColors();
+  private onPlaceClick(placeId: number, numberOfSeats: number) {
+    if (this.selectedPlaceId === placeId) {
+      return; // If the same place is clicked, do nothing
     }
+    this.selectedPlaceId = placeId;
+    this.selectedPlaceSeats = numberOfSeats;
+    this.reservationCreateDto.placeId = placeId; // Update reservationCreateDto with the selected place ID
+    this.updatePlaceColors();
   }
 
   private updatePlaceColors() {
@@ -333,7 +323,19 @@ export class ReservationLayoutComponent implements OnInit {
     }
     this.reservationLayoutCheckAvailabilityDto.areaId = 1; // Hardcoded areaId for now
     this.fetchLayoutAvailability();
+
+    // Check pax against available seats
+    if (this.selectedPlaceSeats !== null && this.reservationCreateDto.pax > this.selectedPlaceSeats) {
+      this.notificationService.showError(`The selected place only has ${this.selectedPlaceSeats} seats.`);
+      this.reservationCreateDto.pax = this.selectedPlaceSeats; // Adjust pax to available seats
+      this.isPaxValid();
+    }
   }
+
+  isPaxValid(): boolean {
+    return this.selectedPlaceSeats === null || (this.reservationCreateDto.pax <= this.selectedPlaceSeats);
+  }
+
   private formatDate(date: Date): string {
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
@@ -354,6 +356,12 @@ export class ReservationLayoutComponent implements OnInit {
       this.reservationCreateDto.lastName = this.currentUser.lastName;
       this.reservationCreateDto.email = this.currentUser.email;
       this.reservationCreateDto.mobileNumber = Number(this.currentUser.mobileNumber);
+    }
+
+    // Check pax against available seats
+    if (this.selectedPlaceSeats !== null && this.reservationCreateDto.pax > this.selectedPlaceSeats) {
+      this.notificationService.showError(`The selected place only has ${this.selectedPlaceSeats} seats.`);
+      return; // Prevent form submission
     }
 
     if (form.valid) {
@@ -388,8 +396,12 @@ export class ReservationLayoutComponent implements OnInit {
       lastName: undefined,
       notes: undefined,
       email: undefined,
-      mobileNumber: undefined
+      mobileNumber: undefined,
+      placeId: undefined
     };
+    this.selectedPlaceId = null;
+    this.selectedPlaceSeats = null;
+    this.updatePlaceColors();
   }
   private showFormErrors(): void {
     if (!this.reservationCreateDto.startTime) {
