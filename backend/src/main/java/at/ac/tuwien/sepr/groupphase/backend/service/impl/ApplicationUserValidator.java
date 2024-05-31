@@ -35,15 +35,15 @@ public class ApplicationUserValidator {
         }
     }
 
-    public void validateApplicationUser(List<String> validationErrors, ApplicationUser applicationUser) {
-        LOG.trace("validateRegistration({})", applicationUser);
-
-        validateFirstName(validationErrors, applicationUser.getFirstName());
-        validateLastName(validationErrors, applicationUser.getLastName());
-        validateEmail(validationErrors, applicationUser.getEmail());
-        validatePhoneNumber(validationErrors, applicationUser.getMobileNumber());
-        validateRoleForReservation(validationErrors, applicationUser.getRole());
-    }
+    // public void validateApplicationUser(List<String> validationErrors, ApplicationUser applicationUser) {
+    //     LOG.trace("validateRegistration({})", applicationUser);
+    //
+    //     validateFirstName(validationErrors, applicationUser.getFirstName());
+    //     validateLastName(validationErrors, applicationUser.getLastName());
+    //     validateEmail(validationErrors, applicationUser.getEmail());
+    //     validatePhoneNumber(validationErrors, applicationUser.getMobileNumber());
+    //     validateRoleForReservation(validationErrors, applicationUser.getRole());
+    // }
 
     public void validateFirstName(List<String> validationErrors, String firstName) {
         LOG.trace("validateFirstName({})", firstName);

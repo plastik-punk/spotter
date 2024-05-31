@@ -16,6 +16,12 @@ Run complete pipeline test before pushing to Repository
 
 `mvn test`
 
+## Install Dependencies
+
+If new dependencies were added in the pom.xml file
+
+`mvn clean install`
+
 ## Conventions
 
 ### Naming DTOs

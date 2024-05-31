@@ -42,60 +42,60 @@ public class ReservationValidator {
         this.applicationUserService = applicationUserService;
     }
 
-    public void validateReservation(Reservation reservation) throws ValidationException {
-        LOGGER.trace("validateReservation({})", reservation);
-        List<String> validationErrors = new ArrayList<>();
+    //public void validateReservation(Reservation reservation) throws ValidationException {
+    //    LOGGER.trace("validateReservation({})", reservation);
+    //    List<String> validationErrors = new ArrayList<>();
+    //
+    //    this.applicationUserValidator.validateApplicationUser(validationErrors, reservation.getApplicationUser());
+    //
+    //    validateStartTime(validationErrors, reservation.getStartTime());
+    //    // validateEndTime(validationErrors, reservation.getEndTime(), reservation.getStartTime()); // TODO: activate after end time was implemented in frontend
+    //    validateDate(validationErrors, reservation.getDate());
+    //    validatePax(validationErrors, reservation.getPax());
+    //    validateNotes(validationErrors, reservation.getNotes());
+    //
+    //    if (!validationErrors.isEmpty()) {
+    //        throw new ValidationException("Validation of reservation failed", validationErrors);
+    //    }
+    //}
 
-        this.applicationUserValidator.validateApplicationUser(validationErrors, reservation.getApplicationUser());
+    // public void validateReservationDetailDto(ReservationDetailDto dto) throws ValidationException {
+    //     LOGGER.trace("validateReservationDetailDto({})", dto);
+    //     List<String> validationErrors = new ArrayList<>();
+    //
+    //     validateStartTime(validationErrors, dto.getStartTime());
+    //     validateEndTime(validationErrors, dto.getEndTime(), dto.getStartTime());
+    //     validateDate(validationErrors, dto.getDate());
+    //     validatePax(validationErrors, dto.getPax());
+    //     validateNotes(validationErrors, dto.getNotes());
+    //     // validatePlaceId(validationErrors, dto.getPlaceId());
+    //
+    //     if (!validationErrors.isEmpty()) {
+    //         throw new ValidationException("Validation of reservationDetailDto failed", validationErrors);
+    //     }
+    // }
 
-        validateStartTime(validationErrors, reservation.getStartTime());
-        // validateEndTime(validationErrors, reservation.getEndTime(), reservation.getStartTime()); // TODO: activate after end time was implemented in frontend
-        validateDate(validationErrors, reservation.getDate());
-        validatePax(validationErrors, reservation.getPax());
-        validateNotes(validationErrors, reservation.getNotes());
-
-        if (!validationErrors.isEmpty()) {
-            throw new ValidationException("Validation of reservation failed", validationErrors);
-        }
-    }
-
-    public void validateReservationDetailDto(ReservationDetailDto dto) throws ValidationException {
-        LOGGER.trace("validateReservationDetailDto({})", dto);
-        List<String> validationErrors = new ArrayList<>();
-
-        validateStartTime(validationErrors, dto.getStartTime());
-        validateEndTime(validationErrors, dto.getEndTime(), dto.getStartTime());
-        validateDate(validationErrors, dto.getDate());
-        validatePax(validationErrors, dto.getPax());
-        validateNotes(validationErrors, dto.getNotes());
-        // validatePlaceId(validationErrors, dto.getPlaceId());
-
-        if (!validationErrors.isEmpty()) {
-            throw new ValidationException("Validation of reservationDetailDto failed", validationErrors);
-        }
-    }
-
-    public void validateReservationCreateDto(ReservationCreateDto dto) throws ValidationException {
-        LOGGER.trace("validateReservationCreateDto({})", dto);
-        List<String> validationErrors = new ArrayList<>();
-
-        if (dto.getUser() != null) {
-            this.applicationUserValidator.validateApplicationUser(validationErrors, dto.getUser());
-        }
-        this.applicationUserValidator.validateFirstName(validationErrors, dto.getFirstName());
-        this.applicationUserValidator.validateEmail(validationErrors, dto.getEmail());
-        this.applicationUserValidator.validatePhoneNumber(validationErrors, dto.getMobileNumber());
-
-        validateStartTime(validationErrors, dto.getStartTime());
-        // validateEndTime(validationErrors, dto.getEndTime(), dto.getStartTime()); // TODO: activate after end time was implemented in frontend
-        validateDate(validationErrors, dto.getDate());
-        validatePax(validationErrors, dto.getPax());
-        validateNotes(validationErrors, dto.getNotes());
-
-        if (!validationErrors.isEmpty()) {
-            throw new ValidationException("Validation of reservationCreateDto failed", validationErrors);
-        }
-    }
+    // public void validateReservationCreateDto(ReservationCreateDto dto) throws ValidationException {
+    //     LOGGER.trace("validateReservationCreateDto({})", dto);
+    //     List<String> validationErrors = new ArrayList<>();
+    //
+    //     if (dto.getUser() != null) {
+    //         this.applicationUserValidator.validateApplicationUser(validationErrors, dto.getUser());
+    //     }
+    //     this.applicationUserValidator.validateFirstName(validationErrors, dto.getFirstName());
+    //     this.applicationUserValidator.validateEmail(validationErrors, dto.getEmail());
+    //     this.applicationUserValidator.validatePhoneNumber(validationErrors, dto.getMobileNumber());
+    //
+    //     validateStartTime(validationErrors, dto.getStartTime());
+    //     // validateEndTime(validationErrors, dto.getEndTime(), dto.getStartTime()); // TODO: activate after end time was implemented in frontend
+    //     validateDate(validationErrors, dto.getDate());
+    //     validatePax(validationErrors, dto.getPax());
+    //     validateNotes(validationErrors, dto.getNotes());
+    //
+    //     if (!validationErrors.isEmpty()) {
+    //         throw new ValidationException("Validation of reservationCreateDto failed", validationErrors);
+    //     }
+    // }
 
 
     public void validateReservationDelete(Long id) throws ValidationException {
@@ -108,37 +108,38 @@ public class ReservationValidator {
             throw new ValidationException("Validation for delete failed", validationErrors);
         }
 
+        // TODO: make the following test cases for business logic instead of validation
         // 2. fetch reservation with id for validation of deletion
-        Optional<Reservation> optionalReservation = reservationRepository.findById(id);
-        if (optionalReservation.isEmpty()) {
-            validationErrors.add("Reservation not found");
-            throw new ValidationException("Validation of delete failed", validationErrors);
-        }
-        Reservation reservation = optionalReservation.get();
-
-        // 3. fetch current user
-        ApplicationUser currentUser = applicationUserService.getCurrentApplicationUser();
-
-        // 4. validate reservation
-        if (currentUser != null && reservation.getApplicationUser() != null && !reservation.getApplicationUser().equals(currentUser)) {
-            //TODO: currentUser != null as if a user is not logged in and clicks on the link, the currentUser is not Guest but null, change to Guest?
-
-            if (applicationUserService.getCurrentApplicationUser() != null && applicationUserService.getCurrentApplicationUser().getRole() != null) {
-                if (!applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.EMPLOYEE)
-                    && !applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.ADMIN)) {
-                    // this way an unauthorized user does not get any information about the existence of a reservation
-                    throw new ValidationException("Only the customer booking a reservation can delete it", validationErrors);
-                }
-            }
-        } else if (reservation.getDate().isBefore(LocalDate.now())) {
-            validationErrors.add("Reservation is in the past and cannot be deleted");
-        } else if (Objects.equals(reservation.getDate(), LocalDate.now()) && reservation.getStartTime().isBefore(LocalTime.now().plusHours(1))) {
-            validationErrors.add("You can not cancel a reservation less than 1 hour before it starts");
-        }
-
-        if (!validationErrors.isEmpty()) {
-            throw new ValidationException("Validation of delete failed", validationErrors);
-        }
+        // Optional<Reservation> optionalReservation = reservationRepository.findById(id);
+        // if (optionalReservation.isEmpty()) {
+        //     validationErrors.add("Reservation not found");
+        //     throw new ValidationException("Validation of delete failed", validationErrors);
+        // }
+        // Reservation reservation = optionalReservation.get();
+        //
+        // // 3. fetch current user
+        // ApplicationUser currentUser = applicationUserService.getCurrentApplicationUser();
+        //
+        // // 4. validate reservation
+        // if (currentUser != null && reservation.getApplicationUser() != null && !reservation.getApplicationUser().equals(currentUser)) {
+        //     //TODO: currentUser != null as if a user is not logged in and clicks on the link, the currentUser is not Guest but null, change to Guest?
+        //
+        //     if (applicationUserService.getCurrentApplicationUser() != null && applicationUserService.getCurrentApplicationUser().getRole() != null) {
+        //         if (!applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.EMPLOYEE)
+        //             && !applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.ADMIN)) {
+        //             // this way an unauthorized user does not get any information about the existence of a reservation
+        //             throw new ValidationException("Only the customer booking a reservation can delete it", validationErrors);
+        //         }
+        //     }
+        // } else if (reservation.getDate().isBefore(LocalDate.now())) {
+        //     validationErrors.add("Reservation is in the past and cannot be deleted");
+        // } else if (Objects.equals(reservation.getDate(), LocalDate.now()) && reservation.getStartTime().isBefore(LocalTime.now().plusHours(1))) {
+        //     validationErrors.add("You can not cancel a reservation less than 1 hour before it starts");
+        // }
+        //
+        // if (!validationErrors.isEmpty()) {
+        //     throw new ValidationException("Validation of delete failed", validationErrors);
+        // }
     }
 
     private void validateStartTime(List<String> validationErrors, LocalTime startTime) {

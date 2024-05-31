@@ -2,10 +2,17 @@ package at.ac.tuwien.sepr.groupphase.backend.integrationtest.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
+import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -13,6 +20,20 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.MediaType;
+
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -27,10 +48,10 @@ public class ReservationEndpointTest implements TestData {
     private ReservationRepository reservationRepository;
 
     @Autowired
-    private ApplicationUserRepository userRepository;
+    private ObjectMapper objectMapper;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private ApplicationUserRepository userRepository;
 
     @Autowired
     private JwtTokenizer jwtTokenizer;
@@ -38,7 +59,6 @@ public class ReservationEndpointTest implements TestData {
     @Autowired
     private SecurityProperties securityProperties;
 
-    /*
     @Test
     @Transactional
     public void givenReservationCreateDto_whenCreateForGuest_thenReservationAndGuestIsCreated() throws Exception {
@@ -159,7 +179,8 @@ public class ReservationEndpointTest implements TestData {
         );
     }
 
-    //@Test
+    // TODO: activate again after hash value was updated
+    // @Test
     @Transactional
     public void givenValidId_whenDelete_thenNoContent() throws Exception {
         // Given a user
@@ -247,12 +268,13 @@ public class ReservationEndpointTest implements TestData {
     @Transactional
     public void givenInvalidReservation_whenGetNextAvailableTables_thenReturnBadRequest() throws Exception {
         // Given Invalid Reservation
-        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
-            .withStartTime(TEST_RESERVATION_AVAILABILITY.getStartTime())
-            .withDate(null)
-            .withPax(TEST_RESERVATION_AVAILABILITY.getPax())
-            .withIdToExclude(TEST_RESERVATION_AVAILABILITY.getIdToExclude())
-            .build();
+        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto =
+            ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+                .withStartTime(TEST_RESERVATION_AVAILABILITY.getStartTime())
+                .withDate(null)
+                .withPax(TEST_RESERVATION_AVAILABILITY.getPax())
+                .withIdToExclude(TEST_RESERVATION_AVAILABILITY.getIdToExclude())
+                .build();
 
         // When a get request is made with the invalid reservation
         MvcResult mvcResult = this.mockMvc.perform(get(RESERVATION_BASE_URI + "/next")
@@ -267,6 +289,4 @@ public class ReservationEndpointTest implements TestData {
         int statusCode = mvcResult.getResponse().getStatus();
         assertEquals(400, statusCode);
     }
-
-     */
 }

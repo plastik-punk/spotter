@@ -26,6 +26,9 @@ import at.ac.tuwien.sepr.groupphase.backend.service.HashService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ReservationMapper;
 import jakarta.mail.MessagingException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,8 +47,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
-
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
@@ -65,7 +68,6 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Autowired
     private Validator validator;
-
 
     @Autowired
     public ReservationServiceImpl(ReservationMapper mapper,
@@ -93,9 +95,14 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationCreateDto create(ReservationCreateDto reservationCreateDto) throws MessagingException, ValidationException {
+    public ReservationCreateDto create(@Valid ReservationCreateDto reservationCreateDto) throws MessagingException, ValidationException {
         LOGGER.trace("create ({})", reservationCreateDto.toString());
-        reservationValidator.validateReservationCreateDto(reservationCreateDto);
+        // reservationValidator.validateReservationCreateDto(reservationCreateDto);
+
+        Set<ConstraintViolation<ReservationCreateDto>> reservationCreateDtoViolations = validator.validate(reservationCreateDto);
+        if (!reservationCreateDtoViolations.isEmpty()) {
+            throw new ConstraintViolationException(reservationCreateDtoViolations);
+        }
 
         // 1. if in simple view, no end time is given, so we set it to 2 hours after start time by default
         if (reservationCreateDto.getEndTime() == null) {
@@ -158,7 +165,13 @@ public class ReservationServiceImpl implements ReservationService {
 
         // 6. save Reservation in database and return it mapped to a DTO
         Reservation savedReservation = reservationRepository.save(reservation);
-        reservationValidator.validateReservation(savedReservation);
+        // Validate the Reservation object via javax.validation using the annotations in the entity class
+        Set<ConstraintViolation<Reservation>> reservationViolations = validator.validate(savedReservation);
+        if (!reservationViolations.isEmpty()) {
+            throw new ConstraintViolationException(reservationViolations);
+        }
+
+        // reservationValidator.validateReservation(savedReservation);
 
 
         // 7. send conformation Mail
@@ -396,7 +409,15 @@ public class ReservationServiceImpl implements ReservationService {
             + reservation.getStartTime().toString() + reservation.getEndTime().toString()
             + reservation.getPax().toString()));
         Reservation updatedReservation = reservationRepository.save(reservation);
-        this.reservationValidator.validateReservation(updatedReservation);
+        // Validate the Reservation object via javax.validation using the annotations in the entity class
+        Set<ConstraintViolation<Reservation>> violations = validator.validate(updatedReservation);
+        if (!violations.isEmpty()) {
+            throw new ConstraintViolationException(violations);
+        }
+
+
+        // this.reservationValidator.validateReservation(updatedReservation);
+
 
         // 4. update user data if user is a guest
         assert currentUser != null;

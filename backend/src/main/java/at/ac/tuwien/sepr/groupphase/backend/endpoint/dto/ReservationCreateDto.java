@@ -1,6 +1,12 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -10,22 +16,36 @@ public class ReservationCreateDto {
 
     private ApplicationUser applicationUser;
 
+    @NotNull(message = "First name is required")
+    @Size(min = 1, message = "First name should not be empty")
+    @Size(max = 255, message = "First name shouldn't be longer than 255 characters")
+    @Pattern(regexp = "^[A-Za-z ]+$", message = "First name must consist of letters and spaces only")
     private String firstName;
 
     private String lastName;
 
+    @NotNull(message = "startTime is required")
     private LocalTime startTime;
 
     private LocalTime endTime;
 
+    @NotNull(message = "Date must not be null")
+    @FutureOrPresent(message = "Date cannot be in the past")
     private LocalDate date;
 
+    @NotNull(message = "Pax must not be null")
+    @Positive(message = "Pax should be greater than 0")
     private Long pax;
 
+    @Size(max = 100000, message = "Notes shouldn't be longer than 100000 characters")
     private String notes;
 
+    @NotNull(message = "Email is required")
+    @Email(message = "Email must be valid")
     private String email;
 
+    @NotNull(message = "Mobile number is required")
+    @Pattern(regexp = "^[0-9]{1,15}$", message = "Invalid mobile number. It must consist of max. 15 digits.")
     private String mobileNumber;
 
     public ApplicationUser getUser() {
