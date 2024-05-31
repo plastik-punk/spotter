@@ -17,18 +17,6 @@ import * as d3 from 'd3';
 import {formatIsoDate} from "../../../util/date-helper";
 import {Observable} from "rxjs";
 
-interface Coordinate {
-  x: number;
-  y: number;
-}
-
-interface Place {
-  placeId: number;
-  coordinates: Coordinate[];
-  numberOfSeats: number;
-  reservation: boolean; // 0 for free, 1 for booked
-  status: boolean;
-}
 
 @Component({
   selector: 'app-component-reservation-layout',
@@ -64,8 +52,6 @@ export class ReservationLayoutComponent implements OnInit {
   nowTime= this.hours + ':' + this.minutes;
   now = formatIsoDate(new Date());
 
-
-
   reservationLayoutCheckAvailabilityDto: ReservationLayoutCheckAvailabilityDto = {
     startTime:this.nowTime,
     date: this.now,
@@ -76,6 +62,9 @@ export class ReservationLayoutComponent implements OnInit {
   currentUser: UserOverviewDto;
   areaLayout: AreaLayoutDto;
   selectedPlaceId: number | null = null; // Track the selected place
+
+  layoutWidth: number = 1600; // Default width
+  layoutHeight: number = 900; // Default height
 
   constructor(
     public authService: AuthService,
@@ -100,7 +89,7 @@ export class ReservationLayoutComponent implements OnInit {
   private adjustSvgSize() {
     const element = this.d3Container.nativeElement;
     const width = element.clientWidth;
-    const aspectRatio = 16 / 9; // 16:9 aspect ratio
+    const aspectRatio = this.layoutWidth / this.layoutHeight;
     const height = width / aspectRatio;
 
     d3.select(element).select('svg')
@@ -111,26 +100,27 @@ export class ReservationLayoutComponent implements OnInit {
   private createSeatingPlan() {
     const element = this.d3Container.nativeElement;
     const width = element.clientWidth;
-    const aspectRatio = 16 / 9; // 16:9 aspect ratio
+    const aspectRatio = this.layoutWidth / this.layoutHeight;
     const height = width / aspectRatio;
 
     const svg = d3.select(this.d3Container.nativeElement)
       .append('svg')
-      .attr('viewBox', `0 0 1600 900`) // 1600x900 for 16:9 aspect ratio
+      .attr('viewBox', `0 0 ${this.layoutWidth} ${this.layoutHeight}`) // Use dynamic width and height
       .attr('preserveAspectRatio', 'xMidYMid meet')
       .attr('width', width)
       .attr('height', height);
   }
 
   private fetchLayoutAvailability() {
-
-      console.log('ngDoCheck called');
-
+    console.log('ngDoCheck called');
 
     this.service.getLayoutAvailability(this.reservationLayoutCheckAvailabilityDto).subscribe({
       next: (data: AreaLayoutDto) => {
         this.areaLayout = data;
+        this.layoutWidth = this.areaLayout.width;
+        this.layoutHeight = this.areaLayout.height;
         this.updateSeatingPlan();
+        this.adjustSvgSize(); // Adjust size after updating layout dimensions
       },
       error: (error) => {
         this.notificationService.showError('Failed to fetch layout availability. Please try again later.');
@@ -144,26 +134,6 @@ export class ReservationLayoutComponent implements OnInit {
     svg.selectAll('*').remove(); // Clear existing elements
 
     const gridSize = 100;
-
-    // Define places with their properties
-    const places: Place[] = [
-      { placeId: 1, coordinates: [{ x: 1, y: 3 }, { x: 2, y: 3 }], numberOfSeats: 6, reservation: false, status: false},
-      { placeId: 2, coordinates: [{ x: 1, y: 5 }, { x: 2, y: 5 }], numberOfSeats: 6, reservation: false, status: false},
-      { placeId: 3, coordinates: [{ x: 1, y: 7 }, { x: 2, y: 7 }], numberOfSeats: 6, reservation: false, status: false},
-      { placeId: 4, coordinates: [{ x: 5, y: 3 }, { x: 6, y: 3 }], numberOfSeats: 6, reservation: false, status: true},
-      { placeId: 5, coordinates: [{ x: 5, y: 5 }, { x: 6, y: 5 }], numberOfSeats: 6, reservation: false, status: true},
-
-      { placeId: 6, coordinates: [{ x: 5, y: 7 }, { x: 6, y: 7 }], numberOfSeats: 6, reservation: false, status: true},
-      { placeId: 7, coordinates: [{ x: 11, y: 3 }, { x: 12, y: 3 }], numberOfSeats: 6, reservation: false, status: true},
-      { placeId: 8, coordinates: [{ x: 11, y: 5 }, { x: 12, y: 5 }], numberOfSeats: 6, reservation: false, status: true},
-      { placeId: 9, coordinates: [{ x: 11, y: 7 }, { x: 12, y: 7 }], numberOfSeats: 6, reservation: false, status: true},
-      { placeId: 10, coordinates: [{ x: 12, y: 0 }], numberOfSeats: 3, reservation: true, status: true},
-      { placeId: 11, coordinates: [{ x: 14, y: 0 }, { x: 15, y: 0 }, { x: 15, y: 1 }, { x: 15, y: 2 }], numberOfSeats: 5, reservation: true, status: true}, // L-shaped table
-      { placeId: 13, coordinates: [{ x: 15, y: 4 }], numberOfSeats: 3, reservation: true, status: true},
-      { placeId: 14, coordinates: [{ x: 15, y: 6 }], numberOfSeats: 3, reservation: true, status: true},
-      { placeId: 16, coordinates: [{ x: 2, y: 0 }, { x: 3, y: 0 }, { x: 4, y: 0 }, { x: 5, y: 0 }, { x: 6, y: 0 }, { x: 7, y: 0 }, { x: 8, y: 0 }, { x: 9, y: 0 }, { x: 10, y: 0 }], numberOfSeats: 20, reservation: false, status: true}, // Bar
-    ];
-
     // Add places to SVG
     const group = svg.selectAll('g')
       .data(this.areaLayout.placeVisuals)
@@ -377,7 +347,7 @@ export class ReservationLayoutComponent implements OnInit {
     return `${hours}:${minutes}`;
   }
 
-    onSubmit(form: NgForm) {
+  onSubmit(form: NgForm) {
     if (this.authService.isLoggedIn()) {
       this.currentUser = this.authService.getCurrentUser();
       this.reservationCreateDto.firstName = this.currentUser.firstName;
