@@ -14,82 +14,95 @@
   <div class="col-12 col-lg-10 mx-auto h-90 py-3">
     <div class="card custom-card">
 
-      <!-- Start row with Name -->
-      <div class="row justify-content-center">
-        <div class="col-lg-4 d-flex align-items-center justify-content-center">
-          <h1 class="font-heading">Update Event</h1>
-        </div>
-        <hr class="my-4">
-      </div>
-      <!-- End row with Name -->
-
-
-      <!-- Start row with name, startDate, startTime, endDate endTime, description -->
-      <div class="row">
-
-        <div class="column">
-          <div class="input-container">
-            <label for="eventName">Name</label>
-            <div class="input-like" id="eventName" contenteditable="true">
-              {{ eventEditDto.name }}
+      <form #form="ngForm" (ngSubmit)="onSubmit(form)" novalidate>
+        <!-- Start row with Title, startTime and Date -->
+        <div class="top-banner">
+          <div class="row">
+            <div class="column">
+              <h1 class="font-heading">Edit Event</h1>
             </div>
           </div>
 
-          <div class="input-container">
-            <label for="eventStartDate">Start Date</label>
-            <div class="input-like" id="eventStartDate" contenteditable="true">
-              {{ startDateSplit }}
-            </div>
-          </div>
-
-          <div class="input-container">
-            <label for="eventStartTime">Start Time</label>
-            <div class="input-like" id="eventStartTime" contenteditable="true">
-              {{ startTimeSplit }}
-            </div>
-          </div>
+          <hr class="my-4">
         </div>
 
-        <div class="column">
-          <div class="input-container">
-            <label for="eventEndDate">End Date</label>
-            <div class="input-like" id="eventEndDate" contenteditable="true">
-              {{ endDateSplit }}
+        <!-- Start row with name, startDate, startTime, endDate endTime, description -->
+        <div class="row">
+          <div class="column">
+
+            <div class="input-container">
+              <label for="eventName">Name</label>
+              <input
+                type="text"
+                id="eventName"
+                name="eventName"
+                placeholder="Event Name"
+                class="form-control pax-input"
+                [(ngModel)]="eventEditDto.name"
+                required
+              />
+            </div>
+
+            <div class="input-container">
+              <label for="eventStartTime">Start Time</label>
+              <input
+                type="datetime-local"
+                id="eventStartTime"
+                name="eventStartTime"
+                placeholder="Start Time (optional)"
+                class="form-control"
+                [(ngModel)]="eventEditDto.startTime"
+              />
+            </div>
+
+            <div class="input-container">
+              <label for="eventEndTime">End Time</label>
+              <input
+                type="datetime-local"
+                id="eventEndTime"
+                name="eventEndTime"
+                placeholder="End Time"
+                class="form-control"
+                [(ngModel)]="eventEditDto.endTime"
+                required
+              />
             </div>
           </div>
 
-          <div class="input-container">
-            <label for="eventEndTime">End Time</label>
-            <div class="input-like" id="eventEndTime" contenteditable="true">
-              {{ endTimeSplit }}
+          <div class="column">
+            <div class="input-container">
+              <textarea
+                id="eventDescription"
+                name="eventDescription"
+                placeholder="Description (optional)"
+                class="form-control notes-textarea"
+                [(ngModel)]="eventEditDto.description"
+              ></textarea>
             </div>
           </div>
         </div>
 
+        <!-- name, startDate, startTime, endDate endTime, description -->
 
-        <div class="column">
-          <div class="input-container">
-            <label for="eventDescription">Description</label>
-            <div class="input-like" id="eventDescription" contenteditable="true">
-              {{ eventEditDto.description }}
+
+
+        <div class="row">
+          <div class="column">
+            <div class="mt-4 d-flex flex-row">
+              <button type="button" class="btn btn-primary m-2" (click)="onBack()">
+                Back
+              </button>
+              <button type="submit" class="btn btn-success m-2" [disabled]="!form.valid">
+                Save
+              </button>
+              <button type="button" class="btn btn-danger m-2" data-bs-toggle="modal"
+                      data-bs-target="#confirmation-dialog-delete">
+                Delete
+              </button>
             </div>
           </div>
         </div>
-      </div>
-      <!-- name, startDate, startTime, endDate endTime, description -->
-
-      <div class="mt-4 d-flex flex-row">
-        <button type="button" class="btn btn-primary m-2" (click)="onBack()">
-          Back
-        </button>
-        <button type="button" class="btn btn-success m-2" (click)="onSubmit()">
-          Save
-        </button>
-        <button type="button" class="btn btn-danger m-2" data-bs-toggle="modal"
-                data-bs-target="#confirmation-dialog-delete">
-          Delete
-        </button>
-      </div>
+      </form>
     </div>
     <!-- end row with Notes -->
   </div>

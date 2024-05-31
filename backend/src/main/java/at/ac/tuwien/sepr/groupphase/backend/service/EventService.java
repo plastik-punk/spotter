@@ -1,9 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventCreateDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventDetailDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventListDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.*;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,6 +37,15 @@ public interface EventService {
      * @throws ValidationException if the eventCreateDto is invalid
      */
     EventCreateDto create(EventCreateDto eventCreateDto) throws ValidationException;
+
+    /**
+     * Update an existing event.
+     *
+     * @param eventEditDto the event to update
+     * @return the updated event
+     * @throws ValidationException if the eventEditDto is invalid
+     */
+    EventEditDto update(EventEditDto eventEditDto) throws ValidationException;
 
     /**
      * Import an ICS file.

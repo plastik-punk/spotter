@@ -1,9 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventCreateDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventDetailDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventListDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.*;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Event;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
@@ -108,6 +105,23 @@ public class EventServiceImpl implements EventService {
         eventValidator.validateEvent(savedEvent);
 
         return mapper.eventToEventCreateDto(savedEvent);
+    }
+
+    @Override
+    public EventEditDto update(EventEditDto eventEditDto) throws ValidationException {
+        LOGGER.trace("update({})", eventEditDto);
+        eventValidator.validateEventEditDto(eventEditDto);
+
+        Event event = eventRepository.findByHashId(eventEditDto.getHashId());
+        event.setName(eventEditDto.getName());
+        event.setDescription(eventEditDto.getDescription());
+        event.setStartTime(eventEditDto.getStartTime());
+        event.setEndTime(eventEditDto.getEndTime());
+
+        Event savedEvent = eventRepository.save(event);
+        eventValidator.validateEvent(savedEvent);
+
+        return mapper.eventToEventEditDto(savedEvent);
     }
 
     @Override

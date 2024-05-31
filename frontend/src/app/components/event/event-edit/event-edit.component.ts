@@ -4,6 +4,7 @@ import {AuthService} from "../../../services/auth.service";
 import {EventService} from "../../../services/event.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {NotificationService} from "../../../services/notification.service";
+import {NgForm} from "@angular/forms";
 
 @Component({
   selector: 'app-event-edit',
@@ -11,10 +12,6 @@ import {NotificationService} from "../../../services/notification.service";
   styleUrl: './event-edit.component.scss'
 })
 export class EventEditComponent {
-  startDateSplit: string;
-  startTimeSplit: string;
-  endDateSplit: string;
-  endTimeSplit: string;
 
   eventEditDto: EventEditDto = {
     hashId: undefined,
@@ -45,10 +42,6 @@ export class EventEditComponent {
             this.eventEditDto.endTime = data.endTime;
             this.eventEditDto.name = data.name;
             this.eventEditDto.description = data.description;
-            this.startDateSplit = this.formatDate(data.startTime);
-            this.startTimeSplit = this.formatTime(data.startTime);
-            this.endDateSplit = this.formatDate(data.endTime);
-            this.endTimeSplit = this.formatTime(data.endTime);
           }
         },
         error: (error) => {
@@ -62,17 +55,22 @@ export class EventEditComponent {
     this.router.navigate(['event-overview'])
   }
 
-  onSubmit() {
-    let observable = this.service.update(this.eventEditDto);
-    observable.subscribe({
-      next: () => {
-        this.notificationService.showSuccess('Event updated successfully.');
-        this.router.navigate(['event-overview']);
-      },
-      error: (error) => {
-        this.notificationService.showError(error.error.message);
-      }
-    });
+  onSubmit(form: NgForm) {
+    if (form.valid) {
+      let observable = this.service.update(this.eventEditDto);
+      observable.subscribe({
+        next: () => {
+          this.notificationService.showSuccess('Event updated successfully.');
+          this.router.navigate(['event-overview']);
+        },
+        error: (error) => {
+          this.notificationService.showError(error.error.message);
+        }
+      });
+    } else {
+      this.showFormErrors();
+    }
+
   }
 
   onDelete() {
@@ -88,13 +86,17 @@ export class EventEditComponent {
     });
   }
 
-  private formatDate(d: Date): string {
-    const date = new Date(d);
-    return date.toLocaleDateString();
+
+  private showFormErrors(): void {
+    if (!this.eventEditDto.startTime) {
+      this.notificationService.showError('Start time is required.');
+    }
+    if (!this.eventEditDto.endTime) {
+      this.notificationService.showError('End time is required.');
+    }
+    if (!this.eventEditDto.name) {
+      this.notificationService.showError('Name is required.');
+    }
   }
 
-  private formatTime(d: Date): string {
-    const date = new Date(d);
-    return date.toLocaleTimeString();
-  }
 }

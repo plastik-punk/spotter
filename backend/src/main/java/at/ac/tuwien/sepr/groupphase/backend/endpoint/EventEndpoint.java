@@ -1,10 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.*;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventCreateDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventCreateDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventDetailDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventListDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -68,7 +65,14 @@ public class EventEndpoint {
         return service.create(eventCreateDto);
     }
 
-    //TODO: update
+    @Secured("ROLE_ADMIN")
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping
+    @Operation(summary = "Update an existing event")
+    public EventEditDto update(@RequestBody EventEditDto eventEditDto) throws ValidationException {
+        LOGGER.info("PUT /api/v1/events body: {}", eventEditDto.toString());
+        return service.update(eventEditDto);
+    }
 
     //TODO: delete
 
