@@ -3,7 +3,6 @@ import {AdminViewDto, PredictionDto} from "../../../dtos/admin-view";
 import {now} from "lodash";
 import {NgForm} from "@angular/forms";
 import {Observable} from "rxjs";
-import {ReservationEditDto} from "../../../dtos/reservation";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AdminViewService} from "../../../services/admin-view.service";
 import {ToastrService} from "ngx-toastr";
@@ -15,13 +14,13 @@ import {AuthService} from "../../../services/auth.service";
   templateUrl: './prediction.component.html',
   styleUrl: './prediction.component.scss'
 })
-export class PredictionComponent implements OnInit{
-  adminViewDto: AdminViewDto={
+export class PredictionComponent implements OnInit {
+  adminViewDto: AdminViewDto = {
     area: undefined,
     startTime: undefined,
     date: undefined
   }
-  predictionDto: PredictionDto={
+  predictionDto: PredictionDto = {
     prediction: undefined
   };
 
@@ -30,13 +29,15 @@ export class PredictionComponent implements OnInit{
     private service: AdminViewService,
     private notification: ToastrService,
     private notificationService: NotificationService,
-    private router:Router,
+    private router: Router,
     private route: ActivatedRoute
   ) {
   }
+
   ngOnInit() {
     this.adminViewDto.date = new Date(now());
     this.adminViewDto.startTime = new Date(now());
+    this.adminViewDto.area = "area1";
   }
 
   onFieldChange() {
@@ -49,10 +50,7 @@ export class PredictionComponent implements OnInit{
       observable = this.service.getPrediction(this.adminViewDto);
       observable.subscribe({
         next: (data) => {
-          this.notification.success("Reservation updated successfully");
-          if (this.authService.isLoggedIn()) {
-            this.router.navigate(['/reservation-overview']);
-          }
+          this.notification.success("Prediction made successfully!");
         },
         error: (error) => {
           this.notificationService.handleError(error);

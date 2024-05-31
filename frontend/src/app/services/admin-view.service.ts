@@ -7,9 +7,10 @@ import {Globals} from "../global/globals";
 @Injectable({
   providedIn: 'root'
 })
+
 export class AdminViewService {
 
-  private reservationBaseUri: string = this.globals.backendUri + "/admin-view"; // todo: change to reservation after auth is implemented
+  private reservationBaseUri: string = this.globals.backendUri + "/adminView"; // todo: change to reservation after auth is implemented
 
   constructor(private httpClient: HttpClient, private globals: Globals) {
   }
@@ -21,10 +22,8 @@ export class AdminViewService {
    * @return an Observable for the prediction
    */
   getPrediction(adminViewDto: AdminViewDto): Observable<PredictionDto> {
-    let params = new HttpParams();
-    Object.keys(adminViewDto).forEach((key) => {
-      params = params.append(key, adminViewDto[key]);
-    });
-    return this.httpClient.get<PredictionDto>(this.reservationBaseUri, {params})
+    let params = new HttpParams().set('adminViewDto', adminViewDto.toString());
+
+    return this.httpClient.get<PredictionDto>(this.reservationBaseUri, params);
   }
 }

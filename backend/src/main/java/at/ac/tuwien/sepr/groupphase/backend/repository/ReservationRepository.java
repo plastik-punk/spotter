@@ -42,6 +42,9 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     List<Reservation> findByHashValue(String hashValue);
 
+    List<Reservation> findAllByDate(LocalDate date);
+
+
     @Query("SELECT r FROM Reservation r WHERE r.applicationUser.id = :applicationUserId")
     List<Reservation> findByApplicationUserId(@Param("applicationUserId") Long applicationUserId);
 }
