@@ -64,7 +64,7 @@ public interface EventService {
      * Import an ICS file.
      *
      * @param file the ICS file
-     * @throws Exception if the file could not be imported
+     * @throws IllegalArgumentException if the file could not be imported
      */
-    void importIcsFile(MultipartFile file) throws Exception;
+    void importIcsFile(MultipartFile file) throws IllegalArgumentException;
 }

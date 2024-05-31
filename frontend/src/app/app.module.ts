@@ -40,8 +40,7 @@ import {GroupByDatePipe} from "./pipes/group-by-date.pipe";
         EventOverviewComponent,
         EventDetailComponent,
         EventEditComponent,
-        EventCreateComponent,
-        EventImportComponent
+        EventCreateComponent
     ],
   imports: [
     BrowserModule,
