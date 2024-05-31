@@ -20,15 +20,16 @@ export class ReservationOverviewComponent implements OnInit {
   upcomingReservations: ReservationListDto[] = [];
   displayedUpcomingReservations: ReservationListDto[] = [];
   searchParams: ReservationSearch = {};
-  searchEarliestDate: string | null = null; // Add these variable definitions
-  searchLatestDate: string | null = null;   // Add these variable definitions
-  searchEarliestStartTime: string | null = null; // Add these variable definitions
-  searchLatestEndTime: string | null = null; // Add these variable definitions
+  searchEarliestDate: string | null = null;
+  searchLatestDate: string | null = null;
+  searchEarliestStartTime: string | null = null;
+  searchLatestEndTime: string | null = null;
   searchChangedObservable = new Subject<void>();
   deleteWhat: ReservationEditDto | null = null;
+  untouched: boolean = true;
 
   currentPage = 1;
-  pageSize = 50;
+  pageSize = 25;
   totalUpcomingReservations = 0;
 
   constructor(
@@ -42,7 +43,7 @@ export class ReservationOverviewComponent implements OnInit {
   ngOnInit(): void {
     this.loadReservations();
     this.searchChangedObservable
-      .pipe(debounceTime(300))
+      .pipe(debounceTime(100))
       .subscribe({next: () => this.loadReservations()});
   }
 
@@ -53,6 +54,7 @@ export class ReservationOverviewComponent implements OnInit {
   isEmployee(): boolean {
     return this.authService.getUserRole() === 'EMPLOYEE';
   }
+
 
   loadReservations() {
     const today = moment().startOf('day');
@@ -83,12 +85,14 @@ export class ReservationOverviewComponent implements OnInit {
     }
 
     // If all fields are null, set default values
-    if (!this.searchParams.earliestDate && !this.searchParams.latestDate &&
-      !this.searchParams.earliestStartTime && !this.searchParams.latestEndTime) {
-      this.searchParams.earliestDate = today.toDate();
-      this.searchParams.latestDate = nextWeek.toDate();
-      this.searchParams.earliestStartTime = today.format('HH:mm');
-      this.searchParams.latestEndTime = nextWeek.format('HH:mm');
+    if (this.isAdmin() || this.isEmployee()) {
+      if (!this.searchParams.earliestDate && !this.searchParams.latestDate &&
+        !this.searchParams.earliestStartTime && !this.searchParams.latestEndTime) {
+        this.searchParams.earliestDate = today.toDate();
+        this.searchParams.latestDate = nextWeek.toDate();
+        this.searchParams.earliestStartTime = today.format('HH:mm');
+        this.searchParams.latestEndTime = nextWeek.format('HH:mm');
+      }
     }
     this.reservationService.search(this.searchParams)
       .subscribe({
@@ -104,14 +108,15 @@ export class ReservationOverviewComponent implements OnInit {
   }
 
   filterReservations() {
+
     const today = moment().startOf('day');
     this.todaysReservations = this.reservations.filter(reservation =>
       moment(reservation.date).isSame(today, 'day')
     );
 
-    this.upcomingReservations = this.reservations.filter(reservation =>
-      moment(reservation.date).isAfter(today, 'day') && moment(reservation.date).isBefore(today.clone().add(8, 'days'), 'day')
-    );
+    const todayHashSet = new Set(this.todaysReservations.map(reservation => reservation.id));
+
+    this.upcomingReservations = this.reservations.filter(reservation => !todayHashSet.has(reservation.id));
 
     this.totalUpcomingReservations = this.upcomingReservations.length;
     this.displayReservations();
@@ -169,4 +174,20 @@ export class ReservationOverviewComponent implements OnInit {
   }
 
   protected readonly Math = Math;
+
+  resetSearchParams(): void {
+    this.currentPage = 1;
+    this.searchEarliestDate = null;
+    this.searchLatestDate = null;
+    this.searchEarliestStartTime = null;
+    this.searchLatestEndTime = null;
+
+    this.searchParams.earliestDate = null;
+    this.searchParams.latestDate = null;
+    this.searchParams.earliestStartTime = null;
+    this.searchParams.latestEndTime = null;
+
+    this.loadReservations();
+  }
+
 }
