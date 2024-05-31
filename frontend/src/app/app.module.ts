@@ -23,6 +23,7 @@ import {EventDetailComponent} from "./components/event/event-detail/event-detail
 import {EventEditComponent} from "./components/event/event-edit/event-edit.component";
 import {EventCreateComponent} from "./components/event/event-create/event-create.component";
 import {EventImportComponent} from "./components/event/event-import/event-import.component";
+import {GroupByDatePipe} from "./pipes/group-by-date.pipe";
 
 @NgModule({
     declarations: [
@@ -42,17 +43,18 @@ import {EventImportComponent} from "./components/event/event-import/event-import
         EventCreateComponent,
         EventImportComponent
     ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        ReactiveFormsModule,
-        HttpClientModule,
-        NgbModule,
-        FormsModule,
-        ToastrModule.forRoot(),
-        BrowserAnimationsModule,
-        NoopAnimationsModule
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+    NgbModule,
+    FormsModule,
+    ToastrModule.forRoot(),
+    BrowserAnimationsModule,
+    NoopAnimationsModule,
+    GroupByDatePipe
+  ],
     providers: [httpInterceptorProviders],
     exports: [
         ConfirmationDialogDeleteComponent
