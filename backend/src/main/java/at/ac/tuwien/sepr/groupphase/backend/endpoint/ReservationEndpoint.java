@@ -32,6 +32,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.invoke.MethodHandles;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -74,13 +76,14 @@ public class ReservationEndpoint {
                                                @RequestParam("idToExclude") Long idToExclude,
                                                @RequestParam("areaId") Long areaId)
         throws ValidationException {
-        ReservationLayoutCheckAvailabilityDto reservationLayoutCheckAvailabilityDto = ReservationLayoutCheckAvailabilityDto.ReservationLayoutCheckAvailabilityDtoBuilder.aReservationLayoutCheckAvailabilityDto()
-            .withStartTime(LocalTime.parse(startTime))
-            .withEndTime(LocalTime.parse(startTime).plusHours(2))
-            .withDate(LocalDate.parse(date))
-            .withIdToExclude(idToExclude)
-            .withAreaId(areaId)
-            .build();
+        ReservationLayoutCheckAvailabilityDto reservationLayoutCheckAvailabilityDto =
+            ReservationLayoutCheckAvailabilityDto.ReservationLayoutCheckAvailabilityDtoBuilder.aReservationLayoutCheckAvailabilityDto()
+                .withStartTime(LocalTime.parse(startTime))
+                .withEndTime(LocalTime.parse(startTime).plusHours(2))
+                .withDate(LocalDate.parse(date))
+                .withIdToExclude(idToExclude)
+                .withAreaId(areaId)
+                .build();
         LOGGER.info("GET /api/v1/reservations body: {}", reservationLayoutCheckAvailabilityDto);
         return service.getAreaLayout(reservationLayoutCheckAvailabilityDto);
     }
@@ -112,7 +115,7 @@ public class ReservationEndpoint {
         LOGGER.info("PUT /api/v1/reservations body: {}", reservationEditDto.toString());
         return service.update(reservationEditDto);
     }
-    
+
     @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_USER"})
     @Operation(summary = "Get list of all reservations for admins and employees", security = @SecurityRequirement(name = "apiKey"))
     @GetMapping({"/search"})
