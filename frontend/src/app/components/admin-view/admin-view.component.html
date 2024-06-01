@@ -54,7 +54,7 @@
           </div>
           <div class="row">
             <div class="col-9" style="height: 350px">
-              PlaceHolder for Area View
+              PlaceHolder for Area Viewd
             </div>
             <div class="col-3" style="height: 350px">
               PlaceHolder for Edit Button
@@ -67,11 +67,22 @@
                 <h5 class="column">Weekly Prediction</h5>
                 <button type="button" class="col-4 btn btn-info" (click)="onClickDetailView()">View Details</button>
               </div>
-              PlaceHolder for Weekly Statistic
+              <!-- Chart 3 - Bootstrap Brain Component -->
+              <div id="chart">
+                <apx-chart
+                  [series]="chartOptions.series"
+                  [chart]="chartOptions.chart"
+                  [dataLabels]="chartOptions.dataLabels"
+                  [plotOptions]="chartOptions.plotOptions"
+                  [yaxis]="chartOptions.yaxis"
+                  [fill]="chartOptions.fill"
+                  [xaxis]="chartOptions.xaxis"
+                ></apx-chart>
+              </div>
             </div>
             <div class="col-6">
               <div class="row">
-                <h5 >Edit Special Offers</h5>
+                <h5>Edit Special Offers</h5>
                 PlaceHolder for Special Offers
               </div>
             </div>

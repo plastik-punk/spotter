@@ -21,6 +21,7 @@ import { NotificationComponent } from './components/notification/notification.co
 import {AdminViewComponent} from "./components/admin-view/admin-view.component";
 import {ReservationEditComponent} from "./components/reservation/reservation-edit/reservation-edit.component";
 import {PredictionComponent} from "./components/admin-view/prediction/prediction.component";
+import {NgApexchartsModule} from "ng-apexcharts";
 
 @NgModule({
   declarations: [
@@ -47,7 +48,8 @@ import {PredictionComponent} from "./components/admin-view/prediction/prediction
     FormsModule,
     ToastrModule.forRoot(),
     BrowserAnimationsModule,
-    NoopAnimationsModule
+    NoopAnimationsModule,
+    NgApexchartsModule
   ],
   providers: [httpInterceptorProviders],
   bootstrap: [AppComponent]
