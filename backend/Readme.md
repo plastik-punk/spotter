@@ -8,8 +8,6 @@
 
 If the database is not clean, the test data won't be inserted.
 
-Disable the FutureOrPresent validation check in Reservation for endDate.
-
 `mvn spring-boot:run -Dspring-boot.run.profiles=generateData`
 
 ## Start Test Pipeline
