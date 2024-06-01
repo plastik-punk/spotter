@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.entity;
 
+import at.ac.tuwien.sepr.groupphase.backend.validation.FutureOrPresentValidation;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,8 +32,9 @@ public class Reservation {
     @Column(nullable = false)
     private LocalTime startTime;
 
+    // @FutureOrPresentValidation(message = "Date cannot be in the past")
     @NotNull(message = "Date must not be null")
-    // @FutureOrPresent(message = "Date cannot be in the past")
+    @FutureOrPresent(message = "Date cannot be in the past")
     @Column(nullable = false)
     private LocalDate date;
 

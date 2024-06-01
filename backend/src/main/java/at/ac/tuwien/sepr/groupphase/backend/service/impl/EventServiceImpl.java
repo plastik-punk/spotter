@@ -8,11 +8,13 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Event;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
-import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.EventRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.EventService;
 import at.ac.tuwien.sepr.groupphase.backend.service.HashService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.EventMapper;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
@@ -31,30 +33,25 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class EventServiceImpl implements EventService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final EventRepository eventRepository;
-    private final ApplicationUserRepository applicationUserRepository;
     private final EventMapper mapper;
     private final HashService hashService;
-    private final EventValidator eventValidator;
-    private final ApplicationUserServiceImpl applicationUserService;
+
+    @Autowired
+    private Validator validator;
 
     @Autowired
     public EventServiceImpl(EventRepository eventRepository,
-                            ApplicationUserRepository applicationUserRepository,
                             EventMapper mapper,
-                            HashService hashService,
-                            EventValidator eventValidator,
-                            ApplicationUserServiceImpl applicationUserService) {
+                            HashService hashService) {
         this.eventRepository = eventRepository;
-        this.applicationUserRepository = applicationUserRepository;
         this.mapper = mapper;
         this.hashService = hashService;
-        this.eventValidator = eventValidator;
-        this.applicationUserService = applicationUserService;
     }
 
     @Override
@@ -101,8 +98,10 @@ public class EventServiceImpl implements EventService {
         if (eventCreateDto.getEndTime() == null) {
             eventCreateDto.setEndTime(LocalTime.of(23, 59));
         }
-
-        eventValidator.validateEventCreateDto(eventCreateDto);
+        Set<ConstraintViolation<EventCreateDto>> eventCreateDtoViolations = validator.validate(eventCreateDto);
+        if (!eventCreateDtoViolations.isEmpty()) {
+            throw new ConstraintViolationException(eventCreateDtoViolations);
+        }
 
         Event event = mapper.eventCreateDtoToEvent(eventCreateDto);
         event.setDescription(event.getDescription() != null ? event.getDescription().trim() : event.getDescription());
@@ -110,7 +109,10 @@ public class EventServiceImpl implements EventService {
         event.setHashId(hashId);
 
         Event savedEvent = eventRepository.save(event);
-        eventValidator.validateEvent(savedEvent);
+        Set<ConstraintViolation<Event>> eventViolations = validator.validate(savedEvent);
+        if (!eventViolations.isEmpty()) {
+            throw new ConstraintViolationException(eventViolations);
+        }
 
         return mapper.eventToEventCreateDto(savedEvent);
     }
@@ -150,7 +152,10 @@ public class EventServiceImpl implements EventService {
 
     public EventEditDto update(EventEditDto eventEditDto) throws ValidationException {
         LOGGER.trace("update({})", eventEditDto);
-        eventValidator.validateEventEditDto(eventEditDto);
+        Set<ConstraintViolation<EventEditDto>> eventEditDtoViolations = validator.validate(eventEditDto);
+        if (!eventEditDtoViolations.isEmpty()) {
+            throw new ConstraintViolationException(eventEditDtoViolations);
+        }
 
         Event event = eventRepository.findByHashId(eventEditDto.getHashId());
         event.setName(eventEditDto.getName());
@@ -159,7 +164,10 @@ public class EventServiceImpl implements EventService {
         event.setEndTime(eventEditDto.getEndTime());
 
         Event savedEvent = eventRepository.save(event);
-        eventValidator.validateEvent(savedEvent);
+        Set<ConstraintViolation<Event>> eventViolations = validator.validate(savedEvent);
+        if (!eventViolations.isEmpty()) {
+            throw new ConstraintViolationException(eventViolations);
+        }
 
         return mapper.eventToEventEditDto(savedEvent);
     }
@@ -179,5 +187,4 @@ public class EventServiceImpl implements EventService {
         eventRepository.deleteById(eventToDelete.getId());
         LOGGER.debug("Event with id {} deleted", eventToDelete.getId());
     }
-
 }

@@ -11,6 +11,7 @@ import at.ac.tuwien.sepr.groupphase.backend.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.annotation.security.PermitAll;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +66,7 @@ public class EventEndpoint {
     @Secured("ROLE_ADMIN")
     @PostMapping
     @Operation(summary = "Create a new event")
-    public EventCreateDto create(@RequestBody EventCreateDto eventCreateDto) throws ValidationException {
+    public EventCreateDto create(@Valid @RequestBody EventCreateDto eventCreateDto) throws ValidationException {
         LOGGER.info("POST /api/v1/events body: {}", eventCreateDto.toString());
         return service.create(eventCreateDto);
     }
@@ -74,7 +75,7 @@ public class EventEndpoint {
     @ResponseStatus(HttpStatus.OK)
     @PutMapping
     @Operation(summary = "Update an existing event")
-    public EventEditDto update(@RequestBody EventEditDto eventEditDto) throws ValidationException {
+    public EventEditDto update(@Valid @RequestBody EventEditDto eventEditDto) throws ValidationException {
         LOGGER.info("PUT /api/v1/events body: {}", eventEditDto.toString());
         return service.update(eventEditDto);
     }
