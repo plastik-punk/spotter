@@ -34,7 +34,7 @@ public class Reservation {
 
     // @FutureOrPresentValidation(message = "Date cannot be in the past")
     @NotNull(message = "Date must not be null")
-    @FutureOrPresent(message = "Date cannot be in the past")
+    // @FutureOrPresent(message = "Date cannot be in the past")
     @Column(nullable = false)
     private LocalDate date;
 
