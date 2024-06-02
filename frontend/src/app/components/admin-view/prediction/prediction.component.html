@@ -17,8 +17,9 @@
 <div class="container-fluid">
   <div class="col-12 col-lg-10 mx-auto">
     <div class="card custom-card">
-      <div class="top-banner">
-        <form #form="ngForm" (ngSubmit)="onSubmit(form)" novalidate>
+
+      <form #form="ngForm" (ngSubmit)="onSubmit(form)" novalidate>
+        <div class="top-banner">
           <div class="row">
             <div class="column">
               <h1 class="font-heading">Admin View</h1>
@@ -26,65 +27,67 @@
             <div class="column">
               <input
                 type="time"
-                id="reservationStartTime"
-                name="reservationStartTime"
+                id="predictionStartTime"
+                name="predictionStartTime"
+                [defaultValue]="currTime"
                 placeholder="hh:mm"
                 class="form-control"
                 [(ngModel)]="adminViewDto.startTime"
-                #adminViewStartTimeModel="ngModel"
+                #predictionStartTimeModel="ngModel"
                 (ngModelChange)="onFieldChange()"
-                required
               />
             </div>
             <div class="column">
               <input
                 type="date"
-                id="reservationDate"
-                name="reservationDate"
+                id="predictionDate"
+                name="predictionDate"
                 pattern="\d{4}-\d{2}-\d{2}"
+                [defaultValue]="currDate"
                 placeholder="dd-mm-yyyy"
                 class="form-control"
                 [(ngModel)]="adminViewDto.date"
-                #adminViewDateModel="ngModel"
+                #predictionDateModel="ngModel"
                 (ngModelChange)="onFieldChange()"
                 required
               />
             </div>
             <hr class="my-4">
           </div>
-          <div class="row">
-            <div class="column">
-              <button type="submit" class="btn btn-danger" [disabled]="!form.valid">
-                Save
-              </button>
-            </div>
-          </div>
-        </form>
+        </div>
 
         <div class="row">
-          <div class="column">
-            <div>
-              <h5 class="font-heading">Auslastung KWx</h5>
-              Dummy für Auslastung KWx
-            </div>
-          </div>
-
+          <button class="btn btn-danger col-2" (click)="getBack()">
+            Back
+          </button>
+          <button type="submit" class="btn btn-success col-2" [disabled]="!form.valid">
+            Get Prediction
+          </button>
         </div>
-        <div class="row">
-          <div class="column">
-            <div>
-              <h5 class="font-heading">Prediction for Amount of Personal</h5>
-              <div
-                type="text"
-                id="predictionText"
 
-                [(ngModel)]="predictionDto.prediction"
-              ></div>
-            </div>
+      <div class="row">
+        <div class="column">
+          <div>
+            <h5 class="font-heading">Auslastung KWx</h5>
+            Dummy für Auslastung KWx
           </div>
-
         </div>
+
       </div>
+      <div class="row">
+        <div class="column">
+          <div>
+            <h5 class="font-heading">Prediction for Amount of Personal</h5>
+            <div type="text" id="predictionText">
+              <span id="reservationNotes" class="h-100">
+              {{ predictionDto.prediction }}
+            </span></div>
+          </div>
+        </div>
+
+      </div>
+
+      </form>
     </div>
   </div>
 </div>

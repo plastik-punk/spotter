@@ -27,7 +27,7 @@ export class AdminViewService {
     Object.keys(adminViewDto).forEach((key) => {
       params = params.append(key, adminViewDto[key]);
     });
-    return this.httpClient.get<PredictionDto>(this.reservationBaseUri, {params});
+    return this.httpClient.get<PredictionDto>(this.reservationBaseUri + '/prediction', {params});
   }
 
   getForeCast(adminViewDto: AdminViewDto) {

@@ -109,6 +109,11 @@ public class AdminViewServiceImpl implements AdminViewService {
         List<ApplicationUser> employeeList = applicationUserRepository.findAllByRole(RoleEnum.EMPLOYEE);
         int totalEmployeeCount = employeeList.size();
         //8, calculate the percentage of the Employees
+        if (amountOfCustomersPerHourMap.isEmpty() || amountOfCustomersPerDayMapLastYear.isEmpty()) {
+            return PredictionDto.PredictionBuilder.aPredictionDto()
+                .withPrediction("No Prediction possible")
+                .build();
+        }
         long maxPaxAtSameTimeCurrDay = Collections.max(amountOfCustomersPerHourMap.values());
         long maxPaxAtSameTimeLastYear = Collections.max(amountOfCustomersPerDayMapLastYear.values());
         long averagePaxLastYear = amountOfCustomersPerDayMapLastYear.values().stream().mapToLong(Long::longValue).sum() / amountOfCustomersPerDayMapLastYear.size();
@@ -116,8 +121,10 @@ public class AdminViewServiceImpl implements AdminViewService {
         float percentageOfPax = (float) maxPaxAtSameTimeCurrDay / (float) maxPaxAtSameTimeLastYear;
         float percentageOfEmployees = (float) totalEmployeeCount * percentageOfPax;
 
-
-        return null;
+        PredictionDto predictionDto = PredictionDto.PredictionBuilder.aPredictionDto()
+            .withPrediction("The Prediction for the given Area and Time is: " + percentageOfEmployees)
+            .build();
+        return predictionDto;
     }
 
     @Override

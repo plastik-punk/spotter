@@ -24,6 +24,9 @@ export class PredictionComponent implements OnInit {
     prediction: undefined
   };
 
+  currDate: any = new Date(now()).toISOString().split('T')[0];
+  currTime: any = new Date(now()).toISOString().split('T')[1].substring(0, 5);
+
   constructor(
     public authService: AuthService,
     private service: AdminViewService,
@@ -35,9 +38,9 @@ export class PredictionComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.adminViewDto.date = new Date(now());
-    this.adminViewDto.startTime = new Date(now());
-    this.adminViewDto.area = "area1";
+    this.adminViewDto.date = this.currDate;
+    this.adminViewDto.startTime = this.currTime;
+    this.adminViewDto.area = "Inside";
   }
 
   onFieldChange() {
@@ -45,17 +48,23 @@ export class PredictionComponent implements OnInit {
   }
 
   onSubmit(form: NgForm) {
+    console.log(this.adminViewDto)
     if (form.valid) {
       let observable: Observable<PredictionDto>;
       observable = this.service.getPrediction(this.adminViewDto);
       observable.subscribe({
         next: (data) => {
           this.notification.success("Prediction made successfully!");
+          this.predictionDto = data;
         },
         error: (error) => {
           this.notificationService.handleError(error);
         },
       });
     }
+  }
+
+  getBack() {
+    this.router.navigate(['/admin-view']);
   }
 }
