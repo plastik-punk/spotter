@@ -7,7 +7,6 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
-import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -39,18 +38,16 @@ public interface EventService {
      *
      * @param eventCreateDto the event to create
      * @return the created event
-     * @throws ValidationException if the eventCreateDto is invalid
      */
-    EventCreateDto create(EventCreateDto eventCreateDto) throws ValidationException;
+    EventCreateDto create(EventCreateDto eventCreateDto);
 
     /**
      * Update an existing event.
      *
      * @param eventEditDto the event to update
      * @return the updated event
-     * @throws ValidationException if the eventEditDto is invalid
      */
-    EventEditDto update(EventEditDto eventEditDto) throws ValidationException;
+    EventEditDto update(EventEditDto eventEditDto);
 
     /**
      * Delete an event.

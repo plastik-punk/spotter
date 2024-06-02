@@ -15,12 +15,11 @@ public class ReservationCheckAvailabilityDto {
 
     private LocalTime endTime;
 
-    @NotNull(message = "Date must not be null")
-    @FutureOrPresent(message = "Date cannot be in the past")
+    @NotNull(message = "Date is required")
     private LocalDate date;
 
-    @NotNull(message = "Pax must not be null")
-    @Positive(message = "Pax should be greater than 0")
+    @NotNull(message = "Pax is required")
+    @Positive(message = "Pax should be at least 1")
     private Long pax;
 
     /**

@@ -19,7 +19,6 @@ import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
-import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.AreaPlaceSegmentRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.AreaRepository;
@@ -41,6 +40,7 @@ import jakarta.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
@@ -106,7 +106,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationCreateDto create(@Valid ReservationCreateDto reservationCreateDto) throws MessagingException, ValidationException {
+    public ReservationCreateDto create(@Valid ReservationCreateDto reservationCreateDto) throws MessagingException {
         LOGGER.trace("create ({})", reservationCreateDto.toString());
         Set<ConstraintViolation<ReservationCreateDto>> reservationCreateDtoViolations = validator.validate(reservationCreateDto);
         if (!reservationCreateDtoViolations.isEmpty()) {
@@ -210,7 +210,7 @@ public class ReservationServiceImpl implements ReservationService {
 
 
     @Override
-    public ReservationResponseEnum getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) throws ValidationException {
+    public ReservationResponseEnum getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) {
         LOGGER.trace("getAvailability ({})", reservationCheckAvailabilityDto.toString());
         // reservationValidator.validateReservationCheckAvailabilityDto(reservationCheckAvailabilityDto);
         LocalDate date = reservationCheckAvailabilityDto.getDate();
@@ -297,8 +297,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationCheckAvailabilityDto[] getNextAvailableTables(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto)
-        throws ValidationException {
+    public ReservationCheckAvailabilityDto[] getNextAvailableTables(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) {
         LOGGER.trace("getNextAvailableTables ({})", reservationCheckAvailabilityDto.toString());
 
         LocalDate date = reservationCheckAvailabilityDto.getDate();
@@ -369,7 +368,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationEditDto getByHashedId(String hashValue) throws NotFoundException, ValidationException {
+    public ReservationEditDto getByHashedId(String hashValue) throws NotFoundException {
         LOGGER.trace("getDetail ({})", hashValue);
 
         // TODO: this should not be a list, but a single reservation
@@ -384,8 +383,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         if (currentUser == null || (!currentUser.getRole().equals(RoleEnum.ADMIN) && !currentUser.getRole().equals(RoleEnum.EMPLOYEE))) {
             if (!reservation.getApplicationUser().equals(currentUser)) {
-                // TODO: throw a fitting exception (create a new exception ideally)
-                throw new ValidationException("You are not allowed to view this reservation", new ArrayList<>());
+                throw new AccessDeniedException("You are not allowed to view this reservation");
             }
         }
 
@@ -398,7 +396,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationEditDto update(ReservationEditDto reservationEditDto) throws ValidationException {
+    public ReservationEditDto update(ReservationEditDto reservationEditDto) {
         LOGGER.trace("update ({})", reservationEditDto.toString());
 
         // 1. check if reservation exists and if so, fetch its data
@@ -494,7 +492,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public void cancel(String hashId) throws ValidationException {
+    public void cancel(String hashId) {
         ReservationEditDto reservationEditDto = getByHashedId(hashId);
         Long id = reservationEditDto.getReservationId();
         LOGGER.trace("cancel ({})", id);
@@ -504,7 +502,7 @@ public class ReservationServiceImpl implements ReservationService {
         //fetch reservation
         Optional<Reservation> optionalReservation = reservationRepository.findById(id);
         if (optionalReservation.isEmpty()) {
-            throw new ValidationException("Reservation not found", null);
+            throw new NotFoundException("Reservation not found", null);
         }
         Reservation reservation = optionalReservation.get();
 

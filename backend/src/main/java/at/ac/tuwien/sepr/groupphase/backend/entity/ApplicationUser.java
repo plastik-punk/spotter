@@ -25,14 +25,14 @@ public class ApplicationUser {
     @NotNull(message = "First name is required")
     @Size(min = 1, message = "First name should not be empty")
     @Size(max = 255, message = "First name shouldn't be longer than 255 characters")
-    @Pattern(regexp = "^[A-Za-z ]+$", message = "First name must consist of letters and spaces only")
+    @Pattern(regexp = "^[A-Za-zäöüÄÖÜß ]+$", message = "First name must consist of letters, umlauts, sharp s and spaces only")
     @Column(nullable = false, length = 255)
     private String firstName;
 
     @NotNull(message = "Last name is required")
     @Size(min = 1, message = "Last name should not be empty")
     @Size(max = 255, message = "Last name shouldn't be longer than 255 characters")
-    @Pattern(regexp = "^[A-Za-z ]+$", message = "Last name must consist of letters and spaces only")
+    @Pattern(regexp = "^[A-Za-zäöüÄÖÜß ]+$", message = "Last name must consist of letters, umlauts, sharp s and spaces only")
     @Column(nullable = false, length = 255)
     private String lastName;
 

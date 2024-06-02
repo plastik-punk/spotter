@@ -7,7 +7,6 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Event;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
-import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.EventRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.EventService;
 import at.ac.tuwien.sepr.groupphase.backend.service.HashService;
@@ -88,7 +87,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventCreateDto create(EventCreateDto eventCreateDto) throws ValidationException {
+    public EventCreateDto create(EventCreateDto eventCreateDto) {
         LOGGER.trace("create({})", eventCreateDto);
 
         //if no time is set, set it to 00:00 and 23:59
@@ -150,7 +149,7 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    public EventEditDto update(EventEditDto eventEditDto) throws ValidationException {
+    public EventEditDto update(EventEditDto eventEditDto) {
         LOGGER.trace("update({})", eventEditDto);
         Set<ConstraintViolation<EventEditDto>> eventEditDtoViolations = validator.validate(eventEditDto);
         if (!eventEditDtoViolations.isEmpty()) {

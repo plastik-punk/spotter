@@ -8,7 +8,6 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckA
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
-import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -52,7 +51,7 @@ public class ReservationEndpoint {
     @PermitAll
     @PostMapping
     @Operation(summary = "Create a new reservation")
-    public ReservationCreateDto create(@Valid @RequestBody ReservationCreateDto reservationCreateDto) throws MessagingException, ValidationException {
+    public ReservationCreateDto create(@Valid @RequestBody ReservationCreateDto reservationCreateDto) throws MessagingException {
         LOGGER.info("POST /api/v1/reservations body: {}", reservationCreateDto.toString());
         return service.create(reservationCreateDto);
     }
@@ -61,11 +60,10 @@ public class ReservationEndpoint {
     @PermitAll
     @GetMapping
     @Operation(summary = "Check if any tables are available for requested time and pax")
-    public ReservationResponseEnum getAvailability(@Valid ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) throws ValidationException {
+    public ReservationResponseEnum getAvailability(@Valid ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) {
         LOGGER.info("GET /api/v1/reservations body: {}", reservationCheckAvailabilityDto);
         return service.getAvailability(reservationCheckAvailabilityDto);
     }
-
 
     @ResponseStatus(HttpStatus.OK)
     @PermitAll
@@ -74,8 +72,7 @@ public class ReservationEndpoint {
     public AreaLayoutDto getAvailabilityLayout(@RequestParam("startTime") String startTime,
                                                @RequestParam("date") String date,
                                                @RequestParam("idToExclude") Long idToExclude,
-                                               @RequestParam("areaId") Long areaId)
-        throws ValidationException {
+                                               @RequestParam("areaId") Long areaId) {
         ReservationLayoutCheckAvailabilityDto reservationLayoutCheckAvailabilityDto =
             ReservationLayoutCheckAvailabilityDto.ReservationLayoutCheckAvailabilityDtoBuilder.aReservationLayoutCheckAvailabilityDto()
                 .withStartTime(LocalTime.parse(startTime))
@@ -92,8 +89,7 @@ public class ReservationEndpoint {
     @PermitAll
     @GetMapping({"/next"})
     @Operation(summary = "Get the next three available reservations")
-    public ReservationCheckAvailabilityDto[] getNextAvailableTables(@Valid ReservationCheckAvailabilityDto reservationCheckAvailabilityDto)
-        throws ValidationException {
+    public ReservationCheckAvailabilityDto[] getNextAvailableTables(@Valid ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) {
         LOGGER.info("GET /api/v1/reservations body: {}", reservationCheckAvailabilityDto);
         return service.getNextAvailableTables(reservationCheckAvailabilityDto);
     }
@@ -102,7 +98,7 @@ public class ReservationEndpoint {
     @PermitAll
     @GetMapping({"/detail"})
     @Operation(summary = "Get detail information for a single reservation")
-    public ReservationEditDto getByHashedId(@RequestParam("id") String id) throws ValidationException {
+    public ReservationEditDto getByHashedId(@RequestParam("id") String id) {
         LOGGER.info("GET /api/v1/reservations/detail body: {}", id);
         return service.getByHashedId(id);
     }
@@ -111,7 +107,7 @@ public class ReservationEndpoint {
     @PermitAll
     @PutMapping
     @Operation(summary = "Update a reservation")
-    public ReservationEditDto update(@Valid @RequestBody ReservationEditDto reservationEditDto) throws ValidationException {
+    public ReservationEditDto update(@Valid @RequestBody ReservationEditDto reservationEditDto) {
         LOGGER.info("PUT /api/v1/reservations body: {}", reservationEditDto.toString());
         return service.update(reservationEditDto);
     }
@@ -130,7 +126,7 @@ public class ReservationEndpoint {
     @PermitAll
     @DeleteMapping
     @Operation(summary = "Delete a reservation")
-    public ResponseEntity<Void> delete(@RequestBody String hashedId) throws ValidationException {
+    public ResponseEntity<Void> delete(@RequestBody String hashedId) {
         LOGGER.info("DELETE /api/v1/reservations body: {}", hashedId);
         service.cancel(hashedId);
         return ResponseEntity.noContent().build();
