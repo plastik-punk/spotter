@@ -29,6 +29,9 @@
       <li class="nav-item" *ngIf="authService.getUserRole() === 'ADMIN'">
         <a class="nav-link" routerLink="/employees" routerLinkActive="active">Staff Accounts</a>
       </li>
+      <li class="nav-item" *ngIf="authService.getUserRole() === 'ADMIN'">
+        <a class="nav-link" routerLink="/admin-view" routerLinkActive="active">Admin View</a>
+      </li>
       <li class="nav-item" *ngIf="authService.isLoggedIn()">
         <a class="nav-link" routerLink="/login" (click)="authService.logoutUser()">Logout</a>
       </li>

@@ -26,6 +26,10 @@ import {EventCreateComponent} from "./components/event/event-create/event-create
 import {GroupByDatePipe} from "./pipes/group-by-date.pipe";
 import {NgIf} from "@angular/common";
 import {RouterLink} from "@angular/router";
+import {AdminViewComponent} from "./components/admin-view/admin-view.component";
+import {ReservationEditComponent} from "./components/reservation/reservation-edit/reservation-edit.component";
+import {PredictionComponent} from "./components/admin-view/prediction/prediction.component";
+import {NgApexchartsModule} from "ng-apexcharts";
 
 @NgModule({
     declarations: [
@@ -36,6 +40,7 @@ import {RouterLink} from "@angular/router";
         LoginComponent,
         MessageComponent,
         ReservationDetailComponent,
+        ReservationEditComponent,
         ReservationOverviewComponent,
         ConfirmationDialogDeleteComponent,
         NotificationComponent,
@@ -43,7 +48,9 @@ import {RouterLink} from "@angular/router";
         EventDetailComponent,
         EventEditComponent,
         EventCreateComponent,
-        ReservationLayoutComponent
+        ReservationLayoutComponent,
+        AdminViewComponent,
+        PredictionComponent
     ],
   imports: [
     BrowserModule,
@@ -59,7 +66,9 @@ import {RouterLink} from "@angular/router";
     FormsModule,
     NgIf,
     ReactiveFormsModule,
-    RouterLink
+    RouterLink,
+    NoopAnimationsModule,
+    NgApexchartsModule
   ],
     providers: [httpInterceptorProviders],
     exports: [

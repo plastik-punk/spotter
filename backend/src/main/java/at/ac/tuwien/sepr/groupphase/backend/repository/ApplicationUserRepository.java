@@ -34,4 +34,5 @@ public interface ApplicationUserRepository extends JpaRepository<ApplicationUser
 
     List<ApplicationUser> findAllByOrderByFirstNameDesc();
 
+    List<ApplicationUser> findAllByRole(RoleEnum role);
 }

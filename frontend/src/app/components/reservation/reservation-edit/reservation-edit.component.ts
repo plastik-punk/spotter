@@ -13,11 +13,6 @@ import {NgIf} from "@angular/common";
 @Component({
   selector: 'app-reservation-edit',
   templateUrl: './reservation-edit.component.html',
-  standalone: true,
-  imports: [
-    FormsModule,
-    NgIf
-  ],
   styleUrls: ['./reservation-edit.component.scss']
 })
 

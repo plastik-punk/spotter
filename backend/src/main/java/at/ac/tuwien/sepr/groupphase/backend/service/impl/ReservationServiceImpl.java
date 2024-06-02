@@ -460,6 +460,7 @@ public class ReservationServiceImpl implements ReservationService {
             throw new RuntimeException(e);
         }
 
+
         // 7. map updated reservation to DTO and return it
         ReservationEditDto dto = mapper.reservationToReservationEditDto(updatedReservation);
         List<ReservationPlace> reservationPlaces = reservationPlaceRepository.findByReservationId(updatedReservation.getId());
