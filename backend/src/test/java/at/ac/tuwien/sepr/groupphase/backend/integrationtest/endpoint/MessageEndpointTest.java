@@ -224,5 +224,4 @@ public class MessageEndpointTest implements TestData {
         return date.getYear() == today.getYear() && date.getDayOfYear() == today.getDayOfYear() &&
             date.getHour() == today.getHour();
     }
-
 }

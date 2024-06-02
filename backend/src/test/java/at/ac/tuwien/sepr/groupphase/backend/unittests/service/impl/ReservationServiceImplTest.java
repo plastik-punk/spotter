@@ -3,11 +3,11 @@ package at.ac.tuwien.sepr.groupphase.backend.unittests.service.impl;
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
-import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
 import jakarta.mail.MessagingException;
+import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
+import jakarta.validation.ConstraintViolationException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -53,11 +54,11 @@ public class ReservationServiceImplTest implements TestData {
 
     @Test
     @Transactional
-    public void givenInvalidData_whenCreateGuestReservation_thenThrowValidationException() throws ValidationException, MessagingException {
+    public void givenInvalidData_whenCreateGuestReservation_thenThrowConstraintViolationException()  {
         ReservationCreateDto dto = TEST_RESERVATION_CREATE_DTO_GUEST.copy();
         dto.setStartTime(null);
 
-        assertThrows(ValidationException.class, () -> service.create(dto));
+        assertThrows(ConstraintViolationException.class, () -> service.create(dto));
     }
 
     @Test

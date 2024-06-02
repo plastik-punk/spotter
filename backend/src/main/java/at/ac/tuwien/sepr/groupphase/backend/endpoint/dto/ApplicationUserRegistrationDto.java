@@ -1,18 +1,25 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import java.util.Objects;
 
 public class ApplicationUserRegistrationDto {
 
+    @Size(min = 1, max = 255, message = "First name should not be empty and shouldn't be longer than 255 characters")
+    @Pattern(regexp = "^[A-Za-zäöüÄÖÜß ]+$", message = "First name must consist of letters, umlauts, sharp s and spaces only")
     @NotBlank(message = "First name must not be empty")
     private String firstName;
 
+    @Size(min = 1, max = 255, message = "Last name should not be empty and shouldn't be longer than 255 characters")
+    @Pattern(regexp = "^[A-Za-zäöüÄÖÜß ]+$", message = "Laste name must consist of letters, umlauts, sharp s and spaces only")
     @NotBlank(message = "Last name must not be empty")
     private String lastName;
 
@@ -20,13 +27,15 @@ public class ApplicationUserRegistrationDto {
     @Email(message = "Email should be valid")
     private String email;
 
+    @Pattern(regexp = "^[0-9]{1,15}$", message = "Invalid mobile number. It must consist of max. 15 digits.")
     private String mobileNumber;  // Optional, no @NotNull or @NotBlank
 
     @NotBlank(message = "Password must not be empty")
     @Size(min = 8, message = "Password must be at least 8 characters long")
     private String password;
 
-    @NotNull(message = "Role must not be null")
+    @NotNull(message = "User role is required")
+    @Enumerated(EnumType.STRING)
     private RoleEnum role;
 
     // Getters and setters

@@ -19,7 +19,6 @@ import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
-import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.AreaPlaceSegmentRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.AreaRepository;
@@ -28,16 +27,20 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.OpeningHoursRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationPlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
-import at.ac.tuwien.sepr.groupphase.backend.repository.SegmentRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.EmailService;
 import at.ac.tuwien.sepr.groupphase.backend.service.HashService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ReservationMapper;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
+import jakarta.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
@@ -52,6 +55,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,11 +71,12 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationPlaceRepository reservationPlaceRepository;
     private final EmailService emailService;
     private final HashService hashService;
-    private final ReservationValidator reservationValidator;
     private final ApplicationUserServiceImpl applicationUserService;
     private final AreaRepository areaRepository;
-    private final SegmentRepository segmentRepository;
     private final AreaPlaceSegmentRepository areaPlaceSegmentRepository;
+
+    @Autowired
+    private Validator validator;
 
     @Autowired
     public ReservationServiceImpl(ReservationMapper mapper,
@@ -79,35 +84,34 @@ public class ReservationServiceImpl implements ReservationService {
                                   ApplicationUserRepository applicationUserRepository,
                                   PlaceRepository placeRepository,
                                   EmailService emailService,
-                                  ReservationValidator reservationValidator,
                                   OpeningHoursRepository openingHoursRepository,
                                   ReservationPlaceRepository reservationPlaceRepository,
                                   ClosedDayRepository closedDayRepository,
                                   HashService hashService,
                                   ApplicationUserServiceImpl applicationUserService,
                                   AreaRepository areaRepository,
-                                  SegmentRepository segmentRepository,
                                   AreaPlaceSegmentRepository areaPlaceSegmentRepository) {
         this.mapper = mapper;
         this.reservationRepository = reservationRepository;
         this.applicationUserRepository = applicationUserRepository;
         this.placeRepository = placeRepository;
         this.emailService = emailService;
-        this.reservationValidator = reservationValidator;
         this.openingHoursRepository = openingHoursRepository;
         this.reservationPlaceRepository = reservationPlaceRepository;
         this.closedDayRepository = closedDayRepository;
         this.hashService = hashService;
         this.applicationUserService = applicationUserService;
         this.areaRepository = areaRepository;
-        this.segmentRepository = segmentRepository;
         this.areaPlaceSegmentRepository = areaPlaceSegmentRepository;
     }
 
     @Override
-    public ReservationCreateDto create(ReservationCreateDto reservationCreateDto) throws MessagingException, ValidationException {
+    public ReservationCreateDto create(@Valid ReservationCreateDto reservationCreateDto) throws MessagingException {
         LOGGER.trace("create ({})", reservationCreateDto.toString());
-        reservationValidator.validateReservationCreateDto(reservationCreateDto);
+        Set<ConstraintViolation<ReservationCreateDto>> reservationCreateDtoViolations = validator.validate(reservationCreateDto);
+        if (!reservationCreateDtoViolations.isEmpty()) {
+            throw new ConstraintViolationException(reservationCreateDtoViolations);
+        }
 
         // 1. if in simple view, no end time is given, so we set it to 2 hours after start time by default
         if (reservationCreateDto.getEndTime() == null) {
@@ -115,12 +119,13 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         // 2. check if a table is still available (via getAvailability) since last check and set endTime to closingHour if necessary
-        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
-            .withDate(reservationCreateDto.getDate())
-            .withStartTime(reservationCreateDto.getStartTime())
-            .withEndTime(reservationCreateDto.getEndTime())
-            .withPax(reservationCreateDto.getPax())
-            .build();
+        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto =
+            ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+                .withDate(reservationCreateDto.getDate())
+                .withStartTime(reservationCreateDto.getStartTime())
+                .withEndTime(reservationCreateDto.getEndTime())
+                .withPax(reservationCreateDto.getPax())
+                .build();
         ReservationResponseEnum tableStatus = getAvailability(reservationCheckAvailabilityDto);
         if (tableStatus != ReservationResponseEnum.AVAILABLE) {
             return null; // frontend should check for null and show notification accordingly
@@ -133,7 +138,8 @@ public class ReservationServiceImpl implements ReservationService {
                 .withFirstName(reservationCreateDto.getFirstName().trim())
                 .withLastName(reservationCreateDto.getLastName().trim())
                 .withEmail(reservationCreateDto.getEmail().trim())
-                .withMobileNumber(reservationCreateDto.getMobileNumber() != null ? reservationCreateDto.getMobileNumber().trim() : reservationCreateDto.getMobileNumber())
+                .withMobileNumber(
+                    reservationCreateDto.getMobileNumber() != null ? reservationCreateDto.getMobileNumber().trim() : reservationCreateDto.getMobileNumber())
                 .withoutPassword()
                 .withRole(RoleEnum.GUEST)
                 .build();
@@ -161,7 +167,9 @@ public class ReservationServiceImpl implements ReservationService {
         }
         if (selectedPlace == null) {
             List<Place> places = placeRepository.findAll();
-            List<Long> reservationIds = reservationRepository.findReservationsAtSpecifiedTime(reservationCheckAvailabilityDto.getDate(), reservationCheckAvailabilityDto.getStartTime(), reservationCheckAvailabilityDto.getEndTime());
+            List<Long> reservationIds =
+                reservationRepository.findReservationsAtSpecifiedTime(reservationCheckAvailabilityDto.getDate(), reservationCheckAvailabilityDto.getStartTime(),
+                    reservationCheckAvailabilityDto.getEndTime());
             List<Long> placeIds = reservationPlaceRepository.findPlaceIdsByReservationIds(reservationIds);
             places.removeAll(placeRepository.findAllById(placeIds));
             if (places.isEmpty()) {
@@ -179,9 +187,13 @@ public class ReservationServiceImpl implements ReservationService {
 
         // 6. save Reservation in database and return it mapped to a DTO
         Reservation savedReservation = reservationRepository.save(reservation);
-        reservationValidator.validateReservation(savedReservation);
+        // Validate the Reservation object via javax.validation using the annotations in the entity class
+        Set<ConstraintViolation<Reservation>> reservationViolations = validator.validate(savedReservation);
+        if (!reservationViolations.isEmpty()) {
+            throw new ConstraintViolationException(reservationViolations);
+        }
 
-        // 7. send confirmation Mail
+        // 7. send conformation Mail
         Map<String, Object> templateModel = constructMailTemplateModel(savedReservation, reservationCreateDto.getUser());
         emailService.sendMessageUsingThymeleafTemplate(reservationCreateDto.getUser().getEmail(),
             "Reservation Confirmation", templateModel);
@@ -197,11 +209,10 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
 
-
     @Override
-    public ReservationResponseEnum getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) throws ValidationException {
+    public ReservationResponseEnum getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) {
         LOGGER.trace("getAvailability ({})", reservationCheckAvailabilityDto.toString());
-        reservationValidator.validateReservationCheckAvailabilityDto(reservationCheckAvailabilityDto);
+        // reservationValidator.validateReservationCheckAvailabilityDto(reservationCheckAvailabilityDto);
         LocalDate date = reservationCheckAvailabilityDto.getDate();
         LocalTime startTime = reservationCheckAvailabilityDto.getStartTime();
         LocalTime endTime = reservationCheckAvailabilityDto.getEndTime();
@@ -211,8 +222,11 @@ public class ReservationServiceImpl implements ReservationService {
         if (endTime == null) {
             endTime = reservationCheckAvailabilityDto.getStartTime().plusHours(2);
         }
-        // b. if endTime is after midnight and before 6am, set it to just before midnight to guarantee check-safety
-        if (!endTime.isBefore(LocalTime.of(0, 0)) && endTime.isBefore(LocalTime.of(6, 0)) && startTime.isBefore(LocalTime.of(23, 59)) && startTime.isAfter(LocalTime.of(6, 0))) {
+        // b. if endTime is after midnight, before 6am, set it to just before midnight to guarantee check-safety
+        if (!endTime.isBefore(LocalTime.of(0, 0))
+            && endTime.isBefore(LocalTime.of(6, 0))
+            && startTime.isBefore(LocalTime.of(23, 59))
+            && startTime.isAfter(LocalTime.of(6, 0))) {
             endTime = LocalTime.of(23, 59);
         }
 
@@ -257,7 +271,9 @@ public class ReservationServiceImpl implements ReservationService {
 
         // 6. check if any places are available for specified time
         List<Place> places = placeRepository.findAll();
-        List<Long> reservationIds = reservationRepository.findReservationsAtSpecifiedTime(reservationCheckAvailabilityDto.getDate(), reservationCheckAvailabilityDto.getStartTime(), reservationCheckAvailabilityDto.getEndTime());
+        List<Long> reservationIds =
+            reservationRepository.findReservationsAtSpecifiedTime(reservationCheckAvailabilityDto.getDate(), reservationCheckAvailabilityDto.getStartTime(),
+                reservationCheckAvailabilityDto.getEndTime());
         List<Long> placeIds = reservationPlaceRepository.findPlaceIdsByReservationIds(reservationIds);
         places.removeAll(placeRepository.findAllById(placeIds));
         if (places.isEmpty()) {
@@ -281,9 +297,8 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationCheckAvailabilityDto[] getNextAvailableTables(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) throws ValidationException {
+    public ReservationCheckAvailabilityDto[] getNextAvailableTables(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) {
         LOGGER.trace("getNextAvailableTables ({})", reservationCheckAvailabilityDto.toString());
-        reservationValidator.validateReservationCheckAvailabilityDto(reservationCheckAvailabilityDto);
 
         LocalDate date = reservationCheckAvailabilityDto.getDate();
         LocalTime startTime = reservationCheckAvailabilityDto.getStartTime();
@@ -322,12 +337,13 @@ public class ReservationServiceImpl implements ReservationService {
 
         while (nextTables.size() < 3 && tryStart.isBefore(endOfDay)) {
             LocalDateTime tryEnd = tryStart.plusMinutes(duration);
-            ReservationCheckAvailabilityDto newReservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
-                .withDate(tryStart.toLocalDate())
-                .withStartTime(tryStart.toLocalTime())
-                .withEndTime(tryEnd.toLocalTime())
-                .withPax(reservationCheckAvailabilityDto.getPax())
-                .build();
+            ReservationCheckAvailabilityDto newReservationCheckAvailabilityDto =
+                ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+                    .withDate(tryStart.toLocalDate())
+                    .withStartTime(tryStart.toLocalTime())
+                    .withEndTime(tryEnd.toLocalTime())
+                    .withPax(reservationCheckAvailabilityDto.getPax())
+                    .build();
             ReservationResponseEnum tableStatus = getAvailability(newReservationCheckAvailabilityDto);
 
             if (tableStatus == ReservationResponseEnum.AVAILABLE) {
@@ -352,7 +368,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationEditDto getByHashedId(String hashValue) throws NotFoundException, ValidationException {
+    public ReservationEditDto getByHashedId(String hashValue) throws NotFoundException {
         LOGGER.trace("getDetail ({})", hashValue);
 
         // TODO: this should not be a list, but a single reservation
@@ -362,14 +378,12 @@ public class ReservationServiceImpl implements ReservationService {
             throw new NotFoundException("Reservation with not found");
         }
 
-
         Reservation reservation = reservationList.getFirst();
         ApplicationUser currentUser = applicationUserService.getCurrentApplicationUser();
 
         if (currentUser == null || (!currentUser.getRole().equals(RoleEnum.ADMIN) && !currentUser.getRole().equals(RoleEnum.EMPLOYEE))) {
             if (!reservation.getApplicationUser().equals(currentUser)) {
-                // TODO: throw a fitting exception (create a new exception ideally)
-                throw new ValidationException("You are not allowed to view this reservation", new ArrayList<>());
+                throw new AccessDeniedException("You are not allowed to view this reservation");
             }
         }
 
@@ -382,9 +396,8 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public ReservationEditDto update(ReservationEditDto reservationEditDto) throws ValidationException {
+    public ReservationEditDto update(ReservationEditDto reservationEditDto) {
         LOGGER.trace("update ({})", reservationEditDto.toString());
-        // TODO: validate reservationEditDto
 
         // 1. check if reservation exists and if so, fetch its data
         Optional<Reservation> optionalReservation = reservationRepository.findById(reservationEditDto.getReservationId());
@@ -411,7 +424,11 @@ public class ReservationServiceImpl implements ReservationService {
             + reservation.getStartTime().toString() + reservation.getEndTime().toString()
             + reservation.getPax().toString()));
         Reservation updatedReservation = reservationRepository.save(reservation);
-        this.reservationValidator.validateReservation(updatedReservation);
+        // Validate the Reservation object via javax.validation using the annotations in the entity class
+        Set<ConstraintViolation<Reservation>> violations = validator.validate(updatedReservation);
+        if (!violations.isEmpty()) {
+            throw new ConstraintViolationException(violations);
+        }
 
         // 4. update user data if user is a guest
         assert currentUser != null;
@@ -475,18 +492,17 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public void cancel(String hashId) throws ValidationException {
+    public void cancel(String hashId) {
         ReservationEditDto reservationEditDto = getByHashedId(hashId);
         Long id = reservationEditDto.getReservationId();
         LOGGER.trace("cancel ({})", id);
 
-        //validate reservation
-        this.reservationValidator.validateReservationDelete(id);
+        // TODO: check if ID is positive, otherwise return a fitting exception for notification handler
 
         //fetch reservation
         Optional<Reservation> optionalReservation = reservationRepository.findById(id);
         if (optionalReservation.isEmpty()) {
-            throw new ValidationException("Reservation not found", null);
+            throw new NotFoundException("Reservation not found", null);
         }
         Reservation reservation = optionalReservation.get();
 
@@ -513,7 +529,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     @Transactional
-public AreaLayoutDto getAreaLayout(ReservationLayoutCheckAvailabilityDto dto) throws ValidationException {
+    public AreaLayoutDto getAreaLayout(ReservationLayoutCheckAvailabilityDto dto) {
         var area = areaRepository.getReferenceById(dto.getAreaId());
 
         List<AreaPlaceSegment> areaPlaceSegments = areaPlaceSegmentRepository.findByAreaId(area.getId());

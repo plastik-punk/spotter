@@ -6,7 +6,6 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ApplicationUserRegistra
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
-import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -74,9 +73,8 @@ public interface ApplicationUserService extends UserDetailsService {
      * Register a user.
      *
      * @param applicationUserRegistrationDto registration Data
-     * @throws ValidationException if data used for the registration is invalid
      */
-    void register(ApplicationUserRegistrationDto applicationUserRegistrationDto) throws ValidationException;
+    void register(ApplicationUserRegistrationDto applicationUserRegistrationDto);
 
     /**
      * Updates a user.

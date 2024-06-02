@@ -17,12 +17,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.MediaType;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,10 +48,10 @@ public class ReservationEndpointTest implements TestData {
     private ReservationRepository reservationRepository;
 
     @Autowired
-    private ApplicationUserRepository userRepository;
+    private ObjectMapper objectMapper;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private ApplicationUserRepository userRepository;
 
     @Autowired
     private JwtTokenizer jwtTokenizer;
@@ -178,7 +179,8 @@ public class ReservationEndpointTest implements TestData {
         );
     }
 
-    //@Test
+    // TODO: activate again after hash value was updated
+    // @Test
     @Transactional
     public void givenValidId_whenDelete_thenNoContent() throws Exception {
         // Given a user
@@ -266,12 +268,13 @@ public class ReservationEndpointTest implements TestData {
     @Transactional
     public void givenInvalidReservation_whenGetNextAvailableTables_thenReturnBadRequest() throws Exception {
         // Given Invalid Reservation
-        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
-            .withStartTime(TEST_RESERVATION_AVAILABILITY.getStartTime())
-            .withDate(null)
-            .withPax(TEST_RESERVATION_AVAILABILITY.getPax())
-            .withIdToExclude(TEST_RESERVATION_AVAILABILITY.getIdToExclude())
-            .build();
+        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto =
+            ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+                .withStartTime(TEST_RESERVATION_AVAILABILITY.getStartTime())
+                .withDate(null)
+                .withPax(TEST_RESERVATION_AVAILABILITY.getPax())
+                .withIdToExclude(TEST_RESERVATION_AVAILABILITY.getIdToExclude())
+                .build();
 
         // When a get request is made with the invalid reservation
         MvcResult mvcResult = this.mockMvc.perform(get(RESERVATION_BASE_URI + "/next")

@@ -7,7 +7,6 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
-import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
@@ -39,18 +38,16 @@ public class ApplicationUserServiceImpl implements ApplicationUserService {
     private final ApplicationUserRepository applicationUserRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenizer jwtTokenizer;
-    private final ApplicationUserValidator applicationUserValidator;
     private final ApplicationUserMapper applicationUserMapper;
     private final ReservationRepository reservationRepository;
 
     @Autowired
     public ApplicationUserServiceImpl(ApplicationUserRepository applicationUserRepository, PasswordEncoder passwordEncoder,
-                                      JwtTokenizer jwtTokenizer, ApplicationUserValidator applicationUserValidator, ApplicationUserMapper applicationUserMapper,
+                                      JwtTokenizer jwtTokenizer, ApplicationUserMapper applicationUserMapper,
                                       ReservationRepository reservationRepository) {
         this.applicationUserRepository = applicationUserRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenizer = jwtTokenizer;
-        this.applicationUserValidator = applicationUserValidator;
         this.applicationUserMapper = applicationUserMapper;
         this.reservationRepository = reservationRepository;
     }
@@ -141,9 +138,8 @@ public class ApplicationUserServiceImpl implements ApplicationUserService {
     }
 
     @Override
-    public void register(ApplicationUserRegistrationDto applicationUserRegistrationDto) throws ValidationException {
+    public void register(ApplicationUserRegistrationDto applicationUserRegistrationDto) {
         LOGGER.trace("register ({})", applicationUserRegistrationDto);
-        applicationUserValidator.validateRegistration(applicationUserRegistrationDto);
         ApplicationUser applicationUser = applicationUserMapper.userRegistrationDtoToApplicationUser(applicationUserRegistrationDto);
         applicationUser.setPassword(passwordEncoder.encode(applicationUserRegistrationDto.getPassword()));
         applicationUserRepository.save(applicationUser);

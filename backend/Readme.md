@@ -6,7 +6,7 @@
 
 ## Start the backend with test data
 
-If the database is not clean, the test data won't be inserted
+If the database is not clean, the test data won't be inserted.
 
 `mvn spring-boot:run -Dspring-boot.run.profiles=generateData`
 
@@ -15,6 +15,42 @@ If the database is not clean, the test data won't be inserted
 Run complete pipeline test before pushing to Repository
 
 `mvn test`
+
+## Install Dependencies
+
+If new dependencies were added in the pom.xml file
+
+`mvn clean install`
+
+## Defining Validation Rules
+
+### Standard Annotations (for DTOs and Entities)
+
+- Both DTOs and Entities should use standard validation annotations
+- some basic annotations are: @NotNull, @Size, @Email, @Pattern, @Min, @Max, @Positive...
+
+### Custom Annotations
+
+- used for complex validation rules
+- placed in the "validation" package
+- instead of annotating a specific field, a custom annotation is used to validate the whole object
+- for an example, see EventCreateDto and the custom annotation @EndDateAndTimeAfterStartValidation
+
+## Using Validation
+
+Generally, use @Valid annotation and jakarta Validator, no custom validators!
+
+NOTE: the @Valid annotation can only be used on endpoint-parameters
+
+### Validate DTOs in endpoint (s. ReservationEndpoint.create for an example)
+
+- simply use @Valid on the parameter
+
+### Validation in service layer (s. ReservationServiceImpl for an example)
+
+1. create a private field of type jakarta.validation.Validator
+2. create and fill a Set with ConstraintViolation-objects by calling validator.validate(dto/entity)
+3. if the set is not empty throw a ConstraintViolationException with the set as parameter
 
 ## Conventions
 

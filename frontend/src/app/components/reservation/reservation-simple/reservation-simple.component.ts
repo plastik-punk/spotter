@@ -57,7 +57,7 @@ export class ReservationSimpleComponent implements OnInit {
     this.reservationCheckAvailabilityDto.startTime = this.reservationCreateDto.startTime;
     this.reservationCheckAvailabilityDto.date = this.reservationCreateDto.date;
     this.reservationCheckAvailabilityDto.pax = this.reservationCreateDto.pax;
-    this.unavailable = true;
+    this.unavailable = false;
 
     this.nextAvailableTables = [];
 
@@ -100,6 +100,7 @@ export class ReservationSimpleComponent implements OnInit {
         }
       },
       error: (error) => {
+        // TODO: handle validation errors (and other errors that should be shown to the user, if applicable)
         this.notificationService.showError('Failed to check availability. Please try again later.');
       },
     })

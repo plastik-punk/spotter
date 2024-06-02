@@ -8,7 +8,6 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckA
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
-import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
 import jakarta.mail.MessagingException;
 
 import java.util.List;
@@ -25,7 +24,7 @@ public interface ReservationService {
      * @param reservationCreateDto the reservation data
      * @return the reservation as provided from the Repository layer after creation in the database
      */
-    ReservationCreateDto create(ReservationCreateDto reservationCreateDto) throws MessagingException, ValidationException;
+    ReservationCreateDto create(ReservationCreateDto reservationCreateDto) throws MessagingException;
 
     /**
      * Check if any tables are available for requested time and pax.
@@ -33,7 +32,7 @@ public interface ReservationService {
      * @param reservationCheckAvailabilityDto the reservation data
      * @return the availability status
      */
-    ReservationResponseEnum getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) throws ValidationException;
+    ReservationResponseEnum getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto);
 
     /**
      * Get the next three available tables for a reservation.
@@ -41,7 +40,7 @@ public interface ReservationService {
      * @param reservationCheckAvailabilityDto the reservation data
      * @return the next three available tables
      */
-    ReservationCheckAvailabilityDto[] getNextAvailableTables(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) throws ValidationException;
+    ReservationCheckAvailabilityDto[] getNextAvailableTables(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto);
 
     /**
      * Get the details of a reservation specified by its Hashed id.
@@ -49,7 +48,7 @@ public interface ReservationService {
      * @param id the Hashed id of the reservation
      * @return the reservation details
      */
-    ReservationEditDto getByHashedId(String id) throws ValidationException;
+    ReservationEditDto getByHashedId(String id);
 
     /**
      * Update a reservation.
@@ -57,7 +56,7 @@ public interface ReservationService {
      * @param reservationEditDto the reservation data
      * @return the updated reservation
      */
-    ReservationEditDto update(ReservationEditDto reservationEditDto) throws ValidationException;
+    ReservationEditDto update(ReservationEditDto reservationEditDto);
 
     /**
      * Find all reservations that match the search parameters ordered by startDate (desc).
@@ -72,9 +71,8 @@ public interface ReservationService {
      * Cancel a reservation.
      *
      * @param hashId the Hashed id of the reservation.
-     * @throws ValidationException if the reservation is not found.
      */
-    void cancel(String hashId) throws ValidationException;
+    void cancel(String hashId);
 
 
     /**
@@ -84,5 +82,5 @@ public interface ReservationService {
      * @return the layout of the area
      */
 
-    AreaLayoutDto getAreaLayout(ReservationLayoutCheckAvailabilityDto reservationLayoutCheckAvailabilityDto) throws ValidationException;
+    AreaLayoutDto getAreaLayout(ReservationLayoutCheckAvailabilityDto reservationLayoutCheckAvailabilityDto);
 }
