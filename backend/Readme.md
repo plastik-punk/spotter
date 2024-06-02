@@ -27,15 +27,7 @@ If new dependencies were added in the pom.xml file
 ### Standard Annotations (for DTOs and Entities)
 
 - Both DTOs and Entities should use standard validation annotations
-- some basic annotations are:
-  - @NotNull(message = "startDate is required")
-  - @Size(max = 100000, message = "Notes shouldn't be longer than 100000 characters")
-  - @Email(message = "Email must be valid")
-  - @Pattern(regexp = "^[A-Za-z ]+$", message = "Last name must consist of letters and spaces only")
-  - @Min(min = 1, message = "First name should not be empty")
-  - @Max(max = 255, message = "First name shouldn't be longer than 255 characters")
-  - @FutureOrPresent(message = "Date cannot be in the past")
-  - @Positive(message = "Pax should be at least 1")
+- some basic annotations are: @NotNull, @Size, @Email, @Pattern, @Min, @Max, @Positive...
 
 ### Custom Annotations
 
@@ -56,9 +48,9 @@ NOTE: the @Valid annotation can only be used on endpoint-parameters
 
 ### Validation in service layer (s. ReservationServiceImpl for an example)
 
-1. create a private field that is autowired to jakarta.validation.Validator
-2. create and fill a Set with ConstraintViolation-objects by calling validator.validate(dto)
-3. check if the set is not empty and throw a ValidationException with the violations as message
+1. create a private field of type jakarta.validation.Validator
+2. create and fill a Set with ConstraintViolation-objects by calling validator.validate(dto/entity)
+3. if the set is not empty throw a ConstraintViolationException with the set as parameter
 
 ## Conventions
 
