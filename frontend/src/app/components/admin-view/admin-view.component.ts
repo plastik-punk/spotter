@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {NgForm} from "@angular/forms";
 import {AuthService} from "../../services/auth.service";
-import {AdminViewDto} from "../../dtos/admin-view";
+import {AdminViewDto, ReservationForeCastDto} from "../../dtos/admin-view";
 import {Router} from "@angular/router";
 import {now} from "lodash";
 import {AdminViewService} from "../../services/adminView.service";
@@ -17,6 +17,8 @@ import {
   ApexXAxis,
   ApexYAxis
 } from "ng-apexcharts";
+import {Observable} from "rxjs";
+import {NotificationService} from "../../services/notification.service";
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -39,28 +41,90 @@ export type ChartOptions = {
 export class AdminViewComponent implements OnInit {
   adminViewDto: AdminViewDto = {
     area: undefined,
-    startTime: new Date(now()),
-    date: new Date(now())
+    startTime: undefined,
+    date: undefined
   }
 
+  forecast: ReservationForeCastDto;
+
   public chartOptions: Partial<ChartOptions>;
+  currDate: any = new Date(now()).toISOString().split('T')[0];
+  currTime: any = new Date(now()).toISOString().split('T')[1].substring(0, 5);
 
   constructor(
     public authService: AuthService,
     private service: AdminViewService,
+    private notificationService: NotificationService,
     private router: Router
   ) {
 
   }
 
   ngOnInit() {
+    this.adminViewDto.area = "Inside";
+
+    this.adminViewDto.date = this.currDate;
+    this.adminViewDto.startTime = this.currTime;
     this.chartOptions = {
       series: [
         {
-          name: "Inflation",
-          data: [2.3, 3.1, 4.0, 10.1, 4.0, 3.6, 3.2]
+          name: "# of reserved tables",
+          data: [0, 0, 0, 0, 0, 0, 0]
         }
       ],
+      chart: {
+        height: 350,
+        type: "bar"
+      },
+    };
+
+    let observable: Observable<ReservationForeCastDto>;
+    observable = this.service.getForeCast(this.adminViewDto);
+    observable.subscribe({
+      next: (value) => {
+        this.forecast = value;
+        this.generateChart();
+      },
+      error: (error) => {
+        this.notificationService.handleError(error);
+      }
+    });
+
+
+  }
+
+  onSubmit(form: NgForm) {
+
+  }
+
+  onFieldChange() {
+    console.log(this.adminViewDto)
+    let observable: Observable<ReservationForeCastDto>;
+    observable = this.service.getForeCast(this.adminViewDto);
+    observable.subscribe({
+      next: (value) => {
+        this.forecast = value;
+        this.generateChart();
+      },
+      error: (error) => {
+        this.notificationService.handleError(error);
+      }
+    });
+  }
+
+
+  onClickDetailView() {
+    this.router.navigate(['/admin-view/prediction'])
+  }
+
+  generateChart(){
+    this.chartOptions=null;
+    this.chartOptions = {
+      series: [{
+        name: "# of reserved tables",
+        data: this.forecast.forecast
+      }],
+
       chart: {
         height: 350,
         type: "bar"
@@ -72,6 +136,7 @@ export class AdminViewComponent implements OnInit {
           }
         }
       },
+
       dataLabels: {
         enabled: true,
         formatter: function (val) {
@@ -85,16 +150,9 @@ export class AdminViewComponent implements OnInit {
       },
 
       xaxis: {
-        categories: [
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday",
-          "Sunday"
-        ]
+        categories: this.forecast.days,
       },
+
 
       fill: {
         type: "gradient",
@@ -110,6 +168,7 @@ export class AdminViewComponent implements OnInit {
         }
       },
       yaxis: {
+        max: this.forecast.maxPlace,
         axisBorder: {
           show: false
         },
@@ -119,22 +178,12 @@ export class AdminViewComponent implements OnInit {
         labels: {
           show: false,
           formatter: function (val) {
-            return val + "%";
+            return val + " Tables";
           }
         }
       },
     };
   }
 
-  onSubmit(form: NgForm) {
 
-  }
-
-  onFieldChange() {
-
-  }
-
-  onClickDetailView() {
-    this.router.navigate(['/admin-view/prediction'])
-  }
 }

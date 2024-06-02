@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {AdminViewDto, PredictionDto} from "../dtos/admin-view";
+import {AdminViewDto, PredictionDto, ReservationForeCastDto} from "../dtos/admin-view";
 import {Observable} from "rxjs";
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {Globals} from "../global/globals";
@@ -28,5 +28,13 @@ export class AdminViewService {
       params = params.append(key, adminViewDto[key]);
     });
     return this.httpClient.get<PredictionDto>(this.reservationBaseUri, {params});
+  }
+
+  getForeCast(adminViewDto: AdminViewDto) {
+    let params = new HttpParams().append('adminViewDto', adminViewDto.toString());
+    Object.keys(adminViewDto).forEach((key) => {
+      params = params.append(key, adminViewDto[key]);
+    });
+    return this.httpClient.get<ReservationForeCastDto>(this.reservationBaseUri + '/forecast', {params});
   }
 }

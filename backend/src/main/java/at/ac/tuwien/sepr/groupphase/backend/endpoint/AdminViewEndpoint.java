@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ForeCastDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PredictionDto;
 import at.ac.tuwien.sepr.groupphase.backend.service.AdminViewService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,18 +28,28 @@ public class AdminViewEndpoint {
         this.service = service;
     }
 
-    /*String area;
-    LocalTime startTime;
-    LocalDate date;*/
+
     @ResponseStatus(HttpStatus.OK)
     @Secured("ROLE_ADMIN")
-    @GetMapping
+    @GetMapping({"/prediction"})
     @Operation(summary = "Get the prediction for the next week")
     public PredictionDto getPrediction(@RequestParam("area") String area,
                                        @RequestParam("startTime") LocalTime startTime,
                                        @RequestParam("date") LocalDate date) {
-        LOGGER.info("GET /api/v1/admin-view");
-        LOGGER.debug("GET /api/v1/admin-view body: {} {}, {}", area, startTime, date);
+        LOGGER.info("GET /api/v1/admin-view/prediction");
+        LOGGER.debug("GET /api/v1/admin-view/prediction body: {} {}, {}", area, startTime, date);
         return service.getPrediction(area, startTime, date);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @Secured("ROLE_ADMIN")
+    @GetMapping({"/forecast"})
+    @Operation(summary = "Get the forecast for the next week")
+    public ForeCastDto getForeCast(@RequestParam("area") String area,
+                                   @RequestParam("startTime") LocalTime startTime,
+                                   @RequestParam("date") LocalDate date) {
+        LOGGER.info("GET /api/v1/admin-view/forecast");
+        LOGGER.debug("GET /api/v1/admin-view/forecast body: {} {}, {}", area, startTime, date);
+        return service.getForecast(area, date);
     }
 }

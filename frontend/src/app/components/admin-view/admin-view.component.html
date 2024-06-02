@@ -28,12 +28,12 @@
                 type="time"
                 id="adminViewStartTime"
                 name="adminViewStartTime"
+                [defaultValue]="currTime"
                 placeholder="hh:mm"
                 class="form-control"
                 [(ngModel)]="adminViewDto.startTime"
                 #adminViewStartTimeModel="ngModel"
                 (ngModelChange)="onFieldChange()"
-                required
               />
             </div>
             <div class="column">
@@ -42,6 +42,7 @@
                 id="adminViewDate"
                 name="adminViewDate"
                 pattern="\d{4}-\d{2}-\d{2}"
+                [defaultValue]="currDate"
                 placeholder="dd-mm-yyyy"
                 class="form-control"
                 [(ngModel)]="adminViewDto.date"
@@ -67,8 +68,8 @@
                 <h5 class="column">Weekly Prediction</h5>
                 <button type="button" class="col-4 btn btn-info" (click)="onClickDetailView()">View Details</button>
               </div>
-              <!-- Chart 3 - Bootstrap Brain Component -->
               <div id="chart">
+                <h6> Number of reserved tables</h6>
                 <apx-chart
                   [series]="chartOptions.series"
                   [chart]="chartOptions.chart"

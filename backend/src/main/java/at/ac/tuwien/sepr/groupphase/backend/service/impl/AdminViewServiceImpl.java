@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ForeCastDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PredictionDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
@@ -36,6 +37,7 @@ public class AdminViewServiceImpl implements AdminViewService {
         this.placeRepository = placeRepository;
         this.applicationUserRepository = applicationUserRepository;
     }
+
 
     @Override
     public PredictionDto getPrediction(String area, LocalTime startTimeForPrediction, LocalDate dateForPrediction) {
@@ -116,5 +118,26 @@ public class AdminViewServiceImpl implements AdminViewService {
 
 
         return null;
+    }
+
+    @Override
+    public ForeCastDto getForecast(String area, LocalDate date) {
+        LOGGER.info("Calculating Forecast for given Area and Date: {}, {}", area, date);
+        ForeCastDto foreCastDto = new ForeCastDto();
+
+        foreCastDto.setMaxPlace(placeRepository.findAll().size());
+        String[] days = new String[7];
+        days[0] = "TODAY";
+        days[1] = "TOMORROW";
+        for (int i = 2; i < 7; i++) {
+            days[i] = date.plusDays(i).getDayOfWeek().toString();
+        }
+        foreCastDto.setDays(days);
+        int[] forecast = new int[7];
+        for (int i = 0; i < 7; i++) {
+            forecast[i] = reservationRepository.findAllByDate(date.plusDays(i)).size();
+        }
+        foreCastDto.setForecast(forecast);
+        return foreCastDto;
     }
 }
