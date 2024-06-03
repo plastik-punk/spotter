@@ -26,6 +26,11 @@ export class ReservationLayoutComponent implements OnInit {
 
   @ViewChild('d3Container', { static: true }) d3Container: ElementRef;
 
+  hours = new Date().getHours().toString().padStart(2, '0');
+  minutes = new Date().getMinutes().toString().padStart(2, '0');
+  nowTime = this.hours + ':' + this.minutes;
+  now = formatIsoDate(new Date());
+
   reservationCreateDto: ReservationCreateDto = {
     user: undefined,
     startTime: undefined,
@@ -37,13 +42,9 @@ export class ReservationLayoutComponent implements OnInit {
     notes: undefined,
     email: undefined,
     mobileNumber: undefined,
-    placeIds: [] // Initialize as an empty array
+    placeIds: []
   };
 
-  hours = new Date().getHours().toString().padStart(2, '0');
-  minutes = new Date().getMinutes().toString().padStart(2, '0');
-  nowTime = this.hours + ':' + this.minutes;
-  now = formatIsoDate(new Date());
 
   reservationLayoutCheckAvailabilityDto: ReservationLayoutCheckAvailabilityDto = {
     startTime: this.nowTime,
@@ -102,7 +103,6 @@ export class ReservationLayoutComponent implements OnInit {
   }
 
   private fetchLayoutAvailability() {
-    console.log('ngDoCheck called');
 
     this.service.getLayoutAvailability(this.reservationLayoutCheckAvailabilityDto).subscribe({
       next: (data: AreaLayoutDto) => {
@@ -292,6 +292,7 @@ export class ReservationLayoutComponent implements OnInit {
     // Prefill the pax field with the total number of seats
     this.reservationCreateDto.pax = totalSeats;
 
+
     // Update the place colors and total seats display
     this.updatePlaceColors();
     this.updateTotalSeats();
@@ -311,7 +312,6 @@ export class ReservationLayoutComponent implements OnInit {
 
   private updateTotalSeats() {
     const totalSeats = this.selectedPlaces.reduce((sum, place) => sum + place.numberOfSeats, 0);
-    console.log(`Total available seats: ${totalSeats}`);
 
     // Update the pax field in the form
     this.reservationCreateDto.pax = totalSeats;
@@ -322,7 +322,7 @@ export class ReservationLayoutComponent implements OnInit {
     tooltip.style('display', 'block')
       .style('left', `${event.pageX + 10}px`)
       .style('top', `${event.pageY + 10}px`)
-      .html(`ID: ${place.placeId}<br>Seats: ${place.numberOfSeats}<br>Status: ${!place.reservation ? 'Free' : 'Booked'}`);
+      .html(`Table: ${place.placeId}<br>Seats: ${place.numberOfSeats}<br>Status: ${!place.reservation ? 'Free' : 'Booked'}`);
   }
 
   private hideTooltip() {
@@ -361,7 +361,7 @@ export class ReservationLayoutComponent implements OnInit {
     if (this.reservationCreateDto.date) {
       this.reservationLayoutCheckAvailabilityDto.date = this.reservationCreateDto.date.toString();
     }
-    this.reservationLayoutCheckAvailabilityDto.areaId = 1; // Hardcoded areaId for now
+    this.reservationLayoutCheckAvailabilityDto.areaId = 1; // Hardcoded areaId for now //TODO make adjustable
     this.fetchLayoutAvailability();
 
     // Check pax against available seats
@@ -376,19 +376,6 @@ export class ReservationLayoutComponent implements OnInit {
   isPaxValid(): boolean {
     const totalSeats = this.selectedPlaces.reduce((sum, place) => sum + place.numberOfSeats, 0);
     return this.reservationCreateDto.pax <= totalSeats;
-  }
-
-  private formatDate(date: Date): string {
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
-
-  private formatTime(time: Date): string {
-    const hours = time.getHours().toString().padStart(2, '0');
-    const minutes = time.getMinutes().toString().padStart(2, '0');
-    return `${hours}:${minutes}`;
   }
 
   onSubmit(form: NgForm) {
