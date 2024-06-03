@@ -118,17 +118,35 @@ public class ReservationServiceImpl implements ReservationService {
             reservationCreateDto.setEndTime(reservationCreateDto.getStartTime().plusHours(2));
         }
 
-        // 2. check if a table is still available (via getAvailability) since last check and set endTime to closingHour if necessary
-        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto =
-            ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
-                .withDate(reservationCreateDto.getDate())
-                .withStartTime(reservationCreateDto.getStartTime())
-                .withEndTime(reservationCreateDto.getEndTime())
-                .withPax(reservationCreateDto.getPax())
-                .build();
-        ReservationResponseEnum tableStatus = getAvailability(reservationCheckAvailabilityDto);
-        if (tableStatus != ReservationResponseEnum.AVAILABLE) {
-            return null; // frontend should check for null and show notification accordingly
+        // 2. Check if all specified tables are available
+        if (reservationCreateDto.getPlaceIds() != null && !reservationCreateDto.getPlaceIds().isEmpty()) {
+            for (Long placeId : reservationCreateDto.getPlaceIds()) {
+                ReservationCheckAvailabilityDto reservationCheckAvailabilityDto =
+                    ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+                        .withDate(reservationCreateDto.getDate())
+                        .withStartTime(reservationCreateDto.getStartTime())
+                        .withEndTime(reservationCreateDto.getEndTime())
+                        .withPax(reservationCreateDto.getPax())
+                        .withIdToExclude(null) // Assuming we're not excluding any reservations
+                        .build();
+                if (!isPlaceAvailable(placeId, reservationCheckAvailabilityDto)) {
+                    return null; // frontend should check for null and show notification accordingly
+                }
+            }
+        } else {
+            // If no place IDs are provided, perform the default availability check
+            ReservationCheckAvailabilityDto reservationCheckAvailabilityDto =
+                ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+                    .withDate(reservationCreateDto.getDate())
+                    .withStartTime(reservationCreateDto.getStartTime())
+                    .withEndTime(reservationCreateDto.getEndTime())
+                    .withPax(reservationCreateDto.getPax())
+                    .withIdToExclude(null) // Assuming we're not excluding any reservations
+                    .build();
+            ReservationResponseEnum tableStatus = getAvailability(reservationCheckAvailabilityDto);
+            if (tableStatus != ReservationResponseEnum.AVAILABLE) {
+                return null; // frontend should check for null and show notification accordingly
+            }
         }
 
         // 3. Create guest if this is a guest-reservation, otherwise set known customer data
@@ -153,29 +171,33 @@ public class ReservationServiceImpl implements ReservationService {
             reservationCreateDto.setUser(currentUser);
         }
 
-        // 4. map to Reservation entity
+        // 4. Map to Reservation entity
         Reservation reservation = mapper.reservationCreateDtoToReservation(reservationCreateDto);
         reservation.setNotes(reservation.getNotes() != null ? reservation.getNotes().trim() : reservation.getNotes());
 
-        // 5. Choose the place for reservation
-        Place selectedPlace = null;
-        if (reservationCreateDto.getPlaceId() != null) {
-            Optional<Place> optionalPlace = placeRepository.findById(reservationCreateDto.getPlaceId());
-            if (optionalPlace.isPresent()) {
-                selectedPlace = optionalPlace.get();
+        // 5. Choose the places for reservation
+        List<Place> selectedPlaces = new ArrayList<>();
+        if (reservationCreateDto.getPlaceIds() != null && !reservationCreateDto.getPlaceIds().isEmpty()) {
+            for (Long placeId : reservationCreateDto.getPlaceIds()) {
+                Optional<Place> optionalPlace = placeRepository.findById(placeId);
+                if (optionalPlace.isPresent()) {
+                    selectedPlaces.add(optionalPlace.get());
+                }
             }
-        }
-        if (selectedPlace == null) {
+            // If any specified place is not found, return null
+            if (selectedPlaces.size() != reservationCreateDto.getPlaceIds().size()) {
+                return null;
+            }
+        } else {
             List<Place> places = placeRepository.findAll();
             List<Long> reservationIds =
-                reservationRepository.findReservationsAtSpecifiedTime(reservationCheckAvailabilityDto.getDate(), reservationCheckAvailabilityDto.getStartTime(),
-                    reservationCheckAvailabilityDto.getEndTime());
+                reservationRepository.findReservationsAtSpecifiedTime(reservationCreateDto.getDate(), reservationCreateDto.getStartTime(), reservationCreateDto.getEndTime());
             List<Long> placeIds = reservationPlaceRepository.findPlaceIdsByReservationIds(reservationIds);
             places.removeAll(placeRepository.findAllById(placeIds));
             if (places.isEmpty()) {
                 return null; // No available places
             }
-            selectedPlace = places.get(0);
+            selectedPlaces.add(places.get(0));
         }
 
         // TODO: add Restaurant name to DTO
@@ -185,7 +207,7 @@ public class ReservationServiceImpl implements ReservationService {
             + reservation.getPax().toString());
         reservation.setHashValue(hashedValue);
 
-        // 6. save Reservation in database and return it mapped to a DTO
+        // 6. Save Reservation in database and return it mapped to a DTO
         Reservation savedReservation = reservationRepository.save(reservation);
         // Validate the Reservation object via javax.validation using the annotations in the entity class
         Set<ConstraintViolation<Reservation>> reservationViolations = validator.validate(savedReservation);
@@ -193,20 +215,38 @@ public class ReservationServiceImpl implements ReservationService {
             throw new ConstraintViolationException(reservationViolations);
         }
 
-        // 7. send conformation Mail
+        // 7. Send confirmation Mail
         Map<String, Object> templateModel = constructMailTemplateModel(savedReservation, reservationCreateDto.getUser());
         emailService.sendMessageUsingThymeleafTemplate(reservationCreateDto.getUser().getEmail(),
             "Reservation Confirmation", templateModel);
 
-        // 8. save ReservationPlace in database
-        ReservationPlace reservationPlace = ReservationPlace.ReservationPlaceBuilder.aReservationPlace()
-            .withReservation(savedReservation)
-            .withPlace(selectedPlace)
-            .build();
-        reservationPlaceRepository.save(reservationPlace);
+        // 8. Save ReservationPlace for all selected places in the database
+        for (Place place : selectedPlaces) {
+            ReservationPlace reservationPlace = ReservationPlace.ReservationPlaceBuilder.aReservationPlace()
+                .withReservation(savedReservation)
+                .withPlace(place)
+                .build();
+            reservationPlaceRepository.save(reservationPlace);
+        }
 
         return mapper.reservationToReservationCreateDto(savedReservation);
     }
+
+    private boolean isPlaceAvailable(Long placeId, ReservationCheckAvailabilityDto dto) {
+        // Implement the logic to check if the place is available using the provided DTO
+        // This might involve querying the database or calling another service
+        // For example:
+        ReservationResponseEnum placeStatus = getPlaceAvailability(placeId, dto);
+        return placeStatus == ReservationResponseEnum.AVAILABLE;
+    }
+
+    private ReservationResponseEnum getPlaceAvailability(Long placeId, ReservationCheckAvailabilityDto dto) {
+        // Implement the actual logic to check place availability
+        // This is a placeholder and should be replaced with your actual implementation
+        return ReservationResponseEnum.AVAILABLE;
+    }
+
+
 
 
     @Override

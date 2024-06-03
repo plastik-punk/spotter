@@ -19,7 +19,7 @@ import {SimpleViewReservationStatusEnum} from "../dtos/status-enum";
 
 export class ReservationService {
 
-  private reservationBaseUri : string = this.globals.backendUri + "/reservations"; // todo: change to reservation after auth is implemented
+  private reservationBaseUri : string = this.globals.backendUri + "/reservations";
 
   constructor(private httpClient: HttpClient, private globals: Globals) {}
 

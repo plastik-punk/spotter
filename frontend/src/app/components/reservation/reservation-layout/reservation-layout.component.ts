@@ -17,7 +17,6 @@ import * as d3 from 'd3';
 import { formatIsoDate } from "../../../util/date-helper";
 import { Observable } from "rxjs";
 
-
 @Component({
   selector: 'app-component-reservation-layout',
   templateUrl: './reservation-layout.component.html',
@@ -38,7 +37,7 @@ export class ReservationLayoutComponent implements OnInit {
     notes: undefined,
     email: undefined,
     mobileNumber: undefined,
-    placeId: undefined
+    placeIds: [] // Initialize as an empty array
   };
 
   hours = new Date().getHours().toString().padStart(2, '0');
@@ -55,8 +54,7 @@ export class ReservationLayoutComponent implements OnInit {
 
   currentUser: UserOverviewDto;
   areaLayout: AreaLayoutDto;
-  selectedPlaceId: number | null = null; // Track the selected place
-  selectedPlaceSeats: number | null = null; // Track the number of seats in the selected place
+  selectedPlaces: { placeId: number, numberOfSeats: number }[] = []; // Track the selected places
 
   layoutWidth: number = 1600; // Default width
   layoutHeight: number = 900; // Default height
@@ -113,11 +111,27 @@ export class ReservationLayoutComponent implements OnInit {
         this.layoutHeight = this.areaLayout.height;
         this.updateSeatingPlan();
         this.adjustSvgSize(); // Adjust size after updating layout dimensions
+        this.checkSelectedPlacesAvailability();
       },
       error: (error) => {
         this.notificationService.showError('Failed to fetch layout availability. Please try again later.');
       },
     });
+  }
+
+  private checkSelectedPlacesAvailability() {
+    const unavailablePlaces = this.selectedPlaces.filter(selectedPlace => {
+      const place = this.areaLayout.placeVisuals.find(p => p.placeId === selectedPlace.placeId);
+      return !place || place.reservation || !place.status;
+    });
+
+    if (unavailablePlaces.length > 0) {
+      unavailablePlaces.forEach(unavailablePlace => {
+        this.selectedPlaces = this.selectedPlaces.filter(p => p.placeId !== unavailablePlace.placeId);
+        this.notificationService.showError(`Table ${unavailablePlace.placeId} is no longer available.`);
+      });
+      this.updatePlaceColors();
+    }
   }
 
   private updateSeatingPlan() {
@@ -252,7 +266,7 @@ export class ReservationLayoutComponent implements OnInit {
   }
 
   private getPlaceColor(place: PlaceVisualDto): string {
-    if (place.placeId === this.selectedPlaceId) {
+    if (this.selectedPlaces.some(p => p.placeId === place.placeId)) {
       return '#377eb8'; // Selected color
     }
     if (!place.status) {
@@ -262,19 +276,45 @@ export class ReservationLayoutComponent implements OnInit {
   }
 
   private onPlaceClick(placeId: number, numberOfSeats: number) {
-    if (this.selectedPlaceId === placeId) {
-      return; // If the same place is clicked, do nothing
+    const index = this.selectedPlaces.findIndex(p => p.placeId === placeId);
+    if (index !== -1) {
+      this.selectedPlaces.splice(index, 1); // Unselect the place
+    } else {
+      this.selectedPlaces.push({ placeId, numberOfSeats }); // Select the place
     }
-    this.selectedPlaceId = placeId;
-    this.selectedPlaceSeats = numberOfSeats;
-    this.reservationCreateDto.placeId = placeId; // Update reservationCreateDto with the selected place ID
+
+    // Update the DTO with selected place IDs
+    this.reservationCreateDto.placeIds = this.selectedPlaces.map(p => p.placeId);
+
+    // Calculate the total number of seats for selected places
+    const totalSeats = this.selectedPlaces.reduce((sum, place) => sum + place.numberOfSeats, 0);
+
+    // Prefill the pax field with the total number of seats
+    this.reservationCreateDto.pax = totalSeats;
+
+    // Update the place colors and total seats display
     this.updatePlaceColors();
+    this.updateTotalSeats();
+
+    // Reflect the change in the UI (if necessary)
+    const paxInput = document.getElementById('paxInput') as HTMLInputElement;
+    if (paxInput) {
+      paxInput.value = totalSeats.toString();
+    }
   }
 
   private updatePlaceColors() {
     const element = this.d3Container.nativeElement;
     d3.select(element).selectAll('path')
       .attr('fill', (d: PlaceVisualDto) => this.getPlaceColor(d));
+  }
+
+  private updateTotalSeats() {
+    const totalSeats = this.selectedPlaces.reduce((sum, place) => sum + place.numberOfSeats, 0);
+    console.log(`Total available seats: ${totalSeats}`);
+
+    // Update the pax field in the form
+    this.reservationCreateDto.pax = totalSeats;
   }
 
   private showTooltip(event: MouseEvent, place: PlaceVisualDto) {
@@ -325,15 +365,17 @@ export class ReservationLayoutComponent implements OnInit {
     this.fetchLayoutAvailability();
 
     // Check pax against available seats
-    if (this.selectedPlaceSeats !== null && this.reservationCreateDto.pax > this.selectedPlaceSeats) {
-      this.notificationService.showError(`The selected place only has ${this.selectedPlaceSeats} seats.`);
-      this.reservationCreateDto.pax = this.selectedPlaceSeats; // Adjust pax to available seats
+    const totalSeats = this.selectedPlaces.reduce((sum, place) => sum + place.numberOfSeats, 0);
+    if (this.reservationCreateDto.pax > totalSeats) {
+      this.notificationService.showError(`The selected places only have ${totalSeats} seats.`);
+      this.reservationCreateDto.pax = totalSeats; // Adjust pax to available seats
       this.isPaxValid();
     }
   }
 
   isPaxValid(): boolean {
-    return this.selectedPlaceSeats === null || (this.reservationCreateDto.pax <= this.selectedPlaceSeats);
+    const totalSeats = this.selectedPlaces.reduce((sum, place) => sum + place.numberOfSeats, 0);
+    return this.reservationCreateDto.pax <= totalSeats;
   }
 
   private formatDate(date: Date): string {
@@ -359,8 +401,9 @@ export class ReservationLayoutComponent implements OnInit {
     }
 
     // Check pax against available seats
-    if (this.selectedPlaceSeats !== null && this.reservationCreateDto.pax > this.selectedPlaceSeats) {
-      this.notificationService.showError(`The selected place only has ${this.selectedPlaceSeats} seats.`);
+    const totalSeats = this.selectedPlaces.reduce((sum, place) => sum + place.numberOfSeats, 0);
+    if (this.reservationCreateDto.pax > totalSeats) {
+      this.notificationService.showError(`The selected places only have ${totalSeats} seats.`);
       return; // Prevent form submission
     }
 
@@ -384,6 +427,7 @@ export class ReservationLayoutComponent implements OnInit {
       this.showFormErrors();
     }
   }
+
   private resetForm(form: NgForm) {
     form.resetForm();
     this.reservationCreateDto = {
@@ -397,12 +441,12 @@ export class ReservationLayoutComponent implements OnInit {
       notes: undefined,
       email: undefined,
       mobileNumber: undefined,
-      placeId: undefined
+      placeIds: [] // Reset to an empty array
     };
-    this.selectedPlaceId = null;
-    this.selectedPlaceSeats = null;
+    this.selectedPlaces = [];
     this.updatePlaceColors();
   }
+
   private showFormErrors(): void {
     if (!this.reservationCreateDto.startTime) {
       this.notificationService.showError('Start time is required.');

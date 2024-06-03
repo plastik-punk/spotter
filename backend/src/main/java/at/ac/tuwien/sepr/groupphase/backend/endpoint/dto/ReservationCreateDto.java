@@ -10,6 +10,7 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Objects;
 
 public class ReservationCreateDto {
@@ -51,7 +52,7 @@ public class ReservationCreateDto {
     @Pattern(regexp = "^[0-9]{1,15}$", message = "Invalid mobile number. It must consist of max. 15 digits.")
     private String mobileNumber;
 
-    private Long placeId; // Change type to Long
+    private List<Long> placeIds; // Change type to List<Long>
 
     public ApplicationUser getUser() {
         return applicationUser;
@@ -133,12 +134,12 @@ public class ReservationCreateDto {
         this.mobileNumber = mobileNumber;
     }
 
-    public Long getPlaceId() {
-        return placeId;
+    public List<Long> getPlaceIds() {
+        return placeIds;
     }
 
-    public void setPlaceId(Long placeId) {
-        this.placeId = placeId;
+    public void setPlaceIds(List<Long> placeIds) {
+        this.placeIds = placeIds;
     }
 
     @Override
@@ -159,12 +160,12 @@ public class ReservationCreateDto {
             && Objects.equals(notes, that.notes)
             && Objects.equals(email, that.email)
             && Objects.equals(mobileNumber, that.mobileNumber)
-            && Objects.equals(placeId, that.placeId);
+            && Objects.equals(placeIds, that.placeIds);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(applicationUser, firstName, lastName, startTime, endTime, date, pax, notes, email, mobileNumber, placeId);
+        return Objects.hash(applicationUser, firstName, lastName, startTime, endTime, date, pax, notes, email, mobileNumber, placeIds);
     }
 
     @Override
@@ -180,7 +181,7 @@ public class ReservationCreateDto {
             + ", notes='" + notes + '\''
             + ", email='" + email + '\''
             + ", mobileNumber=" + mobileNumber
-            + ", placeId=" + placeId
+            + ", placeIds=" + placeIds
             + '}';
     }
 
@@ -196,7 +197,7 @@ public class ReservationCreateDto {
             .withNotes(this.notes)
             .withEmail(this.email)
             .withMobileNumber(this.mobileNumber)
-            .withPlaceId(this.placeId)
+            .withPlaceIds(this.placeIds) // Update builder with list of place IDs
             .build();
     }
 
@@ -211,7 +212,7 @@ public class ReservationCreateDto {
         private String notes;
         private String email;
         private String mobileNumber;
-        private Long placeId;
+        private List<Long> placeIds; // Change type to List<Long>
 
         private ReservationCreateDtoBuilder() {
         }
@@ -270,8 +271,8 @@ public class ReservationCreateDto {
             return this;
         }
 
-        public ReservationCreateDtoBuilder withPlaceId(Long placeId) {
-            this.placeId = placeId;
+        public ReservationCreateDtoBuilder withPlaceIds(List<Long> placeIds) {
+            this.placeIds = placeIds;
             return this;
         }
 
@@ -287,7 +288,7 @@ public class ReservationCreateDto {
             reservationCreateDto.setNotes(notes);
             reservationCreateDto.setEmail(email);
             reservationCreateDto.setMobileNumber(mobileNumber);
-            reservationCreateDto.setPlaceId(placeId);
+            reservationCreateDto.setPlaceIds(placeIds);
             return reservationCreateDto;
         }
     }

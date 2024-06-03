@@ -21,8 +21,9 @@ export interface ReservationCreateDto {
   notes: string;
   email: string;
   mobileNumber: number;
-  placeId?: number;
+  placeIds?: number[];
 }
+
 export interface ReservationListDto {
   id: number,
   userFirstName: string,
