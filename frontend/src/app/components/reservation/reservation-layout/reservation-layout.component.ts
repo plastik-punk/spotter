@@ -24,12 +24,7 @@ import { Observable } from "rxjs";
 })
 export class ReservationLayoutComponent implements OnInit {
 
-  @ViewChild('d3Container', { static: true }) d3Container: ElementRef;
-
-  hours = new Date().getHours().toString().padStart(2, '0');
-  minutes = new Date().getMinutes().toString().padStart(2, '0');
-  nowTime = this.hours + ':' + this.minutes;
-  now = formatIsoDate(new Date());
+  @ViewChild('d3Container', {static: true}) d3Container: ElementRef;
 
   reservationCreateDto: ReservationCreateDto = {
     user: undefined,
@@ -42,9 +37,13 @@ export class ReservationLayoutComponent implements OnInit {
     notes: undefined,
     email: undefined,
     mobileNumber: undefined,
-    placeIds: []
+    placeIds: [] // Initialize as an empty array
   };
 
+  hours = new Date().getHours().toString().padStart(2, '0');
+  minutes = new Date().getMinutes().toString().padStart(2, '0');
+  nowTime = this.hours + ':' + this.minutes;
+  now = formatIsoDate(new Date());
 
   reservationLayoutCheckAvailabilityDto: ReservationLayoutCheckAvailabilityDto = {
     startTime: this.nowTime,
@@ -60,11 +59,14 @@ export class ReservationLayoutComponent implements OnInit {
   layoutWidth: number = 1600; // Default width
   layoutHeight: number = 900; // Default height
 
+  isPaxValid: boolean = true;
+
   constructor(
     public authService: AuthService,
     private service: ReservationService,
     private notificationService: NotificationService,
-  ) { }
+  ) {
+  }
 
   ngOnInit() {
     this.fetchLayoutAvailability();
@@ -103,6 +105,7 @@ export class ReservationLayoutComponent implements OnInit {
   }
 
   private fetchLayoutAvailability() {
+    console.log('ngDoCheck called');
 
     this.service.getLayoutAvailability(this.reservationLayoutCheckAvailabilityDto).subscribe({
       next: (data: AreaLayoutDto) => {
@@ -243,9 +246,9 @@ export class ReservationLayoutComponent implements OnInit {
     for (let i = 0; i < points.length; i++) {
       let previous = i - 1 >= 0 ? i - 1 : points.length - 1;
       let next = i + 1 < points.length ? i + 1 : 0;
-      let c = { x: points[i][0], y: points[i][1] };
-      let l1 = { x: points[previous][0], y: points[previous][1] };
-      let l2 = { x: points[next][0], y: points[next][1] };
+      let c = {x: points[i][0], y: points[i][1]};
+      let l1 = {x: points[previous][0], y: points[previous][1]};
+      let l2 = {x: points[next][0], y: points[next][1]};
       let a1 = this.getAngle(c, l1);
       let a2 = this.getAngle(c, l2);
 
@@ -292,16 +295,16 @@ export class ReservationLayoutComponent implements OnInit {
     // Prefill the pax field with the total number of seats
     this.reservationCreateDto.pax = totalSeats;
 
-
     // Update the place colors and total seats display
     this.updatePlaceColors();
     this.updateTotalSeats();
 
     // Reflect the change in the UI (if necessary)
-    const paxInput = document.getElementById('paxInput') as HTMLInputElement;
+    const paxInput = document.getElementById('reservationPax') as HTMLInputElement;
     if (paxInput) {
       paxInput.value = totalSeats.toString();
     }
+
   }
 
   private updatePlaceColors() {
@@ -312,6 +315,7 @@ export class ReservationLayoutComponent implements OnInit {
 
   private updateTotalSeats() {
     const totalSeats = this.selectedPlaces.reduce((sum, place) => sum + place.numberOfSeats, 0);
+    console.log(`Total available seats: ${totalSeats}`);
 
     // Update the pax field in the form
     this.reservationCreateDto.pax = totalSeats;
@@ -322,7 +326,7 @@ export class ReservationLayoutComponent implements OnInit {
     tooltip.style('display', 'block')
       .style('left', `${event.pageX + 10}px`)
       .style('top', `${event.pageY + 10}px`)
-      .html(`Table: ${place.placeId}<br>Seats: ${place.numberOfSeats}<br>Status: ${!place.reservation ? 'Free' : 'Booked'}`);
+      .html(`ID: ${place.placeId}<br>Seats: ${place.numberOfSeats}<br>Status: ${!place.reservation ? 'Free' : 'Booked'}`);
   }
 
   private hideTooltip() {
@@ -337,7 +341,7 @@ export class ReservationLayoutComponent implements OnInit {
 
       const covered = coordinates.some(c => c.x === coord.x && c.y === coord.y + 1);
       if (covered) {
-        return { x, y: y + gridSize / 2 };
+        return {x, y: y + gridSize / 2};
       }
     }
 
@@ -350,7 +354,7 @@ export class ReservationLayoutComponent implements OnInit {
     x /= coordinates.length;
     y /= coordinates.length;
 
-    return { x, y };
+    return {x, y};
   }
 
   onFieldChange() {
@@ -361,21 +365,35 @@ export class ReservationLayoutComponent implements OnInit {
     if (this.reservationCreateDto.date) {
       this.reservationLayoutCheckAvailabilityDto.date = this.reservationCreateDto.date.toString();
     }
-    this.reservationLayoutCheckAvailabilityDto.areaId = 1; // Hardcoded areaId for now //TODO make adjustable
+    this.reservationLayoutCheckAvailabilityDto.areaId = 1; // Hardcoded areaId for now
     this.fetchLayoutAvailability();
 
     // Check pax against available seats
     const totalSeats = this.selectedPlaces.reduce((sum, place) => sum + place.numberOfSeats, 0);
+
     if (this.reservationCreateDto.pax > totalSeats) {
       this.notificationService.showError(`The selected places only have ${totalSeats} seats.`);
-      this.reservationCreateDto.pax = totalSeats; // Adjust pax to available seats
-      this.isPaxValid();
+      this.reservationCreateDto.pax = totalSeats;
+      this.isPaxValid =false;
+    } else if (this.reservationCreateDto.pax < this.selectedPlaces.length){
+      this.notificationService.showError(`Not enough People for ${this.selectedPlaces.length} tables.`);
+      this.isPaxValid =false;
+    } else {
+      this.isPaxValid =true;
     }
   }
 
-  isPaxValid(): boolean {
-    const totalSeats = this.selectedPlaces.reduce((sum, place) => sum + place.numberOfSeats, 0);
-    return this.reservationCreateDto.pax <= totalSeats;
+  private formatDate(date: Date): string {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  private formatTime(time: Date): string {
+    const hours = time.getHours().toString().padStart(2, '0');
+    const minutes = time.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
   }
 
   onSubmit(form: NgForm) {

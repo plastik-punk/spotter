@@ -57,7 +57,7 @@
           <hr class="my-4">
         </div>
 
-        <!-- D§ JS CANVAS HERE -->
+        <!-- D3 JS CANVAS HERE -->
         <div class="row justify-content-center">
           <div #d3Container style=" width: 70%; height: auto;"></div>
         </div>
@@ -150,7 +150,7 @@
         <div class="row">
           <div class="column">
             <div class="btn-group">
-              <button type="submit" class="btn btn-danger btn-sm" [disabled]="!form.valid || !isPaxValid()">
+              <button type="submit" id="submit-button" class="btn btn-danger btn-sm" [disabled]="!form.valid || !isPaxValid">
                 Book
               </button>
             </div>
