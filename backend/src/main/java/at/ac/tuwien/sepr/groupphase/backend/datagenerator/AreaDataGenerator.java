@@ -43,6 +43,7 @@ public class AreaDataGenerator {
             .withName("Single Area")
             .withWidth(16)
             .withHeight(9)
+            .withOpen(true)
             .build();
 
         LOGGER.debug("Saving area {}", area);

@@ -583,7 +583,12 @@ public class ReservationServiceImpl implements ReservationService {
         List<AreaLayoutDto.PlaceVisualDto> placeVisuals = places.stream().map(place -> {
             AreaLayoutDto.PlaceVisualDto placeVisual = new AreaLayoutDto.PlaceVisualDto();
             placeVisual.setPlaceId(place.getId());
-            placeVisual.setStatus(place.getStatus() == StatusEnum.AVAILABLE);
+            if (area.isOpen()) {
+                placeVisual.setStatus(place.getStatus() == StatusEnum.AVAILABLE);
+            } else {
+                placeVisual.setStatus(false);
+            }
+
             placeVisual.setReservation(reservedPlaceIds.contains(place.getId()));
             placeVisual.setNumberOfSeats(place.getPax());
 
@@ -606,7 +611,7 @@ public class ReservationServiceImpl implements ReservationService {
         areaLayoutDto.setWidth(area.getWidth());
         areaLayoutDto.setHeight(area.getHeight());
         areaLayoutDto.setPlaceVisuals(placeVisuals);
-        LOGGER.debug("Built areaLayout: {}", areaLayoutDto.toString());
+        LOGGER.debug("Built areaLayout: {}", areaLayoutDto);
 
         return areaLayoutDto;
     }

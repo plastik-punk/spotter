@@ -20,7 +20,7 @@ public class Area {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = true)
+    @Column(nullable = false)
     private Boolean isOpen;
 
     @Column(nullable = true)
@@ -61,7 +61,7 @@ public class Area {
     }
 
     public void setOpen(boolean open) {
-        isOpen = open;
+        this.isOpen = open;
     }
 
     public LocalTime getOpeningTime() {

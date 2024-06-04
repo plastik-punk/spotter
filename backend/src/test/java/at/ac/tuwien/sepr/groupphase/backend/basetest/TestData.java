@@ -388,6 +388,7 @@ public interface TestData {
         .withName("Area 1")
         .withWidth(16)
         .withHeight(9)
+        .withOpen(true)
         .build();
 
 

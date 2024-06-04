@@ -322,12 +322,21 @@ export class ReservationLayoutComponent implements OnInit {
   }
 
   private showTooltip(event: MouseEvent, place: PlaceVisualDto) {
-    const tooltip = d3.select('#tooltip');
-    tooltip.style('display', 'block')
-      .style('left', `${event.pageX + 10}px`)
-      .style('top', `${event.pageY + 10}px`)
-      .html(`ID: ${place.placeId}<br>Seats: ${place.numberOfSeats}<br>Status: ${!place.reservation ? 'Free' : 'Booked'}`);
-  }
+    if(!place.status){
+      const tooltip = d3.select('#tooltip');
+      tooltip.style('display', 'block')
+        .style('left', `${event.pageX + 10}px`)
+        .style('top', `${event.pageY + 10}px`)
+        .html(`ID: ${place.placeId}<br>Seats: ${place.numberOfSeats}<br>Status: Unavailable`);
+
+    }else {
+      const tooltip = d3.select('#tooltip');
+      tooltip.style('display', 'block')
+        .style('left', `${event.pageX + 10}px`)
+        .style('top', `${event.pageY + 10}px`)
+        .html(`ID: ${place.placeId}<br>Seats: ${place.numberOfSeats}<br>Status: ${!place.reservation ? 'Free' : 'Booked'}`);
+    }
+   }
 
   private hideTooltip() {
     d3.select('#tooltip').style('display', 'none');
