@@ -31,7 +31,7 @@
                 name="reservationStartTime"
                 placeholder="hh:mm"
                 class="form-control"
-                [(ngModel)]="reservationCreateDto.startTime"
+                [(ngModel)]="sharedStartTime"
                 #reservationStartTimeModel="ngModel"
                 (ngModelChange)="onFieldChange()"
                 required
@@ -45,7 +45,7 @@
                 pattern="\d{4}-\d{2}-\d{2}"
                 placeholder="dd-mm-yyyy"
                 class="form-control"
-                [(ngModel)]="reservationCreateDto.date"
+                [(ngModel)]="sharedDate"
                 #reservationDateModel="ngModel"
                 (ngModelChange)="onFieldChange()"
                 required

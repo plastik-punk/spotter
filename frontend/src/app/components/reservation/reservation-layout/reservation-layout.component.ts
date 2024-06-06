@@ -1,11 +1,9 @@
-import { Component, OnInit, ElementRef, ViewChild, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, ElementRef, ViewChild, HostListener } from '@angular/core';
 import { NgForm } from "@angular/forms";
 import {
   ReservationLayoutCheckAvailabilityDto,
   ReservationCreateDto,
   AreaLayoutDto,
-  PlaceVisualDto,
-  CoordinateDto,
   AreaListDto,
   AreaDto
 } from "../../../dtos/reservation";
@@ -15,19 +13,18 @@ import { ReservationService } from "../../../services/reservation.service";
 import { NotificationService } from "../../../services/notification.service";
 import { D3DrawService } from "../../../services/d3-draw.service";
 import { formatIsoDate } from "../../../util/date-helper";
-import { Observable } from "rxjs";
 
 @Component({
   selector: 'app-component-reservation-layout',
   templateUrl: './reservation-layout.component.html',
   styleUrls: ['./reservation-layout.component.scss']
 })
-export class ReservationLayoutComponent implements OnInit {
+export class ReservationLayoutComponent implements OnInit, OnDestroy {
 
   @ViewChild('d3Container', { static: true }) d3Container: ElementRef;
 
-  reservationCreateDto: ReservationCreateDto = this.initializeReservationCreateDto();
-  reservationLayoutCheckAvailabilityDto: ReservationLayoutCheckAvailabilityDto = this.initializeReservationLayoutCheckAvailabilityDto();
+  reservationCreateDto: ReservationCreateDto;
+  reservationLayoutCheckAvailabilityDto: ReservationLayoutCheckAvailabilityDto;
 
   currentUser: UserOverviewDto;
   areaLayout: AreaLayoutDto;
@@ -36,27 +33,50 @@ export class ReservationLayoutComponent implements OnInit {
   selectedAreaId: number = 1;
 
   isPaxValid: boolean = true;
+  timer: any;
+
+  sharedStartTime: string;
+  sharedDate: string;
 
   constructor(
     public authService: AuthService,
     private service: ReservationService,
     private notificationService: NotificationService,
     private d3DrawService: D3DrawService
-  ) { }
+  ) {
+    this.initializeSharedProperties();
+    this.reservationCreateDto = this.initializeReservationCreateDto();
+    this.reservationLayoutCheckAvailabilityDto = this.initializeReservationLayoutCheckAvailabilityDto();
+  }
 
   ngOnInit() {
     this.fetchAllAreas();
     this.fetchLayoutAvailability();
     this.d3DrawService.createSeatingPlan(this.d3Container);
     this.onResize();
+    this.startTimer();
+  }
+
+  ngOnDestroy() {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
+  }
+
+  private initializeSharedProperties() {
+    const now = new Date();
+    this.sharedStartTime = now.toTimeString().slice(0, 5);
+    this.sharedDate = formatIsoDate(now);
   }
 
   private initializeReservationCreateDto(): ReservationCreateDto {
     return {
       user: undefined,
-      startTime: undefined,
+      // @ts-ignore
+      startTime: this.sharedStartTime,
       endTime: undefined,
-      date: undefined,
+      // @ts-ignore
+      date: this.sharedDate,
       pax: undefined,
       firstName: undefined,
       lastName: undefined,
@@ -68,14 +88,19 @@ export class ReservationLayoutComponent implements OnInit {
   }
 
   private initializeReservationLayoutCheckAvailabilityDto(): ReservationLayoutCheckAvailabilityDto {
-    const now = formatIsoDate(new Date());
-    const nowTime = new Date().toTimeString().slice(0, 5);
     return {
-      startTime: nowTime,
-      date: now,
+      startTime: this.sharedStartTime,
+      date: this.sharedDate,
       areaId: 1,
       idToExclude: -1
     };
+  }
+
+  private startTimer() {
+    this.timer = setInterval(() => {
+      this.sharedStartTime = new Date().toTimeString().slice(0, 5);
+    }, 60000);
+    this.onFieldChange()
   }
 
   private fetchAllAreas() {
@@ -161,6 +186,7 @@ export class ReservationLayoutComponent implements OnInit {
 
   onFieldChange() {
     this.updateCheckAvailabilityDto();
+    this.updateReservationCreateDto()
     this.fetchLayoutAvailability();
 
     const totalSeats = this.selectedPlaces.reduce((sum, place) => sum + place.numberOfSeats, 0);
@@ -177,12 +203,14 @@ export class ReservationLayoutComponent implements OnInit {
   }
 
   private updateCheckAvailabilityDto() {
-    this.reservationLayoutCheckAvailabilityDto.startTime = this.reservationCreateDto.startTime?.toString() || this.reservationLayoutCheckAvailabilityDto.startTime;
-    this.reservationLayoutCheckAvailabilityDto.date = this.reservationCreateDto.date?.toString() || this.reservationLayoutCheckAvailabilityDto.date;
-    this.reservationLayoutCheckAvailabilityDto.areaId = this.selectedAreaId;
+    this.reservationLayoutCheckAvailabilityDto.startTime = this.sharedStartTime;
+    this.reservationLayoutCheckAvailabilityDto.date = this.sharedDate;
   }
 
   onSubmit(form: NgForm) {
+    this.updateReservationCreateDto();
+    this.updateCheckAvailabilityDto()
+
     if (this.authService.isLoggedIn()) {
       this.setCurrentUserDetails();
     }
@@ -225,11 +253,13 @@ export class ReservationLayoutComponent implements OnInit {
   }
 
   private resetForm(form: NgForm) {
-    form.resetForm();
+    this.initializeSharedProperties();
+    this.fetchAllAreas();
+    this.fetchLayoutAvailability();
+    this.reservationLayoutCheckAvailabilityDto = this.initializeReservationLayoutCheckAvailabilityDto();
     this.reservationCreateDto = this.initializeReservationCreateDto();
     this.selectedPlaces = [];
     this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this));
-    this.reservationLayoutCheckAvailabilityDto = this.initializeReservationLayoutCheckAvailabilityDto();
   }
 
   private showFormErrors() {
@@ -242,5 +272,12 @@ export class ReservationLayoutComponent implements OnInit {
     if (!this.reservationCreateDto.pax) {
       this.notificationService.showError('Number of people (pax) is required.');
     }
+  }
+
+  private updateReservationCreateDto() {
+    // @ts-ignore
+    this.reservationCreateDto.startTime = this.sharedStartTime;
+    // @ts-ignore
+    this.reservationCreateDto.date = this.sharedDate;
   }
 }
