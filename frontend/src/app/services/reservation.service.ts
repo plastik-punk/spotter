@@ -3,7 +3,13 @@ import {HttpClient, HttpParams, HttpResponse} from "@angular/common/http";
 import {Globals} from '../global/globals';
 import {Observable,tap} from "rxjs";
 import {formatIsoDate} from '../util/date-helper';
-import {ReservationSearch, ReservationListDto, ReservationEditDto, AreaLayoutDto} from "../dtos/reservation";
+import {
+  ReservationSearch,
+  ReservationListDto,
+  ReservationEditDto,
+  AreaLayoutDto,
+  AreaListDto
+} from "../dtos/reservation";
 import {
   Reservation,
   ReservationCheckAvailabilityDto,
@@ -125,6 +131,15 @@ export class ReservationService {
    */
   delete(hash: string): Observable<HttpResponse<void>> {
     return this.httpClient.delete<void>(this.reservationBaseUri, { observe: 'response' , body: hash});
+  }
+
+  /**
+   * Get list of all areas
+   *
+   * @return an Observable for the list of areas
+   */
+  getAllAreas(): Observable<AreaListDto> {
+    return this.httpClient.get<AreaListDto>(this.globals.backendUri + "/reservations/areas");
   }
 
 

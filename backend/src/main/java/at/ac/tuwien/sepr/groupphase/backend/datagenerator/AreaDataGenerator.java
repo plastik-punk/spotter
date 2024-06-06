@@ -10,7 +10,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
-import java.time.LocalTime;
 
 @Profile({"generateData", "test"})
 @Component
@@ -32,21 +31,31 @@ public class AreaDataGenerator {
         if (areaRepository.count() > 0) {
             LOGGER.debug("Areas have already been generated");
         } else {
-            LOGGER.debug("Generating 1 area entry");
+            LOGGER.debug("Generating 2 area entries");
 
-            createArea();
+            createAreas();
         }
     }
 
-    private void createArea() {
-        Area area = Area.AreaBuilder.anArea()
-            .withName("Single Area")
-            .withWidth(16)
-            .withHeight(9)
+    private void createAreas() {
+        Area area1 = Area.AreaBuilder.anArea()
+            .withName("Main Area")
+            .withWidth(15)
+            .withHeight(8)
             .withOpen(true)
             .build();
 
-        LOGGER.debug("Saving area {}", area);
-        areaRepository.save(area);
+        LOGGER.debug("Saving area {}", area1);
+        areaRepository.save(area1);
+
+        Area area2 = Area.AreaBuilder.anArea()
+            .withName("Second Area")
+            .withWidth(19)
+            .withHeight(4)
+            .withOpen(false)
+            .build();
+
+        LOGGER.debug("Saving area {}", area2);
+        areaRepository.save(area2);
     }
 }

@@ -12,8 +12,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 
 @Profile({"generateData", "test"})
 @Component

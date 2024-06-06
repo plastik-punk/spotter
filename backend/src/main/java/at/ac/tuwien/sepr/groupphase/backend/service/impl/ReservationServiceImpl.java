@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaLayoutDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
@@ -8,6 +9,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckA
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Area;
 import at.ac.tuwien.sepr.groupphase.backend.entity.AreaPlaceSegment;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ClosedDay;
 import at.ac.tuwien.sepr.groupphase.backend.entity.OpeningHours;
@@ -614,6 +616,28 @@ public class ReservationServiceImpl implements ReservationService {
         LOGGER.debug("Built areaLayout: {}", areaLayoutDto);
 
         return areaLayoutDto;
+    }
+
+    @Override
+
+    public AreaListDto getAllAreas() {
+        LOGGER.trace("getAllAreas()");
+
+        List<Area> areas = areaRepository.findAll();
+        LOGGER.debug("Found {} areas", areas.size());
+
+        List<AreaListDto.AreaDto> areaDtos = areas.stream()
+            .map(area -> {
+                AreaListDto.AreaDto dto = new AreaListDto.AreaDto();
+                dto.setId(area.getId());
+                dto.setName(area.getName());
+                return dto;
+            })
+            .collect(Collectors.toList());
+
+        AreaListDto areaListDto = new AreaListDto();
+        areaListDto.setAreas(areaDtos);
+        return areaListDto;
     }
 
     private Map<String, Object> constructMailTemplateModel(Reservation reservation, ApplicationUser currentUser) {

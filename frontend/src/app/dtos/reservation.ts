@@ -99,3 +99,11 @@ export interface CoordinateDto {
   y: number;
 }
 
+export interface AreaDto {
+  id: number;
+  name: string;
+}
+
+export interface AreaListDto {
+  areas: AreaDto[];
+}

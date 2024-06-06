@@ -377,40 +377,44 @@ public interface TestData {
         + ", dayOfWeek=" + TEST_OPENING_HOURS_DAY_OF_WEEK
         + ", openingTime=" + TEST_OPENING_HOURS_OPENING_TIME
         + ", closingTime=" + TEST_OPENING_HOURS_CLOSING_TIME + "}";
-
-    // ---------------------------------------------
-    // AREA TEST DATA
-    // ---------------------------------------------
-
+// ---------------------------------------------
+// AREA TEST DATA
+// ---------------------------------------------
 
     Area TEST_AREA_1 = Area.AreaBuilder.anArea()
         .withId(1L)
-        .withName("Area 1")
-        .withWidth(16)
-        .withHeight(9)
+        .withName("Main Area")
+        .withWidth(15)
+        .withHeight(8)
         .withOpen(true)
         .build();
 
+    Area TEST_AREA_2 = Area.AreaBuilder.anArea()
+        .withId(2L)
+        .withName("Second Area")
+        .withWidth(19)
+        .withHeight(4)
+        .withOpen(false)
+        .build();
 
-    // ---------------------------------------------
-    // SEGMENT TEST DATA
-    // ---------------------------------------------
+// ---------------------------------------------
+// SEGMENT TEST DATA
+// ---------------------------------------------
 
     Segment TEST_SEGMENT_1 = Segment.SegmentBuilder.aSegment()
         .withX(0)
         .withY(0)
         .build();
 
-    // ---------------------------------------------
-    // AREAPLACESEGMENT TEST DATA
-    // ---------------------------------------------
+// ---------------------------------------------
+// AREAPLACESEGMENT TEST DATA
+// ---------------------------------------------
 
     AreaPlaceSegment TEST_LOCATION_1 = AreaPlaceSegment.AreaPlaceSegmentBuilder.anAreaPlaceSegment()
         .withArea(TEST_AREA_1)
         .withPlace(TEST_PLACE_AVAILABLE_1)
         .withSegment(TEST_SEGMENT_1)
         .build();
-
 
     // ---------------------------------------------
     // ... TEST DATA
