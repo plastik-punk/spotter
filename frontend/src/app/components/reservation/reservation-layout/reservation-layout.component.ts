@@ -1,5 +1,5 @@
-import { Component, OnInit, OnDestroy, ElementRef, ViewChild, HostListener } from '@angular/core';
-import { NgForm } from "@angular/forms";
+import {Component, OnInit, OnDestroy, ElementRef, ViewChild, HostListener} from '@angular/core';
+import {NgForm} from "@angular/forms";
 import {
   ReservationLayoutCheckAvailabilityDto,
   ReservationCreateDto,
@@ -7,12 +7,12 @@ import {
   AreaListDto,
   AreaDto
 } from "../../../dtos/reservation";
-import { UserOverviewDto } from "../../../dtos/app-user";
-import { AuthService } from "../../../services/auth.service";
-import { ReservationService } from "../../../services/reservation.service";
-import { NotificationService } from "../../../services/notification.service";
-import { D3DrawService } from "../../../services/d3-draw.service";
-import { formatIsoDate } from "../../../util/date-helper";
+import {UserOverviewDto} from "../../../dtos/app-user";
+import {AuthService} from "../../../services/auth.service";
+import {ReservationService} from "../../../services/reservation.service";
+import {NotificationService} from "../../../services/notification.service";
+import {D3DrawService} from "../../../services/d3-draw.service";
+import {formatIsoDate} from "../../../util/date-helper";
 
 @Component({
   selector: 'app-component-reservation-layout',
@@ -21,7 +21,7 @@ import { formatIsoDate } from "../../../util/date-helper";
 })
 export class ReservationLayoutComponent implements OnInit, OnDestroy {
 
-  @ViewChild('d3Container', { static: true }) d3Container: ElementRef;
+  @ViewChild('d3Container', {static: true}) d3Container: ElementRef;
 
   reservationCreateDto: ReservationCreateDto;
   reservationLayoutCheckAvailabilityDto: ReservationLayoutCheckAvailabilityDto;
@@ -182,7 +182,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
     if (index !== -1) {
       this.selectedPlaces.splice(index, 1);
     } else {
-      this.selectedPlaces.push({ placeId, numberOfSeats });
+      this.selectedPlaces.push({placeId, numberOfSeats});
     }
 
     this.reservationCreateDto.placeIds = this.selectedPlaces.map(p => p.placeId);
@@ -245,7 +245,8 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         this.isPaxValid = true;
         this.isTimeManuallyChanged = false;
-      }, 2000);    } else {
+      }, 2000);
+    } else {
       this.showFormErrors();
     }
   }
