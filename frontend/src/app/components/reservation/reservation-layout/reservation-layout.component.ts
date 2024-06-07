@@ -34,6 +34,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
 
   isPaxValid: boolean = true;
   timer: any;
+  isTimeManuallyChanged: boolean = false;
 
   sharedStartTime: string;
   sharedDate: string;
@@ -97,11 +98,28 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
   }
 
   private startTimer() {
-    this.timer = setInterval(() => {
-      this.sharedStartTime = new Date().toTimeString().slice(0, 5);
-    }, 60000);
-    this.onFieldChange()
+    this.sharedStartTime = new Date().toTimeString().slice(0, 5);
+
+    const now = new Date();
+    const nextMinute = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes() + 1);
+    const timeUntilNextMinute = nextMinute.getTime() - now.getTime();
+
+    setTimeout(() => {
+      this.timer = setInterval(() => {
+        if (!this.isTimeManuallyChanged) {
+          this.sharedStartTime = new Date().toTimeString().slice(0, 5);
+        }
+      }, 60000);
+
+      if (!this.isTimeManuallyChanged) {
+        this.sharedStartTime = new Date().toTimeString().slice(0, 5);
+      }
+
+    }, timeUntilNextMinute);
+
+    this.onFieldChange();
   }
+
 
   private fetchAllAreas() {
     this.service.getAllAreas().subscribe({
@@ -186,7 +204,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
 
   onFieldChange() {
     this.updateCheckAvailabilityDto();
-    this.updateReservationCreateDto()
+    this.updateReservationCreateDto();
     this.fetchLayoutAvailability();
 
     const totalSeats = this.selectedPlaces.reduce((sum, place) => sum + place.numberOfSeats, 0);
@@ -223,7 +241,11 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
 
     if (form.valid) {
       this.createReservation(form);
-    } else {
+      this.isPaxValid = false;
+      setTimeout(() => {
+        this.isPaxValid = true;
+        this.isTimeManuallyChanged = false;
+      }, 2000);    } else {
       this.showFormErrors();
     }
   }
@@ -279,5 +301,12 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
     this.reservationCreateDto.startTime = this.sharedStartTime;
     // @ts-ignore
     this.reservationCreateDto.date = this.sharedDate;
+  }
+
+  onTimeChange(event: Event) {
+    this.isTimeManuallyChanged = true;
+    clearInterval(this.timer);
+    this.sharedStartTime = (event.target as HTMLInputElement).value;
+    this.onFieldChange();
   }
 }

@@ -77,7 +77,23 @@ public class SegmentDataGenerator {
                 createSegment(7, 0),
                 createSegment(8, 0),
                 createSegment(9, 0),
-                createSegment(10, 0)
+                createSegment(10, 0),
+
+                createSegment(1, 2),
+                createSegment(2, 2),
+                createSegment(1, 4),
+                createSegment(2, 4),
+                createSegment(1, 6),
+                createSegment(2, 6),
+                createSegment(5, 2),
+                createSegment(6, 2),
+                createSegment(5, 4),
+                createSegment(6, 4),
+                createSegment(5, 6),
+                createSegment(6, 6),
+                createSegment(11, 2),
+                createSegment(12, 2)
+
             );
 
             for (Segment segment : segments) {

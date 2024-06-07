@@ -34,8 +34,9 @@
                 [(ngModel)]="sharedStartTime"
                 #reservationStartTimeModel="ngModel"
                 (ngModelChange)="onFieldChange()"
-                required
+                (change)="onTimeChange($event)"
               />
+
             </div>
             <div class="column">
               <input
