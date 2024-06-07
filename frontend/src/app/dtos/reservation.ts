@@ -21,8 +21,9 @@ export interface ReservationCreateDto {
   notes: string;
   email: string;
   mobileNumber: number;
-  placeId?: number;
+  placeIds?: number[];
 }
+
 export interface ReservationListDto {
   id: number,
   userFirstName: string,
@@ -98,3 +99,11 @@ export interface CoordinateDto {
   y: number;
 }
 
+export interface AreaDto {
+  id: number;
+  name: string;
+}
+
+export interface AreaListDto {
+  areas: AreaDto[];
+}

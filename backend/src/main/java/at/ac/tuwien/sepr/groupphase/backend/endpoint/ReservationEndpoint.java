@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaLayoutDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
@@ -81,8 +82,17 @@ public class ReservationEndpoint {
                 .withIdToExclude(idToExclude)
                 .withAreaId(areaId)
                 .build();
-        LOGGER.info("GET /api/v1/reservations body: {}", reservationLayoutCheckAvailabilityDto);
+        LOGGER.info("GET /api/v1/reservations/layout body: {}", reservationLayoutCheckAvailabilityDto);
         return service.getAreaLayout(reservationLayoutCheckAvailabilityDto);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PermitAll
+    @GetMapping("/areas")
+    @Operation(summary = "Get list of all areas")
+    public AreaListDto getAllAreas() {
+        LOGGER.info("GET /api/v1/reservations/areas");
+        return service.getAllAreas();
     }
 
     @ResponseStatus(HttpStatus.OK)

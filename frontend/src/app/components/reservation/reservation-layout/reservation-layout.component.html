@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Lexend+Giga:wght@500&display=swap"
-        rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Lexend+Giga:wght@500&display=swap" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Leckerli+One&display=swap" rel="stylesheet">
@@ -19,7 +18,7 @@
   <div class="col-12 col-lg-10 mx-auto">
     <div class="card custom-card">
       <form #form="ngForm" (ngSubmit)="onSubmit(form)" novalidate>
-        <!-- Start row with Title, startTime and Date -->
+        <!-- Start row with Title, startTime, Date, and Area -->
         <div class="top-banner">
           <div class="row">
             <div class="column">
@@ -32,11 +31,12 @@
                 name="reservationStartTime"
                 placeholder="hh:mm"
                 class="form-control"
-                [(ngModel)]="reservationCreateDto.startTime"
+                [(ngModel)]="sharedStartTime"
                 #reservationStartTimeModel="ngModel"
                 (ngModelChange)="onFieldChange()"
-                required
+                (change)="onTimeChange($event)"
               />
+
             </div>
             <div class="column">
               <input
@@ -46,20 +46,32 @@
                 pattern="\d{4}-\d{2}-\d{2}"
                 placeholder="dd-mm-yyyy"
                 class="form-control"
-                [(ngModel)]="reservationCreateDto.date"
+                [(ngModel)]="sharedDate"
                 #reservationDateModel="ngModel"
                 (ngModelChange)="onFieldChange()"
                 required
               />
+            </div>
+            <div class="column">
+              <select
+                id="reservationArea"
+                name="reservationArea"
+                class="form-control"
+                [(ngModel)]="selectedAreaId"
+                (change)="onAreaChange($event)"
+                required
+              >
+                <option *ngFor="let area of areas" [value]="area.id">{{ area.name }}</option>
+              </select>
             </div>
           </div>
 
           <hr class="my-4">
         </div>
 
-        <!-- D§ JS CANVAS HERE -->
+        <!-- D3 JS CANVAS HERE -->
         <div class="row justify-content-center">
-          <div #d3Container style=" width: 70%; height: auto;"></div>
+          <div #d3Container style="width: 70%; height: auto;"></div>
         </div>
         <hr class="my-4">
 
@@ -150,7 +162,7 @@
         <div class="row">
           <div class="column">
             <div class="btn-group">
-              <button type="submit" class="btn btn-danger btn-sm" [disabled]="!form.valid || !isPaxValid()">
+              <button type="submit" id="submit-button" class="btn btn-danger btn-sm" [disabled]="!form.valid || !isPaxValid">
                 Book
               </button>
             </div>
