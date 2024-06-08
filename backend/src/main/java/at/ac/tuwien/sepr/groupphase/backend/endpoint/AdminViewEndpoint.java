@@ -33,23 +33,23 @@ public class AdminViewEndpoint {
     @Secured("ROLE_ADMIN")
     @GetMapping({"/prediction"})
     @Operation(summary = "Get the prediction for the next week")
-    public PredictionDto getPrediction(@RequestParam("area") String area,
+    public PredictionDto getPrediction(@RequestParam("areaId") Long areaId,
                                        @RequestParam("startTime") LocalTime startTime,
                                        @RequestParam("date") LocalDate date) {
         LOGGER.info("GET /api/v1/admin-view/prediction");
-        LOGGER.debug("GET /api/v1/admin-view/prediction body: {} {}, {}", area, startTime, date);
-        return service.getPrediction(area, startTime, date);
+        LOGGER.debug("GET /api/v1/admin-view/prediction body: {} {}, {}", areaId, startTime, date);
+        return service.getPrediction(areaId, startTime, date);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @Secured("ROLE_ADMIN")
     @GetMapping({"/forecast"})
     @Operation(summary = "Get the forecast for the next week")
-    public ForeCastDto getForeCast(@RequestParam("area") String area,
+    public ForeCastDto getForeCast(@RequestParam("areaId") Long areaId,
                                    @RequestParam("startTime") LocalTime startTime,
                                    @RequestParam("date") LocalDate date) {
         LOGGER.info("GET /api/v1/admin-view/forecast");
-        LOGGER.debug("GET /api/v1/admin-view/forecast body: {} {}, {}", area, startTime, date);
-        return service.getForecast(area, date);
+        LOGGER.debug("GET /api/v1/admin-view/forecast body: {} {}, {}", areaId, startTime, date);
+        return service.getForecast(areaId, date);
     }
 }

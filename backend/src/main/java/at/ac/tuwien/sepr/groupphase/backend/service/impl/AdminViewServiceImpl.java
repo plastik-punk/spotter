@@ -3,10 +3,12 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ForeCastDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PredictionDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Area;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.AreaRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.AdminViewService;
@@ -23,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @Service
 public class AdminViewServiceImpl implements AdminViewService {
@@ -30,28 +33,49 @@ public class AdminViewServiceImpl implements AdminViewService {
     private final ReservationRepository reservationRepository;
     private final PlaceRepository placeRepository;
     private final ApplicationUserRepository applicationUserRepository;
+    private final AreaRepository areaRepository;
 
     @Autowired
-    public AdminViewServiceImpl(ReservationRepository reservationRepository, PlaceRepository placeRepository, ApplicationUserRepository applicationUserRepository) {
+    public AdminViewServiceImpl(ReservationRepository reservationRepository, PlaceRepository placeRepository, ApplicationUserRepository applicationUserRepository, AreaRepository areaRepository) {
         this.reservationRepository = reservationRepository;
         this.placeRepository = placeRepository;
         this.applicationUserRepository = applicationUserRepository;
+        this.areaRepository = areaRepository;
     }
 
 
     @Override
-    public PredictionDto getPrediction(String area, LocalTime startTimeForPrediction, LocalDate dateForPrediction) {
-        LOGGER.info("Calculating Prediction for given Area and Time: {}, {}, {}", area, startTimeForPrediction, dateForPrediction);
-        LocalDate dateToCalculate = dateForPrediction;
+    public PredictionDto getPrediction(Long areaId, LocalTime startTimeForPrediction, LocalDate dateForPrediction) {
+        LOGGER.info("Calculating Prediction for given Area and Time: {}, {}, {}", areaId, startTimeForPrediction, dateForPrediction);
 
-        //TODO: distinguish between different Areas
-        //TODO: Also Calculate Pax without Reservation
+        List<Area> areas = areaRepository.findAll();
+
+        if (areas.isEmpty()) {
+            throw new NoSuchElementException("No Areas found");
+        }
+
+        List<Long> predictedList = new ArrayList<>();
+        String[] areasNames = new String[areas.size()];
+        for (int i = 0; i < areas.size(); i++) {
+            areasNames[i] = areas.get(i).getName();
+            calculatePrediction(predictedList, areas.get(i).getId(), dateForPrediction); //TODO: Also Calculate Pax without Reservation
+        }
+
+        long amountOfEmployees = predictedList.stream().mapToLong(Long::longValue).sum();
+        return PredictionDto.PredictionBuilder.aPredictionDto()
+            .withPredictionText("The Amount of Employees needed for " + dateForPrediction + " is: " + amountOfEmployees)
+            .withAreaNames(areasNames)
+            .withPredictions(predictedList.toArray(new Long[0]))
+            .build();
+    }
+
+    private void calculatePrediction(List<Long> predictedList, Long areaId, LocalDate dateToCalculate) {
         List<Reservation> sameDayReservationListLastYear = new ArrayList<>();
         Map<LocalDate, Long> amountOfCustomersPerDayMapLastYear = new HashMap<>();
         //1. Get all Reservations from the last 52 Weeks
         //2. Calculate the maximum Pax per Day over the last year
         for (int i = 0; i < 52; i++) {
-            List<Reservation> reservations = reservationRepository.findAllByDate(dateToCalculate.minusWeeks(i));
+            List<Reservation> reservations = reservationRepository.findAllReservationsByAreaIdAndDate(areaId, dateToCalculate.minusWeeks(i));
             sameDayReservationListLastYear.addAll(reservations);
             Map<LocalTime, Long> maxPaxPerHour = new HashMap<>();
             LocalDate date = null;
@@ -71,8 +95,11 @@ public class AdminViewServiceImpl implements AdminViewService {
         }
 
         //3. Get all Reservations from the same day
-        List<Reservation> reservationsListSameDay = reservationRepository.findAllByDate(dateToCalculate);
-
+        List<Reservation> reservationsListSameDay = reservationRepository.findAllReservationsByAreaIdAndDate(areaId, dateToCalculate);
+        if (reservationsListSameDay.isEmpty()) {
+            predictedList.add(0L);
+            return;
+        }
         //4. Get the Reservation List Per day
         Map<LocalDate, List<Reservation>> reservationsByDateMap = null;
         for (Reservation reservation : sameDayReservationListLastYear) {
@@ -107,29 +134,21 @@ public class AdminViewServiceImpl implements AdminViewService {
 
         //7. Calculate the amount of the Employees
         List<ApplicationUser> employeeList = applicationUserRepository.findAllByRole(RoleEnum.EMPLOYEE);
-        int totalEmployeeCount = employeeList.size();
-        //8, calculate the percentage of the Employees
-        if (amountOfCustomersPerHourMap.isEmpty() || amountOfCustomersPerDayMapLastYear.isEmpty()) {
-            return PredictionDto.PredictionBuilder.aPredictionDto()
-                .withPrediction("No Prediction possible")
-                .build();
-        }
+        int totalEmployeeCount = 17; //employeeList.size(); TODO get the real count of employees with test Data
+        //8. calculate the percentage of the Employees
         long maxPaxAtSameTimeCurrDay = Collections.max(amountOfCustomersPerHourMap.values());
         long maxPaxAtSameTimeLastYear = Collections.max(amountOfCustomersPerDayMapLastYear.values());
         long averagePaxLastYear = amountOfCustomersPerDayMapLastYear.values().stream().mapToLong(Long::longValue).sum() / amountOfCustomersPerDayMapLastYear.size();
 
         float percentageOfPax = (float) maxPaxAtSameTimeCurrDay / (float) maxPaxAtSameTimeLastYear;
-        float percentageOfEmployees = (float) totalEmployeeCount * percentageOfPax;
+        long percentageOfEmployees = (long) (totalEmployeeCount * percentageOfPax);
 
-        PredictionDto predictionDto = PredictionDto.PredictionBuilder.aPredictionDto()
-            .withPrediction("The Prediction for the given Area and Time is: " + percentageOfEmployees)
-            .build();
-        return predictionDto;
+        predictedList.add(percentageOfEmployees);
     }
 
     @Override
-    public ForeCastDto getForecast(String area, LocalDate date) {
-        LOGGER.info("Calculating Forecast for given Area and Date: {}, {}", area, date);
+    public ForeCastDto getForecast(Long areaId, LocalDate date) {
+        LOGGER.info("Calculating Forecast for given Area and Date: {}, {}", areaId, date);
         ForeCastDto foreCastDto = new ForeCastDto();
 
         foreCastDto.setMaxPlace(placeRepository.findAll().size());

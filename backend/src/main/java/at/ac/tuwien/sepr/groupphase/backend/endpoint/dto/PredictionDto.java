@@ -1,48 +1,75 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
-public class PredictionDto {
-    String prediction;
+import java.util.Arrays;
+import java.util.Objects;
 
-    public String getPrediction() {
-        return prediction;
+public class PredictionDto {
+    String predictionText;
+    String[] areaNames;
+    Long[] predictions;
+
+    public String[] getAreaNames() {
+        return areaNames;
     }
 
-    public void setPrediction(String prediction) {
-        this.prediction = prediction;
+    public void setAreaNames(String[] areaNames) {
+        this.areaNames = areaNames;
+    }
+
+    public Long[] getPredictions() {
+        return predictions;
+    }
+
+    public void setPredictions(Long[] predictions) {
+        this.predictions = predictions;
+    }
+
+    public String getPredictionText() {
+        return predictionText;
+    }
+
+    public void setPredictionText(String predictionText) {
+        this.predictionText = predictionText;
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (object == null || getClass() != object.getClass()) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        PredictionDto that = (PredictionDto) object;
-        return prediction.equals(that.prediction);
+        PredictionDto that = (PredictionDto) o;
+        return Objects.equals(predictionText, that.predictionText) && Objects.deepEquals(areaNames, that.areaNames) && Objects.deepEquals(predictions, that.predictions);
     }
 
     @Override
     public int hashCode() {
-        return prediction.hashCode();
+        return Objects.hash(predictionText, Arrays.hashCode(areaNames), Arrays.hashCode(predictions));
     }
 
     @Override
     public String toString() {
         return "PredictionDto{"
-            + "prediction='" + prediction + '\''
+            + "predictionText='" + predictionText + '\''
+            + ", areaNames=" + Arrays.toString(areaNames)
+            + ", predictions=" + Arrays.toString(predictions)
             + '}';
     }
 
     public PredictionDto copy() {
         return PredictionBuilder.aPredictionDto()
-            .withPrediction(prediction)
+            .withPredictionText(predictionText)
+            .withAreaNames(areaNames)
+            .withPredictions(predictions)
             .build();
     }
 
     public static final class PredictionBuilder {
-        String prediction;
+        String predictionText;
+        String[] areaNames;
+        Long[] predictions;
 
         private PredictionBuilder() {
         }
@@ -51,14 +78,26 @@ public class PredictionDto {
             return new PredictionBuilder();
         }
 
-        public PredictionBuilder withPrediction(String prediction) {
-            this.prediction = prediction;
+        public PredictionBuilder withPredictionText(String predictionText) {
+            this.predictionText = predictionText;
+            return this;
+        }
+
+        public PredictionBuilder withAreaNames(String[] areaNames) {
+            this.areaNames = areaNames;
+            return this;
+        }
+
+        public PredictionBuilder withPredictions(Long[] predictions) {
+            this.predictions = predictions;
             return this;
         }
 
         public PredictionDto build() {
             PredictionDto predictionDto = new PredictionDto();
-            predictionDto.setPrediction(prediction);
+            predictionDto.setPredictionText(predictionText);
+            predictionDto.setAreaNames(areaNames);
+            predictionDto.setPredictions(predictions);
             return predictionDto;
         }
     }
