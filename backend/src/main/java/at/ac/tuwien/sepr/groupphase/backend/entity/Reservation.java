@@ -160,9 +160,8 @@ public class Reservation {
             + ", endTime=" + endTime
             + ", pax=" + pax
             + ", notes='" + notes + '\''
-            + ", hashValue='" + hashValue + '\''
             + ", confirmed='" + confirmed
-            + '}';
+            + "'}";
     }
 
     public Reservation copy() {
