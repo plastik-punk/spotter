@@ -9,6 +9,7 @@ public class PlaceVisualDto {
     private Boolean status;
     private Boolean reservation;
     private Long numberOfSeats;
+    private Integer number;
     private List<CoordinateDto> coordinates;
 
     // Getters and Setters
@@ -53,6 +54,14 @@ public class PlaceVisualDto {
         this.coordinates = coordinates;
     }
 
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -66,12 +75,13 @@ public class PlaceVisualDto {
             && Objects.equals(status, that.status)
             && Objects.equals(reservation, that.reservation)
             && Objects.equals(numberOfSeats, that.numberOfSeats)
-            && Objects.equals(coordinates, that.coordinates);
+            && Objects.equals(coordinates, that.coordinates)
+            && Objects.equals(number, that.number);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(placeId, status, reservation, numberOfSeats, coordinates);
+        return Objects.hash(placeId, status, reservation, numberOfSeats, coordinates, number);
     }
 
     @Override
@@ -87,6 +97,8 @@ public class PlaceVisualDto {
             + numberOfSeats
             + ", coordinates="
             + coordinates
+            + ", number="
+            + number
             + '}';
     }
 
