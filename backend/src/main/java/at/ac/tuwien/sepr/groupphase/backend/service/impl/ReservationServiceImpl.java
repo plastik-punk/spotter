@@ -131,8 +131,8 @@ public class ReservationServiceImpl implements ReservationService {
                         .withPax(reservationCreateDto.getPax())
                         .withIdToExclude(null) // Assuming we're not excluding any reservations
                         .build();
-                if (!isPlaceAvailable(placeId, reservationCheckAvailabilityDto)) {
-                    return null; // frontend should check for null and show notification accordingly
+                if (!isPlaceAvailable(placeId)) {
+                    return null; // frontend checks and notifies
                 }
             }
         } else {
@@ -234,22 +234,10 @@ public class ReservationServiceImpl implements ReservationService {
         return mapper.reservationToReservationCreateDto(savedReservation);
     }
 
-    private boolean isPlaceAvailable(Long placeId, ReservationCheckAvailabilityDto dto) {
-        // Implement the logic to check if the place is available using the provided DTO
-        // This might involve querying the database or calling another service
-        // For example:
-        ReservationResponseEnum placeStatus = getPlaceAvailability(placeId, dto);
-        return placeStatus == ReservationResponseEnum.AVAILABLE;
+    private boolean isPlaceAvailable(Long placeId) {
+        StatusEnum placeStatus = placeRepository.findStatusById(placeId);
+        return placeStatus == StatusEnum.AVAILABLE;
     }
-
-    private ReservationResponseEnum getPlaceAvailability(Long placeId, ReservationCheckAvailabilityDto dto) {
-        // Implement the actual logic to check place availability
-        // This is a placeholder and should be replaced with your actual implementation
-        return ReservationResponseEnum.AVAILABLE;
-    }
-
-
-
 
     @Override
     public ReservationResponseEnum getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) {

@@ -311,6 +311,4 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
     this.sharedStartTime = (event.target as HTMLInputElement).value;
     this.onFieldChange();
   }
-
-  protected readonly SimpleViewReservationStatusEnum = SimpleViewReservationStatusEnum;
 }
