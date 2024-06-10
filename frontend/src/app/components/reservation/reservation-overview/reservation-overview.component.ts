@@ -195,7 +195,7 @@ export class ReservationOverviewComponent implements OnInit {
   }
 
   confirmReservation(hashId: string): void {
-    this.reservationService.confirmReservation(hashId).subscribe({
+    this.reservationService.confirm(hashId).subscribe({
       next: () => {
         this.notificationService.showSuccess('Reservation confirmed successfully');
         this.loadReservations();

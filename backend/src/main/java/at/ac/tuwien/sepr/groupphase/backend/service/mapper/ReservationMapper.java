@@ -42,6 +42,7 @@ public interface ReservationMapper {
     @Mapping(source = "date", target = "date")
     @Mapping(source = "endTime", target = "endTime")
     @Mapping(source = "hashValue", target = "hashId")
+    @Mapping(source = "confirmed", target = "confirmed")
     @Named("reservationList")
     ReservationListDto reservationToReservationListDto(Reservation reservation);
 

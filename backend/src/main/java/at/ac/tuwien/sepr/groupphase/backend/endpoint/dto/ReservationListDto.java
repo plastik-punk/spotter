@@ -24,6 +24,8 @@ public class ReservationListDto {
 
     private String hashId;
 
+    private boolean confirmed;
+
     public Long getId() {
         return id;
     }
@@ -106,6 +108,15 @@ public class ReservationListDto {
         return this;
     }
 
+    public boolean isConfirmed() {
+        return confirmed;
+    }
+
+    public ReservationListDto setConfirmed(boolean confirmed) {
+        this.confirmed = confirmed;
+        return this;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -122,12 +133,13 @@ public class ReservationListDto {
             && Objects.equals(endTime, that.endTime)
             && Objects.equals(pax, that.pax)
             && Objects.equals(placeId, that.placeId)
-            && Objects.equals(hashId, that.hashId);
+            && Objects.equals(hashId, that.hashId)
+            && Objects.equals(confirmed, that.confirmed);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userFirstName, userLastName, startTime, date, endTime, pax, placeId);
+        return Objects.hash(id, userFirstName, userLastName, startTime, date, endTime, pax, placeId, confirmed);
     }
 
     @Override
@@ -141,6 +153,8 @@ public class ReservationListDto {
             + ", endTime=" + endTime
             + ", pax=" + pax + '\''
             + ", placeId=" + placeId
+            + ", hashId=" + hashId
+            + ", confirmed=" + confirmed
             + '}';
     }
 
@@ -157,6 +171,8 @@ public class ReservationListDto {
         private Long pax;
         private Long placeId;
         private String hashId;
+
+        private boolean confirmed;
 
         private ReservationListDtoBuilder() {
         }
@@ -210,6 +226,11 @@ public class ReservationListDto {
             return this;
         }
 
+        public ReservationListDtoBuilder withConfirmed(boolean confirmed) {
+            this.confirmed = confirmed;
+            return this;
+        }
+
         public ReservationListDto build() {
             ReservationListDto reservationListDto = new ReservationListDto();
             reservationListDto.setId(id);
@@ -221,6 +242,7 @@ public class ReservationListDto {
             reservationListDto.setPax(pax);
             reservationListDto.setPlaceId(placeId);
             reservationListDto.setHashId(hashId);
+            reservationListDto.setConfirmed(confirmed);
             return reservationListDto;
         }
     }

@@ -106,6 +106,7 @@ public class ReservationDataGenerator {
             .withPax(pax)
             .withNotes("This is a note for reservation " + index)
             .withHashValue(hashedValue)
+            .withConfirmed(false)
             .build();
 
         LOGGER.debug("Saving reservation {}", reservation);

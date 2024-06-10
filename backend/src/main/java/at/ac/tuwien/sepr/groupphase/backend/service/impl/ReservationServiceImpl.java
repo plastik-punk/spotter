@@ -176,6 +176,7 @@ public class ReservationServiceImpl implements ReservationService {
         // 4. Map to Reservation entity
         Reservation reservation = mapper.reservationCreateDtoToReservation(reservationCreateDto);
         reservation.setNotes(reservation.getNotes() != null ? reservation.getNotes().trim() : reservation.getNotes());
+        reservation.setConfirmed(false);
 
         // 5. Choose the places for reservation
         List<Place> selectedPlaces = new ArrayList<>();
@@ -206,7 +207,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         String hashedValue = hashService.hashSha256(reservation.getDate().toString()
             + reservation.getStartTime().toString() + reservation.getEndTime().toString()
-            + reservation.getPax().toString());
+            + reservation.getPax().toString()) + reservation.isConfirmed();
         reservation.setHashValue(hashedValue);
 
         // 6. Save Reservation in database and return it mapped to a DTO
@@ -247,8 +248,6 @@ public class ReservationServiceImpl implements ReservationService {
         // This is a placeholder and should be replaced with your actual implementation
         return ReservationResponseEnum.AVAILABLE;
     }
-
-
 
 
     @Override
@@ -650,5 +649,20 @@ public class ReservationServiceImpl implements ReservationService {
         templateModel.put("reservationTime", reservation.getStartTime());
         templateModel.put("link", "http://localhost:4200/#/reservation-detail/" + reservation.getHashValue()); //TODO: change away from localhost
         return templateModel;
+    }
+
+    @Override
+    public void confirm(String hashId) throws NotFoundException {
+        ReservationEditDto reservationEditDto = getByHashedId(hashId);
+        Long id = reservationEditDto.getReservationId();
+        LOGGER.trace("confirm ({})", id);
+
+        Optional<Reservation> optionalReservation = reservationRepository.findById(id);
+        if (optionalReservation.isEmpty()) {
+            throw new NotFoundException("Reservation not found", null);
+        }
+        Reservation reservation = optionalReservation.get();
+        reservation.setConfirmed(true);
+        reservationRepository.save(reservation);
     }
 }

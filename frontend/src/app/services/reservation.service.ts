@@ -148,8 +148,8 @@ export class ReservationService {
    * @param hashId the hashed id of the reservation to confirm
    * @return an Observable for the HttpResponse
    */
-  confirmReservation(hashId: string): Observable<void> {
-    return this.httpClient.post<void>(this.globals.backendUri + "/reservations/confirm", hashId);
+  confirm(hashId: string): Observable<void> {
+    return this.httpClient.put<void>(this.globals.backendUri + "/reservations/confirm", hashId);
   }
 
 }
