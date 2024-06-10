@@ -190,4 +190,20 @@ export class ReservationOverviewComponent implements OnInit {
     this.loadReservations();
   }
 
+  reservationIsInTheFuture(reservation: ReservationListDto): boolean {
+    return moment(reservation.date).isAfter(moment());
+  }
+
+  confirmReservation(hashId: string): void {
+    this.reservationService.confirmReservation(hashId).subscribe({
+      next: () => {
+        this.notificationService.showSuccess('Reservation confirmed successfully');
+        this.loadReservations();
+      },
+      error: error => {
+        this.notificationService.showError('Failed to confirm reservation. Please try again later.');
+      }
+    });
+  }
+
 }

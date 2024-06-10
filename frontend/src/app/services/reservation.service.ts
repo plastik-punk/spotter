@@ -142,5 +142,14 @@ export class ReservationService {
     return this.httpClient.get<AreaListDto>(this.globals.backendUri + "/reservations/areas");
   }
 
+  /**
+   * Confirm that the guests for a reservation have arrived.
+   *
+   * @param hashId the hashed id of the reservation to confirm
+   * @return an Observable for the HttpResponse
+   */
+  confirmReservation(hashId: string): Observable<void> {
+    return this.httpClient.post<void>(this.globals.backendUri + "/reservations/confirm", hashId);
+  }
 
 }
