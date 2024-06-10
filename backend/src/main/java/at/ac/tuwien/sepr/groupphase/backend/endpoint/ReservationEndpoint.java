@@ -151,4 +151,14 @@ public class ReservationEndpoint {
         service.confirm(hashedId);
         return ResponseEntity.ok().build();
     }
+
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"ROLE_EMPLOYEE"})
+    @PutMapping("/unconfirm")
+    @Operation(summary = "Unconfirm a reservation")
+    public ResponseEntity<Void> unconfirm(@RequestBody String hashedId) {
+        LOGGER.info("PUT /api/v1/reservations/unconfirm body: {}", hashedId);
+        service.unconfirm(hashedId);
+        return ResponseEntity.ok().build();
+    }
 }

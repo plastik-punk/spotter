@@ -99,4 +99,12 @@ public interface ReservationService {
      * @throws NotFoundException if the reservation is not found
      */
     void confirm(String hashId) throws NotFoundException;
+
+    /**
+     * Unconfirm a reservation.
+     *
+     * @param hashId the Hashed id of the reservation.
+     * @throws NotFoundException if the reservation is not found
+     */
+    void unconfirm(String hashId) throws NotFoundException;
 }

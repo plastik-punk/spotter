@@ -665,4 +665,19 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setConfirmed(true);
         reservationRepository.save(reservation);
     }
+
+    @Override
+    public void unconfirm(String hashId) throws NotFoundException {
+        ReservationEditDto reservationEditDto = getByHashedId(hashId);
+        Long id = reservationEditDto.getReservationId();
+        LOGGER.trace("unconfirm ({})", id);
+
+        Optional<Reservation> optionalReservation = reservationRepository.findById(id);
+        if (optionalReservation.isEmpty()) {
+            throw new NotFoundException("Reservation not found", null);
+        }
+        Reservation reservation = optionalReservation.get();
+        reservation.setConfirmed(false);
+        reservationRepository.save(reservation);
+    }
 }

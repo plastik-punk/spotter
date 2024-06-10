@@ -152,4 +152,13 @@ export class ReservationService {
     return this.httpClient.put<void>(this.globals.backendUri + "/reservations/confirm", hashId);
   }
 
+  /**
+   * Unconfirm that the guests for a reservation have arrived.
+   *
+   * @param hashId the hashed id of the reservation to unconfirm
+   * @return an Observable for the HttpResponse
+   */
+  unconfirm(hashId: string): Observable<void> {
+    return this.httpClient.put<void>(this.globals.backendUri + "/reservations/unconfirm", hashId);
+  }
 }
