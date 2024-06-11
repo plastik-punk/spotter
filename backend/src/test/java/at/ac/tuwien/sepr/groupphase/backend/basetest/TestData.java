@@ -178,6 +178,16 @@ public interface TestData {
         .withRole(RoleEnum.GUEST)
         .build();
 
+    ApplicationUser TEST_APPLICATION_USER_ADMIN = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
+        .withId(1L)
+        .withFirstName(TEST_APPLICATION_USER_FIRST_NAME)
+        .withLastName(TEST_APPLICATION_USER_LAST_NAME)
+        .withEmail(TEST_APPLICATION_USER_EMAIL)
+        .withMobileNumber(TEST_APPLICATION_USER_MOBILE_NUMBER)
+        .withoutPassword()
+        .withRole(RoleEnum.ADMIN)
+        .build();
+
     // ---------------------------------------------
     // RESERVATION TEST DATA
     // ---------------------------------------------
@@ -255,6 +265,7 @@ public interface TestData {
         .withDate(TEST_RESERVATION_DATE)
         .withPax(TEST_RESERVATION_PAX)
         .withNotes(TEST_RESERVATION_NOTES)
+        .withConfirmed(false)
         .build();
 
     Reservation TEST_RESERVATION_2 = Reservation.ReservationBuilder.aReservation()
@@ -265,6 +276,7 @@ public interface TestData {
         .withDate(TEST_RESERVATION_DATE)
         .withPax(TEST_RESERVATION_PAX)
         .withNotes(TEST_RESERVATION_NOTES)
+        .withConfirmed(false)
         .build();
 
     Reservation TEST_RESERVATION_TO_DELETE = Reservation.ReservationBuilder.aReservation()
