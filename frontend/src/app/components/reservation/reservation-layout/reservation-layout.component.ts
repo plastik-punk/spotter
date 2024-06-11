@@ -165,7 +165,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
 
   private checkSelectedPlacesAvailability() {
     const unavailablePlaces = this.selectedPlaces.filter(selectedPlace => {
-      const place = this.areaLayout.placeVisuals.find(p => p.placeId === selectedPlace.placeId);
+      const place = this.areaLayout.placeVisuals.find(p => p.placeNumber === selectedPlace.placeId);
       return !place || place.reservation || !place.status;
     });
 

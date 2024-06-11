@@ -563,6 +563,11 @@ public class ReservationServiceImpl implements ReservationService {
     public AreaLayoutDto getAreaLayout(ReservationLayoutCheckAvailabilityDto dto) {
         var area = areaRepository.getReferenceById(dto.getAreaId());
 
+        // Set end time to two hours after start time if not provided
+        if (dto.getEndTime() == null) {
+            dto.setEndTime(dto.getStartTime().plusHours(2));
+        }
+
         List<AreaPlaceSegment> areaPlaceSegments = areaPlaceSegmentRepository.findByAreaId(area.getId());
         List<Long> placeIds = areaPlaceSegments.stream().map(aps -> aps.getPlace().getId()).collect(Collectors.toList());
         List<Place> places = placeRepository.findAllById(placeIds);
@@ -570,10 +575,38 @@ public class ReservationServiceImpl implements ReservationService {
             dto.getDate(), dto.getStartTime(), dto.getEndTime());
         List<Long> reservedPlaceIds = reservationPlaceRepository.findPlaceIdsByReservationIds(reservationIds);
 
+        final boolean isOpen;
+        DayOfWeek dayOfWeek = dto.getDate().getDayOfWeek();
+        List<OpeningHours> openingHoursList = openingHoursRepository.findByDayOfWeek(dayOfWeek);
+
+        if (openingHoursList.isEmpty()) {
+            // If the area is closed on this day, set all place statuses to false
+            isOpen = false;
+        } else {
+            boolean open = false;
+            for (OpeningHours openingHours : openingHoursList) {
+                if (!dto.getStartTime().isAfter(openingHours.getClosingTime())
+                    && !dto.getStartTime().isBefore(openingHours.getOpeningTime())
+                    && !dto.getEndTime().isBefore(openingHours.getOpeningTime())) {
+                    if (!dto.getStartTime().plusHours(1).isAfter(openingHours.getClosingTime())) {
+                        open = true;
+                        if (!dto.getEndTime().isBefore(openingHours.getClosingTime())) {
+                            dto.setEndTime(openingHours.getClosingTime());
+                        }
+                        break;
+                    } else {
+                        open = false;
+                    }
+                }
+            }
+            isOpen = open;
+        }
+
         List<AreaLayoutDto.PlaceVisualDto> placeVisuals = places.stream().map(place -> {
             AreaLayoutDto.PlaceVisualDto placeVisual = new AreaLayoutDto.PlaceVisualDto();
-            placeVisual.setPlaceId(place.getId());
-            if (area.isOpen()) {
+            placeVisual.setPlaceNumber(place.getNumber());
+
+            if (area.isOpen() && isOpen) {
                 placeVisual.setStatus(place.getStatus() == StatusEnum.AVAILABLE);
             } else {
                 placeVisual.setStatus(false);
@@ -605,35 +638,6 @@ public class ReservationServiceImpl implements ReservationService {
 
         return areaLayoutDto;
     }
-    //TODO: validierung - und opening hours
-
-    //  4. check if reservation is on regular closed day of the week
-    //        boolean isOpen = false;
-    //        DayOfWeek dayOfWeek = date.getDayOfWeek();
-    //        List<OpeningHours> openingHoursList = openingHoursRepository.findByDayOfWeek(dayOfWeek);
-    //        if (openingHoursList.isEmpty()) {
-    //            return ReservationResponseEnum.CLOSED; // if one weekday is always closed, this should return this enum instead of OUTSIDE_OPENING_HOURS
-    //        }
-    //
-    //        // 5. check if reservation is within opening hours
-    //        for (OpeningHours openingHours : openingHoursList) {
-    //            if (!startTime.isAfter(openingHours.getClosingTime())
-    //                && !startTime.isBefore(openingHours.getOpeningTime())
-    //                && !endTime.isBefore(openingHours.getOpeningTime())) {
-    //                if (!startTime.plusHours(1).isAfter(openingHours.getClosingTime())) {
-    //                    isOpen = true;
-    //                    if (!endTime.isBefore(openingHours.getClosingTime())) {
-    //                        reservationCheckAvailabilityDto.setEndTime(openingHours.getClosingTime());
-    //                    }
-    //                    break;
-    //                } else {
-    //                    return ReservationResponseEnum.RESPECT_CLOSING_HOUR;
-    //                }
-    //            }
-    //        }
-    //        if (!isOpen) {
-    //            return ReservationResponseEnum.OUTSIDE_OPENING_HOURS;
-    //        }
 
     @Override
 

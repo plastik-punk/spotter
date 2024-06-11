@@ -87,7 +87,7 @@ export interface AreaLayoutDto {
 }
 
 export interface PlaceVisualDto {
-  placeId: number;
+  placeNumber: number;
   status: boolean;
   reservation: boolean;
   numberOfSeats: number;

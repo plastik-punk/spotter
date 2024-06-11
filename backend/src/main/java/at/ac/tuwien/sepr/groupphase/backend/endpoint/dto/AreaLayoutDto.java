@@ -68,7 +68,7 @@ public class AreaLayoutDto {
 
     public static class PlaceVisualDto {
 
-        private Long placeId;
+        private int placeNumber;
         private Boolean status;
         private Boolean reservation;
         private Long numberOfSeats;
@@ -76,12 +76,12 @@ public class AreaLayoutDto {
 
         // Getters and Setters
 
-        public Long getPlaceId() {
-            return placeId;
+        public int getPlaceNumber() {
+            return placeNumber;
         }
 
-        public void setPlaceId(Long placeId) {
-            this.placeId = placeId;
+        public void setPlaceNumber(int placeNumber) {
+            this.placeNumber = placeNumber;
         }
 
         public Boolean getStatus() {
@@ -125,7 +125,7 @@ public class AreaLayoutDto {
                 return false;
             }
             PlaceVisualDto that = (PlaceVisualDto) o;
-            return Objects.equals(placeId, that.placeId)
+            return Objects.equals(placeNumber, that.placeNumber)
                 && Objects.equals(status, that.status)
                 && Objects.equals(reservation, that.reservation)
                 && Objects.equals(numberOfSeats, that.numberOfSeats)
@@ -134,14 +134,14 @@ public class AreaLayoutDto {
 
         @Override
         public int hashCode() {
-            return Objects.hash(placeId, status, reservation, numberOfSeats, coordinates);
+            return Objects.hash(placeNumber, status, reservation, numberOfSeats, coordinates);
         }
 
         @Override
         public String toString() {
             return "PlaceVisualDto{"
                 + "placeId="
-                + placeId
+                + placeNumber
                 + ", status="
                 + status
                 + ", reservation="

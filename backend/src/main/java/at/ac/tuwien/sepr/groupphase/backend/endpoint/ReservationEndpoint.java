@@ -32,8 +32,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.invoke.MethodHandles;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -66,22 +64,12 @@ public class ReservationEndpoint {
         return service.getAvailability(reservationCheckAvailabilityDto);
     }
 
+    //Todo als dto
     @ResponseStatus(HttpStatus.OK)
     @PermitAll
     @GetMapping("/layout")
     @Operation(summary = "Get layout of area for requested time and pax")
-    public AreaLayoutDto getAvailabilityLayout(@RequestParam("startTime") String startTime,
-                                               @RequestParam("date") String date,
-                                               @RequestParam("idToExclude") Long idToExclude,
-                                               @RequestParam("areaId") Long areaId) {
-        ReservationLayoutCheckAvailabilityDto reservationLayoutCheckAvailabilityDto =
-            ReservationLayoutCheckAvailabilityDto.ReservationLayoutCheckAvailabilityDtoBuilder.aReservationLayoutCheckAvailabilityDto()
-                .withStartTime(LocalTime.parse(startTime))
-                .withEndTime(LocalTime.parse(startTime).plusHours(2))
-                .withDate(LocalDate.parse(date))
-                .withIdToExclude(idToExclude)
-                .withAreaId(areaId)
-                .build();
+    public AreaLayoutDto getAvailabilityLayout(@Valid ReservationLayoutCheckAvailabilityDto reservationLayoutCheckAvailabilityDto) {
         LOGGER.info("GET /api/v1/reservations/layout body: {}", reservationLayoutCheckAvailabilityDto);
         return service.getAreaLayout(reservationLayoutCheckAvailabilityDto);
     }
