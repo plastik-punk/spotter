@@ -194,6 +194,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
     const paxInput = document.getElementById('reservationPax') as HTMLInputElement;
     if (paxInput) {
       paxInput.value = this.reservationCreateDto.pax.toString();
+      this.isPaxValid = true;
     }
   }
 

@@ -7,7 +7,7 @@ public class AreaLayoutCreateDto {
     private Integer width;
     private Integer height;
     private boolean isOpen;
-    private List<PlaceVisualDto> places;
+    private List<AreaLayoutDto.PlaceVisualDto> places;
 
     // Getters and Setters
 
@@ -35,11 +35,11 @@ public class AreaLayoutCreateDto {
         this.height = height;
     }
 
-    public List<PlaceVisualDto> getPlaces() {
+    public List<AreaLayoutDto.PlaceVisualDto> getPlaces() {
         return places;
     }
 
-    public void setPlaces(List<PlaceVisualDto> places) {
+    public void setPlaces(List<AreaLayoutDto.PlaceVisualDto> places) {
         this.places = places;
     }
 
