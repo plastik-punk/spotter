@@ -13,12 +13,11 @@ public interface AdminViewService {
     /**
      * Get the prediction for the next week split into the areas.
      *
-     * @param areaId    the areaId
      * @param startTime the start time
      * @param date      the date
      * @return the predictions for each area
      */
-    PredictionDto getPrediction(Long areaId, LocalTime startTime, LocalDate date);
+    PredictionDto getPrediction(LocalTime startTime, LocalDate date);
 
     /**
      * Get the forecast for the next week.

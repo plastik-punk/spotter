@@ -23,4 +23,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
         @Param("endTime") LocalDateTime endTime);
 
     Event findByHashId(String hashId);
+
+    List<Event> findAllByStartTimeBetween(LocalDateTime startTime, LocalDateTime endTime);
 }

@@ -38,7 +38,7 @@ public class AdminViewEndpoint {
                                        @RequestParam("date") LocalDate date) {
         LOGGER.info("GET /api/v1/admin-view/prediction");
         LOGGER.debug("GET /api/v1/admin-view/prediction body: {} {}, {}", areaId, startTime, date);
-        return service.getPrediction(areaId, startTime, date);
+        return service.getPrediction(startTime, date);
     }
 
     @ResponseStatus(HttpStatus.OK)
