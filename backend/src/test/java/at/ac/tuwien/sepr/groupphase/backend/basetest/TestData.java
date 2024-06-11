@@ -4,7 +4,17 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailab
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
-import at.ac.tuwien.sepr.groupphase.backend.entity.*;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Area;
+import at.ac.tuwien.sepr.groupphase.backend.entity.AreaPlaceSegment;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ClosedDay;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Message;
+import at.ac.tuwien.sepr.groupphase.backend.entity.OpeningHours;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ReservationPlace;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Restaurant;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Segment;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
 
@@ -109,6 +119,7 @@ public interface TestData {
     Place TEST_PLACE_AVAILABLE_1 = Place.PlaceBuilder.aPlace()
         .withId(1L)
         .withPax(4L)
+        .withNumber(1)
         .withStatus(StatusEnum.AVAILABLE)
         .build();
 
