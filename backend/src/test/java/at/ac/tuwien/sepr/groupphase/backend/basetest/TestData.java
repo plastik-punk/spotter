@@ -178,6 +178,16 @@ public interface TestData {
         .withRole(RoleEnum.GUEST)
         .build();
 
+    ApplicationUser TEST_APPLICATION_USER_ADMIN = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
+        .withId(1L)
+        .withFirstName(TEST_APPLICATION_USER_FIRST_NAME)
+        .withLastName(TEST_APPLICATION_USER_LAST_NAME)
+        .withEmail(TEST_APPLICATION_USER_EMAIL)
+        .withMobileNumber(TEST_APPLICATION_USER_MOBILE_NUMBER)
+        .withoutPassword()
+        .withRole(RoleEnum.ADMIN)
+        .build();
+
     // ---------------------------------------------
     // RESERVATION TEST DATA
     // ---------------------------------------------
@@ -255,6 +265,7 @@ public interface TestData {
         .withDate(TEST_RESERVATION_DATE)
         .withPax(TEST_RESERVATION_PAX)
         .withNotes(TEST_RESERVATION_NOTES)
+        .withConfirmed(false)
         .build();
 
     Reservation TEST_RESERVATION_2 = Reservation.ReservationBuilder.aReservation()
@@ -265,6 +276,7 @@ public interface TestData {
         .withDate(TEST_RESERVATION_DATE)
         .withPax(TEST_RESERVATION_PAX)
         .withNotes(TEST_RESERVATION_NOTES)
+        .withConfirmed(false)
         .build();
 
     Reservation TEST_RESERVATION_TO_DELETE = Reservation.ReservationBuilder.aReservation()
@@ -283,7 +295,8 @@ public interface TestData {
         + ", date=" + TEST_RESERVATION_DATE
         + ", endTime=" + TEST_RESERVATION_END_TIME
         + ", pax=" + TEST_RESERVATION_PAX
-        + ", notes='" + TEST_RESERVATION_NOTES + "'}";
+        + ", notes='" + TEST_RESERVATION_NOTES + '\''
+        + ", confirmed='false'}";
 
     LocalTime TEST_RESERVATION_AVAILABILITY_START_TIME = LocalDateTime.of(2024, 7, 1, 18, 0, 0, 0).toLocalTime();
     LocalDate TEST_RESERVATION_AVAILABILITY_DATE = LocalDate.of(2024, 7, 1);

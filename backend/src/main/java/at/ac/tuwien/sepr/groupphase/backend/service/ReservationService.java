@@ -9,6 +9,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckA
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import jakarta.mail.MessagingException;
 
 import java.util.List;
@@ -82,8 +83,28 @@ public interface ReservationService {
      * @param reservationLayoutCheckAvailabilityDto the reservation data
      * @return the layout of the area
      */
-
     AreaLayoutDto getAreaLayout(ReservationLayoutCheckAvailabilityDto reservationLayoutCheckAvailabilityDto);
 
+    /**
+     * Get list of all areas.
+     *
+     * @return the list of all areas
+     */
     AreaListDto getAllAreas();
+
+    /**
+     * Confirm a reservation.
+     *
+     * @param hashId the Hashed id of the reservation.
+     * @throws NotFoundException if the reservation is not found
+     */
+    void confirm(String hashId) throws NotFoundException;
+
+    /**
+     * Unconfirm a reservation.
+     *
+     * @param hashId the Hashed id of the reservation.
+     * @throws NotFoundException if the reservation is not found
+     */
+    void unconfirm(String hashId) throws NotFoundException;
 }

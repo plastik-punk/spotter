@@ -104,7 +104,6 @@ export class ReservationOverviewComponent implements OnInit {
           this.notificationService.showError('Failed to load reservations. Please try again later.');
         }
       });
-    console.log(this.reservations);
   }
 
   filterReservations() {
@@ -188,6 +187,36 @@ export class ReservationOverviewComponent implements OnInit {
     this.searchParams.latestEndTime = null;
 
     this.loadReservations();
+  }
+
+  reservationIsInTheFuture(reservation: ReservationListDto): boolean {
+
+    const reservationDateTime = moment(`${reservation.date} ${reservation.startTime}`, 'YYYY-MM-DD HH:mm:ss')
+    return moment(reservationDateTime).isAfter(moment());
+  }
+
+  confirmReservation(hashId: string): void {
+    this.reservationService.confirm(hashId).subscribe({
+      next: () => {
+        this.notificationService.showSuccess('Reservation confirmed successfully');
+        this.loadReservations();
+      },
+      error: error => {
+        this.notificationService.showError('Failed to confirm reservation. Please try again later.');
+      }
+    });
+  }
+
+  unconfirmReservation(hashId: string): void {
+    this.reservationService.unconfirm(hashId).subscribe({
+      next: () => {
+        this.notificationService.showSuccess('Reservation unconfirmed successfully');
+        this.loadReservations();
+      },
+      error: error => {
+        this.notificationService.showError('Failed to unconfirm reservation. Please try again later.');
+      }
+    });
   }
 
 }
