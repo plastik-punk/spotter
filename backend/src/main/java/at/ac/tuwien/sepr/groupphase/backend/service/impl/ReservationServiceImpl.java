@@ -605,6 +605,35 @@ public class ReservationServiceImpl implements ReservationService {
 
         return areaLayoutDto;
     }
+    //TODO: validierung - und opening hours
+
+    //  4. check if reservation is on regular closed day of the week
+    //        boolean isOpen = false;
+    //        DayOfWeek dayOfWeek = date.getDayOfWeek();
+    //        List<OpeningHours> openingHoursList = openingHoursRepository.findByDayOfWeek(dayOfWeek);
+    //        if (openingHoursList.isEmpty()) {
+    //            return ReservationResponseEnum.CLOSED; // if one weekday is always closed, this should return this enum instead of OUTSIDE_OPENING_HOURS
+    //        }
+    //
+    //        // 5. check if reservation is within opening hours
+    //        for (OpeningHours openingHours : openingHoursList) {
+    //            if (!startTime.isAfter(openingHours.getClosingTime())
+    //                && !startTime.isBefore(openingHours.getOpeningTime())
+    //                && !endTime.isBefore(openingHours.getOpeningTime())) {
+    //                if (!startTime.plusHours(1).isAfter(openingHours.getClosingTime())) {
+    //                    isOpen = true;
+    //                    if (!endTime.isBefore(openingHours.getClosingTime())) {
+    //                        reservationCheckAvailabilityDto.setEndTime(openingHours.getClosingTime());
+    //                    }
+    //                    break;
+    //                } else {
+    //                    return ReservationResponseEnum.RESPECT_CLOSING_HOUR;
+    //                }
+    //            }
+    //        }
+    //        if (!isOpen) {
+    //            return ReservationResponseEnum.OUTSIDE_OPENING_HOURS;
+    //        }
 
     @Override
 
