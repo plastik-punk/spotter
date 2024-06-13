@@ -226,6 +226,7 @@ public interface TestData {
     Long TEST_RESERVATION_DETAIL_ID = 1L;
     String TEST_RESERVATION_HASH_VALUE = "TestHashValue";
     String TEST_RESERVATION_HASH_VALUE_1 = "1476C39F97636A345B7BCCA9AAE7787E7140D6835FDDD947EC561DEC9C6F9AC5";
+    LocalDate TEST_RESERVATION_DATE_INVALID = LocalDate.of(2022, 1, 2);
 
     ReservationCreateDto TEST_RESERVATION_CREATE_DTO_CUSTOMER = ReservationCreateDto.ReservationCreateDtoBuilder.aReservationCreateDto()
         .withApplicationUser(TEST_APPLICATION_USER_CUSTOMER_1)

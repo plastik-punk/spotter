@@ -60,7 +60,7 @@ public class ReservationServiceImplTest implements TestData {
     @Transactional
     public void givenInvalidData_whenCreateGuestReservation_thenThrowConstraintViolationException() {
         ReservationCreateDto dto = TEST_RESERVATION_CREATE_DTO_GUEST.copy();
-        dto.setStartTime(null);
+        dto.setPax(-10L);
 
         assertThrows(ConstraintViolationException.class, () -> service.create(dto));
     }
