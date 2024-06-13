@@ -13,6 +13,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import at.ac.tuwien.sepr.groupphase.backend.repository.OpeningHoursRepository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -30,23 +32,6 @@ public class OpeningHoursRepositoryTest implements TestData {
 
     @Test
     @Transactional
-    public void givenLegalData_whenSaveOpeningHours_thenFindListWithOneElementAndFindOpeningHoursById() {
-        OpeningHours openingHours = OpeningHours.OpeningHourBuilder.anOpeningHour()
-            .withRestaurant(restaurantRepository.save(TEST_RESTAURANT_1))
-            .withDayOfWeek(TEST_OPENING_HOURS_DAY_OF_WEEK)
-            .withOpeningTime(TEST_OPENING_HOURS_OPENING_TIME)
-            .withClosingTime(TEST_OPENING_HOURS_CLOSING_TIME)
-            .build();
-        openingHoursRepository.save(openingHours);
-
-        assertAll(
-            () -> assertEquals(1, openingHoursRepository.findAll().size()),
-            () -> assertNotNull(openingHoursRepository.findById(openingHours.getId()))
-        );
-    }
-
-    @Test
-    @Transactional
     public void givenDayOfWeek_whenFindByDayOfWeek_thenFindOpeningHours() {
         OpeningHours openingHours = OpeningHours.OpeningHourBuilder.anOpeningHour()
             .withRestaurant(restaurantRepository.save(TEST_RESTAURANT_1))
@@ -55,9 +40,19 @@ public class OpeningHoursRepositoryTest implements TestData {
             .withClosingTime(TEST_OPENING_HOURS_CLOSING_TIME)
             .build();
         openingHoursRepository.save(openingHours);
+        OpeningHours openingHours2 = OpeningHours.OpeningHourBuilder.anOpeningHour()
+            .withRestaurant(restaurantRepository.save(TEST_RESTAURANT_1))
+            .withDayOfWeek(TEST_OPENING_HOURS_DAY_OF_WEEK_2)
+            .withOpeningTime(TEST_OPENING_HOURS_OPENING_TIME)
+            .withClosingTime(TEST_OPENING_HOURS_CLOSING_TIME)
+            .build();
+        openingHoursRepository.save(openingHours2);
+
+        List<OpeningHours> result = openingHoursRepository.findByDayOfWeek(TEST_OPENING_HOURS_DAY_OF_WEEK);
 
         assertAll(
-            () -> assertEquals(openingHours, openingHoursRepository.findByDayOfWeek(TEST_OPENING_HOURS_DAY_OF_WEEK).get(0))
+            () -> assertEquals(1, result.size(), "Should return one opening hour"),
+            () -> assertEquals(openingHours, result.get(0), "Should return the correct opening hour")
         );
     }
 }

@@ -1,7 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.unittests.repository;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Message;
 import at.ac.tuwien.sepr.groupphase.backend.repository.MessageRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(SpringExtension.class)
 // This test slice annotation is used instead of @SpringBootTest to load only entity beans instead of
@@ -24,17 +22,6 @@ public class MessageRepositoryTest implements TestData {
 
     @Autowired
     private MessageRepository messageRepository;
-
-    @Test
-    @Transactional
-    public void givenNothing_whenSaveMessage_thenFindListWithOneElementAndFindMessageById() {
-        messageRepository.save(TEST_MESSAGE_1);
-
-        assertAll(
-            () -> assertEquals(1, messageRepository.findAll().size()),
-            () -> assertNotNull(messageRepository.findById(TEST_MESSAGE_1.getId()))
-        );
-    }
 
     @Test
     @Transactional

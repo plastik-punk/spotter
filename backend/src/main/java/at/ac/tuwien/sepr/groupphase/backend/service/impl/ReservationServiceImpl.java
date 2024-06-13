@@ -110,10 +110,6 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public ReservationCreateDto create(@Valid ReservationCreateDto reservationCreateDto) throws MessagingException {
         LOGGER.trace("create ({})", reservationCreateDto.toString());
-        Set<ConstraintViolation<ReservationCreateDto>> reservationCreateDtoViolations = validator.validate(reservationCreateDto);
-        if (!reservationCreateDtoViolations.isEmpty()) {
-            throw new ConstraintViolationException(reservationCreateDtoViolations);
-        }
 
         // 1. if in simple view, no end time is given, so we set it to 2 hours after start time by default
         if (reservationCreateDto.getEndTime() == null) {
@@ -212,7 +208,8 @@ public class ReservationServiceImpl implements ReservationService {
 
         // 6. Save Reservation in database and return it mapped to a DTO
         Reservation savedReservation = reservationRepository.save(reservation);
-        // Validate the Reservation object via javax.validation using the annotations in the entity class
+
+        // Validate after changes being made as an additional layer of defense
         Set<ConstraintViolation<Reservation>> reservationViolations = validator.validate(savedReservation);
         if (!reservationViolations.isEmpty()) {
             throw new ConstraintViolationException(reservationViolations);
@@ -253,7 +250,6 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public ReservationResponseEnum getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) {
         LOGGER.trace("getAvailability ({})", reservationCheckAvailabilityDto.toString());
-        // reservationValidator.validateReservationCheckAvailabilityDto(reservationCheckAvailabilityDto);
         LocalDate date = reservationCheckAvailabilityDto.getDate();
         LocalTime startTime = reservationCheckAvailabilityDto.getStartTime();
         LocalTime endTime = reservationCheckAvailabilityDto.getEndTime();
@@ -465,7 +461,8 @@ public class ReservationServiceImpl implements ReservationService {
             + reservation.getStartTime().toString() + reservation.getEndTime().toString()
             + reservation.getPax().toString()));
         Reservation updatedReservation = reservationRepository.save(reservation);
-        // Validate the Reservation object via javax.validation using the annotations in the entity class
+
+        // Validate after changes being made as an additional layer of defense
         Set<ConstraintViolation<Reservation>> violations = validator.validate(updatedReservation);
         if (!violations.isEmpty()) {
             throw new ConstraintViolationException(violations);
