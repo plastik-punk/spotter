@@ -6,16 +6,13 @@ import {formatIsoDate} from '../util/date-helper';
 import {
   ReservationSearch,
   ReservationListDto,
-  ReservationEditDto,
-  AreaLayoutDto,
-  AreaListDto
+  ReservationEditDto
 } from "../dtos/reservation";
 import {
   Reservation,
   ReservationCheckAvailabilityDto,
   ReservationCreateDto,
-  ReservationDetailDto,
-  ReservationLayoutCheckAvailabilityDto,
+  ReservationDetailDto
 } from "../dtos/reservation";
 import {SimpleViewReservationStatusEnum} from "../dtos/status-enum";
 
@@ -51,18 +48,6 @@ export class ReservationService {
       params = params.append(key, reservationCheckAvailabilityDto[key]);
     });
     return this.httpClient.get<SimpleViewReservationStatusEnum>(this.reservationBaseUri, { params });
-  }
-
-  /**
-   * Get the layout of an area and check the availability
-   * @param reservationLayoutCheckAvailabilityDto the time, date and area to check the availability for
-   */
-  getLayoutAvailability(reservationLayoutCheckAvailabilityDto: ReservationLayoutCheckAvailabilityDto) : Observable<AreaLayoutDto> {
-    let params = new HttpParams();
-    Object.keys(reservationLayoutCheckAvailabilityDto).forEach((key) => {
-      params = params.append(key, reservationLayoutCheckAvailabilityDto[key]);
-    });
-    return this.httpClient.get<AreaLayoutDto>(this.reservationBaseUri + "/layout", { params });
   }
 
   /**
@@ -132,15 +117,4 @@ export class ReservationService {
   delete(hash: string): Observable<HttpResponse<void>> {
     return this.httpClient.delete<void>(this.reservationBaseUri, { observe: 'response' , body: hash});
   }
-
-  /**
-   * Get list of all areas
-   *
-   * @return an Observable for the list of areas
-   */
-  getAllAreas(): Observable<AreaListDto> {
-    return this.httpClient.get<AreaListDto>(this.globals.backendUri + "/reservations/areas");
-  }
-
-
 }

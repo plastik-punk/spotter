@@ -1,6 +1,6 @@
 import { Injectable, ElementRef } from '@angular/core';
 import * as d3 from 'd3';
-import {AreaLayoutDto, CoordinateDto, PlaceVisualDto} from "../dtos/reservation";
+import {AreaLayoutDto, CoordinateDto, PlaceVisualDto} from "../dtos/layout";
 
 @Injectable({
   providedIn: 'root'

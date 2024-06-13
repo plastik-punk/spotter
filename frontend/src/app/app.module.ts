@@ -30,6 +30,7 @@ import {AdminViewComponent} from "./components/admin-view/admin-view.component";
 import {ReservationEditComponent} from "./components/reservation/reservation-edit/reservation-edit.component";
 import {PredictionComponent} from "./components/admin-view/prediction/prediction.component";
 import {NgApexchartsModule} from "ng-apexcharts";
+import {CreateLayoutComponent} from "./components/create-layout/create-layout.component";
 
 @NgModule({
     declarations: [
@@ -50,7 +51,8 @@ import {NgApexchartsModule} from "ng-apexcharts";
         EventCreateComponent,
         ReservationLayoutComponent,
         AdminViewComponent,
-        PredictionComponent
+        PredictionComponent,
+       CreateLayoutComponent
     ],
   imports: [
     BrowserModule,

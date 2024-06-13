@@ -1,11 +1,8 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaLayoutDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
@@ -64,24 +61,6 @@ public class ReservationEndpoint {
         return service.getAvailability(reservationCheckAvailabilityDto);
     }
 
-    //Todo als dto
-    @ResponseStatus(HttpStatus.OK)
-    @PermitAll
-    @GetMapping("/layout")
-    @Operation(summary = "Get layout of area for requested time and pax")
-    public AreaLayoutDto getAvailabilityLayout(@Valid ReservationLayoutCheckAvailabilityDto reservationLayoutCheckAvailabilityDto) {
-        LOGGER.info("GET /api/v1/reservations/layout body: {}", reservationLayoutCheckAvailabilityDto);
-        return service.getAreaLayout(reservationLayoutCheckAvailabilityDto);
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @PermitAll
-    @GetMapping("/areas")
-    @Operation(summary = "Get list of all areas")
-    public AreaListDto getAllAreas() {
-        LOGGER.info("GET /api/v1/reservations/areas");
-        return service.getAllAreas();
-    }
 
     @ResponseStatus(HttpStatus.OK)
     @PermitAll

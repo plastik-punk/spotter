@@ -1,14 +1,15 @@
 import {Component, OnInit, OnDestroy, ElementRef, ViewChild, HostListener} from '@angular/core';
 import {NgForm} from "@angular/forms";
+import {ReservationCreateDto} from "../../../dtos/reservation";
 import {
   ReservationLayoutCheckAvailabilityDto,
-  ReservationCreateDto,
   AreaLayoutDto,
   AreaListDto,
   AreaDto
-} from "../../../dtos/reservation";
+} from "../../../dtos/layout";
 import {UserOverviewDto} from "../../../dtos/app-user";
 import {AuthService} from "../../../services/auth.service";
+import {LayoutService} from "../../../services/layout.service";
 import {ReservationService} from "../../../services/reservation.service";
 import {NotificationService} from "../../../services/notification.service";
 import {D3DrawService} from "../../../services/d3-draw.service";
@@ -42,7 +43,8 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
 
   constructor(
     public authService: AuthService,
-    private service: ReservationService,
+    private layoutService: LayoutService,
+    private reservationService: ReservationService,
     private notificationService: NotificationService,
     private d3DrawService: D3DrawService
   ) {
@@ -123,7 +125,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
 
 
   private fetchAllAreas() {
-    this.service.getAllAreas().subscribe({
+    this.layoutService.getAllAreas().subscribe({
       next: (data: AreaListDto) => {
         this.areas = data.areas;
         if (this.areas.length > 0) {
@@ -151,7 +153,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
   }
 
   private fetchLayoutAvailability() {
-    this.service.getLayoutAvailability(this.reservationLayoutCheckAvailabilityDto).subscribe({
+    this.layoutService.getLayoutAvailability(this.reservationLayoutCheckAvailabilityDto).subscribe({
       next: (data: AreaLayoutDto) => {
         this.areaLayout = data;
         this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this));
@@ -262,7 +264,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
   }
 
   private createReservation(form: NgForm) {
-    this.service.createReservation(this.reservationCreateDto).subscribe({
+    this.reservationService.createReservation(this.reservationCreateDto).subscribe({
       next: (data) => {
         if (data == null) {
           this.notificationService.showError('Location Closed');
