@@ -43,7 +43,8 @@ with open('insert_reservations_and_mapping.sql', 'w') as file:
     file.write(",\n".join(place_entries) + ";\n\n")
 
     # Write SQL for inserting reservations
-    file.write("MERGE INTO reservation (id, user_id, date, start_time, end_time, pax, notes, hash_value) VALUES\n")
+    file.write(
+        "MERGE INTO reservation (id, user_id, date, start_time, end_time, pax, notes, hash_value,confirmed) VALUES\n")
     reservation_entries = []
     reservation_place_entries = []
     current_reservation_id = start_reservation_id
@@ -77,7 +78,7 @@ with open('insert_reservations_and_mapping.sql', 'w') as file:
                     if place_id not in reservations:
                         reservations[place_id] = []
                     reservations[place_id].append({'date': date, 'start_time': start_time, 'end_time': end_time})
-                    reservation_entry = f"({current_reservation_id}, {user_id}, '{date}', '{start_time}', '{end_time}', {pax}, '{notes}', '{hash_value}')"
+                    reservation_entry = f"({current_reservation_id}, {user_id}, '{date}', '{start_time}', '{end_time}', {pax}, '{notes}', '{hash_value}',{0})"
                     reservation_entries.append(reservation_entry)
                     # Add entry for reservationplace mapping table
                     reservation_place_entry = f"({current_reservation_id}, {place_id})"

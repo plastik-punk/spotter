@@ -2,12 +2,13 @@ import {Component, OnInit} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AuthService} from '../../../services/auth.service';
 import {ReservationEditDto, ReservationListDto, ReservationSearch} from "../../../dtos/reservation";
-import {debounceTime, Observable, Subject} from "rxjs";
+import {interval,debounceTime, Observable, Subject, Subscription} from "rxjs";
 import {ReservationService} from "../../../services/reservation.service";
 import {Router} from "@angular/router";
 import {HttpResponse} from "@angular/common/http";
 import {NotificationService} from "../../../services/notification.service";
 import moment from 'moment';
+import {now} from "lodash";
 
 @Component({
   selector: 'app-reservation-overview',
@@ -27,6 +28,7 @@ export class ReservationOverviewComponent implements OnInit {
   searchChangedObservable = new Subject<void>();
   deleteWhat: ReservationEditDto | null = null;
   untouched: boolean = true;
+  fetchIntervalSubscription!: Subscription;
 
   currentPage = 1;
   pageSize = 25;
@@ -42,9 +44,19 @@ export class ReservationOverviewComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadReservations();
-    this.searchChangedObservable
-      .pipe(debounceTime(100))
-      .subscribe({next: () => this.loadReservations()});
+    this.searchChangedObservable.pipe(debounceTime(100)).subscribe(() => this.loadReservations());
+
+    // Set up the interval to reload reservations every 2 minutes
+    this.fetchIntervalSubscription = interval(120000).subscribe(() => {
+      console.log('Fetching new reservations automatically...');
+      this.loadReservations();
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.fetchIntervalSubscription) {
+      this.fetchIntervalSubscription.unsubscribe();
+    }
   }
 
   isAdmin(): boolean {
@@ -55,13 +67,18 @@ export class ReservationOverviewComponent implements OnInit {
     return this.authService.getUserRole() === 'EMPLOYEE';
   }
 
+  isAdminOrEmployee(): boolean {
+    const role = this.authService.getUserRole();
+    return role === 'ADMIN' || role === 'EMPLOYEE';
+  }
+
 
   loadReservations() {
     const today = moment().startOf('day');
     const nextWeek = moment().add(7, 'days').endOf('day');
 
     if (this.searchEarliestDate == null || this.searchEarliestDate === "") {
-      this.searchParams.earliestDate = null;
+      this.searchParams.earliestDate = this.isAdminOrEmployee() ? null : today.toDate();
     } else {
       this.searchParams.earliestDate = new Date(this.searchEarliestDate);
     }
@@ -94,6 +111,8 @@ export class ReservationOverviewComponent implements OnInit {
         this.searchParams.latestEndTime = nextWeek.format('HH:mm');
       }
     }
+
+
     this.reservationService.search(this.searchParams)
       .subscribe({
         next: (reservations: ReservationListDto[]) => {
