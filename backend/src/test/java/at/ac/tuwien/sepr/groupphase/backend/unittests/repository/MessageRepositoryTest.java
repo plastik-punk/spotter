@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.unittests.repository;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Message;
 import at.ac.tuwien.sepr.groupphase.backend.repository.MessageRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,13 +27,13 @@ public class MessageRepositoryTest implements TestData {
     @Test
     @Transactional
     public void givenNothing_whenFindAllByOrderByPublishedAtDesc_thenReturnOrdered() {
-        messageRepository.save(TEST_MESSAGE_1);
-        messageRepository.save(TEST_MESSAGE_3);
+        Message message1 = messageRepository.save(TEST_MESSAGE_1);
+        Message message2 = messageRepository.save(TEST_MESSAGE_3);
 
         assertAll(
             () -> assertEquals(2, messageRepository.findAllByOrderByPublishedAtDesc().size()),
-            () -> assertEquals(TEST_MESSAGE_3, messageRepository.findAllByOrderByPublishedAtDesc().get(0)),
-            () -> assertEquals(TEST_MESSAGE_1, messageRepository.findAllByOrderByPublishedAtDesc().get(1))
+            () -> assertEquals(message2, messageRepository.findAllByOrderByPublishedAtDesc().get(0)),
+            () -> assertEquals(message1, messageRepository.findAllByOrderByPublishedAtDesc().get(1))
         );
     }
 }

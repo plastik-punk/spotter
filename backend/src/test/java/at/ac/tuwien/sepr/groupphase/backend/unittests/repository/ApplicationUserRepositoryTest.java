@@ -44,8 +44,8 @@ public class ApplicationUserRepositoryTest implements TestData {
     @Test
     @Transactional
     public void givenValidData_whenFindRoleInOrderByFirstNameAsc_thenReturnUsersInOrder() {
-        applicationUserRepository.save(TEST_APPLICATION_USER_CUSTOMER_1);
-        applicationUserRepository.save(TEST_APPLICATION_USER_CUSTOMER_3);
+        ApplicationUser user1 = applicationUserRepository.save(TEST_APPLICATION_USER_CUSTOMER_1);
+        ApplicationUser user2 = applicationUserRepository.save(TEST_APPLICATION_USER_CUSTOMER_3);
 
         List<RoleEnum> roles = new ArrayList<>();
         roles.add(RoleEnum.CUSTOMER);
@@ -53,8 +53,8 @@ public class ApplicationUserRepositoryTest implements TestData {
         List<ApplicationUser> users = applicationUserRepository.findByRoleInOrderByFirstNameAsc(roles);
 
         assertAll(
-            () -> assertEquals(((List<?>) users).get(0), TEST_APPLICATION_USER_CUSTOMER_3),
-            () -> assertEquals(users.get(1), TEST_APPLICATION_USER_CUSTOMER_1)
+            () -> assertEquals(((List<?>) users).get(0), user2),
+            () -> assertEquals(users.get(1), user1)
         );
     }
 
@@ -63,7 +63,7 @@ public class ApplicationUserRepositoryTest implements TestData {
     public void givenValidData_whenFindAllByRole_thenReturnUsers() {
         ApplicationUser user1 = applicationUserRepository.save(TEST_APPLICATION_USER_CUSTOMER_1);
         ApplicationUser user2 = applicationUserRepository.save(TEST_APPLICATION_USER_CUSTOMER_3);
-        ApplicationUser user3 = applicationUserRepository.save(TEST_APPLICATION_USER_GUEST_2);
+        applicationUserRepository.save(TEST_APPLICATION_USER_GUEST_2);
 
         List<ApplicationUser> users = applicationUserRepository.findAllByRole(RoleEnum.CUSTOMER);
 

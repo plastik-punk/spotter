@@ -33,13 +33,14 @@ public class OpeningHoursRepositoryTest implements TestData {
     @Test
     @Transactional
     public void givenDayOfWeek_whenFindByDayOfWeek_thenFindOpeningHours() {
-        OpeningHours openingHours = OpeningHours.OpeningHourBuilder.anOpeningHour()
+        OpeningHours openingHours1 = OpeningHours.OpeningHourBuilder.anOpeningHour()
             .withRestaurant(restaurantRepository.save(TEST_RESTAURANT_1))
             .withDayOfWeek(TEST_OPENING_HOURS_DAY_OF_WEEK)
             .withOpeningTime(TEST_OPENING_HOURS_OPENING_TIME)
             .withClosingTime(TEST_OPENING_HOURS_CLOSING_TIME)
             .build();
-        openingHoursRepository.save(openingHours);
+        OpeningHours openingHours1Saved = openingHoursRepository.save(openingHours1);
+
         OpeningHours openingHours2 = OpeningHours.OpeningHourBuilder.anOpeningHour()
             .withRestaurant(restaurantRepository.save(TEST_RESTAURANT_1))
             .withDayOfWeek(TEST_OPENING_HOURS_DAY_OF_WEEK_2)
@@ -52,7 +53,7 @@ public class OpeningHoursRepositoryTest implements TestData {
 
         assertAll(
             () -> assertEquals(1, result.size(), "Should return one opening hour"),
-            () -> assertEquals(openingHours, result.get(0), "Should return the correct opening hour")
+            () -> assertEquals(openingHours1Saved, result.get(0), "Should return the correct opening hour")
         );
     }
 }

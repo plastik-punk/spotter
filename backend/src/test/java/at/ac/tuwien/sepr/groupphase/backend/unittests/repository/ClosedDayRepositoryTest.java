@@ -36,7 +36,7 @@ public class ClosedDayRepositoryTest implements TestData {
             .withRestaurant(restaurantRepository.save(TEST_RESTAURANT_1))
             .withDate(TEST_CLOSED_DAY_DATE)
             .build();
-        closedDayRepository.save(closedDay);
+        closedDay = closedDayRepository.save(closedDay);
 
         assertEquals(closedDay, closedDayRepository.findByDate(TEST_CLOSED_DAY_DATE).get());
     }
