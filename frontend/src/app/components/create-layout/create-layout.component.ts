@@ -43,6 +43,14 @@ export class CreateLayoutComponent implements OnInit {
   layoutCreateDto: LayoutCreateDto = { areas: [] };
   currentCell: { x: number, y: number } | null = null;
   createdTables: PlaceVisualDto[] = [];
+  cellToDelete: { x: number, y: number, placeNumber: number } | null = null;
+
+  confirmHeader = 'Delete Table';
+  changeWhatFirstName = '';
+  changeWhatLastName = '';
+  makeWhat = 'delete';
+  yesWhat = 'Delete';
+  whatRole = 'Table';
 
   constructor(private fb: FormBuilder) {}
 
@@ -72,10 +80,16 @@ export class CreateLayoutComponent implements OnInit {
         places: this.layoutForm.value.places
       };
       this.layoutCreateDto.areas.push(area);
-      this.layoutForm.reset();
-      this.layoutForm.patchValue({ isMainArea: false, isOpen: false }); // Reset main area and open checkboxes
-      this.ensureSingleMainArea();
+      this.resetFormForNextArea();
     }
+  }
+
+  resetFormForNextArea(): void {
+    this.layoutForm.reset();
+    this.layoutForm.patchValue({ isMainArea: false, isOpen: false }); // Reset main area and open checkboxes
+    this.createdTables = [];
+    this.ensureSingleMainArea();
+    d3.select(this.d3Container.nativeElement).selectAll('*').remove(); // Clear the grid
   }
 
   ensureSingleMainArea(): void {
@@ -120,7 +134,7 @@ export class CreateLayoutComponent implements OnInit {
             .attr('fill', '#d3d3d3')
             .attr('stroke', '#ffffff')
             .attr('class', `cell-${x}-${y}`)
-            .on('click', (event) => this.onCellClick(x, y));
+            .on('click', () => this.onCellClick(x, y));
 
           svg.append('text')
             .attr('x', x * cellSize + cellSize / 2)
@@ -134,14 +148,27 @@ export class CreateLayoutComponent implements OnInit {
   }
 
   onCellClick(x: number, y: number): void {
-    const adjacentTable = this.findAdjacentTable(x, y);
-    if (adjacentTable) {
-      this.addCoordinatesToAdjacentTable(adjacentTable, x, y);
+    const table = this.findTableByCoordinates(x, y);
+    if (table) {
+      this.cellToDelete = { x, y, placeNumber: table.placeNumber };
+      this.showConfirmDialog();
     } else {
-      this.currentCell = { x, y };
-      const placeModal = new bootstrap.Modal(document.getElementById('placeModal'));
-      placeModal.show();
+      const adjacentTable = this.findAdjacentTable(x, y);
+      if (adjacentTable) {
+        this.addCoordinatesToAdjacentTable(adjacentTable, x, y);
+      } else {
+        this.currentCell = { x, y };
+        this.placeForm.reset();
+        const placeModal = new bootstrap.Modal(document.getElementById('placeModal'));
+        placeModal.show();
+      }
     }
+  }
+
+  findTableByCoordinates(x: number, y: number): PlaceVisualDto | undefined {
+    return this.createdTables.find(table =>
+      table.coordinates.some(coord => coord.x === x && coord.y === y)
+    );
   }
 
   findAdjacentTable(x: number, y: number): PlaceVisualDto | undefined {
@@ -177,6 +204,13 @@ export class CreateLayoutComponent implements OnInit {
 
   savePlace(): void {
     if (this.placeForm.valid && this.currentCell) {
+      const placeNumber = this.placeForm.value.placeNumber;
+
+      if (this.createdTables.some(table => table.placeNumber === placeNumber)) {
+        // Number is already taken, do not allow save
+        return;
+      }
+
       const placeData: PlaceVisualDto = {
         placeNumber: this.placeForm.value.placeNumber,
         status: this.placeForm.value.status === 'true',
@@ -198,7 +232,36 @@ export class CreateLayoutComponent implements OnInit {
 
       const placeModal = bootstrap.Modal.getInstance(document.getElementById('placeModal'));
       placeModal.hide();
+      this.placeForm.reset();
     }
+  }
+
+  deleteCell(): void {
+    if (this.cellToDelete) {
+      const { x, y, placeNumber } = this.cellToDelete;
+      const table = this.createdTables.find(t => t.placeNumber === placeNumber);
+      if (table) {
+        table.coordinates = table.coordinates.filter(coord => coord.x !== x || coord.y !== y);
+        if (table.coordinates.length === 0) {
+          this.createdTables = this.createdTables.filter(t => t.placeNumber !== placeNumber);
+          const placesArray = this.layoutForm.get('places') as FormArray;
+          const index = placesArray.controls.findIndex(control => control.value.placeNumber === placeNumber);
+          if (index !== -1) {
+            placesArray.removeAt(index);
+          }
+        }
+
+        // Clear the cell
+        const container = d3.select(this.d3Container.nativeElement).select('svg');
+        container.select(`.table-number-${x}-${y}`).text('');
+        container.select(`.cell-${x}-${y}`).attr('fill', '#d3d3d3');
+      }
+    }
+  }
+
+  showConfirmDialog(): void {
+    const confirmModal = new bootstrap.Modal(document.getElementById('confirm-dialog'));
+    confirmModal.show();
   }
 
   onSubmit(): void {

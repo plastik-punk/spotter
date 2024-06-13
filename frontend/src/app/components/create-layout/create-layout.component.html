@@ -12,12 +12,11 @@
 <body>
 <div class="top-left-logo">
   <a href="/login">
-    <img src="../../../../assets/images/logo.png" alt="Logo">
-  </a>
-</div>
+    <img src="assets/images/logo.png" alt="Logo">
+  </a></div>
 <div class="container-fluid">
   <div class="col-12 col-lg-10 mx-auto">
-    <div class="card custom-card">
+    <div class="custom-card">
       <form [formGroup]="layoutForm" (ngSubmit)="onSubmit()" novalidate>
         <div class="top-banner">
           <div class="row">
@@ -141,11 +140,25 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" (click)="savePlace()">Save</button>
+                <button type="button" class="btn btn-primary" (click)="savePlace()"
+                        [disabled]="placeForm.invalid">
+                  Save
+                </button>
               </div>
             </div>
           </div>
         </div>
+
+        <!-- Modal for confirming delete -->
+        <app-confirm-dialog id="confirm-dialog"
+                            [confirmHeader]="confirmHeader"
+                            [changeWhatFirstName]="changeWhatFirstName"
+                            [changeWhatLastName]="changeWhatLastName"
+                            [makeWhat]="makeWhat"
+                            [whatRole]="whatRole"
+                            [yesWhat]="yesWhat"
+                            (confirm)="deleteCell()">
+        </app-confirm-dialog>
 
         <hr class="my-4">
         <div class="row">

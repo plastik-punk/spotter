@@ -31,6 +31,7 @@ import {ReservationEditComponent} from "./components/reservation/reservation-edi
 import {PredictionComponent} from "./components/admin-view/prediction/prediction.component";
 import {NgApexchartsModule} from "ng-apexcharts";
 import {CreateLayoutComponent} from "./components/create-layout/create-layout.component";
+import {ConfirmDialogComponent} from "./components/confirm-dialog/confirm-dialog.component";
 
 @NgModule({
     declarations: [
@@ -70,7 +71,8 @@ import {CreateLayoutComponent} from "./components/create-layout/create-layout.co
     ReactiveFormsModule,
     RouterLink,
     NoopAnimationsModule,
-    NgApexchartsModule
+    NgApexchartsModule,
+    ConfirmDialogComponent
   ],
     providers: [httpInterceptorProviders],
     exports: [
