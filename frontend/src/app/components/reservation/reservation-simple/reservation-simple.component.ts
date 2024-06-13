@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../../../services/auth.service';
-import { NgForm } from '@angular/forms';
-import { ReservationCheckAvailabilityDto, ReservationCreateDto } from '../../../dtos/reservation';
-import { UserOverviewDto } from '../../../dtos/app-user';
-import { ReservationService } from '../../../services/reservation.service';
-import { NotificationService } from '../../../services/notification.service';
-import { SimpleViewReservationStatusEnum } from '../../../dtos/status-enum';
+import {Component, OnInit} from '@angular/core';
+import {AuthService} from '../../../services/auth.service';
+import {NgForm} from '@angular/forms';
+import {ReservationCheckAvailabilityDto, ReservationCreateDto} from '../../../dtos/reservation';
+import {UserOverviewDto} from '../../../dtos/app-user';
+import {ReservationService} from '../../../services/reservation.service';
+import {NotificationService} from '../../../services/notification.service';
+import {SimpleViewReservationStatusEnum} from '../../../dtos/status-enum';
 import {ActivatedRoute} from "@angular/router";
 
 @Component({
@@ -47,14 +47,17 @@ export class ReservationSimpleComponent implements OnInit {
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       // Override logged-in status based on query parameter
-      this.isGuestView = params['guestView'] === 'true';});
+      this.isGuestView = params['guestView'] === 'true';
+    });
     this.startTimer()
   }
+
   ngOnDestroy() {
     if (this.timer) {
       clearInterval(this.timer);
     }
   }
+
   private startTimer() {
     this.sharedStartTime = new Date().toTimeString().slice(0, 5);
 
