@@ -141,6 +141,12 @@ public interface TestData {
     String TEST_APPLICATION_USER_PASSWORD = "naughtyotter";
     RoleEnum TEST_APPLICATION_USER_ROLE = RoleEnum.CUSTOMER;
 
+    String TEST_APPLICATION_USER_FIRST_NAME_2 = "Biber";
+    String TEST_APPLICATION_USER_LAST_NAME_2 = "McBiberface";
+    String TEST_APPLICATION_USER_EMAIL_2 = "biber@example.at";
+    String TEST_APPLICATION_USER_MOBILE_NUMBER_2 = "06501234568";
+    String TEST_APPLICATION_USER_PASSWORD_2 = "naughtybiber";
+
     ApplicationUser TEST_APPLICATION_USER_CUSTOMER_1 = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
         .withId(1L)
         .withFirstName(TEST_APPLICATION_USER_FIRST_NAME)
@@ -161,6 +167,16 @@ public interface TestData {
         .withRole(TEST_APPLICATION_USER_ROLE)
         .build();
 
+    ApplicationUser TEST_APPLICATION_USER_CUSTOMER_3 = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
+        .withId(2L)
+        .withFirstName(TEST_APPLICATION_USER_FIRST_NAME_2)
+        .withLastName(TEST_APPLICATION_USER_LAST_NAME_2)
+        .withEmail(TEST_APPLICATION_USER_EMAIL_2)
+        .withMobileNumber(TEST_APPLICATION_USER_MOBILE_NUMBER_2)
+        .withPassword(TEST_APPLICATION_USER_PASSWORD_2)
+        .withRole(TEST_APPLICATION_USER_ROLE)
+        .build();
+
     String TEST_APPLICATION_USER_EXPECTED_STRING = "User{id=1, firstName='" + TEST_APPLICATION_USER_FIRST_NAME
         + "', lastName='" + TEST_APPLICATION_USER_LAST_NAME
         + "', eMail='" + TEST_APPLICATION_USER_EMAIL
@@ -170,6 +186,16 @@ public interface TestData {
 
     ApplicationUser TEST_APPLICATION_USER_GUEST = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
         .withId(1L)
+        .withFirstName(TEST_APPLICATION_USER_FIRST_NAME)
+        .withLastName(TEST_APPLICATION_USER_LAST_NAME)
+        .withEmail(TEST_APPLICATION_USER_EMAIL)
+        .withMobileNumber(TEST_APPLICATION_USER_MOBILE_NUMBER)
+        .withoutPassword()
+        .withRole(RoleEnum.GUEST)
+        .build();
+
+    ApplicationUser TEST_APPLICATION_USER_GUEST_2 = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
+        .withId(22L)
         .withFirstName(TEST_APPLICATION_USER_FIRST_NAME)
         .withLastName(TEST_APPLICATION_USER_LAST_NAME)
         .withEmail(TEST_APPLICATION_USER_EMAIL)
@@ -200,6 +226,7 @@ public interface TestData {
     Long TEST_RESERVATION_DETAIL_ID = 1L;
     String TEST_RESERVATION_HASH_VALUE = "TestHashValue";
     String TEST_RESERVATION_HASH_VALUE_1 = "1476C39F97636A345B7BCCA9AAE7787E7140D6835FDDD947EC561DEC9C6F9AC5";
+    LocalDate TEST_RESERVATION_DATE_INVALID = LocalDate.of(2022, 1, 2);
 
     ReservationCreateDto TEST_RESERVATION_CREATE_DTO_CUSTOMER = ReservationCreateDto.ReservationCreateDtoBuilder.aReservationCreateDto()
         .withApplicationUser(TEST_APPLICATION_USER_CUSTOMER_1)
@@ -271,6 +298,17 @@ public interface TestData {
     Reservation TEST_RESERVATION_2 = Reservation.ReservationBuilder.aReservation()
         .withId(1L)
         .withUser(TEST_APPLICATION_USER_CUSTOMER_1)
+        .withStartTime(TEST_RESERVATION_START_TIME)
+        .withEndTime(TEST_RESERVATION_END_TIME)
+        .withDate(TEST_RESERVATION_DATE)
+        .withPax(TEST_RESERVATION_PAX)
+        .withNotes(TEST_RESERVATION_NOTES)
+        .withConfirmed(false)
+        .build();
+
+    Reservation TEST_RESERVATION_3 = Reservation.ReservationBuilder.aReservation()
+        .withId(2L)
+        .withUser(TEST_APPLICATION_USER_CUSTOMER_3)
         .withStartTime(TEST_RESERVATION_START_TIME)
         .withEndTime(TEST_RESERVATION_END_TIME)
         .withDate(TEST_RESERVATION_DATE)
@@ -366,6 +404,7 @@ public interface TestData {
     // ---------------------------------------------
 
     DayOfWeek TEST_OPENING_HOURS_DAY_OF_WEEK = DayOfWeek.MONDAY;
+    DayOfWeek TEST_OPENING_HOURS_DAY_OF_WEEK_2 = DayOfWeek.TUESDAY;
     LocalTime TEST_OPENING_HOURS_OPENING_TIME = LocalTime.of(11, 30);
     LocalTime TEST_OPENING_HOURS_CLOSING_TIME = LocalTime.of(15, 0);
 

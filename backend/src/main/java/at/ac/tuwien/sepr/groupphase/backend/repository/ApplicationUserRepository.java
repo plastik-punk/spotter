@@ -32,7 +32,5 @@ public interface ApplicationUserRepository extends JpaRepository<ApplicationUser
      */
     List<ApplicationUser> findByRoleInOrderByFirstNameAsc(List<RoleEnum> roles);
 
-    List<ApplicationUser> findAllByOrderByFirstNameDesc();
-
     List<ApplicationUser> findAllByRole(RoleEnum role);
 }
