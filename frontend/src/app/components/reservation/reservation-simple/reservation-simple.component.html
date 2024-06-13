@@ -110,7 +110,7 @@
 
         <!-- Start row with (firstName, lastName, Mail, Phone), Notes -->
         <div class="row">
-          <div class="column" *ngIf="!authService.isLoggedIn()">
+          <div class="column" *ngIf="!authService.isLoggedIn() || isGuestView">
             <div>
               <!-- start guest fields -->
               <input

@@ -22,9 +22,28 @@ reservations = {}
 
 # Function to generate a random time within opening hours
 def random_time():
-    hour = random.randint(opening_hour, closing_hour - 2)  # end by 20:00 at latest to allow 2 hours
+    # Define two ranges of valid start times
+    morning_range_start = 11
+    morning_range_end = 15
+    evening_range_start = 17
+    evening_range_end = 22
+
+    # Choose a range based on a random choice
+    if random.choice([True, False]):
+        hour = random.randint(morning_range_start, morning_range_end - 2)  # Ends at 13:00 latest for 2-hour slot
+    else:
+        hour = random.randint(evening_range_start, evening_range_end - 2)  # Ends at 20:00 latest for 2-hour slot
+
     minute = random.choice([0, 15, 30, 45])
-    return datetime.strptime(f"{hour}:{minute}", "%H:%M").time()
+    time = datetime.strptime(f"{hour}:{minute}", "%H:%M").time()
+
+    # Adjust times to fit within the allowed booking slots
+    if time.hour >= morning_range_end - 1:
+        time = datetime.strptime(f"{morning_range_end - 2}:30", "%H:%M").time()
+    elif time.hour >= evening_range_end - 1:
+        time = datetime.strptime(f"{evening_range_end - 2}:30", "%H:%M").time()
+
+    return time
 
 
 # Generate SQL script

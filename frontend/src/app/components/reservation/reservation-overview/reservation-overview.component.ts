@@ -238,4 +238,13 @@ export class ReservationOverviewComponent implements OnInit {
     });
   }
 
+  createNewReservationGuest() {
+    // Navigate to the target page with a query parameter
+    this.router.navigate(['reservation-simple'], { queryParams: { guestView: 'true' } });
+  }
+
+  createNewReservation() {
+    // Navigate to the target page with a query parameter
+    this.router.navigate(['reservation-simple']);
+  }
 }

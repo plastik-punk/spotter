@@ -6,6 +6,7 @@ import { UserOverviewDto } from '../../../dtos/app-user';
 import { ReservationService } from '../../../services/reservation.service';
 import { NotificationService } from '../../../services/notification.service';
 import { SimpleViewReservationStatusEnum } from '../../../dtos/status-enum';
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-reservation-simple',
@@ -29,11 +30,12 @@ export class ReservationSimpleComponent implements OnInit {
   isBookButtonTimeout: boolean = false;
 
 
-
+  isGuestView = false;
   reservationStatusText: string = 'Provide Time, Date and Pax';
   reservationStatusClass: string = 'reservation-table-incomplete';
 
   constructor(
+    private route: ActivatedRoute,
     public authService: AuthService,
     private service: ReservationService,
     private notificationService: NotificationService,
@@ -43,6 +45,9 @@ export class ReservationSimpleComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      // Override logged-in status based on query parameter
+      this.isGuestView = params['guestView'] === 'true';});
     this.startTimer()
   }
   ngOnDestroy() {
