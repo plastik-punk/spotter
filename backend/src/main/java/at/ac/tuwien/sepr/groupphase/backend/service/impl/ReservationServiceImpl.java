@@ -110,10 +110,6 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public ReservationCreateDto create(@Valid ReservationCreateDto reservationCreateDto) throws MessagingException {
         LOGGER.trace("create ({})", reservationCreateDto.toString());
-        Set<ConstraintViolation<ReservationCreateDto>> reservationCreateDtoViolations = validator.validate(reservationCreateDto);
-        if (!reservationCreateDtoViolations.isEmpty()) {
-            throw new ConstraintViolationException(reservationCreateDtoViolations);
-        }
 
         // 1. if in simple view, no end time is given, so we set it to 2 hours after start time by default
         if (reservationCreateDto.getEndTime() == null) {
@@ -176,6 +172,7 @@ public class ReservationServiceImpl implements ReservationService {
         // 4. Map to Reservation entity
         Reservation reservation = mapper.reservationCreateDtoToReservation(reservationCreateDto);
         reservation.setNotes(reservation.getNotes() != null ? reservation.getNotes().trim() : reservation.getNotes());
+        reservation.setConfirmed(false);
 
         // 5. Choose the places for reservation
         List<Place> selectedPlaces = new ArrayList<>();
@@ -206,12 +203,13 @@ public class ReservationServiceImpl implements ReservationService {
 
         String hashedValue = hashService.hashSha256(reservation.getDate().toString()
             + reservation.getStartTime().toString() + reservation.getEndTime().toString()
-            + reservation.getPax().toString());
+            + reservation.getPax().toString()) + reservation.isConfirmed();
         reservation.setHashValue(hashedValue);
 
         // 6. Save Reservation in database and return it mapped to a DTO
         Reservation savedReservation = reservationRepository.save(reservation);
-        // Validate the Reservation object via javax.validation using the annotations in the entity class
+
+        // Validate after changes being made as an additional layer of defense
         Set<ConstraintViolation<Reservation>> reservationViolations = validator.validate(savedReservation);
         if (!reservationViolations.isEmpty()) {
             throw new ConstraintViolationException(reservationViolations);
@@ -249,12 +247,9 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
 
-
-
     @Override
     public ReservationResponseEnum getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) {
         LOGGER.trace("getAvailability ({})", reservationCheckAvailabilityDto.toString());
-        // reservationValidator.validateReservationCheckAvailabilityDto(reservationCheckAvailabilityDto);
         LocalDate date = reservationCheckAvailabilityDto.getDate();
         LocalTime startTime = reservationCheckAvailabilityDto.getStartTime();
         LocalTime endTime = reservationCheckAvailabilityDto.getEndTime();
@@ -466,7 +461,8 @@ public class ReservationServiceImpl implements ReservationService {
             + reservation.getStartTime().toString() + reservation.getEndTime().toString()
             + reservation.getPax().toString()));
         Reservation updatedReservation = reservationRepository.save(reservation);
-        // Validate the Reservation object via javax.validation using the annotations in the entity class
+
+        // Validate after changes being made as an additional layer of defense
         Set<ConstraintViolation<Reservation>> violations = validator.validate(updatedReservation);
         if (!violations.isEmpty()) {
             throw new ConstraintViolationException(violations);
@@ -650,5 +646,35 @@ public class ReservationServiceImpl implements ReservationService {
         templateModel.put("reservationTime", reservation.getStartTime());
         templateModel.put("link", "http://localhost:4200/#/reservation-detail/" + reservation.getHashValue()); //TODO: change away from localhost
         return templateModel;
+    }
+
+    @Override
+    public void confirm(String hashId) throws NotFoundException {
+        ReservationEditDto reservationEditDto = getByHashedId(hashId);
+        Long id = reservationEditDto.getReservationId();
+        LOGGER.trace("confirm ({})", id);
+
+        Optional<Reservation> optionalReservation = reservationRepository.findById(id);
+        if (optionalReservation.isEmpty()) {
+            throw new NotFoundException("Reservation not found", null);
+        }
+        Reservation reservation = optionalReservation.get();
+        reservation.setConfirmed(true);
+        reservationRepository.save(reservation);
+    }
+
+    @Override
+    public void unconfirm(String hashId) throws NotFoundException {
+        ReservationEditDto reservationEditDto = getByHashedId(hashId);
+        Long id = reservationEditDto.getReservationId();
+        LOGGER.trace("unconfirm ({})", id);
+
+        Optional<Reservation> optionalReservation = reservationRepository.findById(id);
+        if (optionalReservation.isEmpty()) {
+            throw new NotFoundException("Reservation not found", null);
+        }
+        Reservation reservation = optionalReservation.get();
+        reservation.setConfirmed(false);
+        reservationRepository.save(reservation);
     }
 }

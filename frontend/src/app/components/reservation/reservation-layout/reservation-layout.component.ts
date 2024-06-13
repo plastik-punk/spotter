@@ -13,6 +13,7 @@ import {ReservationService} from "../../../services/reservation.service";
 import {NotificationService} from "../../../services/notification.service";
 import {D3DrawService} from "../../../services/d3-draw.service";
 import {formatIsoDate} from "../../../util/date-helper";
+import {SimpleViewReservationStatusEnum} from "../../../dtos/status-enum";
 
 @Component({
   selector: 'app-component-reservation-layout',
@@ -310,4 +311,6 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
     this.sharedStartTime = (event.target as HTMLInputElement).value;
     this.onFieldChange();
   }
+
+  protected readonly SimpleViewReservationStatusEnum = SimpleViewReservationStatusEnum;
 }

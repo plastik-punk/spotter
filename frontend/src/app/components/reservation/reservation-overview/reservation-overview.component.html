@@ -67,7 +67,7 @@
           <table *ngIf="todaysReservations.length!==0" class="table table-hover">
             <thead>
             <tr>
-              <th>Date</th>
+              <th>Status</th>
               <th>Start Time</th>
               <th>End Time</th>
               <th>Name</th>
@@ -78,7 +78,17 @@
             </thead>
             <tbody>
             <tr *ngFor="let reservation of todaysReservations">
-              <td>{{ reservation.date }}</td>
+              <td>
+                <div *ngIf="reservation.confirmed && !reservationIsInTheFuture(reservation)">
+                  <i class="bi bi-check-circle-fill text-success"></i>
+                </div>
+                <div *ngIf="!reservation.confirmed && !reservationIsInTheFuture(reservation)">
+                  <i class="bi bi-x-circle-fill text-danger"></i>
+                </div>
+                <div *ngIf="reservationIsInTheFuture(reservation)">
+                  <i class="bi bi-clock text-primary"></i>
+                </div>
+              </td>
               <td>{{ reservation.startTime }}</td>
               <td>{{ reservation.endTime }}</td>
               <td>{{ reservation.userFirstName }} {{ reservation.userLastName }}</td>
@@ -86,6 +96,24 @@
               <td>{{ reservation.placeId }}</td>
               <td>
                 <div class="btn-group">
+                  <a *ngIf="!reservation.confirmed && !reservationIsInTheFuture(reservation)"
+                     class="btn btn-sm responsive-success-button"
+                     aria-label="Confirm reservation has arrived"
+                     (click)="confirmReservation(reservation.hashId)">
+                    <i class="bi bi-check-circle"></i>
+                  </a>
+                  <a *ngIf="reservation.confirmed && !reservationIsInTheFuture(reservation)"
+                     class="btn btn-sm responsive-danger-button"
+                     aria-label="Mark reservation as not arrived"
+                     (click)="unconfirmReservation(reservation.hashId)">
+                    <i class="bi bi-x-circle"></i>
+                  </a>
+                  <a *ngIf="reservationIsInTheFuture(reservation)"
+                     class="btn btn-sm responsive-tree-button"
+                     aria-label="Reservation is in the future and cannot be confirmed"
+                     [class.disabled]="true">
+                  <i class="bi bi-clock"></i>
+                  </a>
                   <a class="btn btn-sm responsive-info-button"
                      aria-label="Show reservation details" [routerLink]="['/reservation-detail',reservation.hashId]">
                     <i class="bi bi-info-lg"></i>
@@ -116,7 +144,6 @@
             <table class="table table-hover">
               <thead>
               <tr>
-                <th>Date</th>
                 <th>Start Time</th>
                 <th>End Time</th>
                 <th>Name</th>
@@ -127,7 +154,6 @@
               </thead>
               <tbody>
               <tr *ngFor="let reservation of day.value">
-                <td>{{ reservation.date }}</td>
                 <td>{{ reservation.startTime }}</td>
                 <td>{{ reservation.endTime }}</td>
                 <td>{{ reservation.userFirstName }} {{ reservation.userLastName }}</td>

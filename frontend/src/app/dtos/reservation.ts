@@ -34,6 +34,7 @@ export interface ReservationListDto {
   pax: number;
   placeId: number;
   hashId: string;
+  confirmed: boolean;
 }
 
 export interface ReservationSearch {
