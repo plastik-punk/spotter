@@ -52,7 +52,7 @@ public class ReservationCreateDto {
     @Pattern(regexp = "^[0-9]{1,15}$", message = "Invalid mobile number. It must consist of max. 15 digits.")
     private String mobileNumber;
 
-    private List<Long> placeIds; // Change type to List<Long>
+    private List<Long> placeIds;
 
     public ApplicationUser getUser() {
         return applicationUser;

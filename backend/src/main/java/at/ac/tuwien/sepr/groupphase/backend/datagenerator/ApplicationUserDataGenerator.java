@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 
 @Profile({"generateData", "test"})
 @Component
@@ -41,8 +42,8 @@ public class ApplicationUserDataGenerator {
     @PostConstruct
     private void generateUsers() {
         LOGGER.trace("generateUsers");
-
-        if (!applicationUserRepository.findAll().isEmpty()) {
+        List<ApplicationUser> existingUsers = applicationUserRepository.findAll();
+        if (!applicationUserRepository.findAll().isEmpty() && !(existingUsers.size() == 1 && existingUsers.get(0).getId() == 0)) {
             LOGGER.debug("Users already generated");
         } else {
             LOGGER.debug("Generating {} user entries", NUMBER_OF_USERS_TO_GENERATE);
