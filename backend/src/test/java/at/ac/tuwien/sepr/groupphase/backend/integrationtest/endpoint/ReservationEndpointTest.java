@@ -5,12 +5,14 @@ import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationModalDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
+import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,6 +60,9 @@ public class ReservationEndpointTest implements TestData {
 
     @Autowired
     private SecurityProperties securityProperties;
+
+    @Autowired
+    private ReservationService service;
 
     @Test
     @Transactional
@@ -232,6 +237,46 @@ public class ReservationEndpointTest implements TestData {
         assertAll(
             () -> assertEquals(200, mvcResult.getResponse().getStatus()),
             () -> assertEquals(3, response.length)
+        );
+    }
+
+    @Test
+    @Transactional
+    public void givenValidId_whenGetModalDetail_thenReturnReservationModalDetailDto() throws Exception {
+        ReservationCreateDto dto = ReservationCreateDto.ReservationCreateDtoBuilder.aReservationCreateDto()
+            .withApplicationUser(TEST_APPLICATION_USER_CUSTOMER_1)
+            .withFirstName(TEST_APPLICATION_USER_CUSTOMER_1.getFirstName())
+            .withLastName(TEST_APPLICATION_USER_CUSTOMER_1.getLastName())
+            .withStartTime(TEST_RESERVATION_START_TIME)
+            .withEndTime(TEST_RESERVATION_END_TIME)
+            .withDate(TEST_RESERVATION_DATE)
+            .withPax(TEST_RESERVATION_PAX)
+            .withNotes(TEST_RESERVATION_NOTES)
+            .withEmail(TEST_APPLICATION_USER_CUSTOMER_1.getEmail())
+            .withMobileNumber(TEST_APPLICATION_USER_CUSTOMER_1.getMobileNumber())
+            .build();
+        service.create(dto);
+
+        ReservationModalDetailDto expectedDto = ReservationModalDetailDto.ReservationModalDetailDtoBuilder.aReservationModalDetailDto()
+            .withFirstName(TEST_APPLICATION_USER_FIRST_NAME)
+            .withLastName(TEST_APPLICATION_USER_LAST_NAME)
+            .withDate(TEST_RESERVATION_DATE)
+            .withStartTime(TEST_RESERVATION_START_TIME)
+            .withEndTime(TEST_RESERVATION_END_TIME)
+            .withNotes(TEST_RESERVATION_NOTES)
+            .build();
+
+        MvcResult mvcResult = this.mockMvc.perform(get(RESERVATION_BASE_URI + "/modal")
+                .param("id", TEST_RESERVATION_HASH_VALUE_1)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(TEST_USER_CUSTOMER, TEST_ROLES_CUSTOMER)))
+            .andDo(print())
+            .andReturn();
+
+        ReservationModalDetailDto actualDto = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ReservationModalDetailDto.class);
+
+        assertAll(
+            () -> assertEquals(200, mvcResult.getResponse().getStatus()),
+            () -> assertEquals(expectedDto, actualDto)
         );
     }
 

@@ -7,6 +7,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationModalDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
@@ -51,6 +52,14 @@ public interface ReservationService {
      * @return the reservation details
      */
     ReservationEditDto getByHashedId(String id);
+
+    /**
+     * Get the details of a reservation specified by its id.
+     *
+     * @param id the id of the reservation
+     * @return the reservation details
+     */
+    ReservationModalDetailDto getModalDetail(String id);
 
     /**
      * Update a reservation.

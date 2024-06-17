@@ -7,6 +7,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationModalDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Area;
@@ -430,6 +431,24 @@ public class ReservationServiceImpl implements ReservationService {
         List<Long> reservationPlaces = reservationPlaceRepository.findPlaceIdsByReservationIds(reservationIds);
         reservationEditDto.setPlaceIds(reservationPlaces);
         return reservationEditDto;
+    }
+
+    @Override
+    public ReservationModalDetailDto getModalDetail(String hashValue) throws NotFoundException {
+        LOGGER.trace("getModalDetail ({})", hashValue);
+
+        List<Reservation> reservations = reservationRepository.findByHashValue(hashValue);
+
+        if (reservations.size() != 1) {
+            throw new NotFoundException("Reservation with not found");
+        }
+
+        Reservation reservation = reservations.getFirst();
+        ReservationModalDetailDto reservationModalDetailDto = mapper.reservationToReservationModalDetailDto(reservation);
+
+        LOGGER.debug("Found reservation: {}", reservationModalDetailDto.toString());
+
+        return reservationModalDetailDto;
     }
 
     @Override

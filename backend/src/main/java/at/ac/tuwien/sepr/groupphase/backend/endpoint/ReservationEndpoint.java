@@ -7,6 +7,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationModalDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
@@ -111,6 +112,15 @@ public class ReservationEndpoint {
     public ReservationEditDto getByHashedId(@RequestParam("id") String id) {
         LOGGER.info("GET /api/v1/reservations/detail body: {}", id);
         return service.getByHashedId(id);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PermitAll
+    @GetMapping("/modal")
+    @Operation(summary = "Get details for the reservation modal")
+    public ReservationModalDetailDto getModalDetail(@RequestParam("id") String id) {
+        LOGGER.info("GET /api/v1/reservations/modal body: {}", id);
+        return service.getModalDetail(id);
     }
 
     @ResponseStatus(HttpStatus.OK)

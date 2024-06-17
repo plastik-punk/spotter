@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.unittests.service.impl;
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationModalDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
@@ -80,6 +81,36 @@ public class ReservationServiceImplTest implements TestData {
             () -> assertEquals(TEST_RESERVATION_PAX, response.getPax()),
             () -> assertEquals(TEST_RESERVATION_NOTES, response.getNotes()),
             () -> assertEquals(TEST_PLACE_IDS, response.getPlaceIds())
+        );
+    }
+
+
+    @Test
+    @Transactional
+    public void givenValidData_whenGetModalDetail_thenReturnDto() throws ValidationException, MessagingException {
+        ReservationCreateDto dto = ReservationCreateDto.ReservationCreateDtoBuilder.aReservationCreateDto()
+            .withApplicationUser(TEST_APPLICATION_USER_CUSTOMER_1)
+            .withFirstName(TEST_APPLICATION_USER_CUSTOMER_1.getFirstName())
+            .withLastName(TEST_APPLICATION_USER_CUSTOMER_1.getLastName())
+            .withStartTime(TEST_RESERVATION_START_TIME)
+            .withEndTime(TEST_RESERVATION_END_TIME)
+            .withDate(TEST_RESERVATION_DATE)
+            .withPax(TEST_RESERVATION_PAX)
+            .withNotes(TEST_RESERVATION_NOTES)
+            .withEmail(TEST_APPLICATION_USER_CUSTOMER_1.getEmail())
+            .withMobileNumber(TEST_APPLICATION_USER_CUSTOMER_1.getMobileNumber())
+            .build();
+        service.create(dto);
+
+        ReservationModalDetailDto response = service.getModalDetail(TEST_RESERVATION_HASH_VALUE_1);
+
+        assertAll(
+            () -> assertEquals(TEST_APPLICATION_USER_FIRST_NAME, response.getFirstName()),
+            () -> assertEquals(TEST_APPLICATION_USER_LAST_NAME, response.getLastName()),
+            () -> assertEquals(TEST_RESERVATION_START_TIME, response.getStartTime()),
+            () -> assertEquals(TEST_RESERVATION_END_TIME, response.getEndTime()),
+            () -> assertEquals(TEST_RESERVATION_DATE, response.getDate()),
+            () -> assertEquals(TEST_RESERVATION_NOTES, response.getNotes())
         );
     }
 

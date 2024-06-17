@@ -62,6 +62,15 @@ export interface ReservationDetailDto {
   placeIds: number[];
 }
 
+export interface ReservationModalDetailDto {
+  firstName: string;
+  lastName: string;
+  startTime: Date;
+  endTime: Date;
+  notes: string;
+  placeIds: number[];
+}
+
 export interface ReservationEditDto {
   reservationId: number;
   startTime: Date;
