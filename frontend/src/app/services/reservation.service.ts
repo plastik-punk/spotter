@@ -8,7 +8,7 @@ import {
   ReservationListDto,
   ReservationEditDto,
   AreaLayoutDto,
-  AreaListDto
+  AreaListDto, ReservationWalkInDto
 } from "../dtos/reservation";
 import {
   Reservation,
@@ -160,5 +160,14 @@ export class ReservationService {
    */
   unconfirm(hashId: string): Observable<void> {
     return this.httpClient.put<void>(this.globals.backendUri + "/reservations/unconfirm", hashId);
+  }
+  /**
+   * Create a new reservation for a guest
+   *
+   * @param reservationCreateDto the reservation to create
+   * @return an Observable for the created reservation
+   */
+  createWalkIn(reservationWalkInDto: ReservationWalkInDto) : Observable<ReservationCreateDto> {
+    return this.httpClient.post<ReservationCreateDto>(this.reservationBaseUri+ "/walk-in", reservationWalkInDto);
   }
 }
