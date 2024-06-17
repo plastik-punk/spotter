@@ -1,21 +1,20 @@
 import {Injectable} from "@angular/core";
 import {HttpClient, HttpParams, HttpResponse} from "@angular/common/http";
 import {Globals} from '../global/globals';
-import {Observable,tap} from "rxjs";
+import {Observable} from "rxjs";
 import {formatIsoDate} from '../util/date-helper';
-import {
-  ReservationSearch,
-  ReservationListDto,
-  ReservationEditDto,
-  AreaLayoutDto,
-  AreaListDto, ReservationWalkInDto
-} from "../dtos/reservation";
 import {
   Reservation,
   ReservationCheckAvailabilityDto,
   ReservationCreateDto,
-  ReservationDetailDto,
   ReservationLayoutCheckAvailabilityDto,
+  ReservationSearch,
+  ReservationListDto,
+  ReservationEditDto,
+  AreaLayoutDto,
+  AreaListDto,
+  ReservationModalDetailDto,
+  ReservationWalkInDto
 } from "../dtos/reservation";
 import {SimpleViewReservationStatusEnum} from "../dtos/status-enum";
 
@@ -88,6 +87,17 @@ export class ReservationService {
   getByHashedId(id: string): Observable<ReservationEditDto> {
     let params = new HttpParams().set('id', id);
     return this.httpClient.get<ReservationEditDto>(this.reservationBaseUri + "/detail", { params: params });
+  }
+
+  /**
+   * Get the details of a reservation for the modal by its id
+   *
+   * @param id the hashed id of the reservation
+   * @return an Observable for the modal details
+   */
+  getModalDetail(id: string): Observable<ReservationModalDetailDto> {
+    let params = new HttpParams().set('id', id);
+    return this.httpClient.get<ReservationModalDetailDto>(this.reservationBaseUri + "/modal", { params: params });
   }
 
   /**
