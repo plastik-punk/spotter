@@ -37,7 +37,7 @@ export class RegistrationComponent implements OnInit {
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      mobileNumber: [''],
+      mobileNumber: undefined,
       password: ['', [Validators.required, Validators.minLength(8)]],
       role: [this.isAdmin ? 'EMPLOYEE' : 'CUSTOMER', Validators.required]
     });

@@ -1,7 +1,13 @@
 import {Component, OnInit} from '@angular/core';
+import * as bootstrap from 'bootstrap';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {AuthService} from '../../../services/auth.service';
-import {ReservationEditDto, ReservationListDto, ReservationSearch} from "../../../dtos/reservation";
+import {
+  ReservationDetailDto,
+  ReservationEditDto,
+  ReservationListDto,
+  ReservationSearch
+} from "../../../dtos/reservation";
 import {debounceTime, Observable, Subject} from "rxjs";
 import {ReservationService} from "../../../services/reservation.service";
 import {Router} from "@angular/router";
@@ -16,6 +22,15 @@ import moment from 'moment';
 })
 export class ReservationOverviewComponent implements OnInit {
   reservations: ReservationListDto[] = [];
+  reservationDetail: ReservationDetailDto = {
+    id: undefined,
+    startTime: undefined,
+    endTime: undefined,
+    date: undefined,
+    pax: undefined,
+    notes: undefined,
+    placeIds: undefined
+  };
   todaysReservations: ReservationListDto[] = [];
   upcomingReservations: ReservationListDto[] = [];
   displayedUpcomingReservations: ReservationListDto[] = [];
@@ -141,6 +156,28 @@ export class ReservationOverviewComponent implements OnInit {
         this.notificationService.showError('Failed to load reservation details. Please try again later.');
       }
     });
+  }
+
+  async showReservationDetails(hashId: string): Promise<void> {
+    if (hashId) {
+      try {
+        let data: ReservationEditDto = await this.reservationService.getByHashedId(hashId).toPromise();
+
+        if (data != null) {
+          this.reservationDetail.id= data.reservationId;
+          this.reservationDetail.startTime = data.startTime;
+          this.reservationDetail.endTime = data.endTime;
+          this.reservationDetail.date = data.date;
+          this.reservationDetail.pax = data.pax;
+          this.reservationDetail.notes = data.notes;
+          this.reservationDetail.placeIds = data.placeIds;
+        }
+      } catch (error) {
+        this.notificationService.handleError(error);
+      }
+      const modalDetail = new bootstrap.Modal(document.getElementById('confirmation-dialog-reservation-detail'));
+      modalDetail.show();
+    }
   }
 
   onDelete(): void {
