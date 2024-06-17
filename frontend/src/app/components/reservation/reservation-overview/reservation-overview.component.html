@@ -2,10 +2,12 @@
 <div class="top-left-logo">
   <a href="/login">
     <img src="../../../../assets/images/logo.png" alt="Logo">
-  </a></div>
+  </a>
+</div>
 <div class="container-fluid align-items-center justify-content-center">
   <div class="col-12 col-lg-10 mx-auto h-90 py-3">
     <div class="card custom-card">
+
       <form class="d-flex flex-row w-auto mb-3" (submit)="loadReservations()">
         <button type="submit" hidden="hidden">submit</button>
         <div class="ms-1">
@@ -224,7 +226,8 @@
               <td>
                 <div class="btn-group">
                   <a class="btn btn-sm responsive-info-button"
-                     aria-label="Show reservation details" [routerLink]="['/reservation-detail',reservation.hashId]">
+                     aria-label="Show reservation details"
+                     (click)="showReservationDetails(reservation.hashId)">
                     <i class="bi bi-info-lg"></i>
                   </a>
                   <a class="btn btn-sm responsive-warning-button"
@@ -245,6 +248,25 @@
           </table>
         </div>
       </div>
+
+      <!-- Modal for details -->
+      <div class="modal fade" id="confirmation-dialog-reservation-detail" tabindex="-1" aria-labelledby="confirmation-dialog-reservation-detail-modal" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="confirmation-dialog-reservation-detail-title">Details</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p> {{ reservationDetail.notes }}</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -254,4 +276,5 @@
   [dialogText]="'Do you really want to delete this reservation?'"
   (confirm)="onDelete()"
 ></app-confirmation-dialog-delete>
+
 </body>

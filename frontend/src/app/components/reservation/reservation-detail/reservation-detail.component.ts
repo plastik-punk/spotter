@@ -5,10 +5,7 @@ import {AuthService} from "../../../services/auth.service";
 import {Observable} from "rxjs";
 import {ActivatedRoute, Router} from "@angular/router";
 import {HttpResponse} from "@angular/common/http";
-import {ToastrService} from "ngx-toastr";
-
 import {NotificationService} from "../../../services/notification.service";
-import {ReservationEditComponent} from "../reservation-edit/reservation-edit.component";
 
 @Component({
   selector: 'app-reservation-detail',
@@ -17,6 +14,7 @@ import {ReservationEditComponent} from "../reservation-edit/reservation-edit.com
 })
 export class ReservationDetailComponent implements OnInit {
   hashID: string;
+  deleteWhat: ReservationEditDto | null = null;
 
   reservationDetailDto: ReservationDetailDto = {
     id: undefined,
@@ -32,7 +30,6 @@ export class ReservationDetailComponent implements OnInit {
     public authService: AuthService,
     private service: ReservationService,
     private router: Router,
-    private notification: ToastrService,
     private notificationService: NotificationService,
     private route: ActivatedRoute,
   ) {
@@ -62,41 +59,38 @@ export class ReservationDetailComponent implements OnInit {
           this.router.navigate(['/reservation-overview']);
         }, // error
       }); // subscribe
-    } // ngOnInit
-  }
-
-  onSubmit() {
-    if (this.authService.isLoggedIn()) {
-      this.router.navigate(['/reservation-overview']);
-    } else {
-      this.router.navigate(['/reservation-simple']);
     }
-  } // onSubmit
+  } // ngOnInit
 
-  onEdit() {
-    this.router.navigate(['/reservation-edit', this.hashID])
-  }
+  openConfirmationDialog(hashId: string): void {
+    this.service.getByHashedId(hashId).subscribe({
+      next: data => {
+        this.deleteWhat = data;
+      },
+      error: error => {
+        this.notificationService.showError('Failed to load reservation details. Please try again later.');
+      }
+    });
+  } // openConfirmationDialog
 
-  onDelete() {
+  onDelete(): void {
+    if (!this.deleteWhat) {
+      this.notificationService.showError('No reservation selected for deletion.');
+      return;
+    }
+
     let observable: Observable<HttpResponse<void>>;
-    observable = this.service.delete(this.hashID);
-
+    observable = this.service.delete(this.deleteWhat.hashedId);
     observable.subscribe({
       next: (response) => {
-        if (response.status == 204) {
-          this.notificationService.handleSuccess('reservation canceled successfully');
-          if (this.authService.isLoggedIn()) {
-            this.router.navigate(['/reservation-overview']);
-          } else {
-            this.router.navigate(['/reservation-simple']);
-          }
-        } else {
-          // TODO: depending on final implementation, handle already deleted reservation, logged out user or ended session here. All other cases are handled in error handler below.
+        if (response.status === 204) {
+          this.notificationService.showSuccess('Reservation cancelled successfully');
+          this.router.navigate(['/reservation-overview']);
         }
       },
       error: (error) => {
-        this.notificationService.handleError(error);
-      }, // error
-    }); // subscribe
+        this.notificationService.showError('Failed to cancel reservation. Please try again later.');
+      }
+    });
   } // onDelete
 }
