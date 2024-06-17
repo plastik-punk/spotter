@@ -9,8 +9,10 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckA
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationModalDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationWalkInDto;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import jakarta.mail.MessagingException;
 
 import java.util.List;
@@ -92,6 +94,7 @@ public interface ReservationService {
      * @param reservationLayoutCheckAvailabilityDto the reservation data
      * @return the layout of the area
      */
+
     AreaLayoutDto getAreaLayout(ReservationLayoutCheckAvailabilityDto reservationLayoutCheckAvailabilityDto);
 
     /**
@@ -116,4 +119,12 @@ public interface ReservationService {
      * @throws NotFoundException if the reservation is not found
      */
     void unconfirm(String hashId) throws NotFoundException;
+
+    /**
+     * Create a walk-in reservation.
+     *
+     * @param reservationWalkInDto the necessary data for a walk-in reservation
+     * @return the walk-in reservation as provided from the Repository layer after creation in the database
+     */
+    ReservationCreateDto createWalkIn(ReservationWalkInDto reservationWalkInDto) throws ConflictException, MessagingException;
 }

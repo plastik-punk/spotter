@@ -9,6 +9,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckA
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationModalDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationWalkInDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Area;
 import at.ac.tuwien.sepr.groupphase.backend.entity.AreaPlaceSegment;
@@ -21,6 +22,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Segment;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.AreaPlaceSegmentRepository;
@@ -57,6 +59,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -150,7 +153,8 @@ public class ReservationServiceImpl implements ReservationService {
 
         // 3. Create guest if this is a guest-reservation, otherwise set known customer data
         ApplicationUser currentUser = applicationUserService.getCurrentApplicationUser();
-        if (currentUser == null) {
+        if (currentUser == null || (!Objects.equals(currentUser.getEmail(), reservationCreateDto.getEmail())
+            && (currentUser.getRole().equals(RoleEnum.ADMIN) || currentUser.getRole().equals(RoleEnum.EMPLOYEE)))) {
             ApplicationUser guestUser = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
                 .withFirstName(reservationCreateDto.getFirstName().trim())
                 .withLastName(reservationCreateDto.getLastName().trim())
@@ -596,7 +600,6 @@ public class ReservationServiceImpl implements ReservationService {
         List<Long> reservationIds = reservationRepository.findReservationsAtSpecifiedTime(
             dto.getDate(), dto.getStartTime(), dto.getEndTime());
         List<Long> reservedPlaceIds = reservationPlaceRepository.findPlaceIdsByReservationIds(reservationIds);
-
         List<AreaLayoutDto.PlaceVisualDto> placeVisuals = places.stream().map(place -> {
             AreaLayoutDto.PlaceVisualDto placeVisual = new AreaLayoutDto.PlaceVisualDto();
             placeVisual.setPlaceId(place.getId());
@@ -623,7 +626,6 @@ public class ReservationServiceImpl implements ReservationService {
             placeVisual.setCoordinates(coordinates);
             return placeVisual;
         }).collect(Collectors.toList());
-
         AreaLayoutDto areaLayoutDto = new AreaLayoutDto();
         areaLayoutDto.setWidth(area.getWidth());
         areaLayoutDto.setHeight(area.getHeight());
@@ -653,6 +655,63 @@ public class ReservationServiceImpl implements ReservationService {
         AreaListDto areaListDto = new AreaListDto();
         areaListDto.setAreas(areaDtos);
         return areaListDto;
+    }
+
+    @Override
+    public ReservationCreateDto createWalkIn(ReservationWalkInDto reservationWalkInDto) throws ConflictException, MessagingException {
+        LOGGER.trace("createWalkIn ({})", reservationWalkInDto.toString());
+        List<ApplicationUser> walkInUserList = applicationUserRepository.findAll();
+        ApplicationUser walkInUser = null;
+        for (ApplicationUser user : walkInUserList) {
+            if (user.getId() == 0) {
+                walkInUser = user;
+                break;
+            }
+        }
+        if (walkInUser == null) {
+            List<String> errors = new ArrayList<>();
+            errors.add("Walk-in user not found");
+            throw new ConflictException("Walk-in user not found", errors);
+        }
+        System.out.println("walkInUser = " + walkInUser);
+
+        ReservationCreateDto reservationCreateDto = ReservationCreateDto.ReservationCreateDtoBuilder.aReservationCreateDto()
+            .withDate(reservationWalkInDto.getDate())
+            .withStartTime(reservationWalkInDto.getStartTime())
+            .withEndTime(reservationWalkInDto.getStartTime().plusHours(2))
+            .withPax(reservationWalkInDto.getPax())
+            .withPlaceIds(reservationWalkInDto.getPlaceIds())
+            .withFirstName(walkInUser.getFirstName())
+            .withLastName(walkInUser.getLastName())
+            .withEmail(walkInUser.getEmail())
+            .withApplicationUser(walkInUser)
+            .build();
+        LOGGER.debug("Created reservationCreateDto: {}", reservationCreateDto);
+        Reservation reservation = mapper.reservationCreateDtoToReservation(reservationCreateDto);
+        reservation.setHashValue(hashService.hashSha256(reservation.getDate().toString()
+            + reservation.getStartTime().toString() + reservation.getEndTime().toString()
+            + reservation.getPax().toString()));
+        Reservation createdReservation = reservationRepository.save(reservation);
+        LOGGER.debug("Created reservation: {}", createdReservation);
+        List<Place> selectedPlaces = new ArrayList<>();
+        for (Long placeId : reservationCreateDto.getPlaceIds()) {
+            Optional<Place> optionalPlace = placeRepository.findById(placeId);
+            if (optionalPlace.isPresent()) {
+                selectedPlaces.add(optionalPlace.get());
+            } else {
+                List<String> errors = new ArrayList<>();
+                errors.add("Place with Id" + placeId + " not found");
+                throw new ConflictException("Place not found", errors);
+            }
+        }
+        for (Place place : selectedPlaces) {
+            ReservationPlace reservationPlace = ReservationPlace.ReservationPlaceBuilder.aReservationPlace()
+                .withReservation(createdReservation)
+                .withPlace(place)
+                .build();
+            reservationPlaceRepository.save(reservationPlace);
+        }
+        return mapper.reservationToReservationCreateDto(createdReservation);
     }
 
     private Map<String, Object> constructMailTemplateModel(Reservation reservation, ApplicationUser currentUser) {

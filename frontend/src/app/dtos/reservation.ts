@@ -117,3 +117,10 @@ export interface AreaDto {
 export interface AreaListDto {
   areas: AreaDto[];
 }
+
+export interface ReservationWalkInDto{
+  startTime: string;
+  date: string;
+  pax: number;
+  placeIds: number[];
+}

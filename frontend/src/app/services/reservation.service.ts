@@ -4,17 +4,17 @@ import {Globals} from '../global/globals';
 import {Observable} from "rxjs";
 import {formatIsoDate} from '../util/date-helper';
 import {
-  ReservationSearch,
-  ReservationListDto,
-  ReservationEditDto,
-  AreaLayoutDto,
-  AreaListDto, ReservationModalDetailDto
-} from "../dtos/reservation";
-import {
   Reservation,
   ReservationCheckAvailabilityDto,
   ReservationCreateDto,
   ReservationLayoutCheckAvailabilityDto,
+  ReservationSearch,
+  ReservationListDto,
+  ReservationEditDto,
+  AreaLayoutDto,
+  AreaListDto,
+  ReservationModalDetailDto,
+  ReservationWalkInDto
 } from "../dtos/reservation";
 import {SimpleViewReservationStatusEnum} from "../dtos/status-enum";
 
@@ -170,5 +170,14 @@ export class ReservationService {
    */
   unconfirm(hashId: string): Observable<void> {
     return this.httpClient.put<void>(this.globals.backendUri + "/reservations/unconfirm", hashId);
+  }
+  /**
+   * Create a new reservation for a guest
+   *
+   * @param reservationCreateDto the reservation to create
+   * @return an Observable for the created reservation
+   */
+  createWalkIn(reservationWalkInDto: ReservationWalkInDto) : Observable<ReservationCreateDto> {
+    return this.httpClient.post<ReservationCreateDto>(this.reservationBaseUri+ "/walk-in", reservationWalkInDto);
   }
 }

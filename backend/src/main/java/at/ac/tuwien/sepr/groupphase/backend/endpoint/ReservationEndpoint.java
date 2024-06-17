@@ -9,7 +9,9 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckA
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationModalDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationWalkInDto;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -56,6 +58,15 @@ public class ReservationEndpoint {
     public ReservationCreateDto create(@Valid @RequestBody ReservationCreateDto reservationCreateDto) throws MessagingException {
         LOGGER.info("POST /api/v1/reservations body: {}", reservationCreateDto.toString());
         return service.create(reservationCreateDto);
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
+    @PostMapping("/walk-in")
+    @Operation(summary = "Create a new walk-in reservation")
+    public ReservationCreateDto createWalkIn(@Valid @RequestBody ReservationWalkInDto reservationWalkInDto) throws ConflictException, MessagingException {
+        LOGGER.info("POST /api/v1/reservations/walk-in body: {}", reservationWalkInDto.toString());
+        return service.createWalkIn(reservationWalkInDto);
     }
 
     @ResponseStatus(HttpStatus.OK)
