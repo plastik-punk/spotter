@@ -52,6 +52,8 @@ export class CreateLayoutComponent implements OnInit {
   yesWhat = 'Delete';
   whatRole = 'Table';
 
+  isGridDrawn = false;  // Add this flag
+
   constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {
@@ -71,42 +73,9 @@ export class CreateLayoutComponent implements OnInit {
       status: ['', Validators.required],
       numberOfSeats: ['', Validators.required]
     });
-  }
-
-  addArea(): void {
-    if (this.layoutForm.valid) {
-      const area: AreaCreateDto = {
-        ...this.layoutForm.value,
-        places: this.layoutForm.value.places
-      };
-      this.layoutCreateDto.areas.push(area);
-      this.resetFormForNextArea();
-    }
-  }
-
-  resetFormForNextArea(): void {
-    this.layoutForm.reset();
-    this.layoutForm.patchValue({ isMainArea: false, isOpen: false }); // Reset main area and open checkboxes
-    this.createdTables = [];
-    this.ensureSingleMainArea();
-    d3.select(this.d3Container.nativeElement).selectAll('*').remove(); // Clear the grid
-  }
-
-  ensureSingleMainArea(): void {
-    const mainAreaExists = this.layoutCreateDto.areas.some(area => area.isMainArea);
-    if (mainAreaExists) {
-      this.layoutForm.patchValue({ isMainArea: false });
-    }
-  }
-
-  onMainAreaChange(index: number): void {
-    if (this.layoutForm.get('isMainArea').value) {
-      this.layoutCreateDto.areas.forEach(area => {
-        if (area.isMainArea) {
-          area.isMainArea = false;
-        }
-      });
-    }
+    // Show the info modal on page load
+    const infoModal = new bootstrap.Modal(document.getElementById('infoModal'));
+    infoModal.show();
   }
 
   drawGrid(): void {
@@ -134,6 +103,8 @@ export class CreateLayoutComponent implements OnInit {
             .attr('fill', '#d3d3d3')
             .attr('stroke', '#ffffff')
             .attr('class', `cell-${x}-${y}`)
+            .attr('rx', 10)
+            .attr('ry', 10)
             .on('click', () => this.onCellClick(x, y));
 
           svg.append('text')
@@ -141,11 +112,61 @@ export class CreateLayoutComponent implements OnInit {
             .attr('y', y * cellSize + cellSize / 2)
             .attr('dy', '.35em')
             .attr('text-anchor', 'middle')
-            .attr('class', `table-number-${x}-${y}`);
+            .attr('class', `table-number-${x}-${y}`)
+            .style('fill', 'white');
         }
+      }
+
+      // Disable fields
+      this.layoutForm.get('name').disable();
+      this.layoutForm.get('width').disable();
+      this.layoutForm.get('height').disable();
+
+      // Set the grid drawn flag to true
+      this.isGridDrawn = true;
+    }
+  }
+
+  addArea(): void {
+    if (this.layoutCreateDto.areas.length === 0) {
+      this.confirmAddArea();
+    } else {
+      const confirmAddAreaModal = new bootstrap.Modal(document.getElementById('confirmAddAreaModal'));
+      confirmAddAreaModal.show();
+    }
+  }
+
+
+  confirmAddArea(): void {
+    if (this.layoutForm.valid) {
+      const area: AreaCreateDto = {
+        ...this.layoutForm.value,
+        places: this.layoutForm.value.places
+      };
+      this.layoutCreateDto.areas.push(area);
+      this.layoutForm.reset();
+      this.layoutForm.patchValue({ isMainArea: false, isOpen: false }); // Reset main area and open checkboxes
+
+      // Re-enable the fields
+      this.layoutForm.get('name').enable();
+      this.layoutForm.get('width').enable();
+      this.layoutForm.get('height').enable();
+
+      // Clear the canvas
+      const containerElement = this.d3Container.nativeElement as HTMLDivElement;
+      d3.select(containerElement).selectAll('*').remove();
+
+      // Set the grid drawn flag to false
+      this.isGridDrawn = false;
+
+      // Hide the modal if it was shown
+      const confirmAddAreaModal = bootstrap.Modal.getInstance(document.getElementById('confirmAddAreaModal'));
+      if (confirmAddAreaModal) {
+        confirmAddAreaModal.hide();
       }
     }
   }
+
 
   onCellClick(x: number, y: number): void {
     const table = this.findTableByCoordinates(x, y);
@@ -194,6 +215,14 @@ export class CreateLayoutComponent implements OnInit {
   addCoordinatesToAdjacentTable(table: PlaceVisualDto, x: number, y: number): void {
     table.coordinates.push({ x, y });
 
+    // Find the corresponding form group and update its coordinates array
+    const placesArray = this.layoutForm.get('places') as FormArray;
+    const placeGroup = placesArray.controls.find(control => control.value.placeNumber === table.placeNumber) as FormGroup;
+    if (placeGroup) {
+      const coordinatesArray = placeGroup.get('coordinates') as FormArray;
+      coordinatesArray.push(this.fb.group({ x, y }));
+    }
+
     const container = d3.select(this.d3Container.nativeElement).select('svg');
     const cellSize = (this.d3Container.nativeElement as HTMLDivElement).getBoundingClientRect().width / this.layoutForm.value.width;
     container.select(`.table-number-${x}-${y}`)
@@ -218,8 +247,17 @@ export class CreateLayoutComponent implements OnInit {
         numberOfSeats: this.placeForm.value.numberOfSeats,
         coordinates: [{ x: this.currentCell.x, y: this.currentCell.y }]
       };
+
+      // Initialize the form group for the place with coordinates as a form array
+      const placeGroup = this.fb.group({
+        placeNumber: [placeData.placeNumber],
+        status: [placeData.status],
+        numberOfSeats: [placeData.numberOfSeats],
+        coordinates: this.fb.array(placeData.coordinates.map(coord => this.fb.group(coord)))
+      });
+
       const placesArray = this.layoutForm.get('places') as FormArray;
-      placesArray.push(this.fb.group(placeData));
+      placesArray.push(placeGroup);
       this.createdTables.push(placeData);
 
       // Update the grid with the table number and change color
@@ -244,14 +282,27 @@ export class CreateLayoutComponent implements OnInit {
         table.coordinates = table.coordinates.filter(coord => coord.x !== x || coord.y !== y);
         if (table.coordinates.length === 0) {
           this.createdTables = this.createdTables.filter(t => t.placeNumber !== placeNumber);
+
+          // Remove from form array
           const placesArray = this.layoutForm.get('places') as FormArray;
           const index = placesArray.controls.findIndex(control => control.value.placeNumber === placeNumber);
           if (index !== -1) {
             placesArray.removeAt(index);
           }
+        } else {
+          // Update the form array with the new coordinates
+          const placesArray = this.layoutForm.get('places') as FormArray;
+          const placeGroup = placesArray.controls.find(control => control.value.placeNumber === placeNumber) as FormGroup;
+          if (placeGroup) {
+            const coordinatesArray = placeGroup.get('coordinates') as FormArray;
+            const coordIndex = coordinatesArray.controls.findIndex(control => control.value.x === x && control.value.y === y);
+            if (coordIndex !== -1) {
+              coordinatesArray.removeAt(coordIndex);
+            }
+          }
         }
 
-        // Clear the cell
+        // Clear the cell in the grid
         const container = d3.select(this.d3Container.nativeElement).select('svg');
         container.select(`.table-number-${x}-${y}`).text('');
         container.select(`.cell-${x}-${y}`).attr('fill', '#d3d3d3');
@@ -259,16 +310,31 @@ export class CreateLayoutComponent implements OnInit {
     }
   }
 
+
   showConfirmDialog(): void {
     const confirmModal = new bootstrap.Modal(document.getElementById('confirm-dialog'));
     confirmModal.show();
   }
+  getCurrentAreaTables(): PlaceVisualDto[] {
+    return this.layoutForm.get('places').value;
+  }
+
 
   onSubmit(): void {
+    const confirmSaveLayoutModal = new bootstrap.Modal(document.getElementById('confirmSaveLayoutModal'));
+    confirmSaveLayoutModal.show();
+  }
+
+  confirmSaveLayout(): void {
     if (this.layoutForm.valid) {
       this.addArea(); // Save the current area before submitting
       console.log(this.layoutCreateDto);
-      // handle the submission logic here
+      // TODO Save wth service here
+
+      // Hide the modal
+      const confirmSaveLayoutModal = bootstrap.Modal.getInstance(document.getElementById('confirmSaveLayoutModal'));
+      confirmSaveLayoutModal.hide();
     }
   }
 }
+

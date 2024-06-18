@@ -7,7 +7,10 @@ public class AreaLayoutCreateDto {
     private Integer width;
     private Integer height;
     private boolean isOpen;
-    private List<AreaLayoutDto.PlaceVisualDto> places;
+    private boolean isMainArea;
+    private String openingTime;
+    private String closingTime;
+    private List<PlaceVisualDto> places;
 
     // Getters and Setters
 
@@ -35,14 +38,6 @@ public class AreaLayoutCreateDto {
         this.height = height;
     }
 
-    public List<AreaLayoutDto.PlaceVisualDto> getPlaces() {
-        return places;
-    }
-
-    public void setPlaces(List<AreaLayoutDto.PlaceVisualDto> places) {
-        this.places = places;
-    }
-
     public boolean isOpen() {
         return isOpen;
     }
@@ -51,12 +46,70 @@ public class AreaLayoutCreateDto {
         isOpen = open;
     }
 
-    public static class PlaceDto {
+    public boolean isMainArea() {
+        return isMainArea;
+    }
 
+    public void setMainArea(boolean isMainArea) {
+        this.isMainArea = isMainArea;
+    }
+
+    public String getOpeningTime() {
+        return openingTime;
+    }
+
+    public void setOpeningTime(String openingTime) {
+        this.openingTime = openingTime;
+    }
+
+    public String getClosingTime() {
+        return closingTime;
+    }
+
+    public void setClosingTime(String closingTime) {
+        this.closingTime = closingTime;
+    }
+
+    public List<PlaceVisualDto> getPlaces() {
+        return places;
+    }
+
+    public void setPlaces(List<PlaceVisualDto> places) {
+        this.places = places;
+    }
+
+    public static class PlaceVisualDto {
+        private Integer placeNumber;
+        private Boolean status;
+        private Boolean reservation;
         private Long numberOfSeats;
         private List<CoordinateDto> coordinates;
 
         // Getters and Setters
+
+        public Integer getPlaceNumber() {
+            return placeNumber;
+        }
+
+        public void setPlaceNumber(Integer placeNumber) {
+            this.placeNumber = placeNumber;
+        }
+
+        public Boolean getStatus() {
+            return status;
+        }
+
+        public void setStatus(Boolean status) {
+            this.status = status;
+        }
+
+        public Boolean getReservation() {
+            return reservation;
+        }
+
+        public void setReservation(Boolean reservation) {
+            this.reservation = reservation;
+        }
 
         public Long getNumberOfSeats() {
             return numberOfSeats;
@@ -75,25 +128,25 @@ public class AreaLayoutCreateDto {
         }
 
         public static class CoordinateDto {
-            private Integer x1;
-            private Integer y1;
+            private Integer x;
+            private Integer y;
 
             // Getters and Setters
 
             public Integer getX() {
-                return x1;
+                return x;
             }
 
-            public void setX(Integer x1) {
-                this.x1 = x1;
+            public void setX(Integer x) {
+                this.x = x;
             }
 
             public Integer getY() {
-                return y1;
+                return y;
             }
 
-            public void setY(Integer y1) {
-                this.y1 = y1;
+            public void setY(Integer y) {
+                this.y = y;
             }
         }
     }
