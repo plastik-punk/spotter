@@ -157,7 +157,7 @@ public class AdminViewServiceImpl implements AdminViewService {
         float offsetFromAverage = (float) maxPaxAtSameTimeCurrDay / (float) averagePaxLastYear;
 
         float percentageOfPax = (float) maxPaxAtSameTimeCurrDay / (float) maxPaxAtSameTimeLastYear;
-        long percentageOfEmployees = (long) (totalEmployeeCount * Math.max(percentageOfPax + offsetFromAverage, 1.0f));
+        long percentageOfEmployees = (long) (totalEmployeeCount * Math.min((percentageOfPax * offsetFromAverage), 1.0f));
 
         predictedList.add(percentageOfEmployees);
         return maxPaxAtSameTimeCurrDay * Math.max(percentageOfPax * offsetFromAverage * eventInfluence, 1.0f);
