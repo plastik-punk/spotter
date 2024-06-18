@@ -56,25 +56,6 @@ import {EmployeeViewComponent} from "./components/employee-view/employee-view.co
     AdminViewComponent,
     EmployeeViewComponent
   ],
-  declarations: [
-    AppComponent,
-    SidebarComponent,
-    FooterComponent,
-    ReservationSimpleComponent,
-    LoginComponent,
-    MessageComponent,
-    ReservationDetailComponent,
-    ReservationEditComponent,
-    ReservationOverviewComponent,
-    ConfirmationDialogDeleteComponent,
-    NotificationComponent,
-    EventOverviewComponent,
-    EventDetailComponent,
-    EventEditComponent,
-    EventCreateComponent,
-    ReservationLayoutComponent,
-    AdminViewComponent
-  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
