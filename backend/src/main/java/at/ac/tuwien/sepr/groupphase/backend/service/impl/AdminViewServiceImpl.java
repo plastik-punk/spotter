@@ -109,8 +109,9 @@ public class AdminViewServiceImpl implements AdminViewService {
         getReservationsByDayMap(sameDayReservationListInThePastWithReservation, reservationsByDateMap);
         getReservationsByDayMap(sameDayReservationListInThePastWithOutReservation, walkInsByDateMap);
 
-        //5. Calculate the maximum Pax per Hour same day
+        //5. Calculate the maximum Pax per Hour
         Map<Integer, Long> amountOfCustomersPerHourMap = getIntegerLongMap(reservationsListSameDay);
+        //Map<Integer, Long> amountOfWalkInCustomersPerHourMap = getIntegerLongMap(walkInsByDateMap.get(dateToCalculate)); TODO fix with Test data
 
         //6. Calculate the Pax of the Restaurant
         List<Place> totalPlaces = placeRepository.findAll();
@@ -119,9 +120,12 @@ public class AdminViewServiceImpl implements AdminViewService {
             totalPax += place.getPax();
         }
 
+        long maxPaxAtSameTimeExpected = Collections.max(amountOfCustomersPerHourMap.values()); // + Collections.max(amountOfWalkInCustomersPerHourMap.values());
+
+
         //7. Calculate the amount of the Employees
         List<ApplicationUser> employeeList = applicationUserRepository.findAllByRole(RoleEnum.EMPLOYEE);
-        int totalEmployeeCount = 5; //employeeList.size() / 2; //TODO get the real count of employees with test Data
+        long totalEmployeeCount = 5; //employeeList.size() / 2 * (maxPaxAtSameTimeExpected / totalPax); //TODO get the real count of employees with test Data
 
         //8. Take Events in consideration
         List<Event> events = eventRepository.findAllByStartTimeBetween(dateToCalculate.atStartOfDay(),
