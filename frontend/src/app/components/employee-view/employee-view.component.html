@@ -95,7 +95,16 @@
           </div>
           <div class="column">
             <div class="btn-group">
-              <input type="button" value="Reserve for walk-in customer" id="create-walk-in-button" (click)="createWalkInReservation()" class="btn btn-warning btn-sm" [disabled]="!isPaxValid " >
+              <button class="btn btn-sm btn-success"
+                      (click)="createWalkInReservation()"
+                      [disabled]="!isPaxValid">
+                Reserve for walk-in customer
+              </button>
+              <button class="btn btn-sm btn-warning"
+                      (click)="blockTables()"
+                      [disabled]="selectedPlaces.length < 1">
+                Block / Unblock Tables
+              </button>
             </div>
           </div>
         </div>

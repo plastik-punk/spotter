@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PlaceServiceImpl implements PlaceService {
@@ -27,31 +30,24 @@ public class PlaceServiceImpl implements PlaceService {
     }
 
     @Override
-    public void block(long id) {
-        LOGGER.trace("block {}", id);
-        try {
-            placeRepository.findById(id).ifPresent(place -> {
-                place.setStatus(StatusEnum.BLOCKED);
-                placeRepository.save(place);
-            });
-        } catch (Exception e) {
-            LOGGER.error("Error while blocking place with id {}", id, e);
-            throw new NotFoundException("Table with Number " + id + " not found.");
-        }
-    }
+    public void block(List<Long> ids) throws NotFoundException {
+        LOGGER.trace("block {}", ids);
+        for (Long id : ids) {
+            Optional<Place> optionalPlace = placeRepository.findById(id);
+            if (optionalPlace.isEmpty()) {
+                LOGGER.error("Error while blocking / unblocking place with id {}, Table not found", id);
+                throw new NotFoundException("Table with Number " + id + " not found.");
+            }
 
-    @Override
-    public void unblock(long id) throws NotFoundException {
-        LOGGER.trace("unblock {}", id);
-        try {
-            placeRepository.findById(id).ifPresent(place -> {
+            Place place = optionalPlace.get();
+
+            if (place.getStatus().equals(StatusEnum.BLOCKED)) {
                 place.setStatus(StatusEnum.AVAILABLE);
-                placeRepository.save(place);
-            });
-        } catch (Exception e) {
-            LOGGER.error("Error while unblocking place with id {}", id, e);
-            throw new NotFoundException("Table with Number " + id + " not found.");
+            } else {
+                place.setStatus(StatusEnum.BLOCKED);
+            }
+
+            placeRepository.save(place);
         }
     }
-
 }

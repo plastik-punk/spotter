@@ -154,7 +154,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
     this.reservationService.getLayoutAvailability(this.reservationLayoutCheckAvailabilityDto).subscribe({
       next: (data: AreaLayoutDto) => {
         this.areaLayout = data;
-        this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this));
+        this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this), false);
         this.checkSelectedPlacesAvailability();
       },
       error: () => {
@@ -174,7 +174,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
         this.selectedPlaces = this.selectedPlaces.filter(p => p.placeId !== unavailablePlace.placeId);
         this.notificationService.showError(`Table ${unavailablePlace.placeId} is no longer available.`);
       });
-      this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this));
+      this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this), false);
     }
   }
 
@@ -188,7 +188,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
 
     this.reservationCreateDto.placeIds = this.selectedPlaces.map(p => p.placeId);
     this.reservationCreateDto.pax = this.selectedPlaces.reduce((sum, place) => sum + place.numberOfSeats, 0);
-    this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this));
+    this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this), false);
     this.updateTotalSeats();
 
     const paxInput = document.getElementById('reservationPax') as HTMLInputElement;
@@ -283,7 +283,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
     this.reservationLayoutCheckAvailabilityDto = this.initializeReservationLayoutCheckAvailabilityDto();
     this.reservationCreateDto = this.initializeReservationCreateDto();
     this.selectedPlaces = [];
-    this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this));
+    this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this), false);
   }
 
   private showFormErrors() {
