@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Collection;
 import java.util.Optional;
 
 @Repository
@@ -34,4 +35,5 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
         @Param("pax") Long pax,
         @Param("statusEnum") StatusEnum statusEnum);
 
+    Collection<Place> findAllByStatus(StatusEnum statusEnum);
 }

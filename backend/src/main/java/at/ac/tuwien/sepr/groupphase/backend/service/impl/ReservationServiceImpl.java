@@ -318,6 +318,7 @@ public class ReservationServiceImpl implements ReservationService {
                 reservationCheckAvailabilityDto.getEndTime());
         List<Long> placeIds = reservationPlaceRepository.findPlaceIdsByReservationIds(reservationIds);
         places.removeAll(placeRepository.findAllById(placeIds));
+        places.removeAll(placeRepository.findAllByStatus(StatusEnum.BLOCKED));
         if (places.isEmpty()) {
             return ReservationResponseEnum.ALL_OCCUPIED;
         }

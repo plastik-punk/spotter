@@ -14,6 +14,7 @@ import {NotificationService} from "../../services/notification.service";
 import {D3DrawService} from "../../services/d3-draw.service";
 import {formatIsoDate} from "../../util/date-helper";
 import {SimpleViewReservationStatusEnum} from "../../dtos/status-enum";
+import {PlaceService} from "../../services/place.service";
 
 @Component({
   selector: 'app-employee-view',
@@ -43,7 +44,8 @@ export class EmployeeViewComponent {
     public authService: AuthService,
     private reservationService: ReservationService,
     private notificationService: NotificationService,
-    private d3DrawService: D3DrawService
+    private d3DrawService: D3DrawService,
+    private placeService: PlaceService
   ) {
     this.initializeSharedProperties();
     this.reservationCreateDto = this.initializeReservationCreateDto();
@@ -153,7 +155,7 @@ export class EmployeeViewComponent {
     this.reservationService.getLayoutAvailability(this.reservationLayoutCheckAvailabilityDto).subscribe({
       next: (data: AreaLayoutDto) => {
         this.areaLayout = data;
-        this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this));
+        this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this), true);
         this.checkSelectedPlacesAvailability();
       },
       error: () => {
@@ -173,7 +175,7 @@ export class EmployeeViewComponent {
         this.selectedPlaces = this.selectedPlaces.filter(p => p.placeId !== unavailablePlace.placeId);
         this.notificationService.showError(`Table ${unavailablePlace.placeId} is no longer available.`);
       });
-      this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this));
+      this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this), true);
     }
   }
 
@@ -187,7 +189,7 @@ export class EmployeeViewComponent {
 
     this.reservationCreateDto.placeIds = this.selectedPlaces.map(p => p.placeId);
     this.reservationCreateDto.pax = this.selectedPlaces.reduce((sum, place) => sum + place.numberOfSeats, 0);
-    this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this));
+    this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this), true);
     this.updateTotalSeats();
 
     const paxInput = document.getElementById('reservationPax') as HTMLInputElement;
@@ -278,7 +280,7 @@ export class EmployeeViewComponent {
     this.reservationLayoutCheckAvailabilityDto = this.initializeReservationLayoutCheckAvailabilityDto();
     this.reservationCreateDto = this.initializeReservationCreateDto();
     this.selectedPlaces = [];
-    this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this));
+    this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this), true);
   }
 
   private showFormErrors() {
@@ -341,6 +343,18 @@ export class EmployeeViewComponent {
       this.isPaxValid = true;
       this.isTimeManuallyChanged = false;
     }, 2000);
+  }
 
+  blockTables() {
+    let placeIds = this.selectedPlaces.map(p => p.placeId);
+    this.placeService.blockTables(placeIds).subscribe({
+      next: (data) => {
+          this.notificationService.showSuccess('Tables blocked / unblocked successfully.');
+          this.resetForm();
+      },
+      error: () => {
+        this.notificationService.showError('Failed to block / unblock tables. Please try again later.');
+      },
+    });
   }
 }
