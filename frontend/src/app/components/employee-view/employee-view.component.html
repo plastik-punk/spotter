@@ -23,7 +23,7 @@
         <div class="top-banner">
           <div class="row">
             <div class="column">
-              <h1 class="font-heading">Reserve</h1>
+              <h1 class="font-heading">Employee View</h1>
             </div>
             <div class="column">
               <input
@@ -93,12 +93,16 @@
               required
             />
           </div>
+          <div class="column">
+            <div class="btn-group">
+              <input type="button" value="Reserve for walk-in customer" id="create-walk-in-button" (click)="createWalkInReservation()" class="btn btn-warning btn-sm" [disabled]="!isPaxValid " >
+            </div>
+          </div>
         </div>
-        <!-- End row with pax -->
 
         <!-- Start row with (firstName, lastName, Mail, Phone), Notes -->
         <div class="row">
-          <div class="column" *ngIf="!authService.isLoggedIn()">
+          <div class="column">
             <div>
               <!-- start guest fields -->
               <input

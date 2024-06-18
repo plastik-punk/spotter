@@ -29,7 +29,7 @@ public class RegistrationEndpoint {
     @PostMapping
     @PermitAll
     public ResponseEntity<Void> register(@Valid @RequestBody ApplicationUserRegistrationDto applicationUserRegistrationDto) {
-        LOGGER.info("POST /api/v1/registration body: {}", applicationUserRegistrationDto);
+        LOGGER.info("POST /api/v1/registration body: {}", applicationUserRegistrationDto.toString());
         applicationUserService.register(applicationUserRegistrationDto);
         return ResponseEntity.status(201).build();
     }

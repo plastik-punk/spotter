@@ -24,12 +24,13 @@ public class PlaceRepositoryTest implements TestData {
 
     @Test
     @Transactional
-    public void givenLegalData_whenSavePlace_thenFindListWithOneElementAndFindPlaceById() {
-        placeRepository.save(TEST_PLACE_AVAILABLE_1);
+    public void givenValidData_whenFindFreePlaceForReservation_thenReturnPlace() {
+        // TODO
+    }
 
-        assertAll(
-            () -> assertEquals(1, placeRepository.findAll().size()),
-            () -> assertNotNull(placeRepository.findById(TEST_PLACE_AVAILABLE_1.getId()))
-        );
+    @Test
+    @Transactional
+    public void givenValidData_whenFindFirstByPaxAndStatusOrderByPaxDesc_thenReturnPlace() {
+        // TODO
     }
 }

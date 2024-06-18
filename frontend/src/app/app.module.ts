@@ -33,8 +33,29 @@ import {RouterLink} from "@angular/router";
 import {AdminViewComponent} from "./components/admin-view/admin-view.component";
 import {ReservationEditComponent} from "./components/reservation/reservation-edit/reservation-edit.component";
 import {NgApexchartsModule} from "ng-apexcharts";
+import {EmployeeViewComponent} from "./components/employee-view/employee-view.component";
 
 @NgModule({
+  declarations: [
+    AppComponent,
+    SidebarComponent,
+    FooterComponent,
+    ReservationSimpleComponent,
+    LoginComponent,
+    MessageComponent,
+    ReservationDetailComponent,
+    ReservationEditComponent,
+    ReservationOverviewComponent,
+    ConfirmationDialogDeleteComponent,
+    NotificationComponent,
+    EventOverviewComponent,
+    EventDetailComponent,
+    EventEditComponent,
+    EventCreateComponent,
+    ReservationLayoutComponent,
+    AdminViewComponent,
+    EmployeeViewComponent
+  ],
   declarations: [
     AppComponent,
     SidebarComponent,

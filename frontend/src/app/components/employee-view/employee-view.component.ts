@@ -5,23 +5,22 @@ import {
   ReservationCreateDto,
   AreaLayoutDto,
   AreaListDto,
-  AreaDto
-} from "../../../dtos/reservation";
-import {UserOverviewDto} from "../../../dtos/app-user";
-import {AuthService} from "../../../services/auth.service";
-import {ReservationService} from "../../../services/reservation.service";
-import {NotificationService} from "../../../services/notification.service";
-import {D3DrawService} from "../../../services/d3-draw.service";
-import {formatIsoDate} from "../../../util/date-helper";
-import {SimpleViewReservationStatusEnum} from "../../../dtos/status-enum";
+  AreaDto, ReservationWalkInDto
+} from "../../dtos/reservation";
+import {UserOverviewDto} from "../../dtos/app-user";
+import {AuthService} from "../../services/auth.service";
+import {ReservationService} from "../../services/reservation.service";
+import {NotificationService} from "../../services/notification.service";
+import {D3DrawService} from "../../services/d3-draw.service";
+import {formatIsoDate} from "../../util/date-helper";
+import {SimpleViewReservationStatusEnum} from "../../dtos/status-enum";
 
 @Component({
-  selector: 'app-component-reservation-layout',
-  templateUrl: './reservation-layout.component.html',
-  styleUrls: ['./reservation-layout.component.scss']
+  selector: 'app-employee-view',
+  templateUrl: './employee-view.component.html',
+  styleUrl: './employee-view.component.scss'
 })
-export class ReservationLayoutComponent implements OnInit, OnDestroy {
-
+export class EmployeeViewComponent {
   @ViewChild('d3Container', {static: true}) d3Container: ElementRef;
 
   reservationCreateDto: ReservationCreateDto;
@@ -230,10 +229,6 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
     this.updateReservationCreateDto();
     this.updateCheckAvailabilityDto()
 
-    if (this.authService.isLoggedIn()) {
-      this.setCurrentUserDetails();
-    }
-
     const totalSeats = this.selectedPlaces.reduce((sum, place) => sum + place.numberOfSeats, 0);
     if (this.reservationCreateDto.pax > totalSeats) {
       this.notificationService.showError(`The selected places only have ${totalSeats} seats.`);
@@ -267,7 +262,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
           this.notificationService.showError('Location Closed');
         } else {
           this.notificationService.showSuccess('Reservation created successfully.');
-          this.resetForm(form);
+          this.resetForm();
         }
       },
       error: () => {
@@ -276,7 +271,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
     });
   }
 
-  private resetForm(form: NgForm) {
+  private resetForm() {
     this.initializeSharedProperties();
     this.fetchAllAreas();
     this.fetchLayoutAvailability();
@@ -312,5 +307,40 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
     this.onFieldChange();
   }
 
-  protected readonly SimpleViewReservationStatusEnum = SimpleViewReservationStatusEnum;
+  createWalkInReservation() {
+    this.updateCheckAvailabilityDto()
+
+    const totalSeats = this.selectedPlaces.reduce((sum, place) => sum + place.numberOfSeats, 0);
+    if (this.reservationCreateDto.pax > totalSeats) {
+      this.notificationService.showError(`The selected places only have ${totalSeats} seats.`);
+      return;
+    }
+
+    let walkInReservation: ReservationWalkInDto = {
+      startTime: this.sharedStartTime,
+      date: this.sharedDate,
+      pax: this.reservationCreateDto.pax,
+      placeIds: this.reservationCreateDto.placeIds
+    }
+
+    this.reservationService.createWalkIn(walkInReservation).subscribe({
+      next: (data) => {
+        if (data == null) {
+          this.notificationService.showError('Location Closed');
+        } else {
+          this.notificationService.showSuccess('Walk-in Reservation created successfully.');
+          this.resetForm();
+        }
+      },
+      error: () => {
+        this.notificationService.showError('Failed to create reservation. Please try again later.');
+      },
+    });
+    this.isPaxValid = false;
+    setTimeout(() => {
+      this.isPaxValid = true;
+      this.isTimeManuallyChanged = false;
+    }, 2000);
+
+  }
 }

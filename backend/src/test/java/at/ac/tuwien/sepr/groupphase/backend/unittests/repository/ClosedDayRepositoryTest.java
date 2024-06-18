@@ -31,30 +31,13 @@ public class ClosedDayRepositoryTest implements TestData {
 
     @Test
     @Transactional
-    public void givenLegalData_whenSaveClosedDay_thenFindListWithOneElementAndFindClosedDayById() {
+    public void givenValidData_whenFindByDate_thenReturnClosedDay() {
         ClosedDay closedDay = ClosedDay.ClosedDayBuilder.aClosedDay()
             .withRestaurant(restaurantRepository.save(TEST_RESTAURANT_1))
             .withDate(TEST_CLOSED_DAY_DATE)
             .build();
-        closedDayRepository.save(closedDay);
+        closedDay = closedDayRepository.save(closedDay);
 
-        assertAll(
-            () -> assertEquals(1, closedDayRepository.findAll().size()),
-            () -> assertNotNull(closedDayRepository.findById(closedDay.getId()))
-        );
-    }
-
-    @Test
-    @Transactional
-    public void givenDate_whenFindByDate_thenReturnClosedDay() {
-        ClosedDay closedDay = ClosedDay.ClosedDayBuilder.aClosedDay()
-            .withRestaurant(restaurantRepository.save(TEST_RESTAURANT_1))
-            .withDate(TEST_CLOSED_DAY_DATE)
-            .build();
-        closedDayRepository.save(closedDay);
-
-        assertAll(
-            () -> assertNotNull(closedDayRepository.findByDate(TEST_CLOSED_DAY_DATE))
-        );
+        assertEquals(closedDay, closedDayRepository.findByDate(TEST_CLOSED_DAY_DATE).get());
     }
 }
