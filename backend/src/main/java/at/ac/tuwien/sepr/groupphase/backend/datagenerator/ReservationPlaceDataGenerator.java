@@ -10,6 +10,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -18,8 +19,8 @@ import java.lang.invoke.MethodHandles;
 import java.util.Optional;
 
 @Profile({"generateData", "test"})
-@Order(6)
 @Component
+@Order(6)
 public class ReservationPlaceDataGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());

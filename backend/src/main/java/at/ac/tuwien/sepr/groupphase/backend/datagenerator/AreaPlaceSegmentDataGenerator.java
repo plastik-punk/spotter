@@ -11,6 +11,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.SegmentRepository;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -34,7 +35,10 @@ public class AreaPlaceSegmentDataGenerator {
     public AreaPlaceSegmentDataGenerator(AreaPlaceSegmentRepository areaPlaceSegmentRepository,
                                          AreaRepository areaRepository,
                                          PlaceRepository placeRepository,
-                                         SegmentRepository segmentRepository) {
+                                         SegmentRepository segmentRepository,
+                                         AreaDataGenerator areaDataGenerator,
+                                         PlaceDataGenerator placeDataGenerator,
+                                         SegmentDataGenerator segmentDataGenerator) {
         this.areaPlaceSegmentRepository = areaPlaceSegmentRepository;
         this.areaRepository = areaRepository;
         this.placeRepository = placeRepository;
@@ -54,8 +58,18 @@ public class AreaPlaceSegmentDataGenerator {
         List<Place> places = placeRepository.findAll();
         List<Segment> segments = segmentRepository.findAll();
 
-        if (areas.isEmpty() || places.isEmpty() || segments.isEmpty()) {
-            LOGGER.warn("Cannot generate AreaPlaceSegments: No areas, places, or segments found");
+        if (areas.isEmpty()) {
+            LOGGER.warn("Cannot generate AreaPlaceSegments: No areas found");
+            return;
+        }
+
+        if (places.isEmpty()) {
+            LOGGER.warn("Cannot generate AreaPlaceSegments: No places found");
+            return;
+        }
+
+        if (segments.isEmpty()) {
+            LOGGER.warn("Cannot generate AreaPlaceSegments: No segments found");
             return;
         }
 
