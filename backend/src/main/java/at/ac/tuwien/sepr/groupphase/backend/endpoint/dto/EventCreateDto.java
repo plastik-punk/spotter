@@ -1,14 +1,28 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
+import at.ac.tuwien.sepr.groupphase.backend.validation.EndDateAndTimeAfterStartValidation;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+@EndDateAndTimeAfterStartValidation
 public class EventCreateDto {
+
+    @NotNull(message = "Start date is required")
     private LocalDate startDate;
+
     private LocalTime startTime;
+
+    @NotNull(message = "End date is required")
     private LocalDate endDate;
+
     private LocalTime endTime;
+
+    @NotNull(message = "Name is required")
     private String name;
+
+    @NotNull(message = "Description is required")
     private String description;
 
     public LocalDate getStartDate() {

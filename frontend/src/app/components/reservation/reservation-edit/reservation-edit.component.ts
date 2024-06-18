@@ -9,17 +9,10 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {ToastrService} from "ngx-toastr";
 import {NotificationService} from "../../../services/notification.service";
 import {NgIf} from "@angular/common";
-import {AppUser} from "../../../dtos/app-user";
-
 
 @Component({
   selector: 'app-reservation-edit',
   templateUrl: './reservation-edit.component.html',
-  standalone: true,
-  imports: [
-    FormsModule,
-    NgIf
-  ],
   styleUrls: ['./reservation-edit.component.scss']
 })
 
@@ -48,6 +41,7 @@ export class ReservationEditComponent implements OnInit {
   };
   reservationCheckAvailabilityDto: ReservationCheckAvailabilityDto = {
     startTime: undefined,
+    endTime: undefined,
     date: undefined,
     pax: undefined,
     idToExclude: undefined
@@ -109,6 +103,7 @@ export class ReservationEditComponent implements OnInit {
   onFieldChange() {
     // 1. update DTO with current content of form
     this.reservationCheckAvailabilityDto.startTime = this.reservationEditDto.startTime;
+    this.reservationCheckAvailabilityDto.endTime = this.reservationEditDto.endTime;
     this.reservationCheckAvailabilityDto.date = this.reservationEditDto.date;
     this.reservationCheckAvailabilityDto.pax = this.reservationEditDto.pax;
     this.reservationCheckAvailabilityDto.idToExclude = this.reservationEditDto.reservationId;

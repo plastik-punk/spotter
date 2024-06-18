@@ -4,6 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationModalDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import org.mapstruct.AfterMapping;
@@ -36,12 +37,18 @@ public interface ReservationMapper {
 
     ReservationDetailDto reservationToReservationDetailDto(Reservation reservation);
 
+    @Mapping(source = "applicationUser.firstName", target = "firstName")
+    @Mapping(source = "applicationUser.lastName", target = "lastName")
+    ReservationModalDetailDto reservationToReservationModalDetailDto(Reservation reservation);
+
+    // TODO: annotation only needed for the applicationUser fields (but test this first)
     @Mapping(source = "applicationUser.firstName", target = "userFirstName")
     @Mapping(source = "applicationUser.lastName", target = "userLastName")
     @Mapping(source = "startTime", target = "startTime")
     @Mapping(source = "date", target = "date")
     @Mapping(source = "endTime", target = "endTime")
     @Mapping(source = "hashValue", target = "hashId")
+    @Mapping(source = "confirmed", target = "confirmed")
     @Named("reservationList")
     ReservationListDto reservationToReservationListDto(Reservation reservation);
 

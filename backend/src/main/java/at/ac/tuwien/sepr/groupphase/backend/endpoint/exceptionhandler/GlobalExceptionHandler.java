@@ -4,7 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ConflictErrorRestDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ValidationErrorRestDto;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
-import at.ac.tuwien.sepr.groupphase.backend.exception.ValidationException;
+import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -38,9 +38,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ResponseBody
-    public ValidationErrorRestDto handleValidationException(ValidationException e) {
+    public ValidationErrorRestDto handleValidationException(ConstraintViolationException e) {
         LOGGER.warn("Terminating request processing with status 422 due to {}: {}", e.getClass().getSimpleName(), e.getMessage());
-        return new ValidationErrorRestDto(e.summary(), e.errors());
+        List<String> errors = e.getConstraintViolations().stream()
+            .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
+            .collect(Collectors.toList());
+
+        return new ValidationErrorRestDto(e.getMessage(), errors);
     }
 
     /**

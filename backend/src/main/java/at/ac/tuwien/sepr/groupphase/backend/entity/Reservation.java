@@ -7,6 +7,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -23,23 +27,32 @@ public class Reservation {
     @JoinColumn(name = "user_id", nullable = false, referencedColumnName = "id")
     private ApplicationUser applicationUser;
 
+    @NotNull(message = "startTime is required")
     @Column(nullable = false)
     private LocalTime startTime;
 
+    @NotNull(message = "Date must not be null")
+    // @FutureOrPresent(message = "Date cannot be in the past")
     @Column(nullable = false)
     private LocalDate date;
 
     @Column
     private LocalTime endTime;
 
+    @NotNull(message = "Pax must not be null")
+    @Positive(message = "Pax should be greater than 0")
     @Column(nullable = false)
     private Long pax;
 
+    @Size(max = 100000, message = "Notes shouldn't be longer than 100000 characters")
     @Column(length = 100000)
     private String notes;
 
     @Column(nullable = false)
     private String hashValue;
+
+    @Column(nullable = false)
+    private boolean confirmed;
 
     public Long getId() {
         return id;
@@ -105,6 +118,14 @@ public class Reservation {
         this.hashValue = hashValue;
     }
 
+    public boolean isConfirmed() {
+        return confirmed;
+    }
+
+    public void setConfirmed(boolean confirmed) {
+        this.confirmed = confirmed;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -119,12 +140,14 @@ public class Reservation {
             && Objects.equals(date, reservation.date)
             && Objects.equals(endTime, reservation.endTime)
             && Objects.equals(pax, reservation.pax)
-            && Objects.equals(notes, reservation.notes);
+            && Objects.equals(notes, reservation.notes)
+            && Objects.equals(hashValue, reservation.hashValue)
+            && Objects.equals(confirmed, reservation.confirmed);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, applicationUser, startTime, date, endTime, pax, notes);
+        return Objects.hash(id, applicationUser, startTime, date, endTime, pax, notes, confirmed);
     }
 
     @Override
@@ -137,7 +160,8 @@ public class Reservation {
             + ", endTime=" + endTime
             + ", pax=" + pax
             + ", notes='" + notes + '\''
-            + '}';
+            + ", confirmed='" + confirmed
+            + "'}";
     }
 
     public Reservation copy() {
@@ -162,6 +186,7 @@ public class Reservation {
         private Long pax;
         private String notes;
         private String hashValue;
+        private boolean confirmed;
 
         private ReservationBuilder() {
         }
@@ -210,6 +235,11 @@ public class Reservation {
             return this;
         }
 
+        public ReservationBuilder withConfirmed(boolean confirmed) {
+            this.confirmed = confirmed;
+            return this;
+        }
+
         public Reservation build() {
             Reservation reservation = new Reservation();
             reservation.setId(id);
@@ -220,6 +250,7 @@ public class Reservation {
             reservation.setPax(pax);
             reservation.setNotes(notes);
             reservation.setHashValue(hashValue);
+            reservation.setConfirmed(confirmed);
             return reservation;
         }
     }

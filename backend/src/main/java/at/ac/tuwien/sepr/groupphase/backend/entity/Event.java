@@ -1,32 +1,37 @@
 package at.ac.tuwien.sepr.groupphase.backend.entity;
 
-
-
+import at.ac.tuwien.sepr.groupphase.backend.validation.EndTimeAfterStartTimeValidation;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
+@EndTimeAfterStartTimeValidation
 public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "Start time is required")
     @Column(nullable = false)
     private LocalDateTime startTime;
 
+    @NotNull(message = "End time is required")
     @Column(nullable = false)
     private LocalDateTime endTime;
 
+    @NotNull(message = "Name is required")
     @Column(nullable = false)
     private String name;
 
+    @NotNull(message = "Description is required")
     @Column(length = 100000)
     private String description;
 

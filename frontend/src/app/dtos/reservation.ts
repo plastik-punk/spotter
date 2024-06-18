@@ -21,8 +21,9 @@ export interface ReservationCreateDto {
   notes: string;
   email: string;
   mobileNumber: number;
-  placeId?: number;
+  placeIds?: number[];
 }
+
 export interface ReservationListDto {
   id: number,
   userFirstName: string,
@@ -33,6 +34,7 @@ export interface ReservationListDto {
   pax: number;
   placeId: number;
   hashId: string;
+  confirmed: boolean;
 }
 
 export interface ReservationSearch {
@@ -44,6 +46,7 @@ export interface ReservationSearch {
 
 export interface ReservationCheckAvailabilityDto {
   startTime: Date;
+  endTime?: Date;
   date: Date;
   pax: number;
   idToExclude?: number;
@@ -55,6 +58,15 @@ export interface ReservationDetailDto {
   endTime: Date;
   date: Date;
   pax: number;
+  notes: string;
+  placeIds: number[];
+}
+
+export interface ReservationModalDetailDto {
+  firstName: string;
+  lastName: string;
+  startTime: Date;
+  endTime: Date;
   notes: string;
   placeIds: number[];
 }
@@ -97,3 +109,18 @@ export interface CoordinateDto {
   y: number;
 }
 
+export interface AreaDto {
+  id: number;
+  name: string;
+}
+
+export interface AreaListDto {
+  areas: AreaDto[];
+}
+
+export interface ReservationWalkInDto{
+  startTime: string;
+  date: string;
+  pax: number;
+  placeIds: number[];
+}

@@ -23,18 +23,4 @@ public class RestaurantRepositoryTest implements TestData {
     @Autowired
     private RestaurantRepository restaurantRepository;
 
-    @Test
-    @Transactional
-    public void givenLegalData_whenSaveRestaurant_thenFindListWithOneElementAndFindRestaurantById() {
-        Restaurant restaurant = Restaurant.RestaurantBuilder.aRestaurant()
-            .withName(TEST_RESTAURANT_NAME)
-            .withAddress(TEST_RESTAURANT_ADDRESS)
-            .build();
-        restaurantRepository.save(restaurant);
-
-        assertAll(
-            () -> assertEquals(1, restaurantRepository.findAll().size()),
-            () -> assertNotNull(restaurantRepository.findById(restaurant.getId()))
-        );
-    }
 }

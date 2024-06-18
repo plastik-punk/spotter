@@ -22,6 +22,4 @@ public class AreaRepositoryTest implements TestData {
     @Autowired
     private AreaRepository areaRepository;
 
-    // TODO
-
 }

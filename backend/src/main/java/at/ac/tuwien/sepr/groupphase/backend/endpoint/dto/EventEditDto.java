@@ -1,13 +1,25 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
+import at.ac.tuwien.sepr.groupphase.backend.validation.EndTimeAfterStartTimeValidation;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+@EndTimeAfterStartTimeValidation
 public class EventEditDto {
     private String hashId;
+
+    @NotNull(message = "Start time is required")
     private LocalDateTime startTime;
+
+    @NotNull(message = "End time is required")
     private LocalDateTime endTime;
+
+    @NotNull(message = "Name is required")
     private String name;
+
+    @NotNull(message = "Description is required")
     private String description;
 
     public String getHashId() {

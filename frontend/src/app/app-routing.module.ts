@@ -18,14 +18,15 @@ import {EventCreateComponent} from "./components/event/event-create/event-create
 import {
     ReservationLayoutComponent
 } from "./components/reservation/reservation-layout/reservation-layout.component";
+import {AdminViewComponent} from "./components/admin-view/admin-view.component";
+import {PredictionComponent} from "./components/admin-view/prediction/prediction.component";
+import {EmployeeViewComponent} from "./components/employee-view/employee-view.component";
 
 const routes: Routes = [
   {path: '', redirectTo: 'login', pathMatch: 'full'},
   {path: 'login', component: LoginComponent},
   {path: 'reservation-simple', component: ReservationSimpleComponent},
-  {path: 'message', canActivate: mapToCanActivate([AuthGuard]), component: MessageComponent},
   {path: 'reservation-overview', canActivate: mapToCanActivate([AuthGuard]), component: ReservationOverviewComponent},
-  {path: 'message', canActivate: mapToCanActivate([AuthGuard]), component: MessageComponent},
   {path: 'registration', component: RegistrationComponent},
   {path: 'employees', component: StaffAccountsComponent},
   {path: 'reservation-detail/:id', component: ReservationDetailComponent},
@@ -34,7 +35,11 @@ const routes: Routes = [
   {path: 'event-overview', canActivate: mapToCanActivate([AuthGuard]), component: EventOverviewComponent},
   {path: 'event-detail/:id', canActivate: mapToCanActivate([AuthGuard]), component: EventDetailComponent},
   {path: 'event-edit/:id', canActivate: mapToCanActivate([AuthGuard]), component: EventEditComponent},
-  {path: 'event-create', canActivate: mapToCanActivate([AuthGuard]), component: EventCreateComponent}
+  {path: 'event-create', canActivate: mapToCanActivate([AuthGuard]), component: EventCreateComponent},
+  {path: 'reservation-edit/:id', component: ReservationEditComponent},
+  {path: 'admin-view', component: AdminViewComponent},
+  {path: 'admin-view/prediction', component: PredictionComponent},
+  {path: 'employee-view', component: EmployeeViewComponent}
 ];
 
 @NgModule({

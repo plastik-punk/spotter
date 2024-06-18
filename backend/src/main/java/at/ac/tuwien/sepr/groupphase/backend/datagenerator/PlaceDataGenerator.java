@@ -18,7 +18,7 @@ import java.lang.invoke.MethodHandles;
 public class PlaceDataGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-    private static final int NUMBER_OF_PLACES_TO_GENERATE = 16;
+    private static final int NUMBER_OF_PLACES_TO_GENERATE = 23;
 
     private final PlaceRepository placeRepository;
 

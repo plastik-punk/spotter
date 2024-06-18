@@ -5,24 +5,27 @@ import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationModalDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
+import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.MediaType;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,16 +50,19 @@ public class ReservationEndpointTest implements TestData {
     private ReservationRepository reservationRepository;
 
     @Autowired
-    private ApplicationUserRepository userRepository;
+    private ObjectMapper objectMapper;
 
     @Autowired
-    private ObjectMapper objectMapper;
+    private ApplicationUserRepository userRepository;
 
     @Autowired
     private JwtTokenizer jwtTokenizer;
 
     @Autowired
     private SecurityProperties securityProperties;
+
+    @Autowired
+    private ReservationService service;
 
     @Test
     @Transactional
@@ -178,7 +184,8 @@ public class ReservationEndpointTest implements TestData {
         );
     }
 
-    //@Test
+    // TODO: activate again after hash value was updated
+    // @Test
     @Transactional
     public void givenValidId_whenDelete_thenNoContent() throws Exception {
         // Given a user
@@ -235,6 +242,46 @@ public class ReservationEndpointTest implements TestData {
 
     @Test
     @Transactional
+    public void givenValidId_whenGetModalDetail_thenReturnReservationModalDetailDto() throws Exception {
+        ReservationCreateDto dto = ReservationCreateDto.ReservationCreateDtoBuilder.aReservationCreateDto()
+            .withApplicationUser(TEST_APPLICATION_USER_CUSTOMER_1)
+            .withFirstName(TEST_APPLICATION_USER_CUSTOMER_1.getFirstName())
+            .withLastName(TEST_APPLICATION_USER_CUSTOMER_1.getLastName())
+            .withStartTime(TEST_RESERVATION_START_TIME)
+            .withEndTime(TEST_RESERVATION_END_TIME)
+            .withDate(TEST_RESERVATION_DATE)
+            .withPax(TEST_RESERVATION_PAX)
+            .withNotes(TEST_RESERVATION_NOTES)
+            .withEmail(TEST_APPLICATION_USER_CUSTOMER_1.getEmail())
+            .withMobileNumber(TEST_APPLICATION_USER_CUSTOMER_1.getMobileNumber())
+            .build();
+        service.create(dto);
+
+        ReservationModalDetailDto expectedDto = ReservationModalDetailDto.ReservationModalDetailDtoBuilder.aReservationModalDetailDto()
+            .withFirstName(TEST_APPLICATION_USER_FIRST_NAME)
+            .withLastName(TEST_APPLICATION_USER_LAST_NAME)
+            .withDate(TEST_RESERVATION_DATE)
+            .withStartTime(TEST_RESERVATION_START_TIME)
+            .withEndTime(TEST_RESERVATION_END_TIME)
+            .withNotes(TEST_RESERVATION_NOTES)
+            .build();
+
+        MvcResult mvcResult = this.mockMvc.perform(get(RESERVATION_BASE_URI + "/modal")
+                .param("id", TEST_RESERVATION_HASH_VALUE_1)
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(TEST_USER_CUSTOMER, TEST_ROLES_CUSTOMER)))
+            .andDo(print())
+            .andReturn();
+
+        ReservationModalDetailDto actualDto = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ReservationModalDetailDto.class);
+
+        assertAll(
+            () -> assertEquals(200, mvcResult.getResponse().getStatus()),
+            () -> assertEquals(expectedDto, actualDto)
+        );
+    }
+
+    @Test
+    @Transactional
     public void givenClosedDay_whenGetNextAvailableTables_thenReturnEmpty() throws Exception {
         // Given Closed Day
         ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
@@ -266,12 +313,13 @@ public class ReservationEndpointTest implements TestData {
     @Transactional
     public void givenInvalidReservation_whenGetNextAvailableTables_thenReturnBadRequest() throws Exception {
         // Given Invalid Reservation
-        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
-            .withStartTime(TEST_RESERVATION_AVAILABILITY.getStartTime())
-            .withDate(null)
-            .withPax(TEST_RESERVATION_AVAILABILITY.getPax())
-            .withIdToExclude(TEST_RESERVATION_AVAILABILITY.getIdToExclude())
-            .build();
+        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto =
+            ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+                .withStartTime(TEST_RESERVATION_AVAILABILITY.getStartTime())
+                .withDate(null)
+                .withPax(TEST_RESERVATION_AVAILABILITY.getPax())
+                .withIdToExclude(TEST_RESERVATION_AVAILABILITY.getIdToExclude())
+                .build();
 
         // When a get request is made with the invalid reservation
         MvcResult mvcResult = this.mockMvc.perform(get(RESERVATION_BASE_URI + "/next")

@@ -1,34 +1,58 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Objects;
 
 public class ReservationCreateDto {
 
     private ApplicationUser applicationUser;
 
+    @NotNull(message = "First name is required")
+    @Size(min = 1, message = "First name should not be empty")
+    @Size(max = 255, message = "First name shouldn't be longer than 255 characters")
+    @Pattern(regexp = "^[A-Za-zäöüÄÖÜß ]+$", message = "First name must consist of letters, umlauts, sharp s and spaces only")
     private String firstName;
 
+    @NotNull(message = "Last name is required")
+    @Size(min = 1, message = "Last name should not be empty")
+    @Size(max = 255, message = "Last name shouldn't be longer than 255 characters")
+    @Pattern(regexp = "^[A-Za-zäöüÄÖÜß ]+$", message = "Last name must consist of letters, umlauts, sharp s and spaces only")
     private String lastName;
 
+    @NotNull(message = "startTime is required")
     private LocalTime startTime;
 
     private LocalTime endTime;
 
+    @NotNull(message = "Date must not be null")
+    @FutureOrPresent(message = "Date cannot be in the past")
     private LocalDate date;
 
+    @NotNull(message = "Pax must not be null")
+    @Positive(message = "Pax should be greater than 0")
     private Long pax;
 
+    @Size(max = 100000, message = "Notes shouldn't be longer than 100000 characters")
     private String notes;
 
+    @NotNull(message = "Email is required")
+    @Email(message = "Email must be valid")
     private String email;
 
+    @Pattern(regexp = "^[0-9]{1,15}$", message = "Invalid mobile number. It must consist of max. 15 digits.")
     private String mobileNumber;
 
-    private Long placeId; // Change type to Long
+    private List<Long> placeIds;
 
     public ApplicationUser getUser() {
         return applicationUser;
@@ -110,12 +134,12 @@ public class ReservationCreateDto {
         this.mobileNumber = mobileNumber;
     }
 
-    public Long getPlaceId() {
-        return placeId;
+    public List<Long> getPlaceIds() {
+        return placeIds;
     }
 
-    public void setPlaceId(Long placeId) {
-        this.placeId = placeId;
+    public void setPlaceIds(List<Long> placeIds) {
+        this.placeIds = placeIds;
     }
 
     @Override
@@ -136,12 +160,12 @@ public class ReservationCreateDto {
             && Objects.equals(notes, that.notes)
             && Objects.equals(email, that.email)
             && Objects.equals(mobileNumber, that.mobileNumber)
-            && Objects.equals(placeId, that.placeId);
+            && Objects.equals(placeIds, that.placeIds);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(applicationUser, firstName, lastName, startTime, endTime, date, pax, notes, email, mobileNumber, placeId);
+        return Objects.hash(applicationUser, firstName, lastName, startTime, endTime, date, pax, notes, email, mobileNumber, placeIds);
     }
 
     @Override
@@ -157,7 +181,7 @@ public class ReservationCreateDto {
             + ", notes='" + notes + '\''
             + ", email='" + email + '\''
             + ", mobileNumber=" + mobileNumber
-            + ", placeId=" + placeId
+            + ", placeIds=" + placeIds
             + '}';
     }
 
@@ -173,7 +197,7 @@ public class ReservationCreateDto {
             .withNotes(this.notes)
             .withEmail(this.email)
             .withMobileNumber(this.mobileNumber)
-            .withPlaceId(this.placeId)
+            .withPlaceIds(this.placeIds) // Update builder with list of place IDs
             .build();
     }
 
@@ -188,7 +212,7 @@ public class ReservationCreateDto {
         private String notes;
         private String email;
         private String mobileNumber;
-        private Long placeId;
+        private List<Long> placeIds; // Change type to List<Long>
 
         private ReservationCreateDtoBuilder() {
         }
@@ -247,8 +271,8 @@ public class ReservationCreateDto {
             return this;
         }
 
-        public ReservationCreateDtoBuilder withPlaceId(Long placeId) {
-            this.placeId = placeId;
+        public ReservationCreateDtoBuilder withPlaceIds(List<Long> placeIds) {
+            this.placeIds = placeIds;
             return this;
         }
 
@@ -264,7 +288,7 @@ public class ReservationCreateDto {
             reservationCreateDto.setNotes(notes);
             reservationCreateDto.setEmail(email);
             reservationCreateDto.setMobileNumber(mobileNumber);
-            reservationCreateDto.setPlaceId(placeId);
+            reservationCreateDto.setPlaceIds(placeIds);
             return reservationCreateDto;
         }
     }

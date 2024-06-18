@@ -7,6 +7,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 import java.util.Objects;
 
@@ -18,21 +22,35 @@ public class ApplicationUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = "First name is required")
+    @Size(min = 1, message = "First name should not be empty")
+    @Size(max = 255, message = "First name shouldn't be longer than 255 characters")
+    @Pattern(regexp = "^[A-Za-zäöüÄÖÜß ]+$", message = "First name must consist of letters, umlauts, sharp s and spaces only")
     @Column(nullable = false, length = 255)
     private String firstName;
 
+    @NotNull(message = "Last name is required")
+    @Size(min = 1, message = "Last name should not be empty")
+    @Size(max = 255, message = "Last name shouldn't be longer than 255 characters")
+    @Pattern(regexp = "^[A-Za-zäöüÄÖÜß ]+$", message = "Last name must consist of letters, umlauts, sharp s and spaces only")
     @Column(nullable = false, length = 255)
     private String lastName;
 
+    @NotNull(message = "Email is required")
+    @Email(message = "Email must be valid")
     @Column(nullable = false, length = 255)
     private String email;
 
+    @Pattern(regexp = "^[0-9]{1,15}$", message = "Invalid mobile number. It must consist of max. 15 digits.")
     @Column(nullable = true, length = 15)
     private String mobileNumber;
 
+    @NotNull(message = "Password is required")
+    @Size(max = 255, message = "Password shouldn't be longer than 255 characters")
     @Column(nullable = false, length = 255)
     private String password;
 
+    @NotNull(message = "User role is required")
     @Column(nullable = false)
     private RoleEnum role;
 

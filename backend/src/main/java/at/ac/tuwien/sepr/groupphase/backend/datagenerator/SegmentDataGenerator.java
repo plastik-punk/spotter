@@ -7,13 +7,14 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.SegmentRepository;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 
 @Profile({"generateData", "test"})
 @Component
@@ -25,7 +26,7 @@ public class SegmentDataGenerator {
     private final SegmentRepository segmentRepository;
     private final PlaceRepository placeRepository;
 
-    public SegmentDataGenerator(SegmentRepository segmentRepository, PlaceRepository placeRepository) {
+    public SegmentDataGenerator(SegmentRepository segmentRepository, PlaceRepository placeRepository, AreaDataGenerator areaDataGenerator) {
         this.segmentRepository = segmentRepository;
         this.placeRepository = placeRepository;
     }
@@ -77,7 +78,23 @@ public class SegmentDataGenerator {
                 createSegment(7, 0),
                 createSegment(8, 0),
                 createSegment(9, 0),
-                createSegment(10, 0)
+                createSegment(10, 0),
+
+                createSegment(1, 2),
+                createSegment(2, 2),
+                createSegment(1, 4),
+                createSegment(2, 4),
+                createSegment(1, 6),
+                createSegment(2, 6),
+                createSegment(5, 2),
+                createSegment(6, 2),
+                createSegment(5, 4),
+                createSegment(6, 4),
+                createSegment(5, 6),
+                createSegment(6, 6),
+                createSegment(11, 2),
+                createSegment(12, 2)
+
             );
 
             for (Segment segment : segments) {

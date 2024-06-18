@@ -141,6 +141,12 @@ public interface TestData {
     String TEST_APPLICATION_USER_PASSWORD = "naughtyotter";
     RoleEnum TEST_APPLICATION_USER_ROLE = RoleEnum.CUSTOMER;
 
+    String TEST_APPLICATION_USER_FIRST_NAME_2 = "Biber";
+    String TEST_APPLICATION_USER_LAST_NAME_2 = "McBiberface";
+    String TEST_APPLICATION_USER_EMAIL_2 = "biber@example.at";
+    String TEST_APPLICATION_USER_MOBILE_NUMBER_2 = "06501234568";
+    String TEST_APPLICATION_USER_PASSWORD_2 = "naughtybiber";
+
     ApplicationUser TEST_APPLICATION_USER_CUSTOMER_1 = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
         .withId(1L)
         .withFirstName(TEST_APPLICATION_USER_FIRST_NAME)
@@ -161,6 +167,16 @@ public interface TestData {
         .withRole(TEST_APPLICATION_USER_ROLE)
         .build();
 
+    ApplicationUser TEST_APPLICATION_USER_CUSTOMER_3 = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
+        .withId(2L)
+        .withFirstName(TEST_APPLICATION_USER_FIRST_NAME_2)
+        .withLastName(TEST_APPLICATION_USER_LAST_NAME_2)
+        .withEmail(TEST_APPLICATION_USER_EMAIL_2)
+        .withMobileNumber(TEST_APPLICATION_USER_MOBILE_NUMBER_2)
+        .withPassword(TEST_APPLICATION_USER_PASSWORD_2)
+        .withRole(TEST_APPLICATION_USER_ROLE)
+        .build();
+
     String TEST_APPLICATION_USER_EXPECTED_STRING = "User{id=1, firstName='" + TEST_APPLICATION_USER_FIRST_NAME
         + "', lastName='" + TEST_APPLICATION_USER_LAST_NAME
         + "', eMail='" + TEST_APPLICATION_USER_EMAIL
@@ -178,6 +194,26 @@ public interface TestData {
         .withRole(RoleEnum.GUEST)
         .build();
 
+    ApplicationUser TEST_APPLICATION_USER_GUEST_2 = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
+        .withId(22L)
+        .withFirstName(TEST_APPLICATION_USER_FIRST_NAME)
+        .withLastName(TEST_APPLICATION_USER_LAST_NAME)
+        .withEmail(TEST_APPLICATION_USER_EMAIL)
+        .withMobileNumber(TEST_APPLICATION_USER_MOBILE_NUMBER)
+        .withoutPassword()
+        .withRole(RoleEnum.GUEST)
+        .build();
+
+    ApplicationUser TEST_APPLICATION_USER_ADMIN = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
+        .withId(1L)
+        .withFirstName(TEST_APPLICATION_USER_FIRST_NAME)
+        .withLastName(TEST_APPLICATION_USER_LAST_NAME)
+        .withEmail(TEST_APPLICATION_USER_EMAIL)
+        .withMobileNumber(TEST_APPLICATION_USER_MOBILE_NUMBER)
+        .withoutPassword()
+        .withRole(RoleEnum.ADMIN)
+        .build();
+
     // ---------------------------------------------
     // RESERVATION TEST DATA
     // ---------------------------------------------
@@ -189,7 +225,8 @@ public interface TestData {
     String TEST_RESERVATION_NOTES = "Test Notes";
     Long TEST_RESERVATION_DETAIL_ID = 1L;
     String TEST_RESERVATION_HASH_VALUE = "TestHashValue";
-    String TEST_RESERVATION_HASH_VALUE_1 = "1476C39F97636A345B7BCCA9AAE7787E7140D6835FDDD947EC561DEC9C6F9AC5";
+    String TEST_RESERVATION_HASH_VALUE_1 = "44A17E9E592AA9951A3A0853524BE799A333DFD8522182D79D990A24EB94A7FEfalse";
+    LocalDate TEST_RESERVATION_DATE_INVALID = LocalDate.of(2022, 1, 2);
 
     ReservationCreateDto TEST_RESERVATION_CREATE_DTO_CUSTOMER = ReservationCreateDto.ReservationCreateDtoBuilder.aReservationCreateDto()
         .withApplicationUser(TEST_APPLICATION_USER_CUSTOMER_1)
@@ -255,6 +292,7 @@ public interface TestData {
         .withDate(TEST_RESERVATION_DATE)
         .withPax(TEST_RESERVATION_PAX)
         .withNotes(TEST_RESERVATION_NOTES)
+        .withConfirmed(false)
         .build();
 
     Reservation TEST_RESERVATION_2 = Reservation.ReservationBuilder.aReservation()
@@ -265,6 +303,18 @@ public interface TestData {
         .withDate(TEST_RESERVATION_DATE)
         .withPax(TEST_RESERVATION_PAX)
         .withNotes(TEST_RESERVATION_NOTES)
+        .withConfirmed(false)
+        .build();
+
+    Reservation TEST_RESERVATION_3 = Reservation.ReservationBuilder.aReservation()
+        .withId(2L)
+        .withUser(TEST_APPLICATION_USER_CUSTOMER_3)
+        .withStartTime(TEST_RESERVATION_START_TIME)
+        .withEndTime(TEST_RESERVATION_END_TIME)
+        .withDate(TEST_RESERVATION_DATE)
+        .withPax(TEST_RESERVATION_PAX)
+        .withNotes(TEST_RESERVATION_NOTES)
+        .withConfirmed(false)
         .build();
 
     Reservation TEST_RESERVATION_TO_DELETE = Reservation.ReservationBuilder.aReservation()
@@ -283,7 +333,8 @@ public interface TestData {
         + ", date=" + TEST_RESERVATION_DATE
         + ", endTime=" + TEST_RESERVATION_END_TIME
         + ", pax=" + TEST_RESERVATION_PAX
-        + ", notes='" + TEST_RESERVATION_NOTES + "'}";
+        + ", notes='" + TEST_RESERVATION_NOTES + '\''
+        + ", confirmed='false'}";
 
     LocalTime TEST_RESERVATION_AVAILABILITY_START_TIME = LocalDateTime.of(2024, 7, 1, 18, 0, 0, 0).toLocalTime();
     LocalDate TEST_RESERVATION_AVAILABILITY_DATE = LocalDate.of(2024, 7, 1);
@@ -353,6 +404,7 @@ public interface TestData {
     // ---------------------------------------------
 
     DayOfWeek TEST_OPENING_HOURS_DAY_OF_WEEK = DayOfWeek.MONDAY;
+    DayOfWeek TEST_OPENING_HOURS_DAY_OF_WEEK_2 = DayOfWeek.TUESDAY;
     LocalTime TEST_OPENING_HOURS_OPENING_TIME = LocalTime.of(11, 30);
     LocalTime TEST_OPENING_HOURS_CLOSING_TIME = LocalTime.of(15, 0);
 
@@ -377,39 +429,44 @@ public interface TestData {
         + ", dayOfWeek=" + TEST_OPENING_HOURS_DAY_OF_WEEK
         + ", openingTime=" + TEST_OPENING_HOURS_OPENING_TIME
         + ", closingTime=" + TEST_OPENING_HOURS_CLOSING_TIME + "}";
-
-    // ---------------------------------------------
-    // AREA TEST DATA
-    // ---------------------------------------------
-
+// ---------------------------------------------
+// AREA TEST DATA
+// ---------------------------------------------
 
     Area TEST_AREA_1 = Area.AreaBuilder.anArea()
         .withId(1L)
-        .withName("Area 1")
-        .withWidth(16)
-        .withHeight(9)
+        .withName("Main Area")
+        .withWidth(15)
+        .withHeight(8)
+        .withOpen(true)
         .build();
 
+    Area TEST_AREA_2 = Area.AreaBuilder.anArea()
+        .withId(2L)
+        .withName("Second Area")
+        .withWidth(19)
+        .withHeight(4)
+        .withOpen(false)
+        .build();
 
-    // ---------------------------------------------
-    // SEGMENT TEST DATA
-    // ---------------------------------------------
+// ---------------------------------------------
+// SEGMENT TEST DATA
+// ---------------------------------------------
 
     Segment TEST_SEGMENT_1 = Segment.SegmentBuilder.aSegment()
         .withX(0)
         .withY(0)
         .build();
 
-    // ---------------------------------------------
-    // AREAPLACESEGMENT TEST DATA
-    // ---------------------------------------------
+// ---------------------------------------------
+// AREAPLACESEGMENT TEST DATA
+// ---------------------------------------------
 
     AreaPlaceSegment TEST_LOCATION_1 = AreaPlaceSegment.AreaPlaceSegmentBuilder.anAreaPlaceSegment()
         .withArea(TEST_AREA_1)
         .withPlace(TEST_PLACE_AVAILABLE_1)
         .withSegment(TEST_SEGMENT_1)
         .build();
-
 
     // ---------------------------------------------
     // ... TEST DATA
