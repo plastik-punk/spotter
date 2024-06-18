@@ -128,25 +128,25 @@ public class AreaLayoutCreateDto {
         }
 
         public static class CoordinateDto {
-            private Integer x;
-            private Integer y;
+            private Integer x1;
+            private Integer y1;
 
             // Getters and Setters
 
             public Integer getX() {
-                return x;
+                return x1;
             }
 
             public void setX(Integer x) {
-                this.x = x;
+                this.x1 = x;
             }
 
-            public Integer getY() {
-                return y;
+            public Integer getY1() {
+                return y1;
             }
 
-            public void setY(Integer y) {
-                this.y = y;
+            public void setY1(Integer y1) {
+                this.y1 = y1;
             }
         }
     }
