@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaLayoutDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.LayoutCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Area;
 import at.ac.tuwien.sepr.groupphase.backend.entity.AreaPlaceSegment;
@@ -17,6 +18,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.OpeningHoursRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationPlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.SegmentRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.EmailService;
 import at.ac.tuwien.sepr.groupphase.backend.service.HashService;
 import at.ac.tuwien.sepr.groupphase.backend.service.LayoutService;
@@ -31,6 +33,7 @@ import org.springframework.stereotype.Service;
 
 import java.lang.invoke.MethodHandles;
 import java.time.DayOfWeek;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,6 +52,7 @@ public class LayoutServiceImpl implements LayoutService {
     private final HashService hashService;
     private final ApplicationUserServiceImpl applicationUserService;
     private final AreaRepository areaRepository;
+    private final SegmentRepository segmentRepository;
     private final AreaPlaceSegmentRepository areaPlaceSegmentRepository;
 
     @Autowired
@@ -57,7 +61,7 @@ public class LayoutServiceImpl implements LayoutService {
     @Autowired
     public LayoutServiceImpl(ReservationRepository reservationRepository, ApplicationUserRepository applicationUserRepository, PlaceRepository placeRepository, ReservationMapper reservationMapper, LayoutMapper layoutMapper,
                              OpeningHoursRepository openingHoursRepository, ClosedDayRepository closedDayRepository, ReservationPlaceRepository reservationPlaceRepository, EmailService emailService, HashService hashService,
-                             ApplicationUserServiceImpl applicationUserService, AreaRepository areaRepository, AreaPlaceSegmentRepository areaPlaceSegmentRepository) {
+                             ApplicationUserServiceImpl applicationUserService, AreaRepository areaRepository, SegmentRepository segmentRepository, AreaPlaceSegmentRepository areaPlaceSegmentRepository) {
         this.reservationRepository = reservationRepository;
         this.applicationUserRepository = applicationUserRepository;
         this.placeRepository = placeRepository;
@@ -70,6 +74,7 @@ public class LayoutServiceImpl implements LayoutService {
         this.hashService = hashService;
         this.applicationUserService = applicationUserService;
         this.areaRepository = areaRepository;
+        this.segmentRepository = segmentRepository;
         this.areaPlaceSegmentRepository = areaPlaceSegmentRepository;
     }
 
@@ -173,5 +178,76 @@ public class LayoutServiceImpl implements LayoutService {
         LOGGER.debug("Built areaLayout: {}", areaLayoutDto);
 
         return areaLayoutDto;
+    }
+
+    @Override
+    @Transactional
+    public void createLayout(LayoutCreateDto layoutCreateDto) {
+        // Initial checks
+        if (areaRepository.count() > 0 || placeRepository.count() > 0 || segmentRepository.count() > 0 || areaPlaceSegmentRepository.count() > 0) {
+            throw new IllegalStateException("Layout already exists. Cannot create new layout.");
+        }
+
+        // Separate the main area and other areas
+        LayoutCreateDto.AreaCreateDto mainAreaDto = null;
+        List<LayoutCreateDto.AreaCreateDto> otherAreas = new ArrayList<>();
+
+        for (LayoutCreateDto.AreaCreateDto areaDto : layoutCreateDto.getAreas()) {
+            if (areaDto.isMainArea()) {
+                mainAreaDto = areaDto;
+            } else {
+                otherAreas.add(areaDto);
+            }
+        }
+
+        // Ensure the main area is saved first if it exists
+        if (mainAreaDto != null) {
+            saveArea(mainAreaDto);
+        }
+
+        // Save other areas
+        for (LayoutCreateDto.AreaCreateDto areaDto : otherAreas) {
+            saveArea(areaDto);
+        }
+    }
+
+    private void saveArea(LayoutCreateDto.AreaCreateDto areaDto) {
+        // Create and save Area entity using mapper
+        Area area = layoutMapper.areaCreateDtoToArea(areaDto);
+        areaRepository.save(area);
+
+        // Iterate over each Place in the Area and save it
+        for (LayoutCreateDto.AreaCreateDto.PlaceVisualDto placeDto : areaDto.getPlaces()) {
+            savePlace(area, placeDto);
+        }
+    }
+
+    private void savePlace(Area area, LayoutCreateDto.AreaCreateDto.PlaceVisualDto placeDto) {
+        // Create and save Place entity using mapper
+        Place place = layoutMapper.placeVisualDtoToPlace(placeDto);
+        placeRepository.save(place);
+
+        // Iterate over each Coordinate in the Place and save the Segment
+        for (LayoutCreateDto.AreaCreateDto.PlaceVisualDto.CoordinateDto coordinateDto : placeDto.getCoordinates()) {
+            saveSegment(area, place, coordinateDto);
+        }
+    }
+
+    private void saveSegment(Area area, Place place, LayoutCreateDto.AreaCreateDto.PlaceVisualDto.CoordinateDto coordinateDto) {
+        // Create and save Segment entity using mapper
+        Segment segment = layoutMapper.coordinateDtoToSegment(coordinateDto);
+        segmentRepository.save(segment);
+
+        // Create and save AreaPlaceSegment entity
+        AreaPlaceSegment areaPlaceSegment = new AreaPlaceSegment();
+        areaPlaceSegment.setArea(area);
+        areaPlaceSegment.setPlace(place);
+        areaPlaceSegment.setSegment(segment);
+        AreaPlaceSegment.AreaPlaceSegmentId id = new AreaPlaceSegment.AreaPlaceSegmentId();
+        id.setAreaId(area.getId());
+        id.setPlaceId(place.getId());
+        id.setSegmentId(segment.getId());
+        areaPlaceSegment.setId(id);
+        areaPlaceSegmentRepository.save(areaPlaceSegment);
     }
 }

@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaLayoutDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.LayoutCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.service.LayoutService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,5 +49,14 @@ public class LayoutEndpoint {
     public AreaListDto getAllAreas() {
         LOGGER.info("GET /api/v1/reservations/areas");
         return layoutService.getAllAreas();
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PermitAll
+    @PostMapping
+    @Operation(summary = "Create new layout")
+    public void createLayout(@RequestBody @Valid LayoutCreateDto layoutCreateDto) {
+        LOGGER.info("POST /api/v1/layout body: {}", layoutCreateDto);
+        layoutService.createLayout(layoutCreateDto);
     }
 }
