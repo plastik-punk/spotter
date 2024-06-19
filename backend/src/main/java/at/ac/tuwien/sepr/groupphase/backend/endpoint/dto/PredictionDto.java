@@ -1,11 +1,22 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
 import java.util.Arrays;
 import java.util.Objects;
 
 public class PredictionDto {
+
+    @Size(min = 0, max = 255, message = "Prediction could not be made correctly. Please try again.")
+    @Pattern(regexp = "^[A-Za-zäöüÄÖÜß ]+$")
     String predictionText;
+
+    @NotEmpty(message = "No Areas could be found for the prediction.")
     String[] areaNames;
+
+    @NotEmpty(message = "No Predictions could be made for these areas.")
     Long[] predictions;
 
     public String[] getAreaNames() {
