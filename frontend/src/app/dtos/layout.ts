@@ -35,7 +35,7 @@ export interface AreaListDto {
 
 export interface AreaCreateDto {
   name: string,
-  isMainArea: number,
+  isMainArea: boolean,
   closingTime?: string,
   openingTime?: string,
   isOpen: boolean,

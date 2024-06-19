@@ -2,7 +2,7 @@ import {Injectable} from "@angular/core";
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {Globals} from "../global/globals";
 import {Observable} from "rxjs";
-import {AreaLayoutDto, AreaListDto, ReservationLayoutCheckAvailabilityDto} from "../dtos/layout";
+import {AreaLayoutDto, AreaListDto, LayoutCreateDto, ReservationLayoutCheckAvailabilityDto} from "../dtos/layout";
 
 @Injectable({
   providedIn: 'root'
@@ -37,4 +37,13 @@ export class LayoutService {
     return this.httpClient.get<AreaLayoutDto>(this.layoutBaseUri, { params });
   }
 
+  /**
+   * Create a new layout
+   * @param layoutCreateDto the layout to be created
+   * @return an Observable for the created layout
+   */
+  createLayout(layoutCreateDto: LayoutCreateDto): Observable<any> {
+    return this.httpClient.post<any>(this.layoutBaseUri + "/create", layoutCreateDto);
+  }
 }
+

@@ -4,6 +4,7 @@ import * as d3 from 'd3';
 import * as bootstrap from 'bootstrap';
 import { Router } from '@angular/router';
 import { NotificationService } from "../../services/notification.service";
+import {LayoutService} from "../../services/layout.service";
 
 export interface AreaCreateDto {
   name: string;
@@ -59,8 +60,10 @@ export class CreateLayoutComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private notificationService: NotificationService
-  ) {}
+    private notificationService: NotificationService,
+    private layoutService: LayoutService
+  ) { }
+
 
   ngOnInit(): void {
     this.layoutForm = this.fb.group({
@@ -380,34 +383,6 @@ export class CreateLayoutComponent implements OnInit {
     }
   }
 
-
-  onSubmit(): void {
-    if (this.layoutForm.valid) {
-      // Show the confirm save layout modal
-      const confirmSaveLayoutModal = new bootstrap.Modal(document.getElementById('confirmSaveLayoutModal'));
-      confirmSaveLayoutModal.show();
-    } else {
-      this.notificationService.showError('Please fill out all required fields before submitting.');
-    }
-  }
-
-  confirmSaveLayout(): void {
-    if (this.layoutForm.valid) {
-      this.addCurrentArea(); // Save the current area being edited
-      console.log(this.layoutCreateDto);
-      // TODO: handle the submission logic here
-
-      // Hide the modal after saving
-      const confirmSaveLayoutModal = bootstrap.Modal.getInstance(document.getElementById('confirmSaveLayoutModal'));
-      if (confirmSaveLayoutModal) {
-        confirmSaveLayoutModal.hide();
-      }
-      this.router.navigate(['/admin-view']);
-    } else {
-      this.notificationService.showError('Please fill out all required fields before saving.');
-    }
-  }
-
   addCurrentArea(): void {
     if (this.layoutForm.valid) {
       const area: AreaCreateDto = {
@@ -443,6 +418,37 @@ export class CreateLayoutComponent implements OnInit {
   }
   isMainAreaDisabled(): boolean {
     return this.layoutCreateDto.areas.some(area => area.isMainArea);
+  }
+  onSubmit(): void {
+    if (this.layoutForm.valid) {
+      // Show the confirm save layout modal
+      const confirmSaveLayoutModal = new bootstrap.Modal(document.getElementById('confirmSaveLayoutModal'));
+      confirmSaveLayoutModal.show();
+    } else {
+      this.notificationService.showError('Please fill out all required fields before submitting.');
+    }
+  }
+  confirmSaveLayout(): void {
+    if (this.layoutForm.valid) {
+      this.addCurrentArea(); // Save the current area being edited
+      this.layoutService.createLayout(this.layoutCreateDto).subscribe({
+        next: (response) => {
+          this.notificationService.showSuccess('Layout saved successfully.');
+          this.router.navigate(['/admin-view']);
+        },
+        error: () => {
+          this.notificationService.showError('Failed to save layout. Please try again later.');
+        }
+      });
+
+      // Hide the modal after saving
+      const confirmSaveLayoutModal = bootstrap.Modal.getInstance(document.getElementById('confirmSaveLayoutModal'));
+      if (confirmSaveLayoutModal) {
+        confirmSaveLayoutModal.hide();
+      }
+    } else {
+      this.notificationService.showError('Please fill out all required fields before saving.');
+    }
   }
 
 }
