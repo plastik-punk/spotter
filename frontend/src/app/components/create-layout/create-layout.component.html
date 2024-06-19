@@ -66,7 +66,8 @@
           </div>
           <div class="column form-floating-btn">
             <div class="btn-group w-100 mb-3">
-              <button type="button" class="btn btn-primary" id="create-next-area" (click)="addArea()">
+              <button type="button" class="btn btn-primary" id="create-next-area" (click)="addArea()"
+                      [disabled]="createdTables.length === 0">
                 <i class="fas fa-plus"></i>
               </button>
             </div>
@@ -185,19 +186,19 @@
                             [makeWhat]="makeWhat"
                             [whatRole]="whatRole"
                             [yesWhat]="yesWhat"
-                            (confirm)="deleteCell()">
+                            (confirm)="confirmDelete()">
         </app-confirm-dialog>
 
-        <!-- Confirmation Modal for Adding New Area -->
-        <div class="modal fade" id="confirmAddAreaModal" tabindex="-1" aria-labelledby="confirmAddAreaLabel" aria-hidden="true">
+        <!-- Confirm Add Area Modal -->
+        <div class="modal fade" id="confirmAddAreaModal" tabindex="-1" aria-labelledby="confirmAddAreaModalLabel" aria-hidden="true">
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="confirmAddAreaLabel">Confirm Add New Area</h5>
+                <h5 class="modal-title" id="confirmAddAreaModalLabel">Confirm Add Area</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
-                Adding a new area will lock editing of the current area. You can only edit the previous area in edit mode later. Do you want to continue?
+                Are you sure you want to add an area? Once added, you won't be able to edit the current area.
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

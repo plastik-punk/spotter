@@ -73,6 +73,7 @@ export class CreateLayoutComponent implements OnInit {
       status: ['', Validators.required],
       numberOfSeats: ['', Validators.required]
     });
+
     // Show the info modal on page load
     const infoModal = new bootstrap.Modal(document.getElementById('infoModal'));
     infoModal.show();
@@ -128,22 +129,29 @@ export class CreateLayoutComponent implements OnInit {
   }
 
   addArea(): void {
-    if (this.layoutCreateDto.areas.length === 0) {
-      this.confirmAddArea();
-    } else {
-      const confirmAddAreaModal = new bootstrap.Modal(document.getElementById('confirmAddAreaModal'));
-      confirmAddAreaModal.show();
-    }
+    const confirmAddAreaModal = new bootstrap.Modal(document.getElementById('confirmAddAreaModal'));
+    confirmAddAreaModal.show();
   }
+
 
 
   confirmAddArea(): void {
     if (this.layoutForm.valid) {
+      // Save the current area's properties
       const area: AreaCreateDto = {
-        ...this.layoutForm.value,
-        places: this.layoutForm.value.places
+        name: this.layoutForm.get('name').value,
+        isMainArea: this.layoutForm.get('isMainArea').value,
+        closingTime: this.layoutForm.get('closingTime').value,
+        openingTime: this.layoutForm.get('openingTime').value,
+        isOpen: this.layoutForm.get('isOpen').value,
+        width: this.layoutForm.get('width').value,
+        height: this.layoutForm.get('height').value,
+        places: this.createdTables // Use createdTables to save the places
       };
+
       this.layoutCreateDto.areas.push(area);
+
+      // Reset the form and the createdTables array for the new area
       this.layoutForm.reset();
       this.layoutForm.patchValue({ isMainArea: false, isOpen: false }); // Reset main area and open checkboxes
 
@@ -152,12 +160,21 @@ export class CreateLayoutComponent implements OnInit {
       this.layoutForm.get('width').enable();
       this.layoutForm.get('height').enable();
 
-      // Clear the canvas
+      // Clear the canvas and table data
       const containerElement = this.d3Container.nativeElement as HTMLDivElement;
       d3.select(containerElement).selectAll('*').remove();
 
       // Set the grid drawn flag to false
       this.isGridDrawn = false;
+
+      // Clear the createdTables array
+      this.createdTables = [];
+
+      // Remove all place controls from the form array
+      const placesArray = this.layoutForm.get('places') as FormArray;
+      while (placesArray.length) {
+        placesArray.removeAt(0);
+      }
 
       // Hide the modal if it was shown
       const confirmAddAreaModal = bootstrap.Modal.getInstance(document.getElementById('confirmAddAreaModal'));
@@ -168,11 +185,19 @@ export class CreateLayoutComponent implements OnInit {
   }
 
 
+
+
   onCellClick(x: number, y: number): void {
     const table = this.findTableByCoordinates(x, y);
     if (table) {
       this.cellToDelete = { x, y, placeNumber: table.placeNumber };
-      this.showConfirmDialog();
+      if (table.coordinates.length > 1) {
+        // Directly delete the coordinate if it is not the last one
+        this.deleteCoordinate(x, y, table.placeNumber);
+      } else {
+        // Show the delete confirmation dialog if it is the last coordinate
+        this.showConfirmDialog();
+      }
     } else {
       const adjacentTable = this.findAdjacentTable(x, y);
       if (adjacentTable) {
@@ -183,6 +208,66 @@ export class CreateLayoutComponent implements OnInit {
         const placeModal = new bootstrap.Modal(document.getElementById('placeModal'));
         placeModal.show();
       }
+    }
+  }
+
+  deleteCoordinate(x: number, y: number, placeNumber: number): void {
+    const table = this.createdTables.find(t => t.placeNumber === placeNumber);
+    if (table) {
+      table.coordinates = table.coordinates.filter(coord => coord.x !== x || coord.y !== y);
+
+      // Update the form array with the new coordinates
+      const placesArray = this.layoutForm.get('places') as FormArray;
+      const placeGroup = placesArray.controls.find(control => control.value.placeNumber === placeNumber) as FormGroup;
+      if (placeGroup) {
+        const coordinatesArray = placeGroup.get('coordinates') as FormArray;
+        const coordIndex = coordinatesArray.controls.findIndex(control => control.value.x === x && control.value.y === y);
+        if (coordIndex !== -1) {
+          coordinatesArray.removeAt(coordIndex);
+        }
+      }
+
+      // Clear the cell in the grid
+      this.clearGridCell(x, y);
+    }
+  }
+
+  finalizeDelete(x: number, y: number, placeNumber: number): void {
+    // Remove the table from the createdTables array
+    this.createdTables = this.createdTables.filter(t => t.placeNumber !== placeNumber);
+
+    // Remove from form array
+    const placesArray = this.layoutForm.get('places') as FormArray;
+    const index = placesArray.controls.findIndex(control => control.value.placeNumber === placeNumber);
+    if (index !== -1) {
+      placesArray.removeAt(index);
+    }
+
+    // Clear the cells for the deleted place
+    this.clearGridCell(x, y);
+  }
+
+  clearGridCell(x: number, y: number): void {
+    const container = d3.select(this.d3Container.nativeElement).select('svg');
+    container.select(`.table-number-${x}-${y}`).text('');
+    container.select(`.cell-${x}-${y}`).attr('fill', '#d3d3d3');
+  }
+
+  showConfirmDialog(): void {
+    const confirmModal = new bootstrap.Modal(document.getElementById('confirm-dialog'));
+    confirmModal.show();
+  }
+
+  confirmDelete(): void {
+    if (this.cellToDelete) {
+      const { x, y, placeNumber } = this.cellToDelete;
+      this.finalizeDelete(x, y, placeNumber);
+    }
+
+    // Hide the modal
+    const confirmModal = bootstrap.Modal.getInstance(document.getElementById('confirm-dialog'));
+    if (confirmModal) {
+      confirmModal.hide();
     }
   }
 
@@ -274,67 +359,59 @@ export class CreateLayoutComponent implements OnInit {
     }
   }
 
-  deleteCell(): void {
-    if (this.cellToDelete) {
-      const { x, y, placeNumber } = this.cellToDelete;
-      const table = this.createdTables.find(t => t.placeNumber === placeNumber);
-      if (table) {
-        table.coordinates = table.coordinates.filter(coord => coord.x !== x || coord.y !== y);
-        if (table.coordinates.length === 0) {
-          this.createdTables = this.createdTables.filter(t => t.placeNumber !== placeNumber);
+  onSubmit(): void {
+    if (this.layoutForm.valid) {
+      // Show the confirm save layout modal
+      const confirmSaveLayoutModal = new bootstrap.Modal(document.getElementById('confirmSaveLayoutModal'));
+      confirmSaveLayoutModal.show();
+    }
+  }
 
-          // Remove from form array
-          const placesArray = this.layoutForm.get('places') as FormArray;
-          const index = placesArray.controls.findIndex(control => control.value.placeNumber === placeNumber);
-          if (index !== -1) {
-            placesArray.removeAt(index);
-          }
-        } else {
-          // Update the form array with the new coordinates
-          const placesArray = this.layoutForm.get('places') as FormArray;
-          const placeGroup = placesArray.controls.find(control => control.value.placeNumber === placeNumber) as FormGroup;
-          if (placeGroup) {
-            const coordinatesArray = placeGroup.get('coordinates') as FormArray;
-            const coordIndex = coordinatesArray.controls.findIndex(control => control.value.x === x && control.value.y === y);
-            if (coordIndex !== -1) {
-              coordinatesArray.removeAt(coordIndex);
-            }
-          }
-        }
 
-        // Clear the cell in the grid
-        const container = d3.select(this.d3Container.nativeElement).select('svg');
-        container.select(`.table-number-${x}-${y}`).text('');
-        container.select(`.cell-${x}-${y}`).attr('fill', '#d3d3d3');
+  confirmSaveLayout(): void {
+    if (this.layoutForm.valid) {
+      this.addCurrentArea(); // Save the current area being edited
+      console.log(this.layoutCreateDto);
+      // handle the submission logic here
+
+      // Hide the modal after saving
+      const confirmSaveLayoutModal = bootstrap.Modal.getInstance(document.getElementById('confirmSaveLayoutModal'));
+      if (confirmSaveLayoutModal) {
+        confirmSaveLayoutModal.hide();
       }
     }
   }
 
 
-  showConfirmDialog(): void {
-    const confirmModal = new bootstrap.Modal(document.getElementById('confirm-dialog'));
-    confirmModal.show();
-  }
-  getCurrentAreaTables(): PlaceVisualDto[] {
-    return this.layoutForm.get('places').value;
-  }
-
-
-  onSubmit(): void {
-    const confirmSaveLayoutModal = new bootstrap.Modal(document.getElementById('confirmSaveLayoutModal'));
-    confirmSaveLayoutModal.show();
-  }
-
-  confirmSaveLayout(): void {
+  addCurrentArea(): void {
     if (this.layoutForm.valid) {
-      this.addArea(); // Save the current area before submitting
-      console.log(this.layoutCreateDto);
-      // TODO Save wth service here
+      const area: AreaCreateDto = {
+        name: this.layoutForm.get('name').value,
+        isMainArea: this.layoutForm.get('isMainArea').value,
+        closingTime: this.layoutForm.get('closingTime').value,
+        openingTime: this.layoutForm.get('openingTime').value,
+        isOpen: this.layoutForm.get('isOpen').value,
+        width: this.layoutForm.get('width').value,
+        height: this.layoutForm.get('height').value,
+        places: this.layoutForm.get('places').value
+      };
+      this.layoutCreateDto.areas.push(area);
+      this.layoutForm.reset();
+      this.layoutForm.patchValue({ isMainArea: false, isOpen: false }); // Reset main area and open checkboxes
 
-      // Hide the modal
-      const confirmSaveLayoutModal = bootstrap.Modal.getInstance(document.getElementById('confirmSaveLayoutModal'));
-      confirmSaveLayoutModal.hide();
+      // Clear the canvas and table data
+      const containerElement = this.d3Container.nativeElement as HTMLDivElement;
+      d3.select(containerElement).selectAll('*').remove();
+
+      // Clear the createdTables array
+      this.createdTables = [];
+
+      // Set the grid drawn flag to false
+      this.isGridDrawn = false;
     }
   }
-}
 
+  getCurrentAreaTables(): PlaceVisualDto[] {
+    return this.createdTables;
+  }
+}
