@@ -47,6 +47,7 @@ public class EventEndpoint {
     @GetMapping({"/search"})
     public List<EventListDto> searchEvents(EventSearchDto searchParameters) {
         LOGGER.info("GET /api/v1/events");
+        // TODO: this should be done in info-log and not in a separate log
         LOGGER.debug("request parameters: {}", searchParameters.toString());
         return service.search(searchParameters);
     }

@@ -21,6 +21,8 @@ export class EventService {
    * @param searchParams the search parameters
    */
   search(searchParams: EventSearchDto): Observable<EventListDto[]> {
+    // TODO: name of searchEventDto is never used? if so, remove it both in back- and frontend
+
     let params = new HttpParams();
     if (searchParams.earliestStartDate) {
       params = params.append('earliestDate', formatIsoDate(searchParams.earliestStartDate));
@@ -33,6 +35,9 @@ export class EventService {
     }
     if (searchParams.latestEndTime) {
       params = params.append('latestEndTime', formatIsoDate(searchParams.latestEndTime))
+    }
+    if (searchParams.maxResults) {
+      params = params.append('maxResults', searchParams.maxResults.toString());
     }
     return this.httpClient.get<EventListDto[]>(this.eventBaseUri + "/search", { params });
   }

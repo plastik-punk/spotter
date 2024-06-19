@@ -1,3 +1,8 @@
+@use "sass:map";
+@import "../../../../../node_modules/bootstrap/scss/functions";
+@import "../../../../../node_modules/bootstrap/scss/variables";
+@import "../../../../../node_modules/bootstrap/scss/mixins";
+
 body {
   margin: 0;
   padding: 0;
@@ -21,6 +26,34 @@ body {
   margin-top: 2vh;
   height: 96vh; /* Adjust height to fill screen */
   width: 100%;
+  padding: 2vh;
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.event-row-content-wrapper {
+  display: flex;
+  width: 100%;
+}
+
+.event-row-content-wrapper .event-column-left {
+  width: 70%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.event-row-content-wrapper .event-column-right {
+  flex-grow: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.custom-event-card {
+  width: 100%;
+  border-radius: 20px 0 0 20px;
+  background: pink;
+  margin-top: 2vh;
   padding: 2vh;
   overflow-y: auto; /* Enable vertical scrolling */
 }
@@ -213,4 +246,26 @@ body {
   .font-heading {
     font-size: 4vw;
   }
+}
+
+
+.responsive-info-button,
+.responsive-warning-button,
+.responsive-danger-button,
+.responsive-dark-button,
+.responsive-tree-button,
+.responsive-success-button{
+  @include button-variant($light, $light);
+}
+
+@each $color in (info, warning, danger, success) {
+  $value: map.get($theme-colors, $color);
+  tr:hover .responsive-#{$color}-button {
+    @include button-variant($value, $value);
+  }
+}
+
+.btn-group {
+  display: flex;
+  gap: 0.5rem;
 }

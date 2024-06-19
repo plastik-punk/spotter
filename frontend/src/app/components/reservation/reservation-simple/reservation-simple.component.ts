@@ -1,11 +1,18 @@
 import {Component, OnInit} from '@angular/core';
 import {AuthService} from '../../../services/auth.service';
 import {NgForm} from '@angular/forms';
-import {ReservationCheckAvailabilityDto, ReservationCreateDto} from '../../../dtos/reservation';
+import {
+  ReservationCheckAvailabilityDto,
+  ReservationCreateDto,
+  ReservationModalDetailDto
+} from '../../../dtos/reservation';
 import {UserOverviewDto} from '../../../dtos/app-user';
 import {ReservationService} from '../../../services/reservation.service';
 import {NotificationService} from '../../../services/notification.service';
 import {SimpleViewReservationStatusEnum} from '../../../dtos/status-enum';
+import {EventDetailDto, EventListDto, EventSearchDto} from "../../../dtos/event";
+import {EventService} from "../../../services/event.service";
+import {formatDay, formatDotDate, formatDotDateShort, formatIsoTime, formatTime} from "../../../util/date-helper";
 
 @Component({
   selector: 'app-reservation-simple',
@@ -15,25 +22,26 @@ import {SimpleViewReservationStatusEnum} from '../../../dtos/status-enum';
 export class ReservationSimpleComponent implements OnInit {
   unavailable: boolean = true;
   nextAvailableTables: ReservationCheckAvailabilityDto[] = [];
-
   reservationCreateDto: ReservationCreateDto;
   reservationCheckAvailabilityDto: ReservationCheckAvailabilityDto;
-
   currentUser: UserOverviewDto;
-
   sharedStartTime: string;
   sharedDate: string;
-
   timer: any;
   isTimeManuallyChanged: boolean = false;
   isBookButtonTimeout: boolean = false;
-
   reservationStatusText: string = 'Provide Time, Date and Pax';
   reservationStatusClass: string = 'reservation-table-incomplete';
+  events: EventListDto[] = undefined;
+  eventSearchParams: EventSearchDto = undefined;
+  event: EventDetailDto = undefined;
+  now = new Date();
+  twoMonthsFromNow = new Date();
 
   constructor(
     public authService: AuthService,
     private service: ReservationService,
+    private eventService: EventService,
     private notificationService: NotificationService,
   ) {
     this.initializeSharedProperties();
@@ -42,6 +50,42 @@ export class ReservationSimpleComponent implements OnInit {
 
   ngOnInit() {
     this.startTimer()
+    this.twoMonthsFromNow.setMonth(this.now.getMonth() + 2);
+    this.eventSearchParams = {
+      earliestStartDate: this.now,
+      latestEndDate: this.twoMonthsFromNow,
+      maxResults: 5
+    };
+
+    this.eventService.search(this.eventSearchParams).subscribe({
+      next: (data) => {
+        // TODO: remove
+        console.log(data);
+
+        this.events = data;
+      },
+      error: () => {
+        this.notificationService.showError('Failed to get events. Please try again later.');
+      },
+    });
+  }
+
+  showEventDetails(hashId: string): void {
+    this.eventService.getByHashId(hashId).subscribe( {
+      next: (data: EventDetailDto) => {
+        this.event.name = data.name;
+        this.event.startTime = data.startTime;
+        this.event.endTime = data.endTime;
+        this.event.description = data.description;
+
+        // TODO: modal
+        // const modalDetail = new bootstrap.Modal(document.getElementById('confirmation-dialog-reservation-detail'));
+        // modalDetail.show();
+      },
+      error: error => {
+        this.notificationService.showError('Failed to load reservation details. Please try again later.');
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -280,4 +324,10 @@ export class ReservationSimpleComponent implements OnInit {
     this.sharedStartTime = (event.target as HTMLInputElement).value;
     this.onFieldChange();
   }
+
+  protected readonly formatTime = formatTime;
+  protected readonly formatDotDate = formatDotDate;
+  protected readonly formatDay = formatDay;
+  protected readonly formatDotDateShort = formatDotDateShort;
+  protected readonly formatIsoTime = formatIsoTime;
 }
