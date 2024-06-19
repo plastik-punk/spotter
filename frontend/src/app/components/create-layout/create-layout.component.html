@@ -45,7 +45,7 @@
               <label for="area-height">Height</label>
             </div>
           </div>
-          <div class="column">
+          <div class="column"*ngIf="!isMainAreaDisabled()">
             <div class="form-check form-switch mb-3">
               <input class="form-check-input" type="checkbox" id="main-area" formControlName="isMainArea">
               <label class="form-check-label" for="main-area">Main Area</label>
@@ -59,8 +59,10 @@
           </div>
           <div class="column form-floating-btn">
             <div class="btn-group w-100 mb-3">
-              <button type="button" class="btn btn-success" id="checkmark-button" (click)="drawGrid()"  [disabled]="isGridDrawn">
+              <button type="button" class="btn btn-success" id="checkmark-button" (click)="drawGrid()"
+                      [disabled]="!layoutForm.get('name').valid || !layoutForm.get('width').valid || !layoutForm.get('height').valid || isGridDrawn" >
                 <i class="fas fa-map"></i> <span style="margin-right: 5px;"></span><i class="fas fa-pencil-alt"></i>
+              Place Tables
               </button>
             </div>
           </div>
@@ -69,6 +71,7 @@
               <button type="button" class="btn btn-primary" id="create-next-area" (click)="addArea()"
                       [disabled]="createdTables.length === 0">
                 <i class="fas fa-plus"></i>
+                Add Area
               </button>
             </div>
           </div>
@@ -122,14 +125,19 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
-                <p>Welcome to the Layout Creator!</p>
+                <p>Welcome to the Layout Creator! </p>
+                <p>Follow these steps to design your layout:</p>
                 <ol>
-                  <li>Enter the area data such as name, width, and height.</li>
-                  <li>Click the green pencil button to draw the grid.</li>
-                  <li>Click on the grid cells to enter table information.</li>
-                  <li>Adjacent tables will join to existing ones when clicked.</li>
-                  <li>Click on an existing table again to remove it from the grid.</li>
-                  <li>Once you are done, click the "Add Area" button to save the current area.</li>
+                  <li>First, fill in the area name, width, and height fields.</li>
+                  <li>Press the "Add Places" button to start placing tables.</li>
+                  <li>Select a cell where you want to place a table and add all necessary data.</li>
+                  <li>To make the table bigger or to shape it as you please, click on adjacent cells to add them to the table.</li>
+                  <li>If you make a mistake, simply click on the cell to delete it.</li>
+                  <li>Once you have finished configuring the area, press "Add Area" to save it and move on to the next area. Be careful, as you won't be able to edit the previous area after this.</li>
+                  <li>One area can be marked as the "Main Area", which will be displayed first when making a reservation.</li>
+                  <li>When you are done adding all areas, press "Save" to save the layout with all areas.</li>
+                  <li>From then on, you can edit the layout through the admin view.</li>
+                  <li>If you want to redo everything, you need to delete all areas in edit mode. This will allow you to see this create view again.</li>
                 </ol>
               </div>
               <div class="modal-footer">
@@ -138,6 +146,7 @@
             </div>
           </div>
         </div>
+
 
 
         <!-- Modal for entering place data -->
@@ -163,7 +172,7 @@
                   </div>
                   <div class="mb-3">
                     <label for="numberOfSeats" class="form-label">Number of Seats</label>
-                    <input type="number" class="form-control" id="numberOfSeats" formControlName="numberOfSeats" required>
+                    <input type="number" class="form-control" id="numberOfSeats" formControlName="numberOfSeats"  required min="1" step="1">
                   </div>
                 </form>
               </div>
@@ -198,7 +207,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
-                Are you sure you want to add an area? Once added, you won't be able to edit the current area.
+                <p>You are about to add another area. You won't be able to edit the current area in this view anymore, but you can make changes in the edit mode later.</p>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -217,7 +226,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
-                Saving the current layout will override all preexisting layout data and reservations. If not, please use edit mode to adjust a preexisting layout. Do you want to continue?
+                <p>You are about to save the current layout, including all areas. Please note that if you want to redo everything, you need to delete all areas in the edit mode to get back to this create view.</p>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -228,11 +237,12 @@
         </div>
 
 
+
         <hr class="my-4">
         <div class="row">
           <div class="column">
             <div class="btn-group">
-              <button type="submit" id="submit-button" class="btn btn-danger btn-sm" [disabled]="!layoutForm.valid">
+              <button type="submit" id="submit-button" class="btn btn-danger btn-sm" [disabled]="!layoutForm.valid || createdTables.length === 0">
                 Save
               </button>
             </div>

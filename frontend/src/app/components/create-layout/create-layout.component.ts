@@ -2,6 +2,8 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import * as d3 from 'd3';
 import * as bootstrap from 'bootstrap';
+import { Router } from '@angular/router';
+import { NotificationService } from "../../services/notification.service";
 
 export interface AreaCreateDto {
   name: string;
@@ -54,18 +56,22 @@ export class CreateLayoutComponent implements OnInit {
 
   isGridDrawn = false;  // Add this flag
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private notificationService: NotificationService
+  ) {}
 
   ngOnInit(): void {
     this.layoutForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(20)]],
-      isMainArea: [false],
-      closingTime: [''],
-      openingTime: [''],
-      isOpen: [false],
-      width: [1, [Validators.required, Validators.min(1), Validators.max(16)]],
-      height: [1, [Validators.required, Validators.min(1), Validators.max(9)]],
-      places: this.fb.array([])  // Initially empty, can be populated later
+      isMainArea: [true],
+      closingTime: [],
+      openingTime: [],
+      isOpen: [true],
+      width: [null, [Validators.required, Validators.min(1), Validators.max(16)]],
+      height: [null, [Validators.required, Validators.min(1), Validators.max(9)]],
+      places: this.fb.array([])
     });
 
     this.placeForm = this.fb.group({
@@ -125,15 +131,20 @@ export class CreateLayoutComponent implements OnInit {
 
       // Set the grid drawn flag to true
       this.isGridDrawn = true;
+    } else {
+      this.notificationService.showError('Please fill out all required fields before drawing the grid.');
     }
   }
 
   addArea(): void {
+    if (!this.isGridDrawn) {
+      this.notificationService.showError('Please draw the grid before adding an area.');
+      return;
+    }
+
     const confirmAddAreaModal = new bootstrap.Modal(document.getElementById('confirmAddAreaModal'));
     confirmAddAreaModal.show();
   }
-
-
 
   confirmAddArea(): void {
     if (this.layoutForm.valid) {
@@ -181,11 +192,10 @@ export class CreateLayoutComponent implements OnInit {
       if (confirmAddAreaModal) {
         confirmAddAreaModal.hide();
       }
+    } else {
+      this.notificationService.showError('Please fill out all required fields to add an area.');
     }
   }
-
-
-
 
   onCellClick(x: number, y: number): void {
     const table = this.findTableByCoordinates(x, y);
@@ -229,6 +239,8 @@ export class CreateLayoutComponent implements OnInit {
 
       // Clear the cell in the grid
       this.clearGridCell(x, y);
+    } else {
+      this.notificationService.showError('Failed to delete the coordinate. Please try again.');
     }
   }
 
@@ -262,6 +274,8 @@ export class CreateLayoutComponent implements OnInit {
     if (this.cellToDelete) {
       const { x, y, placeNumber } = this.cellToDelete;
       this.finalizeDelete(x, y, placeNumber);
+    } else {
+      this.notificationService.showError('No cell selected for deletion.');
     }
 
     // Hide the modal
@@ -313,15 +327,20 @@ export class CreateLayoutComponent implements OnInit {
     container.select(`.table-number-${x}-${y}`)
       .text(table.placeNumber);
     container.select(`.cell-${x}-${y}`)
-      .attr('fill', '#4daf4a');
+      .attr('fill', '#212529');
   }
 
   savePlace(): void {
     if (this.placeForm.valid && this.currentCell) {
       const placeNumber = this.placeForm.value.placeNumber;
 
-      if (this.createdTables.some(table => table.placeNumber === placeNumber)) {
-        // Number is already taken, do not allow save
+      // Check if the table number already exists in any area
+      const isDuplicate = this.layoutCreateDto.areas.some(area =>
+        area.places.some(place => place.placeNumber === placeNumber)
+      );
+
+      if (isDuplicate || this.createdTables.some(table => table.placeNumber === placeNumber)) {
+        this.notificationService.showError('Place number is already taken.');
         return;
       }
 
@@ -351,37 +370,43 @@ export class CreateLayoutComponent implements OnInit {
       container.select(`.table-number-${this.currentCell.x}-${this.currentCell.y}`)
         .text(placeData.placeNumber);
       container.select(`.cell-${this.currentCell.x}-${this.currentCell.y}`)
-        .attr('fill', '#4daf4a');
+        .attr('fill', '#212529');
 
       const placeModal = bootstrap.Modal.getInstance(document.getElementById('placeModal'));
       placeModal.hide();
       this.placeForm.reset();
+    } else {
+      this.notificationService.showError('Please fill out all required fields for the place.');
     }
   }
+
 
   onSubmit(): void {
     if (this.layoutForm.valid) {
       // Show the confirm save layout modal
       const confirmSaveLayoutModal = new bootstrap.Modal(document.getElementById('confirmSaveLayoutModal'));
       confirmSaveLayoutModal.show();
+    } else {
+      this.notificationService.showError('Please fill out all required fields before submitting.');
     }
   }
-
 
   confirmSaveLayout(): void {
     if (this.layoutForm.valid) {
       this.addCurrentArea(); // Save the current area being edited
       console.log(this.layoutCreateDto);
-      // handle the submission logic here
+      // TODO: handle the submission logic here
 
       // Hide the modal after saving
       const confirmSaveLayoutModal = bootstrap.Modal.getInstance(document.getElementById('confirmSaveLayoutModal'));
       if (confirmSaveLayoutModal) {
         confirmSaveLayoutModal.hide();
       }
+      this.router.navigate(['/admin-view']);
+    } else {
+      this.notificationService.showError('Please fill out all required fields before saving.');
     }
   }
-
 
   addCurrentArea(): void {
     if (this.layoutForm.valid) {
@@ -408,10 +433,16 @@ export class CreateLayoutComponent implements OnInit {
 
       // Set the grid drawn flag to false
       this.isGridDrawn = false;
+    } else {
+      this.notificationService.showError('Please fill out all required fields to add the current area.');
     }
   }
 
   getCurrentAreaTables(): PlaceVisualDto[] {
     return this.createdTables;
   }
+  isMainAreaDisabled(): boolean {
+    return this.layoutCreateDto.areas.some(area => area.isMainArea);
+  }
+
 }
