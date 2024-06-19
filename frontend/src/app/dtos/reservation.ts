@@ -32,7 +32,7 @@ export interface ReservationListDto {
   date: Date;
   endTime: Date;
   pax: number;
-  placeId: number;
+  placeIds: number[];
   hashId: string;
   confirmed: boolean;
 }
