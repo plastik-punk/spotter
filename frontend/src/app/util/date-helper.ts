@@ -29,7 +29,8 @@ export function formatDotDate(date: Date): string {
 export function formatIsoTime(isoDateTime: Date): string {
   let date = new Date(isoDateTime);
   let hours = date.getUTCHours();
-  return `${hours.toString().padStart(2, '0')}`;
+  let minutes = date.getUTCMinutes();
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
 }
 
 export function formatDotDateShort(date: Date): string {

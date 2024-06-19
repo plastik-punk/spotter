@@ -52,10 +52,18 @@ body {
 .custom-event-card {
   width: 100%;
   border-radius: 20px 0 0 20px;
-  background: pink;
+  background: black;
   margin-top: 2vh;
   padding: 2vh;
   overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.custom-event-card,
+.custom-event-card h3,
+.custom-event-card table,
+.custom-event-card td,
+.custom-event-card th {
+  color: white;
 }
 
 .top-banner {
@@ -248,21 +256,58 @@ body {
   }
 }
 
-
-.responsive-info-button,
-.responsive-warning-button,
-.responsive-danger-button,
-.responsive-dark-button,
-.responsive-tree-button,
-.responsive-success-button{
-  @include button-variant($light, $light);
+.event-info-btn {
+  background-color: transparent;
+  border: 2px solid pink;
+  color: pink;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
 }
 
-@each $color in (info, warning, danger, success) {
-  $value: map.get($theme-colors, $color);
-  tr:hover .responsive-#{$color}-button {
-    @include button-variant($value, $value);
-  }
+.event-info-btn:hover {
+  background-color: pink;
+  color: black;
+}
+
+.btn-event-skip {
+  background-color: transparent;
+  border: 2px solid pink;
+  color: pink;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-event-skip:hover {
+  background-color: pink;
+  color: black;
+}
+
+.dt-dd-align {
+  display: flex;
+  align-items: center;
+}
+
+.dt-dd-align dt, .dt-dd-align dd {
+  margin: 5px;
+  padding: 0;
+}
+
+.event-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* Adjust as needed */
+}
+
+.event-name {
+  flex-grow: 1;
+}
+
+.event-time {
+  margin-top: 0.5rem; /* Adjust as needed */
+  font-size: 0.9em; /* Adjust as needed */
+  color: lightgray; /* Adjust as needed */
 }
 
 .btn-group {

@@ -36,10 +36,14 @@ export class EventService {
     if (searchParams.latestEndTime) {
       params = params.append('latestEndTime', formatIsoDate(searchParams.latestEndTime))
     }
-    if (searchParams.maxResults) {
-      params = params.append('maxResults', searchParams.maxResults.toString());
-    }
     return this.httpClient.get<EventListDto[]>(this.eventBaseUri + "/search", { params });
+  }
+
+  /**
+   * Get next upcoming events (5 at most)
+   */
+  getUpcomingEvents(): Observable<EventListDto[]> {
+    return this.httpClient.get<EventListDto[]>(this.eventBaseUri + "/upcoming");
   }
 
   /**

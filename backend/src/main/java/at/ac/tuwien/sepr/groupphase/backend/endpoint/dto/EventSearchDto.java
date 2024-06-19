@@ -11,7 +11,6 @@ public class EventSearchDto {
     private LocalDate latestDate;
     private LocalTime earliestStartTime;
     private LocalTime latestEndTime;
-    private Long maxResults;
 
     public LocalDate getEarliestDate() {
         return earliestDate;
@@ -45,14 +44,6 @@ public class EventSearchDto {
         this.latestEndTime = latestEndTime;
     }
 
-    public Long getMaxResults() {
-        return maxResults;
-    }
-
-    public void setMaxResults(Long maxResults) {
-        this.maxResults = maxResults;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -64,13 +55,12 @@ public class EventSearchDto {
         return Objects.equals(earliestDate, that.earliestDate)
             && Objects.equals(latestDate, that.latestDate)
             && Objects.equals(earliestStartTime, that.earliestStartTime)
-            && Objects.equals(latestEndTime, that.latestEndTime)
-            && Objects.equals(maxResults, that.maxResults);
+            && Objects.equals(latestEndTime, that.latestEndTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(earliestDate, latestDate, earliestStartTime, latestEndTime, maxResults);
+        return Objects.hash(earliestDate, latestDate, earliestStartTime, latestEndTime);
     }
 
     @Override
@@ -80,7 +70,6 @@ public class EventSearchDto {
             + ", latestDate=" + latestDate
             + ", earliestStartTime=" + earliestStartTime
             + ", latestEndTime=" + latestEndTime
-            + ", maxResults=" + maxResults
             + '}';
     }
 
@@ -89,7 +78,6 @@ public class EventSearchDto {
         private LocalDate latestDate;
         private LocalTime earliestStartTime;
         private LocalTime latestEndTime;
-        private Long maxResults;
 
         private EventSearchDtoBuilder() {
         }
@@ -118,18 +106,12 @@ public class EventSearchDto {
             return this;
         }
 
-        public EventSearchDtoBuilder withMaxResults(Long maxResults) {
-            this.maxResults = maxResults;
-            return this;
-        }
-
         public EventSearchDto build() {
             EventSearchDto eventSearchDto = new EventSearchDto();
             eventSearchDto.setEarliestDate(earliestDate);
             eventSearchDto.setLatestDate(latestDate);
             eventSearchDto.setEarliestStartTime(earliestStartTime);
             eventSearchDto.setLatestEndTime(latestEndTime);
-            eventSearchDto.setMaxResults(maxResults);
             return eventSearchDto;
         }
     }

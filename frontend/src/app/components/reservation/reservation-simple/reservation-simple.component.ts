@@ -1,10 +1,10 @@
 import {Component, OnInit} from '@angular/core';
+import * as bootstrap from 'bootstrap';
 import {AuthService} from '../../../services/auth.service';
 import {NgForm} from '@angular/forms';
 import {
   ReservationCheckAvailabilityDto,
-  ReservationCreateDto,
-  ReservationModalDetailDto
+  ReservationCreateDto
 } from '../../../dtos/reservation';
 import {UserOverviewDto} from '../../../dtos/app-user';
 import {ReservationService} from '../../../services/reservation.service';
@@ -33,10 +33,15 @@ export class ReservationSimpleComponent implements OnInit {
   reservationStatusText: string = 'Provide Time, Date and Pax';
   reservationStatusClass: string = 'reservation-table-incomplete';
   events: EventListDto[] = undefined;
-  eventSearchParams: EventSearchDto = undefined;
-  event: EventDetailDto = undefined;
-  now = new Date();
-  twoMonthsFromNow = new Date();
+  event: EventDetailDto = {
+    hashId: undefined,
+    name: undefined,
+    startTime: undefined,
+    endTime: undefined,
+    description: undefined
+  };
+  currentEventPage: number = 1;
+  itemsPerPage: number = 3;
 
   constructor(
     public authService: AuthService,
@@ -50,18 +55,9 @@ export class ReservationSimpleComponent implements OnInit {
 
   ngOnInit() {
     this.startTimer()
-    this.twoMonthsFromNow.setMonth(this.now.getMonth() + 2);
-    this.eventSearchParams = {
-      earliestStartDate: this.now,
-      latestEndDate: this.twoMonthsFromNow,
-      maxResults: 5
-    };
 
-    this.eventService.search(this.eventSearchParams).subscribe({
+    this.eventService.getUpcomingEvents().subscribe({
       next: (data) => {
-        // TODO: remove
-        console.log(data);
-
         this.events = data;
       },
       error: () => {
@@ -78,9 +74,8 @@ export class ReservationSimpleComponent implements OnInit {
         this.event.endTime = data.endTime;
         this.event.description = data.description;
 
-        // TODO: modal
-        // const modalDetail = new bootstrap.Modal(document.getElementById('confirmation-dialog-reservation-detail'));
-        // modalDetail.show();
+        const modalDetail = new bootstrap.Modal(document.getElementById('event-detail'));
+        modalDetail.show();
       },
       error: error => {
         this.notificationService.showError('Failed to load reservation details. Please try again later.');
@@ -91,6 +86,18 @@ export class ReservationSimpleComponent implements OnInit {
   ngOnDestroy() {
     if (this.timer) {
       clearInterval(this.timer);
+    }
+  }
+
+  nextPage() {
+    if (this.currentEventPage < Math.ceil(this.events.length / this.itemsPerPage)) {
+      this.currentEventPage++;
+    }
+  }
+
+  previousPage() {
+    if (this.currentEventPage > 1) {
+      this.currentEventPage--;
     }
   }
 
@@ -330,4 +337,5 @@ export class ReservationSimpleComponent implements OnInit {
   protected readonly formatDay = formatDay;
   protected readonly formatDotDateShort = formatDotDateShort;
   protected readonly formatIsoTime = formatIsoTime;
+  protected readonly Math = Math;
 }

@@ -113,7 +113,7 @@
             </div>
             <!-- End row with pax -->
 
-            <!-- Start row with (firstName, lastName, Mail, Phone), Notes -->
+            <!-- Start row with (firstName, lastName, Mail, Phone) -->
             <div class="row">
               <div class="column" *ngIf="!authService.isLoggedIn()">
                 <!-- start guest fields -->
@@ -162,50 +162,52 @@
                   />
                 </div>
                 <!-- End guest fields -->
+                <!-- End row with (firstName, lastName, Mail, Phone) -->
               </div>
             </div>
-            <!-- End row with (firstName, lastName, Mail, Phone), Notes -->
           </div>
           <!-- End event-column-left -->
 
           <!-- Start event-column-right -->
-
-
             <div class="event-column-right">
               <div class="custom-event-card">
                 <h3>Events</h3>
                 <table class="table table-hover">
-                  <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Start</th>
-                    <th></th>
-                  </tr>
-                  </thead>
                   <tbody>
-                  <tr *ngFor="let event of events">
-                    <td>{{ event.name }}</td>
-                    <td>{{ formatDotDateShort(event.startTime) }} {{ formatIsoTime(event.startTime) }}h</td>
+                  <tr *ngFor="let event of events | slice:(currentEventPage-1)*itemsPerPage : currentEventPage*itemsPerPage">
                     <td>
-                      <div class="btn-group">
-                        <a class="btn btn-sm responsive-info-button"
-                           aria-label="Show reservation details"
-                           (click)="showEventDetails(event.hashId)">
-                          <i class="bi bi-info-lg"></i>
-                        </a>
-                      </div>
-                    </td>
+                      <div class="event-row">
+                      <a class="btn event-info-btn btn-sm"
+                         aria-label="Show event details"
+                         (click)="showEventDetails(event.hashId)">
+                        <i class="bi bi-info-lg"></i>
+                      </a>
+                    <span class="event-name">{{ event.name }}</span>
+                    </div>
+                    <div class="event-time">{{ event.startTime ? formatDay(event.startTime) : ''}} - {{ event.startTime ? formatDotDate(event.startTime) : ''}}</div>
+                  </td>
                   </tr>
                   </tbody>
                 </table>
+                <div class="btn-group">
+                  <a class="btn btn-event-skip btn-sm"
+                     aria-label="Previous events"
+                     [class.disabled]="currentEventPage === 1"
+                     (click)="previousPage()">
+                    <i class="bi bi-skip-backward"></i>
+                  </a>
+                  <a class="btn btn-event-skip btn-sm"
+                     [class.disabled]="currentEventPage === Math.ceil(events.length / itemsPerPage)"
+                     aria-label="Next events"
+                     (click)="nextPage()">
+                    <i class="bi bi-fast-forward"></i>
+                  </a>
+                </div>
               </div>
-
             </div>
           <!-- End event-column-right -->
-
         </div>
         <!-- End event-row-content-wrapper -->
-
         <div class="column">
               <textarea
                 id="reservationNotes"
@@ -216,11 +218,10 @@
                 #reservationNotes="ngModel"
               ></textarea>
         </div>
-        <!-- End row with (firstName, lastName, Mail, Phone), Notes -->
 
         <div class="row">
           <div class="column">
-            <div class="btn-group">
+            <div>
               <button type="submit" class="btn btn-danger btn-sm" [disabled]="!form.valid || isBookButtonTimeout || unavailable">
                 Book
               </button>
@@ -231,5 +232,38 @@
     </div>
   </div>
 </div>
+
+<!-- Modal for event details -->
+<div class="modal fade" id="event-detail" tabindex="-1" aria-labelledby="event-detail-modal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="event-detail-title">{{event.name}}</h3>
+        </div>
+      <div class="modal-body">
+        <dl class="row">
+          <div class="dt-dd-align">
+            <dt class="col-sm-2">From:</dt>
+            <dd class="col-sm-10">{{ event.startTime ? formatDay(event.startTime) : ''}} - {{event.startTime? formatDotDate(event.startTime) : ''}} - {{ event.startTime ? formatIsoTime(event.startTime) : ''}}h</dd>
+          </div>
+
+          <div class="dt-dd-align">
+            <dt class="col-sm-2">Until:</dt>
+            <dd class="col-sm-10">{{ event.endTime ? formatDay(event.endTime) : ''}} - {{ event.endTime ? formatDotDate(event.endTime) : ''}} - {{ event.endTime ? formatIsoTime(event.endTime) : '' }}h</dd>
+          </div>
+
+          <div class="dt-dd-align">
+            <dt class="col-sm-2">Info:</dt>
+            <dd class="col-sm-10">{{ event.description }}</dd>
+          </div>
+        </dl>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

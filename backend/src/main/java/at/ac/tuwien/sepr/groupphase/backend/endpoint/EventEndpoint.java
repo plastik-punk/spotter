@@ -53,6 +53,14 @@ public class EventEndpoint {
     }
 
     @PermitAll
+    @Operation(summary = "Get the next upcoming events", security = @SecurityRequirement(name = "apiKey"))
+    @GetMapping({"/upcoming"})
+    public List<EventListDto> getUpcomingEvents() {
+        LOGGER.info("GET /api/v1/events/upcoming");
+        return service.getUpcomingEvents();
+    }
+
+    @PermitAll
     @ResponseStatus(HttpStatus.OK)
     @GetMapping({"/detail"})
     @Operation(summary = "Get details of a specific event")

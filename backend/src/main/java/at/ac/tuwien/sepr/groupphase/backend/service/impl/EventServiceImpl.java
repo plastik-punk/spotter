@@ -70,12 +70,14 @@ public class EventServiceImpl implements EventService {
             endTime = LocalDateTime.of(searchParameters.getLatestDate(), searchParameters.getLatestEndTime());
         }
 
-        List<Event> events = null;
-        if (searchParameters.getMaxResults() != null) {
-            events = eventRepository.findEventsByDateMax(startTime, endTime, searchParameters.getMaxResults());
-        } else {
-            events = eventRepository.findEventsByDate(startTime, endTime);
-        }
+        List<Event> events = eventRepository.findEventsByDate(startTime, endTime);
+        return mapper.eventToEventListDto(events);
+    }
+
+    @Override
+    public List<EventListDto> getUpcomingEvents() {
+        LOGGER.trace("getUpcomingEvents()");
+        List<Event> events = eventRepository.findUpcomingEvents();
         return mapper.eventToEventListDto(events);
     }
 
