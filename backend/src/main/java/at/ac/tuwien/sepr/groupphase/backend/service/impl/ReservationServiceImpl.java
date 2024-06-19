@@ -540,18 +540,28 @@ public class ReservationServiceImpl implements ReservationService {
     public List<ReservationListDto> search(ReservationSearchDto reservationSearchDto) {
         LOGGER.trace("search ({})", reservationSearchDto.toString());
 
+        List<ReservationListDto> reservationListDtos = new ArrayList<>();
+
         if (applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.ADMIN)
             || applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.EMPLOYEE)) {
             List<Reservation> reservations = reservationRepository.findReservationsWithoutUserId(reservationSearchDto.getEarliestDate(),
                 reservationSearchDto.getLatestDate(), reservationSearchDto.getEarliestStartTime(), reservationSearchDto.getLatestEndTime());
+            for (Reservation reservation : reservations) {
+                List<Long> placeIds = reservationPlaceRepository.findPlaceIdsByReservationIds(Collections.singletonList(reservation.getId()));
+                reservationListDtos.add(mapper.reservationToReservationListDto(reservation, placeIds));
+            }
             LOGGER.debug("Found {} reservations for the given params", reservations.size());
-            return mapper.reservationToReservationListDto(reservations);
+            return reservationListDtos;
         }
         String email = applicationUserService.getCurrentUserAuthentication().getName();
         List<Reservation> reservations = reservationRepository.findReservationsByDate(email, reservationSearchDto.getEarliestDate(),
             reservationSearchDto.getLatestDate(), reservationSearchDto.getEarliestStartTime(), reservationSearchDto.getLatestEndTime());
         LOGGER.debug("Found {} reservations for the given params", reservations.size());
-        return mapper.reservationToReservationListDto(reservations);
+        for (Reservation reservation : reservations) {
+            List<Long> placeIds = reservationPlaceRepository.findPlaceIdsByReservationIds(Collections.singletonList(reservation.getId()));
+            reservationListDtos.add(mapper.reservationToReservationListDto(reservation, placeIds));
+        }
+        return reservationListDtos;
     }
 
     @Override

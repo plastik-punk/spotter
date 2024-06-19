@@ -8,7 +8,6 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationModalDetailD
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import org.mapstruct.AfterMapping;
-import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -42,18 +41,16 @@ public interface ReservationMapper {
     ReservationModalDetailDto reservationToReservationModalDetailDto(Reservation reservation);
 
     // TODO: annotation only needed for the applicationUser fields (but test this first)
-    @Mapping(source = "applicationUser.firstName", target = "userFirstName")
-    @Mapping(source = "applicationUser.lastName", target = "userLastName")
-    @Mapping(source = "startTime", target = "startTime")
-    @Mapping(source = "date", target = "date")
-    @Mapping(source = "endTime", target = "endTime")
-    @Mapping(source = "hashValue", target = "hashId")
-    @Mapping(source = "confirmed", target = "confirmed")
+    @Mapping(source = "reservation.applicationUser.firstName", target = "userFirstName")
+    @Mapping(source = "reservation.applicationUser.lastName", target = "userLastName")
+    @Mapping(source = "reservation.startTime", target = "startTime")
+    @Mapping(source = "reservation.date", target = "date")
+    @Mapping(source = "reservation.endTime", target = "endTime")
+    @Mapping(source = "reservation.hashValue", target = "hashId")
+    @Mapping(source = "reservation.confirmed", target = "confirmed")
     @Named("reservationList")
-    ReservationListDto reservationToReservationListDto(Reservation reservation);
+    ReservationListDto reservationToReservationListDto(Reservation reservation, List<Long> placeIds);
 
-    @IterableMapping(qualifiedByName = "reservationList")
-    List<ReservationListDto> reservationToReservationListDto(List<Reservation> reservation);
 
     @Mapping(source = "reservation.applicationUser", target = "user")
     @Mapping(source = "reservation.id", target = "reservationId")

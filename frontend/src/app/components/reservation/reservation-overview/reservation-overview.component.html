@@ -95,7 +95,7 @@
               <td>{{ reservation.endTime }}</td>
               <td>{{ reservation.userFirstName }} {{ reservation.userLastName }}</td>
               <td>{{ reservation.pax }}</td>
-              <td>{{ reservation.placeId }}</td>
+              <td>{{ reservation.placeIds.toString() }}</td>
               <td>
                 <div class="btn-group">
                   <a *ngIf="!reservation.confirmed && !reservationIsInTheFuture(reservation)"
@@ -160,7 +160,7 @@
                 <td>{{ reservation.endTime }}</td>
                 <td>{{ reservation.userFirstName }} {{ reservation.userLastName }}</td>
                 <td>{{ reservation.pax }}</td>
-                <td>{{ reservation.placeId }}</td>
+                <td>{{ reservation.placeIds.toString() }}</td>
                 <td>
                   <div class="btn-group">
                     <a class="btn btn-sm responsive-info-button"
@@ -212,6 +212,7 @@
               <th>End Time</th>
               <th>Name</th>
               <th>Seats</th>
+              <th>Table Number</th>
               <th>Actions</th>
             </tr>
             </thead>
@@ -223,6 +224,7 @@
               <td>{{ formatTime(reservation.endTime) }}</td>
               <td>{{ reservation.userFirstName }} {{ reservation.userLastName }}</td>
               <td>{{ reservation.pax }}</td>
+              <td>{{ reservation.placeIds.toString() }}</td>
               <td>
                 <div class="btn-group">
                   <a class="btn btn-sm responsive-info-button"
