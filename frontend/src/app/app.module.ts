@@ -32,35 +32,34 @@ import {NgIf} from "@angular/common";
 import {RouterLink} from "@angular/router";
 import {AdminViewComponent} from "./components/admin-view/admin-view.component";
 import {ReservationEditComponent} from "./components/reservation/reservation-edit/reservation-edit.component";
-import {PredictionComponent} from "./components/admin-view/prediction/prediction.component";
 import {NgApexchartsModule} from "ng-apexcharts";
 import {CreateLayoutComponent} from "./components/create-layout/create-layout.component";
 import {ConfirmDialogComponent} from "./components/confirm-dialog/confirm-dialog.component";
 import {EmployeeViewComponent} from "./components/employee-view/employee-view.component";
 
 @NgModule({
-    declarations: [
-        AppComponent,
-        SidebarComponent,
-        FooterComponent,
-        ReservationSimpleComponent,
-        LoginComponent,
-        MessageComponent,
-        ReservationDetailComponent,
-        ReservationEditComponent,
-        ReservationOverviewComponent,
-        ConfirmationDialogDeleteComponent,
-        NotificationComponent,
-        EventOverviewComponent,
-        EventDetailComponent,
-        EventEditComponent,
-        EventCreateComponent,
-        ReservationLayoutComponent,
-        AdminViewComponent,
-        PredictionComponent,
-        CreateLayoutComponent,
-        EmployeeViewComponent
-    ],
+
+  declarations: [
+    AppComponent,
+    SidebarComponent,
+    FooterComponent,
+    ReservationSimpleComponent,
+    LoginComponent,
+    MessageComponent,
+    ReservationDetailComponent,
+    ReservationEditComponent,
+    ReservationOverviewComponent,
+    ConfirmationDialogDeleteComponent,
+    NotificationComponent,
+    EventOverviewComponent,
+    EventDetailComponent,
+    EventEditComponent,
+    EventCreateComponent,
+    ReservationLayoutComponent,
+    AdminViewComponent,
+    CreateLayoutComponent,
+    EmployeeViewComponent
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
