@@ -25,8 +25,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Query(value = "SELECT e.* FROM event e "
         + "WHERE e.end_time >= CURRENT_TIMESTAMP "
         + "AND e.start_time <= DATEADD('YEAR', 1, CURRENT_TIMESTAMP) "
-        + "ORDER BY e.start_time ASC "
-        + "LIMIT 21",
+        + "ORDER BY e.start_time ASC",
         nativeQuery = true)
     List<Event> findUpcomingEvents();
 

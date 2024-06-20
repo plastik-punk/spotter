@@ -1,4 +1,5 @@
 import {Component, OnInit, OnDestroy, ElementRef, ViewChild, HostListener} from '@angular/core';
+import * as bootstrap from 'bootstrap';
 import {NgForm} from "@angular/forms";
 import {
   ReservationLayoutCheckAvailabilityDto,
@@ -12,8 +13,10 @@ import {AuthService} from "../../../services/auth.service";
 import {ReservationService} from "../../../services/reservation.service";
 import {NotificationService} from "../../../services/notification.service";
 import {D3DrawService} from "../../../services/d3-draw.service";
-import {formatIsoDate} from "../../../util/date-helper";
+import {formatDay, formatDotDate, formatIsoDate, formatIsoTime} from "../../../util/date-helper";
 import {SimpleViewReservationStatusEnum} from "../../../dtos/status-enum";
+import {EventDetailDto, EventListDto} from "../../../dtos/event";
+import {EventService} from "../../../services/event.service";
 
 @Component({
   selector: 'app-component-reservation-layout',
@@ -40,11 +43,24 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
   sharedStartTime: string;
   sharedDate: string;
 
+  events: EventListDto[] = undefined;
+  event: EventDetailDto = {
+    hashId: undefined,
+    name: undefined,
+    startTime: undefined,
+    endTime: undefined,
+    description: undefined
+  };
+  currentEventPage: number = 1;
+  itemsPerPage: number = 3;
+  upcomingEventsExist: boolean = false;
+
   constructor(
     public authService: AuthService,
     private reservationService: ReservationService,
     private notificationService: NotificationService,
-    private d3DrawService: D3DrawService
+    private d3DrawService: D3DrawService,
+    private eventService: EventService,
   ) {
     this.initializeSharedProperties();
     this.reservationCreateDto = this.initializeReservationCreateDto();
@@ -57,6 +73,48 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
     this.d3DrawService.createSeatingPlan(this.d3Container);
     this.onResize();
     this.startTimer();
+
+    this.eventService.getUpcomingEvents().subscribe({
+      next: (data) => {
+        this.events = data;
+        if (this.events?.length > 0) {
+          this.upcomingEventsExist = true;
+        }
+      },
+      error: () => {
+        this.notificationService.showError('Failed to get events. Please try again later.');
+      },
+    });
+  }
+
+
+  showEventDetails(hashId: string): void {
+    this.eventService.getByHashId(hashId).subscribe( {
+      next: (data: EventDetailDto) => {
+        this.event.name = data.name;
+        this.event.startTime = data.startTime;
+        this.event.endTime = data.endTime;
+        this.event.description = data.description;
+
+        const modalDetail = new bootstrap.Modal(document.getElementById('event-detail'));
+        modalDetail.show();
+      },
+      error: error => {
+        this.notificationService.showError('Failed to load reservation details. Please try again later.');
+      }
+    });
+  }
+
+  nextPage() {
+    if (this.currentEventPage < Math.ceil(this.events?.length / this.itemsPerPage)) {
+      this.currentEventPage++;
+    }
+  }
+
+  previousPage() {
+    if (this.currentEventPage > 1) {
+      this.currentEventPage--;
+    }
   }
 
   ngOnDestroy() {
@@ -313,4 +371,8 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
   }
 
   protected readonly SimpleViewReservationStatusEnum = SimpleViewReservationStatusEnum;
+  protected readonly formatDay = formatDay;
+  protected readonly formatDotDate = formatDotDate;
+  protected readonly Math = Math;
+  protected readonly formatIsoTime = formatIsoTime;
 }

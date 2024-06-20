@@ -50,7 +50,7 @@ public class ReservationPlaceDataGenerator {
         } else {
             LOGGER.debug("Generating reservation place entries");
 
-            for (int i = 0; i < reservationRepository.findAll().size(); i++) {
+            for (int i = 1; i < reservationRepository.findAll().size(); i++) {
                 Optional<Reservation> reservation = reservationRepository.findById((long) i);
                 Optional<Place> place;
                 if (reservation.isPresent()) {

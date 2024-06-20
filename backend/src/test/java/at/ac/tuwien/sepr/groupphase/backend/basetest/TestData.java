@@ -225,8 +225,10 @@ public interface TestData {
     String TEST_EVENT_HASH_2 = "eventhash2";
     LocalDateTime TEST_EVENT_START_TIME_1 = LocalDateTime.of(2024, 7, 1, 18, 0);
     LocalDateTime TEST_EVENT_START_TIME_2 = LocalDateTime.of(2024, 8, 2, 17, 0);
+    LocalDateTime TEST_EVENT_START_TIME_3 = LocalDateTime.of(2027, 7, 1, 18, 0);
     LocalDateTime TEST_EVENT_END_TIME_1 = LocalDateTime.of(2024, 7, 1, 22, 0);
     LocalDateTime TEST_EVENT_END_TIME_2 = LocalDateTime.of(2024, 8, 2, 21, 0);
+    LocalDateTime TEST_EVENT_END_TIME_3 = LocalDateTime.of(2027, 7, 1, 22, 0);
     String TEST_EVENT_NAME_1 = "Open Mic Night";
     String TEST_EVENT_NAME_2 = "Fussball EM";
     String TEST_EVENT_DESC_1 = "Let's laugh about some dad jokes.";
@@ -253,6 +255,14 @@ public interface TestData {
         .withId(TEST_EVENT_ID_1)
         .withStartTime(TEST_EVENT_START_TIME_1)
         .withEndTime(TEST_EVENT_END_TIME_1)
+        .withName(TEST_EVENT_NAME_1)
+        .withDescription(TEST_EVENT_DESC_1)
+        .withHashId(TEST_EVENT_HASH_1)
+        .build();
+
+    Event TEST_EVENT_4 = Event.EventBuilder.anEvent()
+        .withStartTime(TEST_EVENT_START_TIME_3)
+        .withEndTime(TEST_EVENT_END_TIME_3)
         .withName(TEST_EVENT_NAME_1)
         .withDescription(TEST_EVENT_DESC_1)
         .withHashId(TEST_EVENT_HASH_1)

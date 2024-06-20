@@ -89,10 +89,10 @@
         </div>
         <!-- End row with advanced view -->
 
-
         <!-- Start event-row-content-wrapper with event card and some form-fields -->
-        <div class="event-row-content-wrapper">
-          <div class="event-column-left">
+        <div [class.event-row-content-wrapper]="upcomingEventsExist">
+          <div [class.event-column-left]="upcomingEventsExist">
+
             <!-- Start row with pax -->
             <div class="row">
               <div class="column pax-container">
@@ -109,15 +109,10 @@
                   min="1"
                   required
                 />
-              </div>
-            </div>
-            <!-- End row with pax -->
 
-            <!-- Start row with (firstName, lastName, Mail, Phone) -->
-            <div class="row">
-              <div class="column" *ngIf="!authService.isLoggedIn()">
-                <!-- start guest fields -->
-                <div>
+                <div class="custom-seperator" *ngIf="!authService.isLoggedIn()"></div>
+
+                <div *ngIf="!authService.isLoggedIn()">
                   <input
                     type="text"
                     id="reservationFirstName"
@@ -126,9 +121,7 @@
                     class="form-control"
                     [(ngModel)]="reservationCreateDto.firstName"
                     #reservationFirstName="ngModel"
-                    required
-                  />
-
+                    required/>
                   <input
                     type="text"
                     id="reservationLastName"
@@ -137,9 +130,7 @@
                     class="form-control"
                     [(ngModel)]="reservationCreateDto.lastName"
                     #reservationLastName="ngModel"
-                    required
-                  />
-
+                    required/>
                   <input
                     type="email"
                     id="reservationEmail"
@@ -148,9 +139,7 @@
                     class="form-control"
                     [(ngModel)]="reservationCreateDto.email"
                     #reservationEmail="ngModel"
-                    required
-                  />
-
+                    required/>
                   <input
                     type="tel"
                     id="reservationMobileNumber"
@@ -158,66 +147,68 @@
                     placeholder="Phone (optional)"
                     class="form-control"
                     [(ngModel)]="reservationCreateDto.mobileNumber"
-                    #reservationMobileNumber="ngModel"
-                  />
+                    #reservationMobileNumber="ngModel"/>
                 </div>
-                <!-- End guest fields -->
-                <!-- End row with (firstName, lastName, Mail, Phone) -->
+
+                <div class="custom-seperator"></div>
+
+                <div>
+                  <textarea
+                    id="reservationNotes"
+                    name="reservationNotes"
+                    placeholder="Notes (optional)"
+                    class="form-control notes-textarea"
+                    [(ngModel)]="reservationCreateDto.notes"
+                    #reservationNotes="ngModel">
+                </textarea>
+                </div>
               </div>
             </div>
           </div>
           <!-- End event-column-left -->
 
           <!-- Start event-column-right -->
-            <div class="event-column-right">
-              <div class="custom-event-card">
-                <h3>Events</h3>
-                <table class="table table-hover">
-                  <tbody>
-                  <tr *ngFor="let event of events | slice:(currentEventPage-1)*itemsPerPage : currentEventPage*itemsPerPage">
-                    <td>
-                      <div class="event-row">
+          <div class="event-column-right" [ngStyle]="{'display': upcomingEventsExist ? 'flex' : 'none'}">
+            <div class="custom-event-card">
+              <h1 class="font-heading">Events</h1>
+              <table class="table table-hover">
+                <tbody>
+                <tr *ngFor="let event of events | slice:(currentEventPage-1)*itemsPerPage : currentEventPage*itemsPerPage">
+                  <td>
+                    <div class="event-row">
+                      <span class="event-name">{{ event.name }}</span>
+                    </div>
+                    <div class="event-row">
                       <a class="btn event-info-btn btn-sm"
                          aria-label="Show event details"
                          (click)="showEventDetails(event.hashId)">
                         <i class="bi bi-info-lg"></i>
                       </a>
-                    <span class="event-name">{{ event.name }}</span>
+                      <div class="event-time">{{ event.startTime ? formatDay(event.startTime) : ''}} - {{ event.startTime ? formatDotDate(event.startTime) : ''}}</div>
                     </div>
-                    <div class="event-time">{{ event.startTime ? formatDay(event.startTime) : ''}} - {{ event.startTime ? formatDotDate(event.startTime) : ''}}</div>
                   </td>
-                  </tr>
-                  </tbody>
-                </table>
-                <div class="btn-group">
-                  <a class="btn btn-event-skip btn-sm"
-                     aria-label="Previous events"
-                     [class.disabled]="currentEventPage === 1"
-                     (click)="previousPage()">
-                    <i class="bi bi-skip-backward"></i>
-                  </a>
-                  <a class="btn btn-event-skip btn-sm"
-                     [class.disabled]="currentEventPage === Math.ceil(events.length / itemsPerPage)"
-                     aria-label="Next events"
-                     (click)="nextPage()">
-                    <i class="bi bi-fast-forward"></i>
-                  </a>
-                </div>
+                </tr>
+                </tbody>
+              </table>
+              <div class="btn-group">
+                <a class="btn btn-event-skip btn-sm"
+                   aria-label="Previous events"
+                   [class.disabled]="currentEventPage === 1"
+                   (click)="previousPage()">
+                  <i class="bi bi-arrow-left"></i>
+                </a>
+                <a class="btn btn-event-skip btn-sm"
+                   [class.disabled]="currentEventPage === Math.ceil(events?.length / itemsPerPage)"
+                   aria-label="Next events"
+                   (click)="nextPage()">
+                  <i class="bi bi-arrow-right"></i>
+                </a>
               </div>
             </div>
+          </div>
           <!-- End event-column-right -->
         </div>
         <!-- End event-row-content-wrapper -->
-        <div class="column">
-              <textarea
-                id="reservationNotes"
-                name="reservationNotes"
-                placeholder="Notes (optional)"
-                class="form-control notes-textarea"
-                [(ngModel)]="reservationCreateDto.notes"
-                #reservationNotes="ngModel"
-              ></textarea>
-        </div>
 
         <div class="row">
           <div class="column">
@@ -235,11 +226,11 @@
 
 <!-- Modal for event details -->
 <div class="modal fade" id="event-detail" tabindex="-1" aria-labelledby="event-detail-modal" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog custom-event-modal">
     <div class="modal-content">
       <div class="modal-header">
         <h3 class="modal-title" id="event-detail-title">{{event.name}}</h3>
-        </div>
+      </div>
       <div class="modal-body">
         <dl class="row">
           <div class="dt-dd-align">

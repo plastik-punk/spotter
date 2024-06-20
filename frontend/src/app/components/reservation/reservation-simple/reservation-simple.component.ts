@@ -2,15 +2,12 @@ import {Component, OnInit} from '@angular/core';
 import * as bootstrap from 'bootstrap';
 import {AuthService} from '../../../services/auth.service';
 import {NgForm} from '@angular/forms';
-import {
-  ReservationCheckAvailabilityDto,
-  ReservationCreateDto
-} from '../../../dtos/reservation';
+import {ReservationCheckAvailabilityDto, ReservationCreateDto} from '../../../dtos/reservation';
 import {UserOverviewDto} from '../../../dtos/app-user';
 import {ReservationService} from '../../../services/reservation.service';
 import {NotificationService} from '../../../services/notification.service';
 import {SimpleViewReservationStatusEnum} from '../../../dtos/status-enum';
-import {EventDetailDto, EventListDto, EventSearchDto} from "../../../dtos/event";
+import {EventDetailDto, EventListDto} from "../../../dtos/event";
 import {EventService} from "../../../services/event.service";
 import {formatDay, formatDotDate, formatDotDateShort, formatIsoTime, formatTime} from "../../../util/date-helper";
 
@@ -42,6 +39,7 @@ export class ReservationSimpleComponent implements OnInit {
   };
   currentEventPage: number = 1;
   itemsPerPage: number = 3;
+  upcomingEventsExist: boolean = false;
 
   constructor(
     public authService: AuthService,
@@ -59,6 +57,9 @@ export class ReservationSimpleComponent implements OnInit {
     this.eventService.getUpcomingEvents().subscribe({
       next: (data) => {
         this.events = data;
+        if (this.events?.length > 0) {
+          this.upcomingEventsExist = true;
+        }
       },
       error: () => {
         this.notificationService.showError('Failed to get events. Please try again later.');
@@ -90,7 +91,7 @@ export class ReservationSimpleComponent implements OnInit {
   }
 
   nextPage() {
-    if (this.currentEventPage < Math.ceil(this.events.length / this.itemsPerPage)) {
+    if (this.currentEventPage < Math.ceil(this.events?.length / this.itemsPerPage)) {
       this.currentEventPage++;
     }
   }

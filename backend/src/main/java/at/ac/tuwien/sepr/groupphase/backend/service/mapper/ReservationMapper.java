@@ -19,8 +19,17 @@ import java.util.List;
 @Mapper
 public interface ReservationMapper {
 
+    @Mapping(target = "confirmed", ignore = true)
+    @Mapping(target = "hashValue", ignore = true)
+    @Mapping(target = "id", ignore = true)
     Reservation reservationCreateDtoToReservation(ReservationCreateDto reservationCreateDto);
 
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "firstName", ignore = true)
+    @Mapping(target = "lastName", ignore = true)
+    @Mapping(target = "email", ignore = true)
+    @Mapping(target = "mobileNumber", ignore = true)
+    @Mapping(target = "placeIds", ignore = true)
     ReservationCreateDto reservationToReservationCreateDto(Reservation reservation);
 
     @AfterMapping
@@ -35,13 +44,12 @@ public interface ReservationMapper {
         }
     }
 
-    ReservationDetailDto reservationToReservationDetailDto(Reservation reservation);
-
+    @Mapping(target = "placeIds", ignore = true)
     @Mapping(source = "applicationUser.firstName", target = "firstName")
     @Mapping(source = "applicationUser.lastName", target = "lastName")
     ReservationModalDetailDto reservationToReservationModalDetailDto(Reservation reservation);
 
-    // TODO: annotation only needed for the applicationUser fields (but test this first)
+    @Mapping(target = "placeId", ignore = true)
     @Mapping(source = "applicationUser.firstName", target = "userFirstName")
     @Mapping(source = "applicationUser.lastName", target = "userLastName")
     @Mapping(source = "startTime", target = "startTime")
@@ -55,6 +63,7 @@ public interface ReservationMapper {
     @IterableMapping(qualifiedByName = "reservationList")
     List<ReservationListDto> reservationToReservationListDto(List<Reservation> reservation);
 
+    @Mapping(target = "placeIds", ignore = true)
     @Mapping(source = "reservation.applicationUser", target = "user")
     @Mapping(source = "reservation.id", target = "reservationId")
     @Mapping(source = "reservation.hashValue", target = "hashedId")

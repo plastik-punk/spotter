@@ -43,6 +43,7 @@ public class EventRepositoryTest implements TestData {
         repository.deleteAll();
         Event event1 = repository.save(TEST_EVENT_1);
         Event event2 = repository.save(TEST_EVENT_2);
+        Event event3 = repository.save(TEST_EVENT_4);
         List<Event> actualEvents = repository.findUpcomingEvents();
         assertAll(
             () -> assertEquals(2, actualEvents.size(), "The size of the returned list should be 2"),
