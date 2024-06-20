@@ -15,12 +15,12 @@ public class LayoutCreateDto {
 
     public static class AreaCreateDto {
         private String name;
-        private Integer width;
-        private Integer height;
-        private boolean isOpen;
         private boolean isMainArea;
         private String openingTime;
         private String closingTime;
+        private boolean isOpen;
+        private Integer width;
+        private Integer height;
         private List<PlaceVisualDto> places;
 
         // Getters and Setters
@@ -49,11 +49,11 @@ public class LayoutCreateDto {
             this.height = height;
         }
 
-        public boolean isOpen() {
+        public boolean getIsOpen() {
             return isOpen;
         }
 
-        public void setOpen(boolean isOpen) {
+        public void setIsOpen(boolean isOpen) {
             this.isOpen = isOpen;
         }
 
@@ -140,25 +140,27 @@ public class LayoutCreateDto {
             }
 
             public static class CoordinateDto {
-                private Integer x1;
-                private Integer y1;
+                @SuppressWarnings("checkstyle:MemberName")
+                private Integer x;
+                @SuppressWarnings("checkstyle:MemberName")
+                private Integer y;
 
                 // Getters and Setters
 
-                public Integer getX1() {
-                    return x1;
+                public Integer getX() {
+                    return x;
                 }
 
-                public void setX1(Integer x1) {
-                    this.x1 = x1;
+                public void setX(Integer x) {
+                    this.x = x;
                 }
 
-                public Integer getY1() {
-                    return y1;
+                public Integer getY() {
+                    return y;
                 }
 
-                public void setY1(Integer y1) {
-                    this.y1 = y1;
+                public void setY(Integer y) {
+                    this.y = y;
                 }
             }
         }

@@ -61,7 +61,7 @@ public class Area {
         return isOpen;
     }
 
-    public void setOpen(boolean isOpen) {
+    public void setIsOpen(boolean isOpen) {
         this.isOpen = isOpen;
     }
 
@@ -186,7 +186,7 @@ public class Area {
             Area area = new Area();
             area.setId(id);
             area.setName(name);
-            area.setOpen(isOpen);
+            area.setIsOpen(isOpen);
             area.setOpeningTime(openingTime);
             area.setClosingTime(closingTime);
             area.setWidth(width);

@@ -216,7 +216,7 @@ public class LayoutServiceImpl implements LayoutService {
     private void saveArea(LayoutCreateDto.AreaCreateDto areaDto) {
         // Create and save Area entity using mapper
         Area area = layoutMapper.areaCreateDtoToArea(areaDto);
-        area.setOpen(areaDto.isOpen());
+        area.setIsOpen(areaDto.getIsOpen());
         areaRepository.save(area);
 
         // Iterate over each Place in the Area and save it
@@ -239,8 +239,8 @@ public class LayoutServiceImpl implements LayoutService {
     private void saveSegment(Area area, Place place, LayoutCreateDto.AreaCreateDto.PlaceVisualDto.CoordinateDto coordinateDto) {
         // Create and save Segment entity using mapper
         Segment segment = layoutMapper.coordinateDtoToSegment(coordinateDto);
-        segment.setX(coordinateDto.getX1());
-        segment.setY(coordinateDto.getY1());
+        segment.setX(coordinateDto.getX());
+        segment.setY(coordinateDto.getY());
         segmentRepository.save(segment);
 
         // Create and save AreaPlaceSegment entity

@@ -158,8 +158,8 @@ export class CreateLayoutComponent implements OnInit {
         closingTime: this.layoutForm.get('closingTime').value,
         openingTime: this.layoutForm.get('openingTime').value,
         isOpen: this.layoutForm.get('isOpen').value,
-        width: this.layoutForm.get('width').value,
-        height: this.layoutForm.get('height').value,
+        width: this.layoutForm.get('width').value -1,
+        height: this.layoutForm.get('height').value -1,
         places: this.createdTables // Use createdTables to save the places
       };
 
@@ -391,8 +391,8 @@ export class CreateLayoutComponent implements OnInit {
         closingTime: this.layoutForm.get('closingTime').value,
         openingTime: this.layoutForm.get('openingTime').value,
         isOpen: this.layoutForm.get('isOpen').value,
-        width: this.layoutForm.get('width').value,
-        height: this.layoutForm.get('height').value,
+        width: this.layoutForm.get('width').value -1,
+        height: this.layoutForm.get('height').value -1,
         places: this.layoutForm.get('places').value
       };
       this.layoutCreateDto.areas.push(area);
