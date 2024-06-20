@@ -32,7 +32,7 @@ export interface ReservationListDto {
   date: Date;
   endTime: Date;
   pax: number;
-  placeId: number;
+  placeIds: number[];
   hashId: string;
   confirmed: boolean;
 }
@@ -58,6 +58,15 @@ export interface ReservationDetailDto {
   endTime: Date;
   date: Date;
   pax: number;
+  notes: string;
+  placeIds: number[];
+}
+
+export interface ReservationModalDetailDto {
+  firstName: string;
+  lastName: string;
+  startTime: Date;
+  endTime: Date;
   notes: string;
   placeIds: number[];
 }
@@ -107,4 +116,11 @@ export interface AreaDto {
 
 export interface AreaListDto {
   areas: AreaDto[];
+}
+
+export interface ReservationWalkInDto{
+  startTime: string;
+  date: string;
+  pax: number;
+  placeIds: number[];
 }

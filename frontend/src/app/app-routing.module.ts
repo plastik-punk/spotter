@@ -20,6 +20,7 @@ import {
 } from "./components/reservation/reservation-layout/reservation-layout.component";
 import {AdminViewComponent} from "./components/admin-view/admin-view.component";
 import {PredictionComponent} from "./components/admin-view/prediction/prediction.component";
+import {EmployeeViewComponent} from "./components/employee-view/employee-view.component";
 
 const routes: Routes = [
   {path: '', redirectTo: 'login', pathMatch: 'full'},
@@ -37,8 +38,8 @@ const routes: Routes = [
   {path: 'event-create', canActivate: mapToCanActivate([AuthGuard]), component: EventCreateComponent},
   {path: 'reservation-edit/:id', component: ReservationEditComponent},
   {path: 'admin-view', component: AdminViewComponent},
-  {path: 'admin-view/prediction', component: PredictionComponent}
-
+  {path: 'admin-view/prediction', component: PredictionComponent},
+  {path: 'employee-view', component: EmployeeViewComponent}
 ];
 
 @NgModule({

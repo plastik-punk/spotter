@@ -256,6 +256,11 @@ export class ReservationSimpleComponent implements OnInit {
   selectAvailable(availabilityDto: ReservationCheckAvailabilityDto) {
     this.reservationCreateDto.date = availabilityDto.date;
     this.reservationCreateDto.startTime = availabilityDto.startTime;
+    // @ts-ignore
+    this.sharedDate = availabilityDto.date;
+    // @ts-ignore
+    this.sharedStartTime = availabilityDto.startTime;
+    this.isTimeManuallyChanged = true;
     this.onFieldChange();
   }
 
@@ -275,5 +280,12 @@ export class ReservationSimpleComponent implements OnInit {
     if (!this.reservationCreateDto.pax) {
       this.notificationService.showError('Number of people (pax) is required.');
     }
+  }
+
+  onTimeChange(event: Event) {
+    this.isTimeManuallyChanged = true;
+    clearInterval(this.timer);
+    this.sharedStartTime = (event.target as HTMLInputElement).value;
+    this.onFieldChange();
   }
 }

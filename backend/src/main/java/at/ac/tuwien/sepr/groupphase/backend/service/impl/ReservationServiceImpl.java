@@ -7,7 +7,9 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationModalDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationWalkInDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Area;
 import at.ac.tuwien.sepr.groupphase.backend.entity.AreaPlaceSegment;
@@ -20,6 +22,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Segment;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.AreaPlaceSegmentRepository;
@@ -56,6 +59,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -149,7 +153,8 @@ public class ReservationServiceImpl implements ReservationService {
 
         // 3. Create guest if this is a guest-reservation, otherwise set known customer data
         ApplicationUser currentUser = applicationUserService.getCurrentApplicationUser();
-        if (currentUser == null) {
+        if (currentUser == null || (!Objects.equals(currentUser.getEmail(), reservationCreateDto.getEmail())
+            && (currentUser.getRole().equals(RoleEnum.ADMIN) || currentUser.getRole().equals(RoleEnum.EMPLOYEE)))) {
             ApplicationUser guestUser = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
                 .withFirstName(reservationCreateDto.getFirstName().trim())
                 .withLastName(reservationCreateDto.getLastName().trim())
@@ -313,6 +318,7 @@ public class ReservationServiceImpl implements ReservationService {
                 reservationCheckAvailabilityDto.getEndTime());
         List<Long> placeIds = reservationPlaceRepository.findPlaceIdsByReservationIds(reservationIds);
         places.removeAll(placeRepository.findAllById(placeIds));
+        places.removeAll(placeRepository.findAllByStatus(StatusEnum.BLOCKED));
         if (places.isEmpty()) {
             return ReservationResponseEnum.ALL_OCCUPIED;
         }
@@ -433,6 +439,24 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    public ReservationModalDetailDto getModalDetail(String hashValue) throws NotFoundException {
+        LOGGER.trace("getModalDetail ({})", hashValue);
+
+        List<Reservation> reservations = reservationRepository.findByHashValue(hashValue);
+
+        if (reservations.size() != 1) {
+            throw new NotFoundException("Reservation with not found");
+        }
+
+        Reservation reservation = reservations.getFirst();
+        ReservationModalDetailDto reservationModalDetailDto = mapper.reservationToReservationModalDetailDto(reservation);
+
+        LOGGER.debug("Found reservation: {}", reservationModalDetailDto.toString());
+
+        return reservationModalDetailDto;
+    }
+
+    @Override
     public ReservationEditDto update(ReservationEditDto reservationEditDto) {
         LOGGER.trace("update ({})", reservationEditDto.toString());
 
@@ -516,18 +540,28 @@ public class ReservationServiceImpl implements ReservationService {
     public List<ReservationListDto> search(ReservationSearchDto reservationSearchDto) {
         LOGGER.trace("search ({})", reservationSearchDto.toString());
 
+        List<ReservationListDto> reservationListDtos = new ArrayList<>();
+
         if (applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.ADMIN)
             || applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.EMPLOYEE)) {
             List<Reservation> reservations = reservationRepository.findReservationsWithoutUserId(reservationSearchDto.getEarliestDate(),
                 reservationSearchDto.getLatestDate(), reservationSearchDto.getEarliestStartTime(), reservationSearchDto.getLatestEndTime());
+            for (Reservation reservation : reservations) {
+                List<Long> placeIds = reservationPlaceRepository.findPlaceIdsByReservationIds(Collections.singletonList(reservation.getId()));
+                reservationListDtos.add(mapper.reservationToReservationListDto(reservation, placeIds));
+            }
             LOGGER.debug("Found {} reservations for the given params", reservations.size());
-            return mapper.reservationToReservationListDto(reservations);
+            return reservationListDtos;
         }
         String email = applicationUserService.getCurrentUserAuthentication().getName();
         List<Reservation> reservations = reservationRepository.findReservationsByDate(email, reservationSearchDto.getEarliestDate(),
             reservationSearchDto.getLatestDate(), reservationSearchDto.getEarliestStartTime(), reservationSearchDto.getLatestEndTime());
         LOGGER.debug("Found {} reservations for the given params", reservations.size());
-        return mapper.reservationToReservationListDto(reservations);
+        for (Reservation reservation : reservations) {
+            List<Long> placeIds = reservationPlaceRepository.findPlaceIdsByReservationIds(Collections.singletonList(reservation.getId()));
+            reservationListDtos.add(mapper.reservationToReservationListDto(reservation, placeIds));
+        }
+        return reservationListDtos;
     }
 
     @Override
@@ -577,7 +611,6 @@ public class ReservationServiceImpl implements ReservationService {
         List<Long> reservationIds = reservationRepository.findReservationsAtSpecifiedTime(
             dto.getDate(), dto.getStartTime(), dto.getEndTime());
         List<Long> reservedPlaceIds = reservationPlaceRepository.findPlaceIdsByReservationIds(reservationIds);
-
         List<AreaLayoutDto.PlaceVisualDto> placeVisuals = places.stream().map(place -> {
             AreaLayoutDto.PlaceVisualDto placeVisual = new AreaLayoutDto.PlaceVisualDto();
             placeVisual.setPlaceId(place.getId());
@@ -604,7 +637,6 @@ public class ReservationServiceImpl implements ReservationService {
             placeVisual.setCoordinates(coordinates);
             return placeVisual;
         }).collect(Collectors.toList());
-
         AreaLayoutDto areaLayoutDto = new AreaLayoutDto();
         areaLayoutDto.setWidth(area.getWidth());
         areaLayoutDto.setHeight(area.getHeight());
@@ -634,6 +666,63 @@ public class ReservationServiceImpl implements ReservationService {
         AreaListDto areaListDto = new AreaListDto();
         areaListDto.setAreas(areaDtos);
         return areaListDto;
+    }
+
+    @Override
+    public ReservationCreateDto createWalkIn(ReservationWalkInDto reservationWalkInDto) throws ConflictException, MessagingException {
+        LOGGER.trace("createWalkIn ({})", reservationWalkInDto.toString());
+        List<ApplicationUser> walkInUserList = applicationUserRepository.findAll();
+        ApplicationUser walkInUser = null;
+        for (ApplicationUser user : walkInUserList) {
+            if (user.getId() == 0) {
+                walkInUser = user;
+                break;
+            }
+        }
+        if (walkInUser == null) {
+            List<String> errors = new ArrayList<>();
+            errors.add("Walk-in user not found");
+            throw new ConflictException("Walk-in user not found", errors);
+        }
+        System.out.println("walkInUser = " + walkInUser);
+
+        ReservationCreateDto reservationCreateDto = ReservationCreateDto.ReservationCreateDtoBuilder.aReservationCreateDto()
+            .withDate(reservationWalkInDto.getDate())
+            .withStartTime(reservationWalkInDto.getStartTime())
+            .withEndTime(reservationWalkInDto.getStartTime().plusHours(2))
+            .withPax(reservationWalkInDto.getPax())
+            .withPlaceIds(reservationWalkInDto.getPlaceIds())
+            .withFirstName(walkInUser.getFirstName())
+            .withLastName(walkInUser.getLastName())
+            .withEmail(walkInUser.getEmail())
+            .withApplicationUser(walkInUser)
+            .build();
+        LOGGER.debug("Created reservationCreateDto: {}", reservationCreateDto);
+        Reservation reservation = mapper.reservationCreateDtoToReservation(reservationCreateDto);
+        reservation.setHashValue(hashService.hashSha256(reservation.getDate().toString()
+            + reservation.getStartTime().toString() + reservation.getEndTime().toString()
+            + reservation.getPax().toString()));
+        Reservation createdReservation = reservationRepository.save(reservation);
+        LOGGER.debug("Created reservation: {}", createdReservation);
+        List<Place> selectedPlaces = new ArrayList<>();
+        for (Long placeId : reservationCreateDto.getPlaceIds()) {
+            Optional<Place> optionalPlace = placeRepository.findById(placeId);
+            if (optionalPlace.isPresent()) {
+                selectedPlaces.add(optionalPlace.get());
+            } else {
+                List<String> errors = new ArrayList<>();
+                errors.add("Place with Id" + placeId + " not found");
+                throw new ConflictException("Place not found", errors);
+            }
+        }
+        for (Place place : selectedPlaces) {
+            ReservationPlace reservationPlace = ReservationPlace.ReservationPlaceBuilder.aReservationPlace()
+                .withReservation(createdReservation)
+                .withPlace(place)
+                .build();
+            reservationPlaceRepository.save(reservationPlace);
+        }
+        return mapper.reservationToReservationCreateDto(createdReservation);
     }
 
     private Map<String, Object> constructMailTemplateModel(Reservation reservation, ApplicationUser currentUser) {

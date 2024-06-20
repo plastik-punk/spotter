@@ -23,7 +23,7 @@
         <div class="top-banner">
           <div class="row">
             <div class="column">
-              <h1 class="font-heading">Reserve</h1>
+              <h1 class="font-heading">Employee View</h1>
             </div>
             <div class="column">
               <input
@@ -36,7 +36,6 @@
                 #reservationStartTimeModel="ngModel"
                 (ngModelChange)="onFieldChange()"
                 (change)="onTimeChange($event)"
-                required
               />
 
             </div>
@@ -94,12 +93,25 @@
               required
             />
           </div>
+          <div class="column">
+            <div class="btn-group">
+              <button class="btn btn-sm btn-success"
+                      (click)="createWalkInReservation()"
+                      [disabled]="!isPaxValid">
+                Reserve for walk-in customer
+              </button>
+              <button class="btn btn-sm btn-warning"
+                      (click)="blockTables()"
+                      [disabled]="selectedPlaces.length < 1">
+                Block / Unblock Tables
+              </button>
+            </div>
+          </div>
         </div>
-        <!-- End row with pax -->
 
         <!-- Start row with (firstName, lastName, Mail, Phone), Notes -->
         <div class="row">
-          <div class="column" *ngIf="!authService.isLoggedIn()">
+          <div class="column">
             <div>
               <!-- start guest fields -->
               <input

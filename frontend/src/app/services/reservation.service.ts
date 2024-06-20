@@ -1,21 +1,20 @@
 import {Injectable} from "@angular/core";
 import {HttpClient, HttpParams, HttpResponse} from "@angular/common/http";
 import {Globals} from '../global/globals';
-import {Observable,tap} from "rxjs";
+import {Observable} from "rxjs";
 import {formatIsoDate} from '../util/date-helper';
-import {
-  ReservationSearch,
-  ReservationListDto,
-  ReservationEditDto,
-  AreaLayoutDto,
-  AreaListDto
-} from "../dtos/reservation";
 import {
   Reservation,
   ReservationCheckAvailabilityDto,
   ReservationCreateDto,
-  ReservationDetailDto,
   ReservationLayoutCheckAvailabilityDto,
+  ReservationSearch,
+  ReservationListDto,
+  ReservationEditDto,
+  AreaLayoutDto,
+  AreaListDto,
+  ReservationModalDetailDto,
+  ReservationWalkInDto
 } from "../dtos/reservation";
 import {SimpleViewReservationStatusEnum} from "../dtos/status-enum";
 
@@ -91,6 +90,17 @@ export class ReservationService {
   }
 
   /**
+   * Get the details of a reservation for the modal by its id
+   *
+   * @param id the hashed id of the reservation
+   * @return an Observable for the modal details
+   */
+  getModalDetail(id: string): Observable<ReservationModalDetailDto> {
+    let params = new HttpParams().set('id', id);
+    return this.httpClient.get<ReservationModalDetailDto>(this.reservationBaseUri + "/modal", { params: params });
+  }
+
+  /**
    * Updates a reservation
    *
    * @param reservationEditDto the reservation to update
@@ -160,5 +170,14 @@ export class ReservationService {
    */
   unconfirm(hashId: string): Observable<void> {
     return this.httpClient.put<void>(this.globals.backendUri + "/reservations/unconfirm", hashId);
+  }
+  /**
+   * Create a new reservation for a guest
+   *
+   * @param reservationCreateDto the reservation to create
+   * @return an Observable for the created reservation
+   */
+  createWalkIn(reservationWalkInDto: ReservationWalkInDto) : Observable<ReservationCreateDto> {
+    return this.httpClient.post<ReservationCreateDto>(this.reservationBaseUri+ "/walk-in", reservationWalkInDto);
   }
 }

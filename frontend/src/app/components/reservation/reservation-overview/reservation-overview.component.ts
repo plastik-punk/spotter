@@ -1,14 +1,22 @@
 import {Component, OnInit} from '@angular/core';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import * as bootstrap from 'bootstrap';
 import {AuthService} from '../../../services/auth.service';
+import {
+  ReservationModalDetailDto,
+  ReservationEditDto,
+  ReservationListDto,
+  ReservationSearch
+} from "../../../dtos/reservation";
+import {debounceTime, Observable, Subject} from "rxjs";
 import {ReservationEditDto, ReservationListDto, ReservationSearch} from "../../../dtos/reservation";
 import {interval,debounceTime, Observable, Subject, Subscription} from "rxjs";
 import {ReservationService} from "../../../services/reservation.service";
-import {Router} from "@angular/router";
 import {HttpResponse} from "@angular/common/http";
 import {NotificationService} from "../../../services/notification.service";
 import moment from 'moment';
+import {Router} from "@angular/router";
 import {now} from "lodash";
+import {formatDay, formatDotDate, formatTime} from "../../../util/date-helper";
 
 @Component({
   selector: 'app-reservation-overview',
@@ -17,6 +25,14 @@ import {now} from "lodash";
 })
 export class ReservationOverviewComponent implements OnInit {
   reservations: ReservationListDto[] = [];
+  reservationModalDetailDto: ReservationModalDetailDto = {
+    firstName: undefined,
+    lastName: undefined,
+    startTime: undefined,
+    endTime: undefined,
+    notes: undefined,
+    placeIds: undefined
+  };
   todaysReservations: ReservationListDto[] = [];
   upcomingReservations: ReservationListDto[] = [];
   displayedUpcomingReservations: ReservationListDto[] = [];
@@ -36,10 +52,8 @@ export class ReservationOverviewComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private modalService: NgbModal,
     private reservationService: ReservationService,
-    private notificationService: NotificationService,
-    private router: Router) {
+    private notificationService: NotificationService) {
   }
 
   ngOnInit(): void {
@@ -111,8 +125,6 @@ export class ReservationOverviewComponent implements OnInit {
         this.searchParams.latestEndTime = nextWeek.format('HH:mm');
       }
     }
-
-
     this.reservationService.search(this.searchParams)
       .subscribe({
         next: (reservations: ReservationListDto[]) => {
@@ -160,6 +172,25 @@ export class ReservationOverviewComponent implements OnInit {
         this.notificationService.showError('Failed to load reservation details. Please try again later.');
       }
     });
+  }
+
+  showReservationDetails(hashId: string): void {
+      this.reservationService.getModalDetail(hashId).subscribe( {
+        next: (data: ReservationModalDetailDto) => {
+            this.reservationModalDetailDto.firstName = data.firstName;
+            this.reservationModalDetailDto.lastName = data.lastName;
+            this.reservationModalDetailDto.startTime = data.startTime;
+            this.reservationModalDetailDto.endTime = data.endTime;
+            this.reservationModalDetailDto.notes = data.notes;
+            this.reservationModalDetailDto.placeIds = data.placeIds;
+
+            const modalDetail = new bootstrap.Modal(document.getElementById('confirmation-dialog-reservation-detail'));
+            modalDetail.show();
+        },
+        error: error => {
+          this.notificationService.showError('Failed to load reservation details. Please try again later.');
+        }
+      });
   }
 
   onDelete(): void {
@@ -238,6 +269,9 @@ export class ReservationOverviewComponent implements OnInit {
     });
   }
 
+  protected readonly formatTime = formatTime;
+  protected readonly formatDotDate = formatDotDate;
+  protected readonly formatDay = formatDay;
   createNewReservationGuest() {
     // Navigate to the target page with a query parameter
     this.router.navigate(['reservation-simple'], { queryParams: { guestView: 'true' } });

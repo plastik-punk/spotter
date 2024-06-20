@@ -125,3 +125,13 @@ body {
 .h3 {
   letter-spacing: -0.02em;
 }
+
+.dt-dd-align {
+  display: flex;
+  align-items: center;
+}
+
+.dt-dd-align dt, .dt-dd-align dd {
+  margin: 5px;
+  padding: 0;
+}

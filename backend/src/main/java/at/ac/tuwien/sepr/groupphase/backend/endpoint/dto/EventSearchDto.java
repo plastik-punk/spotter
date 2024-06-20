@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;
 
+// TODO: validate via annotations
+
 public class EventSearchDto {
     private LocalDate earliestDate;
     private LocalDate latestDate;
