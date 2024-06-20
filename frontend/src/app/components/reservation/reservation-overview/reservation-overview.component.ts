@@ -7,9 +7,7 @@ import {
   ReservationListDto,
   ReservationSearch
 } from "../../../dtos/reservation";
-import {debounceTime, Observable, Subject} from "rxjs";
-import {ReservationEditDto, ReservationListDto, ReservationSearch} from "../../../dtos/reservation";
-import {interval,debounceTime, Observable, Subject, Subscription} from "rxjs";
+import {interval, debounceTime, Observable, Subject, Subscription} from "rxjs";
 import {ReservationService} from "../../../services/reservation.service";
 import {HttpResponse} from "@angular/common/http";
 import {NotificationService} from "../../../services/notification.service";
@@ -53,7 +51,8 @@ export class ReservationOverviewComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private reservationService: ReservationService,
-    private notificationService: NotificationService) {
+    private notificationService: NotificationService,
+    private router: Router) {
   }
 
   ngOnInit(): void {
@@ -175,22 +174,22 @@ export class ReservationOverviewComponent implements OnInit {
   }
 
   showReservationDetails(hashId: string): void {
-      this.reservationService.getModalDetail(hashId).subscribe( {
-        next: (data: ReservationModalDetailDto) => {
-            this.reservationModalDetailDto.firstName = data.firstName;
-            this.reservationModalDetailDto.lastName = data.lastName;
-            this.reservationModalDetailDto.startTime = data.startTime;
-            this.reservationModalDetailDto.endTime = data.endTime;
-            this.reservationModalDetailDto.notes = data.notes;
-            this.reservationModalDetailDto.placeIds = data.placeIds;
+    this.reservationService.getModalDetail(hashId).subscribe({
+      next: (data: ReservationModalDetailDto) => {
+        this.reservationModalDetailDto.firstName = data.firstName;
+        this.reservationModalDetailDto.lastName = data.lastName;
+        this.reservationModalDetailDto.startTime = data.startTime;
+        this.reservationModalDetailDto.endTime = data.endTime;
+        this.reservationModalDetailDto.notes = data.notes;
+        this.reservationModalDetailDto.placeIds = data.placeIds;
 
-            const modalDetail = new bootstrap.Modal(document.getElementById('confirmation-dialog-reservation-detail'));
-            modalDetail.show();
-        },
-        error: error => {
-          this.notificationService.showError('Failed to load reservation details. Please try again later.');
-        }
-      });
+        const modalDetail = new bootstrap.Modal(document.getElementById('confirmation-dialog-reservation-detail'));
+        modalDetail.show();
+      },
+      error: error => {
+        this.notificationService.showError('Failed to load reservation details. Please try again later.');
+      }
+    });
   }
 
   onDelete(): void {
@@ -272,9 +271,10 @@ export class ReservationOverviewComponent implements OnInit {
   protected readonly formatTime = formatTime;
   protected readonly formatDotDate = formatDotDate;
   protected readonly formatDay = formatDay;
+
   createNewReservationGuest() {
     // Navigate to the target page with a query parameter
-    this.router.navigate(['reservation-simple'], { queryParams: { guestView: 'true' } });
+    this.router.navigate(['reservation-simple'], {queryParams: {guestView: 'true'}});
   }
 
   createNewReservation() {

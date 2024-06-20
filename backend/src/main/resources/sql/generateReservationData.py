@@ -6,7 +6,7 @@ fake = Faker()
 
 # Configuration for the script
 num_reservations = 10000
-num_places = 10  # Number of places to create
+num_places = 23  # Number of places to create
 user_id_range = (-200, -1)
 opening_hour = 11
 closing_hour = 22
@@ -66,13 +66,12 @@ with open('insert_data_script.sql', 'w') as file:
     file.write("MERGE INTO place (id, pax, status) VALUES\n")
     place_entries = []
     current_place_id = start_place_id
-    for _ in range(num_places):
-        pax = random.randint(4, 10)  # Random capacity for places, minimum 4 to ensure buffer
-        status = random.choice([0, 1])  # Random status
-        places[current_place_id] = {'pax': pax, 'status': status}
-        status_value = '1' if status == 1 else '0'
+    for _ in range(num_places + 1):
+        pax = 2 + current_place_id % 4
+        places[current_place_id] = {'pax': pax}
+        status_value = '1'
         place_entries.append(f"({current_place_id}, {pax}, '{status_value}')")
-        current_place_id -= 1
+        current_place_id += 1
     file.write(",\n".join(place_entries) + ";\n\n")
     # Write SQL for inserting reservations
     file.write(
@@ -87,16 +86,16 @@ with open('insert_data_script.sql', 'w') as file:
         while attempt < max_attempts:
             attempt += 1
             user_id = random.randint(*user_id_range)
-            place_id = random.randint(start_place_id - num_places + 1, start_place_id)
+            place_id = random.randint(start_place_id, start_place_id + num_places - 1, )
             date = date_start + timedelta(days=random.randint(0, (date_end - date_start).days))
             start_time = random_time()
             end_time = (datetime.combine(date, start_time) + timedelta(hours=2)).time()  # 2-hour duration
-            pax = random.randint(1, places[place_id]['pax'] - 1)  # number of people, ensuring buffer
+            pax = random.randint(1, places[place_id]['pax'])  # number of people, ensuring buffer
             notes = fake.sentence(nb_words=10)  # Simplified text generation for speed
             hash_value = fake.sha256()  # simulate a hash value
 
             # Check if the place is available and the pax does not exceed the capacity with buffer
-            if places[place_id]['status'] == 1 and pax <= places[place_id]['pax'] - 1:
+            if pax <= places[place_id]['pax']:
                 # Check if there is an overlap
                 overlap = False
                 if place_id in reservations:
@@ -122,16 +121,6 @@ with open('insert_data_script.sql', 'w') as file:
     file.write(",\n".join(reservation_entries) + ";\n\n")
     file.write("MERGE INTO RESERVATION_PLACE (reservation_id, place_id) VALUES\n")
     file.write(",\n".join(reservation_place_entries) + ";\n")
-    # Generating AreaPlaceSegment Mappings
-    for area_id in areas:
-        for place_id in places:
-            for segment_id in segments:
-                if places[place_id]['status'] == 1:  # Check if the place is active
-                    area_place_segments.append((area_id, place_id, segment_id))
-
-    file.write("MERGE INTO area_place_segment (area_id, place_id, segment_id) VALUES\n")
-    aps_entries = [f"({aps[0]}, {aps[1]}, {aps[2]})" for aps in area_place_segments]
-    file.write(",\n".join(aps_entries) + ";\n")
     # Areas
     file.write("MERGE INTO area (id, name, width, height, is_open) VALUES\n")
     area_entries = [
@@ -143,4 +132,40 @@ with open('insert_data_script.sql', 'w') as file:
     file.write("MERGE INTO segment (id, x1, y1) VALUES\n")
     segment_entries = [f"({sid}, {sdata['x']}, {sdata['y']})" for sid, sdata in segments.items()]
     file.write(",\n".join(segment_entries) + ";\n\n")
+
+    # Generating AreaPlaceSegment Mappings based on specific patterns
+    aps_data = [
+        (1, 1, [1, 2]),
+        (1, 2, [3, 4]),
+        (1, 3, [5, 6]),
+        (1, 4, [7, 8]),
+        (1, 5, [9, 10]),
+        (1, 6, [11, 12]),
+        (1, 7, [13, 14]),
+        (1, 8, [15, 16]),
+        (1, 9, [17, 18]),
+        (1, 10, [19]),
+        (1, 11, [20, 21, 22, 23]),
+        (1, 13, [24]),
+        (1, 14, [25]),
+        (1, 16, [26, 27, 28, 29, 30, 31, 32, 33, 34]),
+        (2, 17, [35, 36]),
+        (2, 18, [37, 38]),
+        (2, 19, [39, 40]),
+        (2, 20, [41, 42]),
+        (2, 21, [43, 44]),
+        (2, 22, [45, 46]),
+        (2, 23, [47, 48])
+    ]
+
+    area_place_segments = []
+    for area, place, segments in aps_data:
+        for seg in segments:
+            # Format the entries with negative place_id and segment_id directly in the string
+            area_place_segments.append((f"-{area}", place, f"-{seg}"))
+
+    # Writing to the SQL script file
+    file.write("MERGE INTO area_place_segment (area_id, place_id, segment_id) VALUES\n")
+    aps_entries = [f"({aps[0]}, {aps[1]}, {aps[2]})" for aps in area_place_segments]
+    file.write(",\n".join(aps_entries) + ";\n")
 print("SQL insert script for reservations and mappings generated successfully.")
