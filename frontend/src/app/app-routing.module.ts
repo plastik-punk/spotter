@@ -1,25 +1,24 @@
-import { NgModule } from '@angular/core';
+import {NgModule} from '@angular/core';
 import {mapToCanActivate, RouterModule, Routes} from '@angular/router';
-import { ReservationSimpleComponent } from './components/reservation/reservation-simple/reservation-simple.component';
-import { LoginComponent } from './components/login/login.component';
-import { AuthGuard } from './guards/auth.guard';
-import { MessageComponent } from './components/message/message.component';
-import { ReservationOverviewComponent } from './components/reservation/reservation-overview/reservation-overview.component';
-import { RegistrationComponent } from "./components/registration/registration.component";
-import { StaffAccountsComponent } from "./components/staff-accounts/staff-accounts.component";
-import { ReservationDetailComponent } from "./components/reservation/reservation-detail/reservation-detail.component";
-import { ReservationEditComponent } from "./components/reservation/reservation-edit/reservation-edit.component";
+import {ReservationSimpleComponent} from './components/reservation/reservation-simple/reservation-simple.component';
+import {LoginComponent} from './components/login/login.component';
+import {AuthGuard} from './guards/auth.guard';
+import {
+  ReservationOverviewComponent
+} from './components/reservation/reservation-overview/reservation-overview.component';
+import {RegistrationComponent} from "./components/registration/registration.component";
+import {StaffAccountsComponent} from "./components/staff-accounts/staff-accounts.component";
+import {ReservationDetailComponent} from "./components/reservation/reservation-detail/reservation-detail.component";
+import {ReservationEditComponent} from "./components/reservation/reservation-edit/reservation-edit.component";
 import {EventOverviewComponent} from "./components/event/event-overview/event-overview.component";
 import {EventDetailComponent} from "./components/event/event-detail/event-detail.component";
 import {EventEditComponent} from "./components/event/event-edit/event-edit.component";
 
 import {EventCreateComponent} from "./components/event/event-create/event-create.component";
 
-import {
-    ReservationLayoutComponent
-} from "./components/reservation/reservation-layout/reservation-layout.component";
+import {ReservationLayoutComponent} from "./components/reservation/reservation-layout/reservation-layout.component";
 import {AdminViewComponent} from "./components/admin-view/admin-view.component";
-import {PredictionComponent} from "./components/admin-view/prediction/prediction.component";
+import {CreateLayoutComponent} from "./components/create-layout/create-layout.component";
 import {EmployeeViewComponent} from "./components/employee-view/employee-view.component";
 
 const routes: Routes = [
@@ -38,12 +37,15 @@ const routes: Routes = [
   {path: 'event-create', canActivate: mapToCanActivate([AuthGuard]), component: EventCreateComponent},
   {path: 'reservation-edit/:id', component: ReservationEditComponent},
   {path: 'admin-view', component: AdminViewComponent},
-  {path: 'admin-view/prediction', component: PredictionComponent},
+
+  {path: 'create-layout', canActivate: mapToCanActivate([AuthGuard]), component: CreateLayoutComponent},
+
   {path: 'employee-view', component: EmployeeViewComponent}
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { useHash: true })],
+  imports: [RouterModule.forRoot(routes, {useHash: true})],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {
+}

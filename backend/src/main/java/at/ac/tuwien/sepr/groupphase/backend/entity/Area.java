@@ -7,6 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+
 import java.time.LocalTime;
 import java.util.Objects;
 
@@ -21,7 +22,7 @@ public class Area {
     private String name;
 
     @Column(nullable = false)
-    private Boolean isOpen;
+    private boolean isOpen;
 
     @Column(nullable = true)
     private LocalTime openingTime;
@@ -31,12 +32,12 @@ public class Area {
 
     @Column(nullable = false)
     @Min(0)
-    @Max(19)
+    @Max(15)
     private int width;
 
     @Column(nullable = false)
     @Min(0)
-    @Max(19)
+    @Max(8)
     private int height;
 
     // Getters and Setters
@@ -60,8 +61,8 @@ public class Area {
         return isOpen;
     }
 
-    public void setOpen(boolean open) {
-        this.isOpen = open;
+    public void setIsOpen(boolean isOpen) {
+        this.isOpen = isOpen;
     }
 
     public LocalTime getOpeningTime() {
@@ -185,7 +186,7 @@ public class Area {
             Area area = new Area();
             area.setId(id);
             area.setName(name);
-            area.setOpen(isOpen);
+            area.setIsOpen(isOpen);
             area.setOpeningTime(openingTime);
             area.setClosingTime(closingTime);
             area.setWidth(width);

@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {NgForm} from "@angular/forms";
 import {AuthService} from "../../services/auth.service";
-import {AdminViewDto, ReservationForeCastDto} from "../../dtos/admin-view";
+import {AdminViewDto, PredictionDto, ReservationForeCastDto} from "../../dtos/admin-view";
 import {Router} from "@angular/router";
-import {now} from "lodash";
+
 import {AdminViewService} from "../../services/adminView.service";
 import {
   ApexAxisChartSeries,
@@ -11,7 +11,9 @@ import {
   ApexDataLabels,
   ApexFill,
   ApexLegend,
+  ApexNonAxisChartSeries,
   ApexPlotOptions,
+  ApexResponsive,
   ApexStroke,
   ApexTooltip,
   ApexXAxis,
@@ -19,8 +21,13 @@ import {
 } from "ng-apexcharts";
 import {Observable} from "rxjs";
 import {NotificationService} from "../../services/notification.service";
+import {AreaDto, AreaListDto} from "../../dtos/layout";
+import {ReservationService} from "../../services/reservation.service";
+import {LayoutService} from "../../services/layout.service";
+import {formatIsoDate} from "../../util/date-helper";
+import {ToastrService} from "ngx-toastr";
 
-export type ChartOptions = {
+export type ChartBarOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
   dataLabels: ApexDataLabels;
@@ -32,6 +39,12 @@ export type ChartOptions = {
   stroke: ApexStroke;
   legend: ApexLegend;
 };
+export type ChartDonutOptions = {
+  series: ApexNonAxisChartSeries;
+  chart: ApexChart;
+  responsive: ApexResponsive[];
+  labels: any
+};
 
 @Component({
   selector: 'app-admin-view',
@@ -40,32 +53,50 @@ export type ChartOptions = {
 })
 export class AdminViewComponent implements OnInit {
   adminViewDto: AdminViewDto = {
-    area: undefined,
+    areaId: undefined,
     startTime: undefined,
     date: undefined
   }
 
+  predictionDto: PredictionDto = {
+    predictionText: "",
+    areaNames: undefined,
+    predictions: undefined
+  };
+
   forecast: ReservationForeCastDto;
 
-  public chartOptions: Partial<ChartOptions>;
-  currDate: any = new Date(now()).toISOString().split('T')[0];
-  currTime: any = new Date(now()).toISOString().split('T')[1].substring(0, 5);
+  public chartReservedTableOptions: Partial<ChartBarOptions>;
+  public chartPredictionOptions: Partial<ChartDonutOptions>;
+
+
+  currDate: any;
+  currTime: any;
+
+  predictionTitle: string = "Prediction for Amount Of Employees needed";
+
+  areas: AreaDto[] = [];
+  selectedAreaId: number = 1;
 
   constructor(
     public authService: AuthService,
     private service: AdminViewService,
+    private reservationService: ReservationService,
+    private layoutService: LayoutService,
     private notificationService: NotificationService,
+    private notification: ToastrService,
     private router: Router
   ) {
 
   }
 
   ngOnInit() {
-    this.adminViewDto.area = "Inside";
+    this.adminViewDto.areaId = this.selectedAreaId;
 
-    this.adminViewDto.date = this.currDate;
-    this.adminViewDto.startTime = this.currTime;
-    this.chartOptions = {
+    this.initializeDateAndTime();
+    this.fetchAllAreas();
+
+    this.chartReservedTableOptions = {
       series: [
         {
           name: "# of reserved tables",
@@ -78,19 +109,25 @@ export class AdminViewComponent implements OnInit {
       },
     };
 
-    let observable: Observable<ReservationForeCastDto>;
-    observable = this.service.getForeCast(this.adminViewDto);
-    observable.subscribe({
-      next: (value) => {
-        this.forecast = value;
-        this.generateChart();
+    this.chartPredictionOptions = {
+      series: [0],
+      chart: {
+        type: "donut"
       },
-      error: (error) => {
-        this.notificationService.handleError(error);
-      }
-    });
+      labels: [""]
+    };
+
+    this.onFieldChange();
 
 
+  }
+
+  private initializeDateAndTime() {
+    const now = new Date();
+    this.currTime = now.toTimeString().slice(0, 5);
+    this.currDate = formatIsoDate(now);
+    this.adminViewDto.date = this.currDate;
+    this.adminViewDto.startTime = this.currTime;
   }
 
   onSubmit(form: NgForm) {
@@ -98,7 +135,8 @@ export class AdminViewComponent implements OnInit {
   }
 
   onFieldChange() {
-    console.log(this.adminViewDto)
+    this.adminViewDto.date = this.currDate;
+    this.adminViewDto.startTime = this.currTime;
     let observable: Observable<ReservationForeCastDto>;
     observable = this.service.getForeCast(this.adminViewDto);
     observable.subscribe({
@@ -113,13 +151,35 @@ export class AdminViewComponent implements OnInit {
   }
 
 
-  onClickDetailView() {
-    this.router.navigate(['/admin-view/prediction'])
+  onClickGetPrediction() {
+
+    let observable: Observable<PredictionDto>;
+    observable = this.service.getPrediction(this.adminViewDto);
+    observable.subscribe({
+      next: (data) => {
+        this.notificationService.handleSuccess("Prediction made successfully!");
+        this.predictionDto.predictionText = data.predictionText;
+        this.predictionDto.areaNames = data.areaNames;
+        this.predictionDto.predictions = data.predictions;
+        this.chartPredictionOptions = null;
+        this.chartPredictionOptions = {
+          series: data.predictions,
+          chart: {
+            type: "donut"
+          },
+          labels: data.areaNames
+        };
+        this.predictionTitle = data.predictionText;
+      },
+      error: (error) => {
+        this.notificationService.handleError(error);
+      },
+    });
   }
 
-  generateChart(){
-    this.chartOptions=null;
-    this.chartOptions = {
+  generateChart() {
+    this.chartReservedTableOptions = null;
+    this.chartReservedTableOptions = {
       series: [{
         name: "# of reserved tables",
         data: this.forecast.forecast
@@ -185,5 +245,27 @@ export class AdminViewComponent implements OnInit {
     };
   }
 
+  onAreaChange(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    this.selectedAreaId = Number(selectElement.value);
+    //this.reservationLayoutCheckAvailabilityDto.areaId = this.selectedAreaId;
+    //this.fetchLayoutAvailability();
+  }
+
+  private fetchAllAreas() {
+    this.layoutService.getAllAreas().subscribe({
+      next: (data: AreaListDto) => {
+        this.areas = data.areas;
+        if (this.areas.length > 0) {
+          this.selectedAreaId = this.selectedAreaId || this.areas[0].id;
+          //this.reservationLayoutCheckAvailabilityDto.areaId = this.selectedAreaId;
+          //this.fetchLayoutAvailability(); TODO: Implement Layout to edit in Admin view
+        }
+      },
+      error: () => {
+        this.notificationService.showError('Failed to fetch areas. Please try again later.');
+      },
+    });
+  }
 
 }
