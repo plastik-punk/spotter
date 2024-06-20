@@ -17,7 +17,7 @@ import java.sql.SQLException;
  * You can activate this profile by adding {@code -Dspring.profiles.active=generateData} to your maven command line
  */
 @Component
-@Profile("generateData")
+@Profile({"generateData", "test"})
 public class DataGeneratorBean {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final DataSource dataSource;
