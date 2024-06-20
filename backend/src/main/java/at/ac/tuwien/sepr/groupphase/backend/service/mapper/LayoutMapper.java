@@ -9,27 +9,31 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface LayoutMapper {
+
     @Mapping(target = "id", ignore = true)
-    @Mapping(source = "open", target = "open")
+    @Mapping(target = "open", ignore = true) //set inservice
+    @Mapping(target = "name", source = "name")
+    @Mapping(target = "openingTime", source = "openingTime")
+    @Mapping(target = "closingTime", source = "closingTime")
+    @Mapping(target = "width", source = "width")
+    @Mapping(target = "height", source = "height")
     Area areaCreateDtoToArea(LayoutCreateDto.AreaCreateDto areaCreateDto);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(source = "placeNumber", target = "number")
-    @Mapping(source = "status", target = "status", qualifiedByName = "mapStatus")
-    @Mapping(source = "numberOfSeats", target = "pax")
+    @Mapping(target = "number", source = "placeNumber")
+    @Mapping(target = "status", source = "status", qualifiedByName = "mapStatus")
+    @Mapping(target = "pax", source = "numberOfSeats")
     Place placeVisualDtoToPlace(LayoutCreateDto.AreaCreateDto.PlaceVisualDto placeVisualDto);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(source = "x1", target = "x")
-    @Mapping(source = "y1", target = "y")
+    @Mapping(target = "x", ignore = true) //set in service
+    @Mapping(target = "y", ignore = true)
     Segment coordinateDtoToSegment(LayoutCreateDto.AreaCreateDto.PlaceVisualDto.CoordinateDto coordinateDto);
 
     @Named("mapStatus")
     default StatusEnum mapStatus(Boolean status) {
         return status ? StatusEnum.AVAILABLE : StatusEnum.OCCUPIED;
     }
-
 }
-

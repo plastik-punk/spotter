@@ -53,8 +53,8 @@ public class LayoutCreateDto {
             return isOpen;
         }
 
-        public void setOpen(boolean open) {
-            isOpen = open;
+        public void setOpen(boolean isOpen) {
+            this.isOpen = isOpen;
         }
 
         public boolean isMainArea() {
@@ -88,6 +88,7 @@ public class LayoutCreateDto {
         public void setPlaces(List<PlaceVisualDto> places) {
             this.places = places;
         }
+
 
         public static class PlaceVisualDto {
             private Integer placeNumber;
