@@ -23,6 +23,13 @@ public interface EventRepository extends JpaRepository<Event, Long> {
         @Param("startTime") LocalDateTime startTime,
         @Param("endTime") LocalDateTime endTime);
 
+    @Query(value = "SELECT e.* FROM event e "
+        + "WHERE e.end_time >= CURRENT_TIMESTAMP "
+        + "AND e.start_time <= DATEADD('YEAR', 1, CURRENT_TIMESTAMP) "
+        + "ORDER BY e.start_time ASC",
+        nativeQuery = true)
+    List<Event> findUpcomingEvents();
+
     Event findByHashId(String hashId);
 
     List<Event> findAllByStartTimeBetween(LocalDateTime startTime, LocalDateTime endTime);

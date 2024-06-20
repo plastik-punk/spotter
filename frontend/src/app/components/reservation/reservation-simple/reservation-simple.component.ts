@@ -1,4 +1,5 @@
 import {Component, OnInit} from '@angular/core';
+import * as bootstrap from 'bootstrap';
 import {AuthService} from '../../../services/auth.service';
 import {NgForm} from '@angular/forms';
 import {ReservationCheckAvailabilityDto, ReservationCreateDto} from '../../../dtos/reservation';
@@ -6,6 +7,9 @@ import {UserOverviewDto} from '../../../dtos/app-user';
 import {ReservationService} from '../../../services/reservation.service';
 import {NotificationService} from '../../../services/notification.service';
 import {SimpleViewReservationStatusEnum} from '../../../dtos/status-enum';
+import {EventDetailDto, EventListDto} from "../../../dtos/event";
+import {EventService} from "../../../services/event.service";
+import {formatDay, formatDotDate, formatDotDateShort, formatIsoTime, formatTime} from "../../../util/date-helper";
 
 @Component({
   selector: 'app-reservation-simple',
@@ -15,25 +19,32 @@ import {SimpleViewReservationStatusEnum} from '../../../dtos/status-enum';
 export class ReservationSimpleComponent implements OnInit {
   unavailable: boolean = true;
   nextAvailableTables: ReservationCheckAvailabilityDto[] = [];
-
   reservationCreateDto: ReservationCreateDto;
   reservationCheckAvailabilityDto: ReservationCheckAvailabilityDto;
-
   currentUser: UserOverviewDto;
-
   sharedStartTime: string;
   sharedDate: string;
-
   timer: any;
   isTimeManuallyChanged: boolean = false;
   isBookButtonTimeout: boolean = false;
-
   reservationStatusText: string = 'Provide Time, Date and Pax';
   reservationStatusClass: string = 'reservation-table-incomplete';
+  events: EventListDto[] = undefined;
+  event: EventDetailDto = {
+    hashId: undefined,
+    name: undefined,
+    startTime: undefined,
+    endTime: undefined,
+    description: undefined
+  };
+  currentEventPage: number = 1;
+  itemsPerPage: number = 3;
+  upcomingEventsExist: boolean = false;
 
   constructor(
     public authService: AuthService,
     private service: ReservationService,
+    private eventService: EventService,
     private notificationService: NotificationService,
   ) {
     this.initializeSharedProperties();
@@ -42,11 +53,52 @@ export class ReservationSimpleComponent implements OnInit {
 
   ngOnInit() {
     this.startTimer()
+
+    this.eventService.getUpcomingEvents().subscribe({
+      next: (data) => {
+        this.events = data;
+        if (this.events?.length > 0) {
+          this.upcomingEventsExist = true;
+        }
+      },
+      error: () => {
+        this.notificationService.showError('Failed to get events. Please try again later.');
+      },
+    });
+  }
+
+  showEventDetails(hashId: string): void {
+    this.eventService.getByHashId(hashId).subscribe( {
+      next: (data: EventDetailDto) => {
+        this.event.name = data.name;
+        this.event.startTime = data.startTime;
+        this.event.endTime = data.endTime;
+        this.event.description = data.description;
+
+        const modalDetail = new bootstrap.Modal(document.getElementById('event-detail'));
+        modalDetail.show();
+      },
+      error: error => {
+        this.notificationService.showError('Failed to load reservation details. Please try again later.');
+      }
+    });
   }
 
   ngOnDestroy() {
     if (this.timer) {
       clearInterval(this.timer);
+    }
+  }
+
+  nextPage() {
+    if (this.currentEventPage < Math.ceil(this.events?.length / this.itemsPerPage)) {
+      this.currentEventPage++;
+    }
+  }
+
+  previousPage() {
+    if (this.currentEventPage > 1) {
+      this.currentEventPage--;
     }
   }
 
@@ -280,4 +332,11 @@ export class ReservationSimpleComponent implements OnInit {
     this.sharedStartTime = (event.target as HTMLInputElement).value;
     this.onFieldChange();
   }
+
+  protected readonly formatTime = formatTime;
+  protected readonly formatDotDate = formatDotDate;
+  protected readonly formatDay = formatDay;
+  protected readonly formatDotDateShort = formatDotDateShort;
+  protected readonly formatIsoTime = formatIsoTime;
+  protected readonly Math = Math;
 }

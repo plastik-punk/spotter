@@ -75,6 +75,13 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public List<EventListDto> getUpcomingEvents() {
+        LOGGER.trace("getUpcomingEvents()");
+        List<Event> events = eventRepository.findUpcomingEvents();
+        return mapper.eventToEventListDto(events);
+    }
+
+    @Override
     public EventDetailDto getByHashId(String hashId) throws NotFoundException {
         LOGGER.trace("getByHashId({})", hashId);
 

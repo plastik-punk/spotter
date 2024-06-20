@@ -13,6 +13,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface ApplicationUserMapper {
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "password", ignore = true)
     ApplicationUser userRegistrationDtoToApplicationUser(ApplicationUserRegistrationDto applicationUserRegistrationDto);
 

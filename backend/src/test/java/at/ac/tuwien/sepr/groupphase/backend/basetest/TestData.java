@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.basetest;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
@@ -8,6 +9,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Area;
 import at.ac.tuwien.sepr.groupphase.backend.entity.AreaPlaceSegment;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ClosedDay;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Event;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Message;
 import at.ac.tuwien.sepr.groupphase.backend.entity.OpeningHours;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
@@ -46,6 +48,7 @@ public interface TestData {
     String BASE_URI = "/api/v1";
     String RESERVATION_BASE_URI = BASE_URI + "/reservations";
     String MESSAGE_BASE_URI = BASE_URI + "/messages";
+    String EVENT_BASE_URI = BASE_URI + "/events";
     String EMPLOYEES_BASE_URI = BASE_URI + "/employees";
     Long TEST_VALID_ID = 1L;
     Long TEST_INVALID_ID = -1L;
@@ -226,6 +229,72 @@ public interface TestData {
         .withMobileNumber(TEST_APPLICATION_USER_MOBILE_NUMBER)
         .withoutPassword()
         .withRole(RoleEnum.ADMIN)
+        .build();
+
+    // ---------------------------------------------
+    // EVENT TEST DATA
+    // ---------------------------------------------
+
+    Long TEST_EVENT_ID_1 = 1L;
+    String TEST_EVENT_HASH_1 = "eventhash1";
+    String TEST_EVENT_HASH_2 = "eventhash2";
+    LocalDateTime TEST_EVENT_START_TIME_1 = LocalDateTime.of(2024, 7, 1, 18, 0);
+    LocalDateTime TEST_EVENT_START_TIME_2 = LocalDateTime.of(2024, 8, 2, 17, 0);
+    LocalDateTime TEST_EVENT_START_TIME_3 = LocalDateTime.of(2027, 7, 1, 18, 0);
+    LocalDateTime TEST_EVENT_END_TIME_1 = LocalDateTime.of(2024, 7, 1, 22, 0);
+    LocalDateTime TEST_EVENT_END_TIME_2 = LocalDateTime.of(2024, 8, 2, 21, 0);
+    LocalDateTime TEST_EVENT_END_TIME_3 = LocalDateTime.of(2027, 7, 1, 22, 0);
+    String TEST_EVENT_NAME_1 = "Open Mic Night";
+    String TEST_EVENT_NAME_2 = "Fussball EM";
+    String TEST_EVENT_DESC_1 = "Let's laugh about some dad jokes.";
+    String TEST_EVENT_DESC_2 = "Free shots!";
+
+    Event TEST_EVENT_1 = Event.EventBuilder.anEvent()
+        .withId(TEST_EVENT_ID_1)
+        .withStartTime(TEST_EVENT_START_TIME_1)
+        .withEndTime(TEST_EVENT_END_TIME_1)
+        .withName(TEST_EVENT_NAME_1)
+        .withDescription(TEST_EVENT_DESC_1)
+        .withHashId(TEST_EVENT_HASH_1)
+        .build();
+
+    Event TEST_EVENT_2 = Event.EventBuilder.anEvent()
+        .withStartTime(TEST_EVENT_START_TIME_2)
+        .withEndTime(TEST_EVENT_END_TIME_2)
+        .withName(TEST_EVENT_NAME_2)
+        .withDescription(TEST_EVENT_DESC_2)
+        .withHashId(TEST_EVENT_HASH_2)
+        .build();
+
+    Event TEST_EVENT_3 = Event.EventBuilder.anEvent()
+        .withId(TEST_EVENT_ID_1)
+        .withStartTime(TEST_EVENT_START_TIME_1)
+        .withEndTime(TEST_EVENT_END_TIME_1)
+        .withName(TEST_EVENT_NAME_1)
+        .withDescription(TEST_EVENT_DESC_1)
+        .withHashId(TEST_EVENT_HASH_1)
+        .build();
+
+    Event TEST_EVENT_4 = Event.EventBuilder.anEvent()
+        .withStartTime(TEST_EVENT_START_TIME_3)
+        .withEndTime(TEST_EVENT_END_TIME_3)
+        .withName(TEST_EVENT_NAME_1)
+        .withDescription(TEST_EVENT_DESC_1)
+        .withHashId(TEST_EVENT_HASH_1)
+        .build();
+
+    EventListDto TEST_EVENT_LIST_1 = EventListDto.EventListDtoBuilder.anEventListDto()
+        .withStartTime(TEST_EVENT_START_TIME_1)
+        .withEndTime(TEST_EVENT_END_TIME_1)
+        .withName(TEST_EVENT_NAME_1)
+        .withHashId(TEST_EVENT_HASH_1)
+        .build();
+
+    EventListDto TEST_EVENT_LIST_2 = EventListDto.EventListDtoBuilder.anEventListDto()
+        .withStartTime(TEST_EVENT_START_TIME_2)
+        .withEndTime(TEST_EVENT_END_TIME_2)
+        .withName(TEST_EVENT_NAME_2)
+        .withHashId(TEST_EVENT_HASH_2)
         .build();
 
     // ---------------------------------------------

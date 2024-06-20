@@ -25,6 +25,13 @@ public interface EventService {
     List<EventListDto> search(EventSearchDto searchParameters);
 
     /**
+     * Get the upcoming events.
+     *
+     * @return the list of upcoming events
+     */
+    List<EventListDto> getUpcomingEvents();
+
+    /**
      * Get the details of an event specified by its Hashed id.
      *
      * @param hashId the Hashed id of the event

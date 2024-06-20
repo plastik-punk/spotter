@@ -85,7 +85,6 @@ public class ReservationDataGenerator {
                 createReservation(date, places.get(i % places.size()), applicationUsers.get(i % applicationUsers.size()), i);
             }
         }
-
     }
 
     private void createReservation(LocalDate date, Place place, ApplicationUser applicationUser, int index) {
@@ -109,7 +108,7 @@ public class ReservationDataGenerator {
             .withConfirmed(false)
             .build();
 
+        reservation = reservationRepository.save(reservation);
         LOGGER.debug("Saving reservation {}", reservation);
-        reservationRepository.save(reservation);
     }
 }

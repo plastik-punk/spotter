@@ -27,6 +27,8 @@ import java.util.List;
 
 @Mapper
 public interface EventMapper {
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "hashId", ignore = true)
     @Mapping(target = "startTime", expression = "java(combineDateTime(eventCreateDto.getStartDate(), eventCreateDto.getStartTime()))")
     @Mapping(target = "endTime", expression = "java(combineDateTime(eventCreateDto.getEndDate(), eventCreateDto.getEndTime()))")
     Event eventCreateDtoToEvent(EventCreateDto eventCreateDto);

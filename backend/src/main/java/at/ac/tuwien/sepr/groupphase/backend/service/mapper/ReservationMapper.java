@@ -18,8 +18,17 @@ import java.util.List;
 @Mapper
 public interface ReservationMapper {
 
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "hashValue", ignore = true)
+    @Mapping(target = "confirmed", ignore = true)
     Reservation reservationCreateDtoToReservation(ReservationCreateDto reservationCreateDto);
 
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "firstName", ignore = true)
+    @Mapping(target = "lastName", ignore = true)
+    @Mapping(target = "email", ignore = true)
+    @Mapping(target = "mobileNumber", ignore = true)
+    @Mapping(target = "placeIds", ignore = true)
     ReservationCreateDto reservationToReservationCreateDto(Reservation reservation);
 
     @AfterMapping
@@ -34,13 +43,15 @@ public interface ReservationMapper {
         }
     }
 
+    @Mapping(target = "placeIds", ignore = true)
     ReservationDetailDto reservationToReservationDetailDto(Reservation reservation);
 
+    @Mapping(target = "placeIds", ignore = true)
     @Mapping(source = "applicationUser.firstName", target = "firstName")
     @Mapping(source = "applicationUser.lastName", target = "lastName")
     ReservationModalDetailDto reservationToReservationModalDetailDto(Reservation reservation);
 
-    // TODO: annotation only needed for the applicationUser fields (but test this first)
+    @Mapping(target = "placeIds", ignore = true)
     @Mapping(source = "reservation.applicationUser.firstName", target = "userFirstName")
     @Mapping(source = "reservation.applicationUser.lastName", target = "userLastName")
     @Mapping(source = "reservation.startTime", target = "startTime")
@@ -51,7 +62,7 @@ public interface ReservationMapper {
     @Named("reservationList")
     ReservationListDto reservationToReservationListDto(Reservation reservation, List<Long> placeIds);
 
-
+    @Mapping(target = "placeIds", ignore = true)
     @Mapping(source = "reservation.applicationUser", target = "user")
     @Mapping(source = "reservation.id", target = "reservationId")
     @Mapping(source = "reservation.hashValue", target = "hashedId")

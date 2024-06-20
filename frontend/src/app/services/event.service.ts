@@ -21,6 +21,8 @@ export class EventService {
    * @param searchParams the search parameters
    */
   search(searchParams: EventSearchDto): Observable<EventListDto[]> {
+    // TODO: name of searchEventDto is never used? if so, remove it both in back- and frontend
+
     let params = new HttpParams();
     if (searchParams.earliestStartDate) {
       params = params.append('earliestDate', formatIsoDate(searchParams.earliestStartDate));
@@ -35,6 +37,13 @@ export class EventService {
       params = params.append('latestEndTime', formatIsoDate(searchParams.latestEndTime))
     }
     return this.httpClient.get<EventListDto[]>(this.eventBaseUri + "/search", { params });
+  }
+
+  /**
+   * Get next upcoming events (5 at most)
+   */
+  getUpcomingEvents(): Observable<EventListDto[]> {
+    return this.httpClient.get<EventListDto[]>(this.eventBaseUri + "/upcoming");
   }
 
   /**
