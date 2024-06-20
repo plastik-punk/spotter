@@ -1,14 +1,15 @@
 import {Component, OnInit, OnDestroy, ElementRef, ViewChild, HostListener} from '@angular/core';
 import {NgForm} from "@angular/forms";
+import {ReservationCreateDto} from "../../../dtos/reservation";
 import {
   ReservationLayoutCheckAvailabilityDto,
-  ReservationCreateDto,
   AreaLayoutDto,
   AreaListDto,
   AreaDto
-} from "../../../dtos/reservation";
+} from "../../../dtos/layout";
 import {UserOverviewDto} from "../../../dtos/app-user";
 import {AuthService} from "../../../services/auth.service";
+import {LayoutService} from "../../../services/layout.service";
 import {ReservationService} from "../../../services/reservation.service";
 import {NotificationService} from "../../../services/notification.service";
 import {D3DrawService} from "../../../services/d3-draw.service";
@@ -42,6 +43,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
 
   constructor(
     public authService: AuthService,
+    private layoutService: LayoutService,
     private reservationService: ReservationService,
     private notificationService: NotificationService,
     private d3DrawService: D3DrawService
@@ -123,7 +125,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
 
 
   private fetchAllAreas() {
-    this.reservationService.getAllAreas().subscribe({
+    this.layoutService.getAllAreas().subscribe({
       next: (data: AreaListDto) => {
         this.areas = data.areas;
         if (this.areas.length > 0) {
@@ -151,10 +153,10 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
   }
 
   private fetchLayoutAvailability() {
-    this.reservationService.getLayoutAvailability(this.reservationLayoutCheckAvailabilityDto).subscribe({
+    this.layoutService.getLayoutAvailability(this.reservationLayoutCheckAvailabilityDto).subscribe({
       next: (data: AreaLayoutDto) => {
         this.areaLayout = data;
-        this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this));
+        this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this), false);
         this.checkSelectedPlacesAvailability();
       },
       error: () => {
@@ -165,7 +167,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
 
   private checkSelectedPlacesAvailability() {
     const unavailablePlaces = this.selectedPlaces.filter(selectedPlace => {
-      const place = this.areaLayout.placeVisuals.find(p => p.placeId === selectedPlace.placeId);
+      const place = this.areaLayout.placeVisuals.find(p => p.placeNumber === selectedPlace.placeId);
       return !place || place.reservation || !place.status;
     });
 
@@ -174,7 +176,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
         this.selectedPlaces = this.selectedPlaces.filter(p => p.placeId !== unavailablePlace.placeId);
         this.notificationService.showError(`Table ${unavailablePlace.placeId} is no longer available.`);
       });
-      this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this));
+      this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this), false);
     }
   }
 
@@ -188,12 +190,13 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
 
     this.reservationCreateDto.placeIds = this.selectedPlaces.map(p => p.placeId);
     this.reservationCreateDto.pax = this.selectedPlaces.reduce((sum, place) => sum + place.numberOfSeats, 0);
-    this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this));
+    this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this), false);
     this.updateTotalSeats();
 
     const paxInput = document.getElementById('reservationPax') as HTMLInputElement;
     if (paxInput) {
       paxInput.value = this.reservationCreateDto.pax.toString();
+      this.isPaxValid = true;
     }
   }
 
@@ -283,7 +286,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
     this.reservationLayoutCheckAvailabilityDto = this.initializeReservationLayoutCheckAvailabilityDto();
     this.reservationCreateDto = this.initializeReservationCreateDto();
     this.selectedPlaces = [];
-    this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this));
+    this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this), false);
   }
 
   private showFormErrors() {

@@ -50,7 +50,7 @@ public class AreaDataGenerator {
 
         Area area2 = Area.AreaBuilder.anArea()
             .withName("Second Area")
-            .withWidth(19)
+            .withWidth(10)
             .withHeight(4)
             .withOpen(false)
             .build();

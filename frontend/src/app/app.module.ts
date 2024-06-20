@@ -33,9 +33,12 @@ import {RouterLink} from "@angular/router";
 import {AdminViewComponent} from "./components/admin-view/admin-view.component";
 import {ReservationEditComponent} from "./components/reservation/reservation-edit/reservation-edit.component";
 import {NgApexchartsModule} from "ng-apexcharts";
+import {CreateLayoutComponent} from "./components/create-layout/create-layout.component";
+import {ConfirmDialogComponent} from "./components/confirm-dialog/confirm-dialog.component";
 import {EmployeeViewComponent} from "./components/employee-view/employee-view.component";
 
 @NgModule({
+
   declarations: [
     AppComponent,
     SidebarComponent,
@@ -54,6 +57,7 @@ import {EmployeeViewComponent} from "./components/employee-view/employee-view.co
     EventCreateComponent,
     ReservationLayoutComponent,
     AdminViewComponent,
+    CreateLayoutComponent,
     EmployeeViewComponent
   ],
   imports: [
@@ -72,7 +76,8 @@ import {EmployeeViewComponent} from "./components/employee-view/employee-view.co
     ReactiveFormsModule,
     RouterLink,
     NoopAnimationsModule,
-    NgApexchartsModule
+    NgApexchartsModule,
+    ConfirmDialogComponent
   ],
   providers: [httpInterceptorProviders],
   exports: [
@@ -80,5 +85,4 @@ import {EmployeeViewComponent} from "./components/employee-view/employee-view.co
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {
-}
+export class AppModule { }

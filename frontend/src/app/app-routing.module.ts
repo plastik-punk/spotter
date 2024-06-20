@@ -18,6 +18,7 @@ import {EventCreateComponent} from "./components/event/event-create/event-create
 
 import {ReservationLayoutComponent} from "./components/reservation/reservation-layout/reservation-layout.component";
 import {AdminViewComponent} from "./components/admin-view/admin-view.component";
+import {CreateLayoutComponent} from "./components/create-layout/create-layout.component";
 import {EmployeeViewComponent} from "./components/employee-view/employee-view.component";
 
 const routes: Routes = [
@@ -36,6 +37,9 @@ const routes: Routes = [
   {path: 'event-create', canActivate: mapToCanActivate([AuthGuard]), component: EventCreateComponent},
   {path: 'reservation-edit/:id', component: ReservationEditComponent},
   {path: 'admin-view', component: AdminViewComponent},
+
+  {path: 'create-layout', canActivate: mapToCanActivate([AuthGuard]), component: CreateLayoutComponent},
+
   {path: 'employee-view', component: EmployeeViewComponent}
 ];
 

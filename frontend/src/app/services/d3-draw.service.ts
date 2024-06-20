@@ -1,6 +1,6 @@
 import { Injectable, ElementRef } from '@angular/core';
 import * as d3 from 'd3';
-import {AreaLayoutDto, CoordinateDto, PlaceVisualDto} from "../dtos/reservation";
+import {AreaLayoutDto, CoordinateDto, PlaceVisualDto} from "../dtos/layout";
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +34,7 @@ export class D3DrawService {
       .attr('height', height);
   }
 
-  updateSeatingPlan(container: ElementRef, areaLayout: AreaLayoutDto, selectedPlaces: { placeId: number, numberOfSeats: number }[], onPlaceClick: (placeId: number, numberOfSeats: number) => void) {
+  updateSeatingPlan(container: ElementRef, areaLayout: AreaLayoutDto, selectedPlaces: { placeId: number, numberOfSeats: number }[], onPlaceClick: (placeId: number, numberOfSeats: number) => void, employee: boolean) {
     const element = container.nativeElement;
     const svg = d3.select(element).select('svg');
     svg.selectAll('*').remove();
@@ -46,8 +46,8 @@ export class D3DrawService {
       .append('g')
       .on('click', (event, d) => {
         event.stopPropagation();
-        if (!d.reservation && d.status) {
-          onPlaceClick(d.placeId, d.numberOfSeats);
+        if (!d.reservation && d.status || employee) {
+          onPlaceClick(d.placeNumber, d.numberOfSeats);
         }
       })
       .on('mouseover', (event, d) => this.showTooltip(event, d))
@@ -146,7 +146,7 @@ export class D3DrawService {
   }
 
   private getPlaceColor(place: PlaceVisualDto, selectedPlaces: { placeId: number, numberOfSeats: number }[]): string {
-    if (selectedPlaces.some(p => p.placeId === place.placeId)) {
+    if (selectedPlaces.some(p => p.placeId === place.placeNumber)) {
       return '#377eb8';
     }
     if (!place.status) {
@@ -160,7 +160,7 @@ export class D3DrawService {
     tooltip.style('display', 'block')
       .style('left', `${event.pageX + 10}px`)
       .style('top', `${event.pageY + 10}px`)
-      .html(`ID: ${place.placeId}<br>Seats: ${place.numberOfSeats}<br>Status: ${place.status ? (!place.reservation ? 'Free' : 'Booked') : 'Unavailable'}`);
+      .html(`ID: ${place.placeNumber}<br>Seats: ${place.numberOfSeats}<br>Status: ${place.status ? (!place.reservation ? 'Free' : 'Booked') : 'Unavailable'}`);
   }
 
   private hideTooltip() {
