@@ -21,8 +21,9 @@ import {
 } from "ng-apexcharts";
 import {Observable} from "rxjs";
 import {NotificationService} from "../../services/notification.service";
-import {AreaDto, AreaListDto} from "../../dtos/reservation";
+import {AreaDto, AreaListDto} from "../../dtos/layout";
 import {ReservationService} from "../../services/reservation.service";
+import {LayoutService} from "../../services/layout.service";
 import {formatIsoDate} from "../../util/date-helper";
 import {ToastrService} from "ngx-toastr";
 
@@ -81,6 +82,7 @@ export class AdminViewComponent implements OnInit {
     public authService: AuthService,
     private service: AdminViewService,
     private reservationService: ReservationService,
+    private layoutService: LayoutService,
     private notificationService: NotificationService,
     private notification: ToastrService,
     private router: Router
@@ -251,7 +253,7 @@ export class AdminViewComponent implements OnInit {
   }
 
   private fetchAllAreas() {
-    this.reservationService.getAllAreas().subscribe({
+    this.layoutService.getAllAreas().subscribe({
       next: (data: AreaListDto) => {
         this.areas = data.areas;
         if (this.areas.length > 0) {
