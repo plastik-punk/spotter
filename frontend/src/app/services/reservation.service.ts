@@ -7,7 +7,6 @@ import {
   Reservation,
   ReservationCheckAvailabilityDto,
   ReservationCreateDto,
-  ReservationLayoutCheckAvailabilityDto,
   ReservationSearch,
   ReservationListDto,
   ReservationEditDto,
