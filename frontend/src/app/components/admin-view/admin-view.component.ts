@@ -19,6 +19,9 @@ import {
 } from "ng-apexcharts";
 import {Observable} from "rxjs";
 import {NotificationService} from "../../services/notification.service";
+import {SpecialOfferCreateDto, SpecialOfferListDto} from "../../dtos/special-offer";
+import {SpecialOfferService} from "../../services/special-offer.service";
+import {formatDay, formatDotDate, formatTime} from "../../util/date-helper";
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -46,6 +49,12 @@ export class AdminViewComponent implements OnInit {
   }
 
   forecast: ReservationForeCastDto;
+  specialOfferList: SpecialOfferListDto[];
+  specialOfferCreateDto: SpecialOfferCreateDto = {
+    name: undefined,
+    pricePerPax: undefined,
+    image: undefined
+  }
 
   public chartOptions: Partial<ChartOptions>;
   currDate: any = new Date(now()).toISOString().split('T')[0];
@@ -53,7 +62,8 @@ export class AdminViewComponent implements OnInit {
 
   constructor(
     public authService: AuthService,
-    private service: AdminViewService,
+    private adminViewService: AdminViewService,
+    private specialOfferService: SpecialOfferService,
     private notificationService: NotificationService,
     private router: Router
   ) {
@@ -77,9 +87,10 @@ export class AdminViewComponent implements OnInit {
         type: "bar"
       },
     };
+    this.loadSpecialOffers();
 
     let observable: Observable<ReservationForeCastDto>;
-    observable = this.service.getForeCast(this.adminViewDto);
+    observable = this.adminViewService.getForeCast(this.adminViewDto);
     observable.subscribe({
       next: (value) => {
         this.forecast = value;
@@ -91,6 +102,19 @@ export class AdminViewComponent implements OnInit {
     });
 
 
+  }
+
+  loadSpecialOffers() {
+    let observable: Observable<SpecialOfferListDto[]>;
+    observable = this.specialOfferService.getSpecialOffers();
+    observable.subscribe({
+      next: (value) => {
+        this.specialOfferList = value;
+      },
+      error: (error) => {
+        this.notificationService.showError("Failed to load special offers");
+      }
+    });
   }
 
   onSubmit(form: NgForm) {
@@ -100,7 +124,7 @@ export class AdminViewComponent implements OnInit {
   onFieldChange() {
     console.log(this.adminViewDto)
     let observable: Observable<ReservationForeCastDto>;
-    observable = this.service.getForeCast(this.adminViewDto);
+    observable = this.adminViewService.getForeCast(this.adminViewDto);
     observable.subscribe({
       next: (value) => {
         this.forecast = value;
@@ -112,13 +136,33 @@ export class AdminViewComponent implements OnInit {
     });
   }
 
+  onFileChange(event) {
+    const file = event.target.files[0];
+    if (file) {
+      this.specialOfferCreateDto.image = file;
+    }
+  }
+
+  createSpecialOffer(specialOfferForm: NgForm) {
+    if (specialOfferForm.valid) {
+      this.specialOfferService.createSpecialOffer(this.specialOfferCreateDto).subscribe({
+        next: (data) => {
+          this.notificationService.showSuccess('Special Offer created successfully.');
+          this.loadSpecialOffers();
+        },
+        error: (error) => {
+          this.notificationService.showError("Couldn't create Special Offer" + error);
+        }
+      });
+    }
+  }
 
   onClickDetailView() {
     this.router.navigate(['/admin-view/prediction'])
   }
 
-  generateChart(){
-    this.chartOptions=null;
+  generateChart() {
+    this.chartOptions = null;
     this.chartOptions = {
       series: [{
         name: "# of reserved tables",
@@ -186,4 +230,7 @@ export class AdminViewComponent implements OnInit {
   }
 
 
+  protected readonly formatDotDate = formatDotDate;
+  protected readonly formatDay = formatDay;
+  protected readonly formatTime = formatTime;
 }
