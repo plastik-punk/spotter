@@ -126,18 +126,21 @@ public interface TestData {
     Place TEST_PLACE_AVAILABLE_2 = Place.PlaceBuilder.aPlace()
         .withId(2L)
         .withPax(4L)
+        .withNumber(2)
         .withStatus(StatusEnum.AVAILABLE)
         .build();
 
     Place TEST_PLACE_RESERVED = Place.PlaceBuilder.aPlace()
         .withId(3L)
         .withPax(6L)
+        .withNumber(3)
         .withStatus(StatusEnum.RESERVED)
         .build();
 
     Place TEST_PLACE_OCCUPIED = Place.PlaceBuilder.aPlace()
         .withId(4L)
         .withPax(6L)
+        .withNumber(4)
         .withStatus(StatusEnum.OCCUPIED)
         .build();
 
