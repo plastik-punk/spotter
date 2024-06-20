@@ -90,3 +90,20 @@ export interface ReservationWalkInDto{
   pax: number;
   placeIds: number[];
 }
+
+export interface PermanentReservationDto {
+  id?: number;
+  user: AppUser;
+  startDate: Date;
+  startTime: Date;
+  endTime: Date;
+  endDate?: Date;
+  repetition: RepetitionEnum;
+  period: number;
+  confirmed: boolean;
+}
+
+export enum RepetitionEnum{
+  DAYS='DAYS',
+  WEEKS='WEEKS'
+}

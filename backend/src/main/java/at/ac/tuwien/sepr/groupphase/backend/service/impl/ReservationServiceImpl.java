@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
@@ -10,6 +11,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationWalkInDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ClosedDay;
 import at.ac.tuwien.sepr.groupphase.backend.entity.OpeningHours;
+import at.ac.tuwien.sepr.groupphase.backend.entity.PermanentReservation;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ReservationPlace;
@@ -23,6 +25,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.AreaPlaceSegmentRepositor
 import at.ac.tuwien.sepr.groupphase.backend.repository.AreaRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ClosedDayRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.OpeningHoursRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.PermanentReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationPlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
@@ -31,7 +34,6 @@ import at.ac.tuwien.sepr.groupphase.backend.service.HashService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ReservationMapper;
 import jakarta.mail.MessagingException;
-import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
@@ -74,6 +76,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final ApplicationUserServiceImpl applicationUserService;
     private final AreaRepository areaRepository;
     private final AreaPlaceSegmentRepository areaPlaceSegmentRepository;
+    private final PermanentReservationRepository permanentReservationRepository;
 
     @Autowired
     private Validator validator;
@@ -90,7 +93,8 @@ public class ReservationServiceImpl implements ReservationService {
                                   HashService hashService,
                                   ApplicationUserServiceImpl applicationUserService,
                                   AreaRepository areaRepository,
-                                  AreaPlaceSegmentRepository areaPlaceSegmentRepository) {
+                                  AreaPlaceSegmentRepository areaPlaceSegmentRepository,
+                                  PermanentReservationRepository permanentReservationRepository) {
         this.mapper = mapper;
         this.reservationRepository = reservationRepository;
         this.applicationUserRepository = applicationUserRepository;
@@ -103,6 +107,7 @@ public class ReservationServiceImpl implements ReservationService {
         this.applicationUserService = applicationUserService;
         this.areaRepository = areaRepository;
         this.areaPlaceSegmentRepository = areaPlaceSegmentRepository;
+        this.permanentReservationRepository = permanentReservationRepository;
     }
 
     @Override
@@ -640,6 +645,15 @@ public class ReservationServiceImpl implements ReservationService {
             reservationPlaceRepository.save(reservationPlace);
         }
         return mapper.reservationToReservationCreateDto(createdReservation);
+    }
+
+    @Override
+    public PermanentReservationCreateDto createPermanent(PermanentReservationCreateDto permanentReservationCreateDto) {
+        LOGGER.trace("createPermanent {}", permanentReservationCreateDto);
+        LOGGER.info("MAPPED Perma: {}", mapper.permanentReservationCreateDtoToPermanentReservation(permanentReservationCreateDto));
+        PermanentReservation savedPermanentReservation = permanentReservationRepository.save(mapper.permanentReservationCreateDtoToPermanentReservation(permanentReservationCreateDto));
+
+        return mapper.permanentReservationToPermanentReservationCreateDto(savedPermanentReservation);
     }
 
     private Map<String, Object> constructMailTemplateModel(Reservation reservation, ApplicationUser currentUser) {

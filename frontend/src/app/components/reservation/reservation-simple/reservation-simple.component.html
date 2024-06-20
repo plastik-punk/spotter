@@ -51,6 +51,48 @@
                 (ngModelChange)="onFieldChange()"
                 required
               />
+
+            </div>
+            <!-- Start row for recurring reservation option -->
+            <div class ="column">
+            <div class="row">
+              <div class="column">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="isRecurring" [(ngModel)]="isRecurring" name="isRecurring">
+                  <label class="form-check-label" for="isRecurring">
+                    Make this a recurring reservation
+                  </label>
+                </div>
+              </div>
+            </div>
+            </div>
+
+            <!-- Conditional row for setting recurring reservation details -->
+            <div class="row" *ngIf="isRecurring">
+              <div class="column">
+                <label for="repeatEvery">Repeat every:</label>
+                <input type="number" id="repeatEvery" name="repeatEvery" class="form-control" [(ngModel)]="repeatEvery" min="1" required>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" id="days" name="repetitionType" [(ngModel)]="repetitionType" [value]="RepetitionEnum.DAYS">
+                  <label class="form-check-label" for="days">Days</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" id="weeks" name="repetitionType" [(ngModel)]="repetitionType" [value]="RepetitionEnum.WEEKS">
+                  <label class="form-check-label" for="weeks">Weeks</label>
+                </div>
+                <div class="col-auto">
+                  <label for="recurUntil">Make Reservation recurring until:</label>
+                  <input type="date" id="recurUntil" name="recurUntil" class="form-control" [(ngModel)]="endDate">
+                </div>
+              </div>
+
+              <!-- Note on Default Duration -->
+              <div class="col-12 text-center mt-2">
+                <small class="form-text text-muted">
+                  Note: Default runtime for recurring reservations is 3 months. Choose a date if you want to end it earlier.
+                </small>
+
+              </div>
             </div>
           </div>
 
@@ -166,6 +208,7 @@
             </div>
           </div>
           <!-- End event-column-left -->
+
 
           <!-- Start event-column-right -->
           <div class="event-column-right" [ngStyle]="{'display': upcomingEventsExist ? 'flex' : 'none'}">

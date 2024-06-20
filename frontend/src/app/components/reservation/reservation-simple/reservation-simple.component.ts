@@ -2,7 +2,12 @@ import {Component, OnInit} from '@angular/core';
 import * as bootstrap from 'bootstrap';
 import {AuthService} from '../../../services/auth.service';
 import {NgForm} from '@angular/forms';
-import {ReservationCheckAvailabilityDto, ReservationCreateDto} from '../../../dtos/reservation';
+import {
+  PermanentReservationDto,
+  RepetitionEnum,
+  ReservationCheckAvailabilityDto,
+  ReservationCreateDto
+} from '../../../dtos/reservation';
 import {UserOverviewDto} from '../../../dtos/app-user';
 import {ReservationService} from '../../../services/reservation.service';
 import {NotificationService} from '../../../services/notification.service';
@@ -40,6 +45,11 @@ export class ReservationSimpleComponent implements OnInit {
   currentEventPage: number = 1;
   itemsPerPage: number = 3;
   upcomingEventsExist: boolean = false;
+  isRecurring: boolean = false;
+  repeatEvery: number; // Initialize appropriately based on your default or user's last input
+  repetitionType: RepetitionEnum = RepetitionEnum.DAYS; // Default to 'days', can also be 'weeks'
+  permanentReservation: PermanentReservationDto;
+  endDate:string;
 
   constructor(
     public authService: AuthService,
@@ -68,7 +78,7 @@ export class ReservationSimpleComponent implements OnInit {
   }
 
   showEventDetails(hashId: string): void {
-    this.eventService.getByHashId(hashId).subscribe( {
+    this.eventService.getByHashId(hashId).subscribe({
       next: (data: EventDetailDto) => {
         this.event.name = data.name;
         this.event.startTime = data.startTime;
@@ -270,20 +280,45 @@ export class ReservationSimpleComponent implements OnInit {
         this.isBookButtonTimeout = false;
         this.isTimeManuallyChanged = false;
       }, 2000);
-      this.service.createReservation(this.reservationCreateDto).subscribe({
-        next: (data) => {
-          if (data == null) {
-            this.notificationService.showError('The table was booked in the meantime. Please try again.');
-          } else {
-            this.notificationService.showSuccess('Reservation created successfully.');
-            this.initializeSharedProperties();
-            this.initializeDtos();
+
+      if (this.isRecurring) {
+        this.permanentReservation = {
+          user: this.reservationCreateDto.user,
+          startDate: this.reservationCreateDto.date,
+          startTime: this.reservationCreateDto.startTime,
+          endTime: this.reservationCreateDto.endTime,
+          repetition: this.repetitionType,
+          period: this.repeatEvery,
+          confirmed: false, // Assuming it's automatically confirmed for simplicity
+          endDate: this.endDate ? new Date(this.endDate) : null // Set endDate to null if not provided
+        };
+        console.log(this.permanentReservation);
+        this.service.createPermanentReservation(this.permanentReservation).subscribe({
+          next: response => {
+            this.notificationService.showSuccess('Permanent reservation saved successfully.');
+            this.resetForm(form);
+          },
+          error: error => {
+            this.notificationService.showError('Failed to save permanent reservation.');
           }
-        },
-        error: () => {
-          this.notificationService.showError('Location Closed');
-        },
-      });
+        });
+      } else {
+
+        this.service.createReservation(this.reservationCreateDto).subscribe({
+          next: (data) => {
+            if (data == null) {
+              this.notificationService.showError('The table was booked in the meantime. Please try again.');
+            } else {
+              this.notificationService.showSuccess('Reservation created successfully.');
+              this.initializeSharedProperties();
+              this.initializeDtos();
+            }
+          },
+          error: () => {
+            this.notificationService.showError('Location Closed');
+          },
+        });
+      }
     } else {
       this.showFormErrors();
     }
@@ -339,4 +374,5 @@ export class ReservationSimpleComponent implements OnInit {
   protected readonly formatDotDateShort = formatDotDateShort;
   protected readonly formatIsoTime = formatIsoTime;
   protected readonly Math = Math;
+  protected readonly RepetitionEnum = RepetitionEnum;
 }

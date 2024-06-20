@@ -1,11 +1,13 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.mapper;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationModalDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import at.ac.tuwien.sepr.groupphase.backend.entity.PermanentReservation;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
@@ -17,6 +19,26 @@ import java.util.List;
 
 @Mapper
 public interface ReservationMapper {
+
+    @Mapping(source = "applicationUser", target = "applicationUser")
+    @Mapping(source = "startDate", target = "startDate")
+    @Mapping(source = "startTime", target = "startTime")
+    @Mapping(source = "endTime", target = "endTime")
+    @Mapping(source = "endDate", target = "endDate")
+    @Mapping(source = "repetition", target = "repetition")
+    @Mapping(source = "period", target = "period")
+    @Mapping(source = "confirmed", target = "confirmed")
+    PermanentReservation permanentReservationCreateDtoToPermanentReservation(PermanentReservationCreateDto permanentReservationCreateDto);
+
+    @Mapping(source = "applicationUser", target = "applicationUser")
+    @Mapping(source = "startDate", target = "startDate")
+    @Mapping(source = "startTime", target = "startTime")
+    @Mapping(source = "endTime", target = "endTime")
+    @Mapping(source = "endDate", target = "endDate")
+    @Mapping(source = "repetition", target = "repetition")
+    @Mapping(source = "period", target = "period")
+    @Mapping(source = "confirmed", target = "confirmed")
+    PermanentReservationCreateDto permanentReservationToPermanentReservationCreateDto(PermanentReservation permanentReservation);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "hashValue", ignore = true)

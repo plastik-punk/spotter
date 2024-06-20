@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
@@ -62,6 +63,15 @@ public class ReservationEndpoint {
     public ReservationCreateDto createWalkIn(@Valid @RequestBody ReservationWalkInDto reservationWalkInDto) throws ConflictException, MessagingException {
         LOGGER.info("POST /api/v1/reservations/walk-in body: {}", reservationWalkInDto.toString());
         return service.createWalkIn(reservationWalkInDto);
+    }
+
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/permanent")
+    @PermitAll
+    @Operation(summary = "Create a new permanent reservation")
+    public PermanentReservationCreateDto createPermanent(@Valid @RequestBody PermanentReservationCreateDto permanentReservationCreateDto) {
+        LOGGER.info("POST /api/v1/reservations/permanent body: {}", permanentReservationCreateDto.toString());
+        return service.createPermanent(permanentReservationCreateDto);
     }
 
     @ResponseStatus(HttpStatus.OK)

@@ -11,7 +11,7 @@ import {
   ReservationListDto,
   ReservationEditDto,
   ReservationModalDetailDto,
-  ReservationWalkInDto
+  ReservationWalkInDto, PermanentReservationDto
 } from "../dtos/reservation";
 import {SimpleViewReservationStatusEnum} from "../dtos/status-enum";
 
@@ -157,4 +157,13 @@ export class ReservationService {
     return this.httpClient.post<ReservationCreateDto>(this.reservationBaseUri+ "/walk-in", reservationWalkInDto);
   }
 
+  /**
+   * Create a new  reccuring permanent reservation for a guest
+   *
+   * @param permanentReservationDto the permanent reservation to create
+   * @return an Observable for the created permanent reservation
+   */
+  createPermanentReservation(permanentReservationDto: PermanentReservationDto) : Observable<PermanentReservationDto> {
+    return this.httpClient.post<PermanentReservationDto>(this.reservationBaseUri+"/permanent", permanentReservationDto);
+  }
 }

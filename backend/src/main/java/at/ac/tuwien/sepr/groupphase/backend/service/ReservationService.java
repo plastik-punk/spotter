@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
@@ -8,8 +9,8 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationModalDetailD
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationWalkInDto;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
-import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import jakarta.mail.MessagingException;
 
 import java.util.List;
@@ -107,4 +108,12 @@ public interface ReservationService {
      * @return the walk-in reservation as provided from the Repository layer after creation in the database
      */
     ReservationCreateDto createWalkIn(ReservationWalkInDto reservationWalkInDto) throws ConflictException, MessagingException;
+
+    /**
+     * Create a permanent reservation (still needs to be confirmed).
+     *
+     * @param permanentReservationCreateDto the necessary data for a permanent reservation
+     * @return the permanent reservation as provided from the persistence layer after creation in the data storage
+     */
+    PermanentReservationCreateDto createPermanent(PermanentReservationCreateDto permanentReservationCreateDto);
 }
