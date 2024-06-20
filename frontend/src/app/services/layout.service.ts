@@ -43,7 +43,7 @@ export class LayoutService {
    * @return an Observable for the created layout
    */
   createLayout(layoutCreateDto: LayoutCreateDto): Observable<any> {
-    return this.httpClient.post<any>(this.layoutBaseUri + "/create", layoutCreateDto);
+    return this.httpClient.post<any>(`${this.layoutBaseUri}/create`, layoutCreateDto);
   }
 }
 

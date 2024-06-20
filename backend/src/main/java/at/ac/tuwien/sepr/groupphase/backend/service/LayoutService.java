@@ -4,6 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaLayoutDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.LayoutCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckAvailabilityDto;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 
 /**
  * Service for operations on Layout (graphic representation of areas).
@@ -25,5 +26,5 @@ public interface LayoutService {
      */
     AreaLayoutDto getAreaLayout(ReservationLayoutCheckAvailabilityDto reservationLayoutCheckAvailabilityDto);
 
-    void createLayout(LayoutCreateDto layoutCreateDto);
+    void createLayout(LayoutCreateDto layoutCreateDto) throws ConflictException;
 }

@@ -4,6 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaLayoutDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.LayoutCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckAvailabilityDto;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.service.LayoutService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.annotation.security.PermitAll;
@@ -53,10 +54,9 @@ public class LayoutEndpoint {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PermitAll
-    @PostMapping
-    @Operation(summary = "Create new layout")
-    public void createLayout(@RequestBody @Valid LayoutCreateDto layoutCreateDto) {
-        LOGGER.info("POST /api/v1/layout body: {}", layoutCreateDto);
+    @PostMapping("/create")
+    @Operation(summary = "Create layout")
+    public void createLayout(@RequestBody @Valid LayoutCreateDto layoutCreateDto) throws ConflictException {
         layoutService.createLayout(layoutCreateDto);
     }
 }

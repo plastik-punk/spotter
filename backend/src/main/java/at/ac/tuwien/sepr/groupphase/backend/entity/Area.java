@@ -31,12 +31,12 @@ public class Area {
 
     @Column(nullable = false)
     @Min(0)
-    @Max(19)
+    @Max(18)
     private int width;
 
     @Column(nullable = false)
     @Min(0)
-    @Max(19)
+    @Max(17)
     private int height;
 
     // Getters and Setters

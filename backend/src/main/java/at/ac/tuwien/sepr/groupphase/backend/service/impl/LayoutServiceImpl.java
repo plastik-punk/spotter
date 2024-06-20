@@ -10,6 +10,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.OpeningHours;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Segment;
 import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.AreaPlaceSegmentRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.AreaRepository;
@@ -34,6 +35,7 @@ import org.springframework.stereotype.Service;
 import java.lang.invoke.MethodHandles;
 import java.time.DayOfWeek;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -182,10 +184,10 @@ public class LayoutServiceImpl implements LayoutService {
 
     @Override
     @Transactional
-    public void createLayout(LayoutCreateDto layoutCreateDto) {
+    public void createLayout(LayoutCreateDto layoutCreateDto) throws ConflictException {
         // Initial checks
         if (areaRepository.count() > 0 || placeRepository.count() > 0 || segmentRepository.count() > 0 || areaPlaceSegmentRepository.count() > 0) {
-            throw new IllegalStateException("Layout already exists. Cannot create new layout.");
+            throw new ConflictException("Layout already exists. Cannot create new layout.", Collections.singletonList("layout_already_exists"));
         }
 
         // Separate the main area and other areas
