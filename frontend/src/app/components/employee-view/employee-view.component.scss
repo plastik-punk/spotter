@@ -1,3 +1,8 @@
+@use "sass:map";
+@import "../../../../node_modules/bootstrap/scss/functions";
+@import "../../../../node_modules/bootstrap/scss/variables";
+@import "../../../../node_modules/bootstrap/scss/mixins";
+
 body {
   margin: 0;
   padding: 0;
@@ -178,21 +183,6 @@ body {
   color: white;
 }
 
-.available-btn {
-  background-color: transparent;
-  border: 2px solid darkgreen;
-  color: darkgreen;
-  text-align: center;
-  text-decoration: none;
-  transition: background-color 0.3s ease;
-  width: 30%;
-}
-
-.available-btn:hover {
-  background-color: darkgreen;
-  color: white;
-}
-
 .pax-container {
   display: flex;
 }
@@ -213,4 +203,23 @@ body {
   .font-heading {
     font-size: 4vw;
   }
+}
+
+.responsive-info-button,
+.responsive-warning-button,
+.responsive-danger-button,
+.responsive-success-button{
+  @include button-variant($light, $light);
+}
+
+@each $color in (info, warning, danger, success) {
+  $value: map.get($theme-colors, $color);
+  tr:hover .responsive-#{$color}-button {
+    @include button-variant($value, $value);
+  }
+}
+
+.btn-group {
+  display: flex;
+  gap: 0.5rem;
 }

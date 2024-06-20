@@ -4,8 +4,12 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailab
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationModalDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationWalkInDto;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import jakarta.mail.MessagingException;
 
 import java.util.List;
@@ -49,6 +53,14 @@ public interface ReservationService {
     ReservationEditDto getByHashedId(String id);
 
     /**
+     * Get the details of a reservation specified by its id.
+     *
+     * @param id the id of the reservation
+     * @return the reservation details
+     */
+    ReservationModalDetailDto getModalDetail(String id);
+
+    /**
      * Update a reservation.
      *
      * @param reservationEditDto the reservation data
@@ -72,5 +84,27 @@ public interface ReservationService {
      */
     void cancel(String hashId);
 
+    /**
+     * Confirm a reservation.
+     *
+     * @param hashId the Hashed id of the reservation.
+     * @throws NotFoundException if the reservation is not found
+     */
+    void confirm(String hashId) throws NotFoundException;
 
+    /**
+     * Unconfirm a reservation.
+     *
+     * @param hashId the Hashed id of the reservation.
+     * @throws NotFoundException if the reservation is not found
+     */
+    void unconfirm(String hashId) throws NotFoundException;
+
+    /**
+     * Create a walk-in reservation.
+     *
+     * @param reservationWalkInDto the necessary data for a walk-in reservation
+     * @return the walk-in reservation as provided from the Repository layer after creation in the database
+     */
+    ReservationCreateDto createWalkIn(ReservationWalkInDto reservationWalkInDto) throws ConflictException, MessagingException;
 }

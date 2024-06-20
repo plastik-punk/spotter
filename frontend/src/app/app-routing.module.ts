@@ -21,6 +21,7 @@ import {
 import {AdminViewComponent} from "./components/admin-view/admin-view.component";
 import {PredictionComponent} from "./components/admin-view/prediction/prediction.component";
 import {CreateLayoutComponent} from "./components/create-layout/create-layout.component";
+import {EmployeeViewComponent} from "./components/employee-view/employee-view.component";
 
 const routes: Routes = [
   {path: '', redirectTo: 'login', pathMatch: 'full'},
@@ -41,6 +42,8 @@ const routes: Routes = [
   {path: 'admin-view/prediction', component: PredictionComponent},
   {path: 'create-layout', canActivate: mapToCanActivate([AuthGuard]), component: CreateLayoutComponent},
 
+  {path: 'admin-view/prediction', component: PredictionComponent},
+  {path: 'employee-view', component: EmployeeViewComponent}
 ];
 
 @NgModule({

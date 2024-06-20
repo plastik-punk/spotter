@@ -67,11 +67,12 @@ body {
 .responsive-warning-button,
 .responsive-danger-button,
 .responsive-dark-button,
-.responsive-tree-button {
+.responsive-tree-button,
+.responsive-success-button{
   @include button-variant($light, $light);
 }
 
-@each $color in (info, warning, danger) {
+@each $color in (info, warning, danger, success) {
   $value: map.get($theme-colors, $color);
   tr:hover .responsive-#{$color}-button {
     @include button-variant($value, $value);
@@ -123,4 +124,14 @@ body {
 
 .h3 {
   letter-spacing: -0.02em;
+}
+
+.dt-dd-align {
+  display: flex;
+  align-items: center;
+}
+
+.dt-dd-align dt, .dt-dd-align dd {
+  margin: 5px;
+  padding: 0;
 }

@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.unittests.service.mapper;
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationModalDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ReservationMapper;
 import org.junit.jupiter.api.Test;
@@ -38,7 +39,26 @@ public class ReservationMapperTest implements TestData {
         );
     }
 
-    // @Test
+    @Test
+    public void givenValidReservation_whenMapEntityToReservationModalDetailDto_thenDtoHasAllProperties() {
+        // Arrange
+        Reservation reservation = TEST_RESERVATION_1;
+
+        // Act
+        ReservationModalDetailDto dto = reservationMapper.reservationToReservationModalDetailDto(reservation);
+
+        // Assert
+        assertAll(
+            () -> assertEquals(TEST_APPLICATION_USER_FIRST_NAME, dto.getFirstName()),
+            () -> assertEquals(TEST_APPLICATION_USER_LAST_NAME, dto.getLastName()),
+            () -> assertEquals(TEST_RESERVATION_START_TIME, dto.getStartTime()),
+            () -> assertEquals(TEST_RESERVATION_END_TIME, dto.getEndTime()),
+            () -> assertEquals(TEST_RESERVATION_DATE, dto.getDate()),
+            () -> assertEquals(TEST_RESERVATION_NOTES, dto.getNotes())
+        );
+    }
+
+    @Test
     public void givenNothing_whenMapEntityToReservationCreateDto_thenDtoHasAllProperties() {
         ReservationCreateDto dto = reservationMapper.reservationToReservationCreateDto(TEST_RESERVATION_1);
 
@@ -58,15 +78,14 @@ public class ReservationMapperTest implements TestData {
 
     @Test
     public void givenValidReservation_whenMapEntityToReservationListDto_thenDtoHasAllProperties() {
-        ReservationListDto dto = reservationMapper.reservationToReservationListDto(TEST_RESERVATION_1);
+        ReservationListDto dto = reservationMapper.reservationToReservationListDto(TEST_RESERVATION_1, null);
 
         assertAll(
             () -> assertEquals(TEST_APPLICATION_USER_FIRST_NAME, dto.getUserFirstName()),
             () -> assertEquals(TEST_APPLICATION_USER_LAST_NAME, dto.getUserLastName()),
             () -> assertEquals(TEST_RESERVATION_START_TIME, dto.getStartTime()),
             () -> assertEquals(TEST_RESERVATION_END_TIME, dto.getEndTime()),
-            () -> assertEquals(TEST_RESERVATION_DATE, dto.getDate()),
-            () -> assertNull(dto.getPlaceId())
+            () -> assertEquals(TEST_RESERVATION_DATE, dto.getDate())
         );
     }
 }

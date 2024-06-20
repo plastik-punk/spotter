@@ -4,15 +4,15 @@ import {Globals} from '../global/globals';
 import {Observable,tap} from "rxjs";
 import {formatIsoDate} from '../util/date-helper';
 import {
-  ReservationSearch,
-  ReservationListDto,
-  ReservationEditDto
-} from "../dtos/reservation";
-import {
   Reservation,
   ReservationCheckAvailabilityDto,
   ReservationCreateDto,
-  ReservationDetailDto
+  ReservationLayoutCheckAvailabilityDto,
+  ReservationSearch,
+  ReservationListDto,
+  ReservationEditDto,
+  ReservationModalDetailDto,
+  ReservationWalkInDto
 } from "../dtos/reservation";
 import {SimpleViewReservationStatusEnum} from "../dtos/status-enum";
 
@@ -76,6 +76,17 @@ export class ReservationService {
   }
 
   /**
+   * Get the details of a reservation for the modal by its id
+   *
+   * @param id the hashed id of the reservation
+   * @return an Observable for the modal details
+   */
+  getModalDetail(id: string): Observable<ReservationModalDetailDto> {
+    let params = new HttpParams().set('id', id);
+    return this.httpClient.get<ReservationModalDetailDto>(this.reservationBaseUri + "/modal", { params: params });
+  }
+
+  /**
    * Updates a reservation
    *
    * @param reservationEditDto the reservation to update
@@ -117,4 +128,34 @@ export class ReservationService {
   delete(hash: string): Observable<HttpResponse<void>> {
     return this.httpClient.delete<void>(this.reservationBaseUri, { observe: 'response' , body: hash});
   }
+
+  /**
+   * Confirm that the guests for a reservation have arrived.
+   *
+   * @param hashId the hashed id of the reservation to confirm
+   * @return an Observable for the HttpResponse
+   */
+  confirm(hashId: string): Observable<void> {
+    return this.httpClient.put<void>(this.globals.backendUri + "/reservations/confirm", hashId);
+  }
+
+  /**
+   * Unconfirm that the guests for a reservation have arrived.
+   *
+   * @param hashId the hashed id of the reservation to unconfirm
+   * @return an Observable for the HttpResponse
+   */
+  unconfirm(hashId: string): Observable<void> {
+    return this.httpClient.put<void>(this.globals.backendUri + "/reservations/unconfirm", hashId);
+  }
+  /**
+   * Create a new reservation for a guest
+   *
+   * @param reservationCreateDto the reservation to create
+   * @return an Observable for the created reservation
+   */
+  createWalkIn(reservationWalkInDto: ReservationWalkInDto) : Observable<ReservationCreateDto> {
+    return this.httpClient.post<ReservationCreateDto>(this.reservationBaseUri+ "/walk-in", reservationWalkInDto);
+  }
+
 }

@@ -95,8 +95,8 @@
         </thead>
         <tbody>
         <tr *ngFor="let event of displayedEvents">
-          <td>{{ event.startTime }}</td>
-          <td>{{ event.endTime }}</td>
+          <td>{{ event.startTime.toString().replace("T"," ") }}</td>
+          <td>{{ event.endTime.toString().replace("T"," ") }}</td>
           <td>{{ event.name }}</td>
           <td>
             <div class="btn-group">

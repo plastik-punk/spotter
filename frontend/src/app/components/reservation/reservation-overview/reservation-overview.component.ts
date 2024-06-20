@@ -1,13 +1,18 @@
 import {Component, OnInit} from '@angular/core';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import * as bootstrap from 'bootstrap';
 import {AuthService} from '../../../services/auth.service';
-import {ReservationEditDto, ReservationListDto, ReservationSearch} from "../../../dtos/reservation";
+import {
+  ReservationModalDetailDto,
+  ReservationEditDto,
+  ReservationListDto,
+  ReservationSearch
+} from "../../../dtos/reservation";
 import {debounceTime, Observable, Subject} from "rxjs";
 import {ReservationService} from "../../../services/reservation.service";
-import {Router} from "@angular/router";
 import {HttpResponse} from "@angular/common/http";
 import {NotificationService} from "../../../services/notification.service";
 import moment from 'moment';
+import {formatDay, formatDotDate, formatTime} from "../../../util/date-helper";
 
 @Component({
   selector: 'app-reservation-overview',
@@ -16,6 +21,14 @@ import moment from 'moment';
 })
 export class ReservationOverviewComponent implements OnInit {
   reservations: ReservationListDto[] = [];
+  reservationModalDetailDto: ReservationModalDetailDto = {
+    firstName: undefined,
+    lastName: undefined,
+    startTime: undefined,
+    endTime: undefined,
+    notes: undefined,
+    placeIds: undefined
+  };
   todaysReservations: ReservationListDto[] = [];
   upcomingReservations: ReservationListDto[] = [];
   displayedUpcomingReservations: ReservationListDto[] = [];
@@ -34,10 +47,8 @@ export class ReservationOverviewComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private modalService: NgbModal,
     private reservationService: ReservationService,
-    private notificationService: NotificationService,
-    private router: Router) {
+    private notificationService: NotificationService) {
   }
 
   ngOnInit(): void {
@@ -104,7 +115,6 @@ export class ReservationOverviewComponent implements OnInit {
           this.notificationService.showError('Failed to load reservations. Please try again later.');
         }
       });
-    console.log(this.reservations);
   }
 
   filterReservations() {
@@ -142,6 +152,25 @@ export class ReservationOverviewComponent implements OnInit {
         this.notificationService.showError('Failed to load reservation details. Please try again later.');
       }
     });
+  }
+
+  showReservationDetails(hashId: string): void {
+      this.reservationService.getModalDetail(hashId).subscribe( {
+        next: (data: ReservationModalDetailDto) => {
+            this.reservationModalDetailDto.firstName = data.firstName;
+            this.reservationModalDetailDto.lastName = data.lastName;
+            this.reservationModalDetailDto.startTime = data.startTime;
+            this.reservationModalDetailDto.endTime = data.endTime;
+            this.reservationModalDetailDto.notes = data.notes;
+            this.reservationModalDetailDto.placeIds = data.placeIds;
+
+            const modalDetail = new bootstrap.Modal(document.getElementById('confirmation-dialog-reservation-detail'));
+            modalDetail.show();
+        },
+        error: error => {
+          this.notificationService.showError('Failed to load reservation details. Please try again later.');
+        }
+      });
   }
 
   onDelete(): void {
@@ -190,4 +219,37 @@ export class ReservationOverviewComponent implements OnInit {
     this.loadReservations();
   }
 
+  reservationIsInTheFuture(reservation: ReservationListDto): boolean {
+
+    const reservationDateTime = moment(`${reservation.date} ${reservation.startTime}`, 'YYYY-MM-DD HH:mm:ss')
+    return moment(reservationDateTime).isAfter(moment());
+  }
+
+  confirmReservation(hashId: string): void {
+    this.reservationService.confirm(hashId).subscribe({
+      next: () => {
+        this.notificationService.showSuccess('Reservation confirmed successfully');
+        this.loadReservations();
+      },
+      error: error => {
+        this.notificationService.showError('Failed to confirm reservation. Please try again later.');
+      }
+    });
+  }
+
+  unconfirmReservation(hashId: string): void {
+    this.reservationService.unconfirm(hashId).subscribe({
+      next: () => {
+        this.notificationService.showSuccess('Reservation unconfirmed successfully');
+        this.loadReservations();
+      },
+      error: error => {
+        this.notificationService.showError('Failed to unconfirm reservation. Please try again later.');
+      }
+    });
+  }
+
+  protected readonly formatTime = formatTime;
+  protected readonly formatDotDate = formatDotDate;
+  protected readonly formatDay = formatDay;
 }

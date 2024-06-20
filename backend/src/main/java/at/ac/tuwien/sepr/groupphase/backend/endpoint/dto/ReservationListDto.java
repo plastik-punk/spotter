@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Objects;
 
 public class ReservationListDto {
@@ -20,9 +21,11 @@ public class ReservationListDto {
 
     private Long pax;
 
-    private Long placeId;
+    private List<Long> placeIds;
 
     private String hashId;
+
+    private boolean confirmed;
 
     public Long getId() {
         return id;
@@ -88,12 +91,12 @@ public class ReservationListDto {
         return this;
     }
 
-    public Long getPlaceId() {
-        return placeId;
+    public List<Long> getPlaceIds() {
+        return placeIds;
     }
 
-    public ReservationListDto setPlaceId(Long placeId) {
-        this.placeId = placeId;
+    public ReservationListDto setPlaceIds(List<Long> placeIds) {
+        this.placeIds = placeIds;
         return this;
     }
 
@@ -103,6 +106,15 @@ public class ReservationListDto {
 
     public ReservationListDto setHashId(String hashId) {
         this.hashId = hashId;
+        return this;
+    }
+
+    public boolean isConfirmed() {
+        return confirmed;
+    }
+
+    public ReservationListDto setConfirmed(boolean confirmed) {
+        this.confirmed = confirmed;
         return this;
     }
 
@@ -121,13 +133,14 @@ public class ReservationListDto {
             && Objects.equals(date, that.date)
             && Objects.equals(endTime, that.endTime)
             && Objects.equals(pax, that.pax)
-            && Objects.equals(placeId, that.placeId)
-            && Objects.equals(hashId, that.hashId);
+            && Objects.equals(placeIds, that.placeIds)
+            && Objects.equals(hashId, that.hashId)
+            && Objects.equals(confirmed, that.confirmed);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userFirstName, userLastName, startTime, date, endTime, pax, placeId);
+        return Objects.hash(id, userFirstName, userLastName, startTime, date, endTime, pax, placeIds, confirmed);
     }
 
     @Override
@@ -140,7 +153,9 @@ public class ReservationListDto {
             + ", date=" + date
             + ", endTime=" + endTime
             + ", pax=" + pax + '\''
-            + ", placeId=" + placeId
+            + ", placeIds=" + placeIds
+            + ", hashId=" + hashId
+            + ", confirmed=" + confirmed
             + '}';
     }
 
@@ -155,8 +170,11 @@ public class ReservationListDto {
 
         private LocalTime endTime;
         private Long pax;
-        private Long placeId;
+
+        private List<Long> placeIds;
         private String hashId;
+
+        private boolean confirmed;
 
         private ReservationListDtoBuilder() {
         }
@@ -200,13 +218,18 @@ public class ReservationListDto {
             return this;
         }
 
-        public ReservationListDtoBuilder withPlaceId(Long placeId) {
-            this.placeId = placeId;
+        public ReservationListDtoBuilder withPlaceIds(List<Long> placeIds) {
+            this.placeIds = placeIds;
             return this;
         }
 
         public ReservationListDtoBuilder withHashId(String hashId) {
             this.hashId = hashId;
+            return this;
+        }
+
+        public ReservationListDtoBuilder withConfirmed(boolean confirmed) {
+            this.confirmed = confirmed;
             return this;
         }
 
@@ -219,8 +242,9 @@ public class ReservationListDto {
             reservationListDto.setDate(date);
             reservationListDto.setEndTime(endTime);
             reservationListDto.setPax(pax);
-            reservationListDto.setPlaceId(placeId);
+            reservationListDto.setPlaceIds(placeIds);
             reservationListDto.setHashId(hashId);
+            reservationListDto.setConfirmed(confirmed);
             return reservationListDto;
         }
     }

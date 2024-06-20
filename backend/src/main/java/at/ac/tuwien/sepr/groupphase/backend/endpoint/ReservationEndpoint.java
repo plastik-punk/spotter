@@ -4,8 +4,11 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailab
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationModalDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationWalkInDto;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -52,6 +55,15 @@ public class ReservationEndpoint {
         return service.create(reservationCreateDto);
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
+    @PostMapping("/walk-in")
+    @Operation(summary = "Create a new walk-in reservation")
+    public ReservationCreateDto createWalkIn(@Valid @RequestBody ReservationWalkInDto reservationWalkInDto) throws ConflictException, MessagingException {
+        LOGGER.info("POST /api/v1/reservations/walk-in body: {}", reservationWalkInDto.toString());
+        return service.createWalkIn(reservationWalkInDto);
+    }
+
     @ResponseStatus(HttpStatus.OK)
     @PermitAll
     @GetMapping
@@ -82,6 +94,15 @@ public class ReservationEndpoint {
 
     @ResponseStatus(HttpStatus.OK)
     @PermitAll
+    @GetMapping("/modal")
+    @Operation(summary = "Get details for the reservation modal")
+    public ReservationModalDetailDto getModalDetail(@RequestParam("id") String id) {
+        LOGGER.info("GET /api/v1/reservations/modal body: {}", id);
+        return service.getModalDetail(id);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PermitAll
     @PutMapping
     @Operation(summary = "Update a reservation")
     public ReservationEditDto update(@Valid @RequestBody ReservationEditDto reservationEditDto) {
@@ -107,5 +128,25 @@ public class ReservationEndpoint {
         LOGGER.info("DELETE /api/v1/reservations body: {}", hashedId);
         service.cancel(hashedId);
         return ResponseEntity.noContent().build();
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"ROLE_EMPLOYEE"})
+    @PutMapping("/confirm")
+    @Operation(summary = "Confirm a reservation")
+    public ResponseEntity<Void> confirm(@RequestBody String hashedId) {
+        LOGGER.info("PUT /api/v1/reservations/confirm body: {}", hashedId);
+        service.confirm(hashedId);
+        return ResponseEntity.ok().build();
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"ROLE_EMPLOYEE"})
+    @PutMapping("/unconfirm")
+    @Operation(summary = "Unconfirm a reservation")
+    public ResponseEntity<Void> unconfirm(@RequestBody String hashedId) {
+        LOGGER.info("PUT /api/v1/reservations/unconfirm body: {}", hashedId);
+        service.unconfirm(hashedId);
+        return ResponseEntity.ok().build();
     }
 }

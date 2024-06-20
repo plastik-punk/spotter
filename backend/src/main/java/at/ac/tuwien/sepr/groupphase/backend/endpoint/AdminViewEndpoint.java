@@ -29,6 +29,7 @@ public class AdminViewEndpoint {
     }
 
 
+    // TODO: use a DTO instead of RequestParam and then validate the DTO
     @ResponseStatus(HttpStatus.OK)
     @Secured("ROLE_ADMIN")
     @GetMapping({"/prediction"})

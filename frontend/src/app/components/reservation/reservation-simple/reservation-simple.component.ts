@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../../../services/auth.service';
-import { NgForm } from '@angular/forms';
-import { ReservationCheckAvailabilityDto, ReservationCreateDto } from '../../../dtos/reservation';
-import { UserOverviewDto } from '../../../dtos/app-user';
-import { ReservationService } from '../../../services/reservation.service';
-import { NotificationService } from '../../../services/notification.service';
-import { SimpleViewReservationStatusEnum } from '../../../dtos/status-enum';
+import {Component, OnInit} from '@angular/core';
+import {AuthService} from '../../../services/auth.service';
+import {NgForm} from '@angular/forms';
+import {ReservationCheckAvailabilityDto, ReservationCreateDto} from '../../../dtos/reservation';
+import {UserOverviewDto} from '../../../dtos/app-user';
+import {ReservationService} from '../../../services/reservation.service';
+import {NotificationService} from '../../../services/notification.service';
+import {SimpleViewReservationStatusEnum} from '../../../dtos/status-enum';
 
 @Component({
   selector: 'app-reservation-simple',
@@ -28,8 +28,6 @@ export class ReservationSimpleComponent implements OnInit {
   isTimeManuallyChanged: boolean = false;
   isBookButtonTimeout: boolean = false;
 
-
-
   reservationStatusText: string = 'Provide Time, Date and Pax';
   reservationStatusClass: string = 'reservation-table-incomplete';
 
@@ -45,11 +43,13 @@ export class ReservationSimpleComponent implements OnInit {
   ngOnInit() {
     this.startTimer()
   }
+
   ngOnDestroy() {
     if (this.timer) {
       clearInterval(this.timer);
     }
   }
+
   private startTimer() {
     this.sharedStartTime = new Date().toTimeString().slice(0, 5);
 
@@ -248,6 +248,11 @@ export class ReservationSimpleComponent implements OnInit {
   selectAvailable(availabilityDto: ReservationCheckAvailabilityDto) {
     this.reservationCreateDto.date = availabilityDto.date;
     this.reservationCreateDto.startTime = availabilityDto.startTime;
+    // @ts-ignore
+    this.sharedDate = availabilityDto.date;
+    // @ts-ignore
+    this.sharedStartTime = availabilityDto.startTime;
+    this.isTimeManuallyChanged = true;
     this.onFieldChange();
   }
 
@@ -267,5 +272,12 @@ export class ReservationSimpleComponent implements OnInit {
     if (!this.reservationCreateDto.pax) {
       this.notificationService.showError('Number of people (pax) is required.');
     }
+  }
+
+  onTimeChange(event: Event) {
+    this.isTimeManuallyChanged = true;
+    clearInterval(this.timer);
+    this.sharedStartTime = (event.target as HTMLInputElement).value;
+    this.onFieldChange();
   }
 }

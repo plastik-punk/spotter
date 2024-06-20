@@ -34,7 +34,7 @@ export class D3DrawService {
       .attr('height', height);
   }
 
-  updateSeatingPlan(container: ElementRef, areaLayout: AreaLayoutDto, selectedPlaces: { placeId: number, numberOfSeats: number }[], onPlaceClick: (placeId: number, numberOfSeats: number) => void) {
+  updateSeatingPlan(container: ElementRef, areaLayout: AreaLayoutDto, selectedPlaces: { placeId: number, numberOfSeats: number }[], onPlaceClick: (placeId: number, numberOfSeats: number) => void, employee: boolean) {
     const element = container.nativeElement;
     const svg = d3.select(element).select('svg');
     svg.selectAll('*').remove();
@@ -46,7 +46,7 @@ export class D3DrawService {
       .append('g')
       .on('click', (event, d) => {
         event.stopPropagation();
-        if (!d.reservation && d.status) {
+        if (!d.reservation && d.status || employee) {
           onPlaceClick(d.placeNumber, d.numberOfSeats);
         }
       })
