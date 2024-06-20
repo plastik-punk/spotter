@@ -20,24 +20,27 @@ import java.util.List;
 @Mapper
 public interface ReservationMapper {
 
-    @Mapping(source = "applicationUser", target = "applicationUser")
-    @Mapping(source = "startDate", target = "startDate")
-    @Mapping(source = "startTime", target = "startTime")
-    @Mapping(source = "endTime", target = "endTime")
-    @Mapping(source = "endDate", target = "endDate")
-    @Mapping(source = "repetition", target = "repetition")
-    @Mapping(source = "period", target = "period")
-    @Mapping(source = "confirmed", target = "confirmed")
+    // @Mapping(source = "applicationUser", target = "applicationUser")
+    // @Mapping(source = "startDate", target = "startDate")
+    // @Mapping(source = "startTime", target = "startTime")
+    // @Mapping(source = "endTime", target = "endTime")
+    // @Mapping(source = "endDate", target = "endDate")
+    // @Mapping(source = "repetition", target = "repetition")
+    // @Mapping(source = "period", target = "period")
+    // @Mapping(source = "confirmed", target = "confirmed")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "user", ignore = true)
     PermanentReservation permanentReservationCreateDtoToPermanentReservation(PermanentReservationCreateDto permanentReservationCreateDto);
 
-    @Mapping(source = "applicationUser", target = "applicationUser")
-    @Mapping(source = "startDate", target = "startDate")
-    @Mapping(source = "startTime", target = "startTime")
-    @Mapping(source = "endTime", target = "endTime")
-    @Mapping(source = "endDate", target = "endDate")
-    @Mapping(source = "repetition", target = "repetition")
-    @Mapping(source = "period", target = "period")
-    @Mapping(source = "confirmed", target = "confirmed")
+    // @Mapping(source = "applicationUser", target = "applicationUser")
+    // @Mapping(source = "startDate", target = "startDate")
+    // @Mapping(source = "startTime", target = "startTime")
+    // @Mapping(source = "endTime", target = "endTime")
+    // @Mapping(source = "endDate", target = "endDate")
+    // @Mapping(source = "repetition", target = "repetition")
+    // @Mapping(source = "period", target = "period")
+    // @Mapping(source = "confirmed", target = "confirmed")
+    @Mapping(target = "applicationUser", ignore = true)
     PermanentReservationCreateDto permanentReservationToPermanentReservationCreateDto(PermanentReservation permanentReservation);
 
     @Mapping(target = "id", ignore = true)

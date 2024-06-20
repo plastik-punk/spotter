@@ -135,7 +135,7 @@ public class PermanentReservationCreateDto {
             + ", confirmed=" + confirmed + '}';
     }
 
-    public static final class Builder {
+    public static final class PermanentReservationCreateDtoBuilder {
         private ApplicationUser applicationUser;
         private LocalTime startTime;
         private LocalTime endTime;
@@ -145,63 +145,63 @@ public class PermanentReservationCreateDto {
         private Integer period;
         private Boolean confirmed;
 
-        private Builder() {
+        private PermanentReservationCreateDtoBuilder() {
         }
 
-        public static Builder newBuilder() {
-            return new Builder();
+        public static PermanentReservationCreateDtoBuilder aPermanentReservationCreateDto() {
+            return new PermanentReservationCreateDtoBuilder();
         }
 
-        public Builder withApplicationUser(ApplicationUser applicationUser) {
+        public PermanentReservationCreateDtoBuilder withApplicationUser(ApplicationUser applicationUser) {
             this.applicationUser = applicationUser;
             return this;
         }
 
-        public Builder withStartTime(LocalTime startTime) {
+        public PermanentReservationCreateDtoBuilder withStartTime(LocalTime startTime) {
             this.startTime = startTime;
             return this;
         }
 
-        public Builder withEndTime(LocalTime endTime) {
+        public PermanentReservationCreateDtoBuilder withEndTime(LocalTime endTime) {
             this.endTime = endTime;
             return this;
         }
 
-        public Builder withStartDate(LocalDate startDate) {
+        public PermanentReservationCreateDtoBuilder withStartDate(LocalDate startDate) {
             this.startDate = startDate;
             return this;
         }
 
-        public Builder withEndDate(LocalDate endDate) {
+        public PermanentReservationCreateDtoBuilder withEndDate(LocalDate endDate) {
             this.endDate = endDate;
             return this;
         }
 
-        public Builder withRepetition(RepetitionEnum repetition) {
+        public PermanentReservationCreateDtoBuilder withRepetition(RepetitionEnum repetition) {
             this.repetition = repetition;
             return this;
         }
 
-        public Builder withPeriod(Integer period) {
+        public PermanentReservationCreateDtoBuilder withPeriod(Integer period) {
             this.period = period;
             return this;
         }
 
-        public Builder withConfirmed(Boolean confirmed) {
+        public PermanentReservationCreateDtoBuilder withConfirmed(Boolean confirmed) {
             this.confirmed = confirmed;
             return this;
         }
 
         public PermanentReservationCreateDto build() {
             PermanentReservationCreateDto dto = new PermanentReservationCreateDto();
-            dto.applicationUser = this.applicationUser;
-            dto.startTime = this.startTime;
-            dto.endTime = this.endTime;
-            dto.startDate = this.startDate;
-            dto.endDate = this.endDate;
-            dto.repetition = this.repetition;
-            dto.period = this.period;
-            dto.confirmed = this.confirmed;
+            dto.setApplicationUser(applicationUser);
+            dto.setStartTime(startTime);
+            dto.setEndTime(endTime);
+            dto.setStartDate(startDate);
+            dto.setEndDate(endDate);
+            dto.setRepetition(repetition);
+            dto.setPeriod(period);
+            dto.setConfirmed(confirmed);
             return dto;
         }
     }

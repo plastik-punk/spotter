@@ -129,11 +129,45 @@ public class PermanentReservation {
         this.confirmed = confirmed;
     }
 
-    // Builder
-    public static PermanentReservationBuilder anPermanentReservation() {
-        return new PermanentReservationBuilder();
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof PermanentReservation that)) {
+            return false;
+        }
+        return Objects.equals(id, that.id)
+            && Objects.equals(applicationUser, that.applicationUser)
+            && Objects.equals(startDate, that.startDate)
+            && Objects.equals(startTime, that.startTime)
+            && Objects.equals(endTime, that.endTime)
+            && Objects.equals(endDate, that.endDate)
+            && repetition == that.repetition
+            && Objects.equals(period, that.period)
+            && Objects.equals(confirmed, that.confirmed);
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, applicationUser, startDate, startTime, endTime, endDate, repetition, period, confirmed);
+    }
+
+    @Override
+    public String toString() {
+        return "PermanentReservation{"
+            + "id=" + id
+            + ", user=" + applicationUser
+            + ", startDate=" + startDate
+            + ", startTime=" + startTime
+            + ", endTime=" + endTime
+            + ", endDate=" + endDate
+            + ", repetition=" + repetition
+            + ", period=" + period
+            + ", confirmed=" + confirmed + '}';
+    }
+
+    // Builder
     public static final class PermanentReservationBuilder {
         private Long id;
         private ApplicationUser applicationUser;
@@ -195,56 +229,16 @@ public class PermanentReservation {
 
         public PermanentReservation build() {
             PermanentReservation permanentReservation = new PermanentReservation();
-            permanentReservation.id = this.id;
-            permanentReservation.applicationUser = this.applicationUser;
-            permanentReservation.startDate = this.startDate;
-            permanentReservation.startTime = this.startTime;
-            permanentReservation.endTime = this.endTime;
-            permanentReservation.endDate = this.endDate;
-            permanentReservation.repetition = this.repetition;
-            permanentReservation.period = this.period;
-            permanentReservation.confirmed = this.confirmed;
+            permanentReservation.setId(id);
+            permanentReservation.setUser(applicationUser);
+            permanentReservation.setStartDate(startDate);
+            permanentReservation.setStartTime(startTime);
+            permanentReservation.setEndTime(endTime);
+            permanentReservation.setEndDate(endDate);
+            permanentReservation.setRepetition(repetition);
+            permanentReservation.setPeriod(period);
+            permanentReservation.setConfirmed(confirmed);
             return permanentReservation;
         }
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof PermanentReservation that)) {
-            return false;
-        }
-        return Objects.equals(id, that.id)
-            && Objects.equals(applicationUser, that.applicationUser)
-            && Objects.equals(startDate, that.startDate)
-            && Objects.equals(startTime, that.startTime)
-            && Objects.equals(endTime, that.endTime)
-            && Objects.equals(endDate, that.endDate)
-            && repetition == that.repetition
-            && Objects.equals(period, that.period)
-            && Objects.equals(confirmed, that.confirmed);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, applicationUser, startDate, startTime, endTime, endDate, repetition, period, confirmed);
-    }
-
-    @Override
-    public String toString() {
-        return "PermanentReservation{"
-            + "id=" + id
-            + ", user=" + applicationUser
-            + ", startDate=" + startDate
-            + ", startTime=" + startTime
-            + ", endTime=" + endTime
-            + ", endDate=" + endDate
-            + ", repetition=" + repetition
-            + ", period=" + period
-            + ", confirmed=" + confirmed + '}';
-    }
 }
-
-
