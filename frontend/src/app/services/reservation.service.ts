@@ -1,18 +1,15 @@
 import {Injectable} from "@angular/core";
 import {HttpClient, HttpParams, HttpResponse} from "@angular/common/http";
 import {Globals} from '../global/globals';
-import {Observable} from "rxjs";
+import {Observable,tap} from "rxjs";
 import {formatIsoDate} from '../util/date-helper';
 import {
   Reservation,
   ReservationCheckAvailabilityDto,
   ReservationCreateDto,
-  ReservationLayoutCheckAvailabilityDto,
   ReservationSearch,
   ReservationListDto,
   ReservationEditDto,
-  AreaLayoutDto,
-  AreaListDto,
   ReservationModalDetailDto,
   ReservationWalkInDto
 } from "../dtos/reservation";
@@ -50,18 +47,6 @@ export class ReservationService {
       params = params.append(key, reservationCheckAvailabilityDto[key]);
     });
     return this.httpClient.get<SimpleViewReservationStatusEnum>(this.reservationBaseUri, { params });
-  }
-
-  /**
-   * Get the layout of an area and check the availability
-   * @param reservationLayoutCheckAvailabilityDto the time, date and area to check the availability for
-   */
-  getLayoutAvailability(reservationLayoutCheckAvailabilityDto: ReservationLayoutCheckAvailabilityDto) : Observable<AreaLayoutDto> {
-    let params = new HttpParams();
-    Object.keys(reservationLayoutCheckAvailabilityDto).forEach((key) => {
-      params = params.append(key, reservationLayoutCheckAvailabilityDto[key]);
-    });
-    return this.httpClient.get<AreaLayoutDto>(this.reservationBaseUri + "/layout", { params });
   }
 
   /**
@@ -144,15 +129,6 @@ export class ReservationService {
   }
 
   /**
-   * Get list of all areas
-   *
-   * @return an Observable for the list of areas
-   */
-  getAllAreas(): Observable<AreaListDto> {
-    return this.httpClient.get<AreaListDto>(this.globals.backendUri + "/reservations/areas");
-  }
-
-  /**
    * Confirm that the guests for a reservation have arrived.
    *
    * @param hashId the hashed id of the reservation to confirm
@@ -180,4 +156,5 @@ export class ReservationService {
   createWalkIn(reservationWalkInDto: ReservationWalkInDto) : Observable<ReservationCreateDto> {
     return this.httpClient.post<ReservationCreateDto>(this.reservationBaseUri+ "/walk-in", reservationWalkInDto);
   }
+
 }

@@ -36,4 +36,8 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
         @Param("statusEnum") StatusEnum statusEnum);
 
     Collection<Place> findAllByStatus(StatusEnum statusEnum);
+
+    @Query("SELECT p.status FROM Place p WHERE p.id = :placeId")
+    StatusEnum findStatusById(@Param("placeId") Long placeId);
+
 }

@@ -99,10 +99,8 @@ public interface EventMapper {
             }
             throw new Exception("unknown type of startDate Class: " + temporal.getClass());
         } catch (Exception e) {
-            System.out.println("Error mapping start time: " + e.getMessage() + "\n");
-            return null;
+            throw new IllegalArgumentException("Error mapping start time: " + e.getMessage() + "\n");
         }
-        //TODO: throw IllegalArgumentException
     }
 
     @Named("mapEndTime")
@@ -123,8 +121,13 @@ public interface EventMapper {
             }
             throw new Exception("unknown type of endDate Class: " + temporal.getClass());
         } catch (Exception e) {
-            System.out.println("Error mapping end time: " + e.getMessage() + "\n");
-            throw new IllegalArgumentException("Error mapping end time: " + e.getMessage());
+            try {
+                LocalDateTime startTime = mapStartTime(vevent);
+                return startTime.plusDays(1);
+            } catch (Exception e2) {
+                System.out.println("Error mapping end time: " + e.getMessage() + "\n");
+                throw new IllegalArgumentException("Error mapping end time: " + e.getMessage());
+            }
         }
     }
 

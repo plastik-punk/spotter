@@ -87,14 +87,10 @@ export class EventService {
     return this.httpClient.put<EventEditDto>(this.eventBaseUri, eventEditDto);
   }
 
-  uploadIcsFile(file: File): Observable<any> {
+  uploadIcsFile(file: File): Observable<String> {
     const formData: FormData = new FormData();
     formData.append('file', file, file.name);
 
-    return this.httpClient.post(`${this.eventBaseUri}/import-ics`, formData, {
-      headers: new HttpHeaders({
-        'Accept': 'application/json'
-      })
-    });
+    return this.httpClient.post(`${this.eventBaseUri}/import-ics`, formData, {responseType: 'text'});
   }
 }

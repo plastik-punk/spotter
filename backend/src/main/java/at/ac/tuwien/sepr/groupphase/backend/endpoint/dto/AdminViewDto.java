@@ -1,12 +1,24 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;
 
 public class AdminViewDto {
+
+    @NotEmpty(message = "Area is required")
+    @Size(max = 100)
+    @Pattern(regexp = "^[A-Za-zäöüÄÖÜß ]+$")
     String area;
+
+    @NotEmpty(message = "Start time is required")
     LocalTime startTime;
+
+    @NotEmpty(message = "Date is required")
     LocalDate date;
 
     public String getArea() {

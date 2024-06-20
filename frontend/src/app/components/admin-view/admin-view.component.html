@@ -31,7 +31,7 @@
                 [defaultValue]="currTime"
                 placeholder="hh:mm"
                 class="form-control"
-                [(ngModel)]="adminViewDto.startTime"
+                [(ngModel)]="currTime"
                 #adminViewStartTimeModel="ngModel"
                 (ngModelChange)="onFieldChange()"
               />
@@ -45,11 +45,23 @@
                 [defaultValue]="currDate"
                 placeholder="dd-mm-yyyy"
                 class="form-control"
-                [(ngModel)]="adminViewDto.date"
+                [(ngModel)]="currDate"
                 #adminViewDateModel="ngModel"
                 (ngModelChange)="onFieldChange()"
                 required
               />
+            </div>
+            <div class="column">
+              <select
+                id="reservationArea"
+                name="reservationArea"
+                class="form-control"
+                [(ngModel)]="selectedAreaId"
+                (change)="onAreaChange($event)"
+                required
+              >
+                <option *ngFor="let area of areas" [value]="area.id">{{ area.name }}</option>
+              </select>
             </div>
             <hr class="my-4">
           </div>
@@ -65,27 +77,44 @@
           <div class="row">
             <div class="col-6">
               <div class="row">
-                <h5 class="column">Weekly Prediction</h5>
-                <button type="button" class="col-4 btn btn-info" (click)="onClickDetailView()">View Details</button>
+                <h4 class="column">Weekly Prediction</h4>
               </div>
-              <div id="chart">
+              <div id="chartReservedTable">
                 <h6> Number of reserved tables</h6>
                 <apx-chart
-                  [series]="chartOptions.series"
-                  [chart]="chartOptions.chart"
-                  [dataLabels]="chartOptions.dataLabels"
-                  [plotOptions]="chartOptions.plotOptions"
-                  [yaxis]="chartOptions.yaxis"
-                  [fill]="chartOptions.fill"
-                  [xaxis]="chartOptions.xaxis"
+                  [series]="chartReservedTableOptions.series"
+                  [chart]="chartReservedTableOptions.chart"
+                  [dataLabels]="chartReservedTableOptions.dataLabels"
+                  [plotOptions]="chartReservedTableOptions.plotOptions"
+                  [yaxis]="chartReservedTableOptions.yaxis"
+                  [fill]="chartReservedTableOptions.fill"
+                  [xaxis]="chartReservedTableOptions.xaxis"
                 ></apx-chart>
               </div>
             </div>
-            <div class="col-6">
+            <div class="col-6 ">
               <div class="row">
-                <h5>Edit Special Offers</h5>
-                PlaceHolder for Special Offers
+                <h4 class="column">
+                  <button type="button" class="col-4 btn btn-info " (click)="onClickGetPrediction()">Get Prediction
+                  </button>
+                </h4>
+                <div id="chartPredictionTable">
+                  <h6>{{ predictionTitle }}</h6>
+                  <apx-chart
+                    [series]="chartPredictionOptions.series"
+                    [chart]="chartPredictionOptions.chart"
+                    [labels]="chartPredictionOptions.labels">
+                  ></apx-chart>
+                </div>
               </div>
+            </div>
+
+          </div>
+          <hr class="my-4">
+          <div class="col-6">
+            <div class="row">
+              <h5>Edit Special Offers</h5>
+              PlaceHolder for Special Offers
             </div>
           </div>
         </div>

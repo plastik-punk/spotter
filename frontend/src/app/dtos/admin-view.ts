@@ -1,10 +1,12 @@
 export interface AdminViewDto{
-  area: String,
+  areaId: number,
   startTime: Date,
   date: Date
 }
 export interface PredictionDto{
-  prediction: String
+  predictionText: string,
+  areaNames: Array<string>,
+  predictions: Array<number>
 }
 export interface ReservationForeCastDto{
   forecast: Array<number>,

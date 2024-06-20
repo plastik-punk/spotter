@@ -16,7 +16,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query(value = "SELECT e.* FROM event e "
         + "WHERE (:startTime IS NULL OR e.start_time >= :startTime) "
-        + "AND (:endTime IS NULL OR e.start_time <= :endTime) ",
+        + "AND (:endTime IS NULL OR e.start_time <= :endTime) "
+        + "ORDER BY e.start_time ASC",
         nativeQuery = true)
     List<Event> findEventsByDate(
         @Param("startTime") LocalDateTime startTime,
@@ -30,4 +31,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findUpcomingEvents();
 
     Event findByHashId(String hashId);
+
+    List<Event> findAllByStartTimeBetween(LocalDateTime startTime, LocalDateTime endTime);
 }

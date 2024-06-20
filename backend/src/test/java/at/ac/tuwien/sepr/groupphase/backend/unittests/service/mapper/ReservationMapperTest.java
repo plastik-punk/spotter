@@ -78,15 +78,14 @@ public class ReservationMapperTest implements TestData {
 
     @Test
     public void givenValidReservation_whenMapEntityToReservationListDto_thenDtoHasAllProperties() {
-        ReservationListDto dto = reservationMapper.reservationToReservationListDto(TEST_RESERVATION_1);
+        ReservationListDto dto = reservationMapper.reservationToReservationListDto(TEST_RESERVATION_1, null);
 
         assertAll(
             () -> assertEquals(TEST_APPLICATION_USER_FIRST_NAME, dto.getUserFirstName()),
             () -> assertEquals(TEST_APPLICATION_USER_LAST_NAME, dto.getUserLastName()),
             () -> assertEquals(TEST_RESERVATION_START_TIME, dto.getStartTime()),
             () -> assertEquals(TEST_RESERVATION_END_TIME, dto.getEndTime()),
-            () -> assertEquals(TEST_RESERVATION_DATE, dto.getDate()),
-            () -> assertNull(dto.getPlaceId())
+            () -> assertEquals(TEST_RESERVATION_DATE, dto.getDate())
         );
     }
 }

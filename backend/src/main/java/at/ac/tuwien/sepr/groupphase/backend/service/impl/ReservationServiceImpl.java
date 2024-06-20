@@ -1,24 +1,18 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaLayoutDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationModalDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationWalkInDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Area;
-import at.ac.tuwien.sepr.groupphase.backend.entity.AreaPlaceSegment;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ClosedDay;
 import at.ac.tuwien.sepr.groupphase.backend.entity.OpeningHours;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ReservationPlace;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Segment;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
@@ -131,8 +125,8 @@ public class ReservationServiceImpl implements ReservationService {
                         .withPax(reservationCreateDto.getPax())
                         .withIdToExclude(null) // Assuming we're not excluding any reservations
                         .build();
-                if (!isPlaceAvailable(placeId, reservationCheckAvailabilityDto)) {
-                    return null; // frontend should check for null and show notification accordingly
+                if (!isPlaceAvailable(placeId)) {
+                    return null; // frontend checks and notifies
                 }
             }
         } else {
@@ -237,24 +231,15 @@ public class ReservationServiceImpl implements ReservationService {
         return mapper.reservationToReservationCreateDto(savedReservation);
     }
 
-    private boolean isPlaceAvailable(Long placeId, ReservationCheckAvailabilityDto dto) {
-        // Implement the logic to check if the place is available using the provided DTO
-        // This might involve querying the database or calling another service
-        // For example:
-        ReservationResponseEnum placeStatus = getPlaceAvailability(placeId, dto);
-        return placeStatus == ReservationResponseEnum.AVAILABLE;
+    private boolean isPlaceAvailable(Long placeId) {
+        StatusEnum placeStatus = placeRepository.findStatusById(placeId);
+        return placeStatus == StatusEnum.AVAILABLE;
     }
-
-    private ReservationResponseEnum getPlaceAvailability(Long placeId, ReservationCheckAvailabilityDto dto) {
-        // Implement the actual logic to check place availability
-        // This is a placeholder and should be replaced with your actual implementation
-        return ReservationResponseEnum.AVAILABLE;
-    }
-
 
     @Override
     public ReservationResponseEnum getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) {
         LOGGER.trace("getAvailability ({})", reservationCheckAvailabilityDto.toString());
+        // reservationValidator.validateReservationCheckAvailabilityDto(reservationCheckAvailabilityDto);
         LocalDate date = reservationCheckAvailabilityDto.getDate();
         LocalTime startTime = reservationCheckAvailabilityDto.getStartTime();
         LocalTime endTime = reservationCheckAvailabilityDto.getEndTime();
@@ -318,7 +303,6 @@ public class ReservationServiceImpl implements ReservationService {
                 reservationCheckAvailabilityDto.getEndTime());
         List<Long> placeIds = reservationPlaceRepository.findPlaceIdsByReservationIds(reservationIds);
         places.removeAll(placeRepository.findAllById(placeIds));
-        places.removeAll(placeRepository.findAllByStatus(StatusEnum.BLOCKED));
         if (places.isEmpty()) {
             return ReservationResponseEnum.ALL_OCCUPIED;
         }
@@ -540,18 +524,28 @@ public class ReservationServiceImpl implements ReservationService {
     public List<ReservationListDto> search(ReservationSearchDto reservationSearchDto) {
         LOGGER.trace("search ({})", reservationSearchDto.toString());
 
+        List<ReservationListDto> reservationListDtos = new ArrayList<>();
+
         if (applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.ADMIN)
             || applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.EMPLOYEE)) {
             List<Reservation> reservations = reservationRepository.findReservationsWithoutUserId(reservationSearchDto.getEarliestDate(),
                 reservationSearchDto.getLatestDate(), reservationSearchDto.getEarliestStartTime(), reservationSearchDto.getLatestEndTime());
+            for (Reservation reservation : reservations) {
+                List<Long> placeIds = reservationPlaceRepository.findPlaceIdsByReservationIds(Collections.singletonList(reservation.getId()));
+                reservationListDtos.add(mapper.reservationToReservationListDto(reservation, placeIds));
+            }
             LOGGER.debug("Found {} reservations for the given params", reservations.size());
-            return mapper.reservationToReservationListDto(reservations);
+            return reservationListDtos;
         }
         String email = applicationUserService.getCurrentUserAuthentication().getName();
         List<Reservation> reservations = reservationRepository.findReservationsByDate(email, reservationSearchDto.getEarliestDate(),
             reservationSearchDto.getLatestDate(), reservationSearchDto.getEarliestStartTime(), reservationSearchDto.getLatestEndTime());
         LOGGER.debug("Found {} reservations for the given params", reservations.size());
-        return mapper.reservationToReservationListDto(reservations);
+        for (Reservation reservation : reservations) {
+            List<Long> placeIds = reservationPlaceRepository.findPlaceIdsByReservationIds(Collections.singletonList(reservation.getId()));
+            reservationListDtos.add(mapper.reservationToReservationListDto(reservation, placeIds));
+        }
+        return reservationListDtos;
     }
 
     @Override
@@ -590,73 +584,6 @@ public class ReservationServiceImpl implements ReservationService {
         LOGGER.debug("Canceled reservation: {}", id);
     }
 
-    @Override
-    @Transactional
-    public AreaLayoutDto getAreaLayout(ReservationLayoutCheckAvailabilityDto dto) {
-        var area = areaRepository.getReferenceById(dto.getAreaId());
-
-        List<AreaPlaceSegment> areaPlaceSegments = areaPlaceSegmentRepository.findByAreaId(area.getId());
-        List<Long> placeIds = areaPlaceSegments.stream().map(aps -> aps.getPlace().getId()).collect(Collectors.toList());
-        List<Place> places = placeRepository.findAllById(placeIds);
-        List<Long> reservationIds = reservationRepository.findReservationsAtSpecifiedTime(
-            dto.getDate(), dto.getStartTime(), dto.getEndTime());
-        List<Long> reservedPlaceIds = reservationPlaceRepository.findPlaceIdsByReservationIds(reservationIds);
-        List<AreaLayoutDto.PlaceVisualDto> placeVisuals = places.stream().map(place -> {
-            AreaLayoutDto.PlaceVisualDto placeVisual = new AreaLayoutDto.PlaceVisualDto();
-            placeVisual.setPlaceId(place.getId());
-            if (area.isOpen()) {
-                placeVisual.setStatus(place.getStatus() == StatusEnum.AVAILABLE);
-            } else {
-                placeVisual.setStatus(false);
-            }
-
-            placeVisual.setReservation(reservedPlaceIds.contains(place.getId()));
-            placeVisual.setNumberOfSeats(place.getPax());
-
-            List<Segment> segments = areaPlaceSegments.stream()
-                .filter(aps -> aps.getPlace().getId().equals(place.getId()))
-                .map(AreaPlaceSegment::getSegment)
-                .toList();
-            List<AreaLayoutDto.PlaceVisualDto.CoordinateDto> coordinates = segments.stream().map(segment -> {
-                AreaLayoutDto.PlaceVisualDto.CoordinateDto coordinate = new AreaLayoutDto.PlaceVisualDto.CoordinateDto();
-                coordinate.setX(segment.getX());
-                coordinate.setY(segment.getY());
-                return coordinate;
-            }).collect(Collectors.toList());
-
-            placeVisual.setCoordinates(coordinates);
-            return placeVisual;
-        }).collect(Collectors.toList());
-        AreaLayoutDto areaLayoutDto = new AreaLayoutDto();
-        areaLayoutDto.setWidth(area.getWidth());
-        areaLayoutDto.setHeight(area.getHeight());
-        areaLayoutDto.setPlaceVisuals(placeVisuals);
-        LOGGER.debug("Built areaLayout: {}", areaLayoutDto);
-
-        return areaLayoutDto;
-    }
-
-    @Override
-
-    public AreaListDto getAllAreas() {
-        LOGGER.trace("getAllAreas()");
-
-        List<Area> areas = areaRepository.findAll();
-        LOGGER.debug("Found {} areas", areas.size());
-
-        List<AreaListDto.AreaDto> areaDtos = areas.stream()
-            .map(area -> {
-                AreaListDto.AreaDto dto = new AreaListDto.AreaDto();
-                dto.setId(area.getId());
-                dto.setName(area.getName());
-                return dto;
-            })
-            .collect(Collectors.toList());
-
-        AreaListDto areaListDto = new AreaListDto();
-        areaListDto.setAreas(areaDtos);
-        return areaListDto;
-    }
 
     @Override
     public ReservationCreateDto createWalkIn(ReservationWalkInDto reservationWalkInDto) throws ConflictException, MessagingException {
