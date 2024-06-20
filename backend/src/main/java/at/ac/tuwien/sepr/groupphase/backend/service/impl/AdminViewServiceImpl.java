@@ -137,9 +137,18 @@ public class AdminViewServiceImpl implements AdminViewService {
 
 
         //9. calculate the percentage of the Employees
-        long maxPaxAtSameTimeCurrDay = Collections.max(amountOfCustomersPerHourMap.values());
-        long maxPaxAtSameTimeInThePast = Collections.max(amountOfCustomersPerDayMapInThePast.values());
-        long maxPaxAtSameTimeWalkIn = Collections.max(amountOfWalkInCustomersPerDayMapInThePast.values());
+        long maxPaxAtSameTimeCurrDay = 0;
+        if (!amountOfCustomersPerDayMapInThePast.isEmpty()) {
+            maxPaxAtSameTimeCurrDay = Collections.max(amountOfCustomersPerHourMap.values());
+        }
+        long maxPaxAtSameTimeInThePast = 0;
+        if (!amountOfCustomersPerDayMapInThePast.isEmpty()) {
+            maxPaxAtSameTimeInThePast = Collections.max(amountOfCustomersPerDayMapInThePast.values());
+        }
+        long maxPaxAtSameTimeWalkIn = 0;
+        if (!amountOfWalkInCustomersPerDayMapInThePast.isEmpty()) {
+            maxPaxAtSameTimeWalkIn = Collections.max(amountOfWalkInCustomersPerDayMapInThePast.values());
+        }
         long averagePaxInThePast = amountOfCustomersPerDayMapInThePast.values().stream().mapToLong(Long::longValue).sum() / amountOfCustomersPerDayMapInThePast.size();
 
         float offsetFromAverage = (float) maxPaxAtSameTimeCurrDay / (float) averagePaxInThePast;
@@ -170,7 +179,7 @@ public class AdminViewServiceImpl implements AdminViewService {
             LocalTime startTime = reservation.getStartTime();
             LocalTime endTime = reservation.getEndTime();
             for (LocalTime time = startTime; time.isBefore(endTime); time = time.plusHours(1)) {
-                amountOfCustomersPerHourMap.put(time.getHour(), reservation.getPax());
+                amountOfCustomersPerHourMap.put(time.getHour(), amountOfCustomersPerHourMap.getOrDefault(time.getHour(), 0L) + reservation.getPax());
             }
         }
         return amountOfCustomersPerHourMap;

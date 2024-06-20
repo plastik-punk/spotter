@@ -237,9 +237,10 @@ public interface TestData {
     LocalDate TEST_RESERVATION_DATE = LocalDate.of(2025, 1, 2);
     Long TEST_RESERVATION_PAX = 4L;
     String TEST_RESERVATION_NOTES = "Test Notes";
-    Long TEST_RESERVATION_DETAIL_ID = -100L;
+    Long TEST_RESERVATION_DETAIL_ID = 1L;
     String TEST_RESERVATION_HASH_VALUE = "TestHashValue";
-    String TEST_RESERVATION_HASH_VALUE_1 = "44A17E9E592AA9951A3A0853524BE799A333DFD8522182D79D990A24EB94A7FEfalse";
+    String TEST_RESERVATION_HASH_VALUE_1 = "44A17E9E592AA9951A3A0853524BE799A333DFD8522182D79D990A24EB94A7FE";
+    String TEST_RESERVATION_HASH_VALUE_2 = "44A17E9E592AA9951A3A0853524BE799A333DFD8522182D79D990A24EB94A7FEfalse";
     LocalDate TEST_RESERVATION_DATE_INVALID = LocalDate.of(2022, 1, 2);
 
     ReservationCreateDto TEST_RESERVATION_CREATE_DTO_CUSTOMER = ReservationCreateDto.ReservationCreateDtoBuilder.aReservationCreateDto()
@@ -284,7 +285,6 @@ public interface TestData {
         .withDate(TEST_RESERVATION_DATE)
         .withPax(TEST_RESERVATION_PAX)
         .withNotes(TEST_RESERVATION_NOTES)
-        .withHashedId(TEST_RESERVATION_HASH_VALUE)
         .withPlaceIds(TEST_PLACE_IDS)
         .build();
 
@@ -306,6 +306,7 @@ public interface TestData {
         .withDate(TEST_RESERVATION_DATE)
         .withPax(TEST_RESERVATION_PAX)
         .withNotes(TEST_RESERVATION_NOTES)
+        .withHashValue(TEST_RESERVATION_HASH_VALUE_1)
         .withConfirmed(false)
         .build();
 
@@ -317,6 +318,7 @@ public interface TestData {
         .withDate(TEST_RESERVATION_DATE)
         .withPax(TEST_RESERVATION_PAX)
         .withNotes(TEST_RESERVATION_NOTES)
+        .withHashValue(TEST_RESERVATION_HASH_VALUE_1)
         .withConfirmed(false)
         .build();
 
