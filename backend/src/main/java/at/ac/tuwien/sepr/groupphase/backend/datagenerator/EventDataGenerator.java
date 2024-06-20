@@ -189,6 +189,17 @@ public class EventDataGenerator {
                 LOGGER.debug("Generated event: {}", event);
                 eventRepository.save(event);
             }
+            LocalDateTime startTime = LocalDateTime.of(2024, 6, 28, 15, 0);
+            LocalDateTime endTime = LocalDateTime.of(2024, 6, 29, 23, 0);
+            String hashId = hashService.hashSha256(String.valueOf(startTime));
+            Event event = Event.EventBuilder.anEvent()
+                .withName("Semester Closing Party")
+                .withDescription("Celebrate all your hard earned 4s and 5s with your fellow students at the semester closing party.")
+                .withStartTime(startTime)
+                .withEndTime(endTime)
+                .withHashId(hashId)
+                .build();
+            eventRepository.save(event);
         }
     }
 
