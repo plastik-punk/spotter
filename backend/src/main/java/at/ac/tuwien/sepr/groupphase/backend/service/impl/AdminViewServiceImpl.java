@@ -120,14 +120,8 @@ public class AdminViewServiceImpl implements AdminViewService {
             totalPax += place.getPax();
         }
 
-        long maxPaxAtSameTimeExpected = Collections.max(amountOfCustomersPerHourMap.values()); // + Collections.max(amountOfWalkInCustomersPerHourMap.values());
 
-
-        //7. Calculate the amount of the Employees
-        List<ApplicationUser> employeeList = applicationUserRepository.findAllByRole(RoleEnum.EMPLOYEE);
-        long totalEmployeeCount = 5; //employeeList.size() / 2 * (maxPaxAtSameTimeExpected / totalPax); //TODO get the real count of employees with test Data
-
-        //8. Take Events in consideration
+        //7. Take Events in consideration
         List<Event> events = eventRepository.findAllByStartTimeBetween(dateToCalculate.atStartOfDay(),
             dateToCalculate.atStartOfDay().toLocalDate().atTime(23, 59));
         float eventInfluence = 1.0f;
@@ -136,8 +130,8 @@ public class AdminViewServiceImpl implements AdminViewService {
         }
 
 
-        //9. calculate the percentage of the Employees
-        long maxPaxAtSameTimeCurrDay = 0;
+        //8. calculate the percentage of the Employees
+        long maxPaxAtSameTimeCurrDay = 1;
         if (!amountOfCustomersPerDayMapInThePast.isEmpty()) {
             maxPaxAtSameTimeCurrDay = Collections.max(amountOfCustomersPerHourMap.values());
         }
@@ -149,12 +143,29 @@ public class AdminViewServiceImpl implements AdminViewService {
         if (!amountOfWalkInCustomersPerDayMapInThePast.isEmpty()) {
             maxPaxAtSameTimeWalkIn = Collections.max(amountOfWalkInCustomersPerDayMapInThePast.values());
         }
+
+        //9. Calculate the amount of the Employees
+        List<ApplicationUser> employeeList = applicationUserRepository.findAllByRole(RoleEnum.EMPLOYEE);
+        long maxPaxAtSameTimeExpected = Collections.max(amountOfCustomersPerHourMap.values()); // + Collections.max(amountOfWalkInCustomersPerHourMap.values());
+        long totalEmployeeCount = employeeList.size() / 2 * (maxPaxAtSameTimeExpected / totalPax);
+
+
         long averagePaxInThePast = amountOfCustomersPerDayMapInThePast.values().stream().mapToLong(Long::longValue).sum() / amountOfCustomersPerDayMapInThePast.size();
 
         float offsetFromAverage = (float) maxPaxAtSameTimeCurrDay / (float) averagePaxInThePast;
+
+
         float offsetFromWalkIn = (float) maxPaxAtSameTimeCurrDay / (float) maxPaxAtSameTimeWalkIn;
+        if (maxPaxAtSameTimeWalkIn == 0) {
+            offsetFromWalkIn = 1.0f;
+        }
 
         float percentageOfPax = (float) maxPaxAtSameTimeCurrDay / (float) maxPaxAtSameTimeInThePast;
+        if (maxPaxAtSameTimeInThePast == 0) {
+            percentageOfPax = 1.0f;
+        }
+
+
         long employeePrediction = (long) (totalEmployeeCount * percentageOfPax * offsetFromAverage * offsetFromWalkIn * eventInfluence);
 
         predictedList.add(employeePrediction);
