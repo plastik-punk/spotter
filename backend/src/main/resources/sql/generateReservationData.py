@@ -14,10 +14,24 @@ date_start = datetime.now().date() - timedelta(days=5 * 365)  # Approximately 5 
 date_end = datetime.now().date() + timedelta(days=90)  # 3 months ahead
 start_reservation_id = -1  # Assuming starting ID for reservation
 start_place_id = -1  # Starting ID for place
+start_area_id = -1
+start_segment_id = -1
 
-# Dictionary to store place capacity and status
+# Storage for generated data
 places = {}
 reservations = {}
+areas = {}
+segments = {}
+area_place_segments = []
+
+# Define areas as per Java generator logic
+areas[start_area_id] = {'name': "Main Area", 'width': 15, 'height': 8, 'is_open': True}
+areas[start_area_id - 1] = {'name': "Second Area", 'width': 19, 'height': 4, 'is_open': False}
+
+# Define segments from your Java generator, exact numbers if specified or pattern repeated
+for i in range(30):  # Example of having 30 segments with specific logic or unique ids
+    segments[start_segment_id - i] = {'x': i % 10,
+                                      'y': i // 10}  # Example pattern; adjust as needed from Java generator
 
 
 # Function to generate a random time within opening hours
@@ -47,7 +61,7 @@ def random_time():
 
 
 # Generate SQL script
-with open('insert_reservations_and_mapping.sql', 'w') as file:
+with open('insert_data_script.sql', 'w') as file:
     # Write SQL for inserting places
     file.write("MERGE INTO place (id, pax, status) VALUES\n")
     place_entries = []
@@ -60,13 +74,13 @@ with open('insert_reservations_and_mapping.sql', 'w') as file:
         place_entries.append(f"({current_place_id}, {pax}, '{status_value}')")
         current_place_id -= 1
     file.write(",\n".join(place_entries) + ";\n\n")
-
     # Write SQL for inserting reservations
     file.write(
         "MERGE INTO reservation (id, user_id, date, start_time, end_time, pax, notes, hash_value,confirmed) VALUES\n")
     reservation_entries = []
     reservation_place_entries = []
     current_reservation_id = start_reservation_id
+
     for _ in range(num_reservations):
         attempt = 0
         max_attempts = 100  # Avoid infinite loop
@@ -108,5 +122,25 @@ with open('insert_reservations_and_mapping.sql', 'w') as file:
     file.write(",\n".join(reservation_entries) + ";\n\n")
     file.write("MERGE INTO RESERVATION_PLACE (reservation_id, place_id) VALUES\n")
     file.write(",\n".join(reservation_place_entries) + ";\n")
+    # Generating AreaPlaceSegment Mappings
+    for area_id in areas:
+        for place_id in places:
+            for segment_id in segments:
+                if places[place_id]['status'] == 1:  # Check if the place is active
+                    area_place_segments.append((area_id, place_id, segment_id))
 
+    file.write("MERGE INTO area_place_segment (area_id, place_id, segment_id) VALUES\n")
+    aps_entries = [f"({aps[0]}, {aps[1]}, {aps[2]})" for aps in area_place_segments]
+    file.write(",\n".join(aps_entries) + ";\n")
+    # Areas
+    file.write("MERGE INTO area (id, name, width, height, is_open) VALUES\n")
+    area_entries = [
+        f"({aid}, '{adata['name']}', {adata['width']}, {adata['height']}, {'TRUE' if adata['is_open'] else 'FALSE'})"
+        for aid, adata in areas.items()]
+    file.write(",\n".join(area_entries) + ";\n\n")
+
+    # Segments
+    file.write("MERGE INTO segment (id, x1, y1) VALUES\n")
+    segment_entries = [f"({sid}, {sdata['x']}, {sdata['y']})" for sid, sdata in segments.items()]
+    file.write(",\n".join(segment_entries) + ";\n\n")
 print("SQL insert script for reservations and mappings generated successfully.")
