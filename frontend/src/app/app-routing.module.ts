@@ -8,7 +8,6 @@ import {
 } from './components/reservation/reservation-overview/reservation-overview.component';
 import {RegistrationComponent} from "./components/registration/registration.component";
 import {StaffAccountsComponent} from "./components/staff-accounts/staff-accounts.component";
-import {ReservationDetailComponent} from "./components/reservation/reservation-detail/reservation-detail.component";
 import {ReservationEditComponent} from "./components/reservation/reservation-edit/reservation-edit.component";
 import {EventOverviewComponent} from "./components/event/event-overview/event-overview.component";
 import {EventDetailComponent} from "./components/event/event-detail/event-detail.component";
@@ -28,7 +27,6 @@ const routes: Routes = [
   {path: 'reservation-overview', canActivate: mapToCanActivate([AuthGuard]), component: ReservationOverviewComponent},
   {path: 'registration', component: RegistrationComponent},
   {path: 'employees', component: StaffAccountsComponent},
-  {path: 'reservation-detail/:id', component: ReservationDetailComponent},
   {path: 'reservation-edit/:id', component: ReservationEditComponent},
   {path: 'reservation-layout', component: ReservationLayoutComponent},
   {path: 'event-overview', canActivate: mapToCanActivate([AuthGuard]), component: EventOverviewComponent},
