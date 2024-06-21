@@ -45,4 +45,10 @@ public class SpecialOfferServiceImpl implements SpecialOfferService {
         List<SpecialOffer> foundSpecialOffers = specialOfferRepository.findAll();
         return specialOfferMapper.specialOffersToSpecialOfferListDtos(foundSpecialOffers);
     }
+
+    @Override
+    public void deleteSpecialOffer(Long id) {
+        LOGGER.trace("deleteSpecialOffer({})", id);
+        specialOfferRepository.deleteById(id);
+    }
 }

@@ -55,6 +55,8 @@ export class AdminViewComponent implements OnInit {
     pricePerPax: undefined,
     image: undefined
   }
+  specialOfferToDelete: SpecialOfferListDto;
+
 
   public chartOptions: Partial<ChartOptions>;
   currDate: any = new Date(now()).toISOString().split('T')[0];
@@ -155,6 +157,22 @@ export class AdminViewComponent implements OnInit {
         }
       });
     }
+  }
+
+  deleteSpecialOffer() {
+    if (!this.specialOfferToDelete) {
+      this.notificationService.showError('No special offer selected for deletion.');
+      return;
+    }
+    this.specialOfferService.delete(this.specialOfferToDelete.id).subscribe({
+      next: (data) => {
+        this.notificationService.showSuccess('Special Offer deleted successfully.');
+        this.loadSpecialOffers();
+      },
+      error: (error) => {
+        this.notificationService.showError("Couldn't delete Special Offer" + error);
+      }
+    });
   }
 
   onClickDetailView() {

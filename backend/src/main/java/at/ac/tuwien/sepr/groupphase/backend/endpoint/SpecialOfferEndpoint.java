@@ -3,13 +3,17 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferListDto;
 import at.ac.tuwien.sepr.groupphase.backend.service.SpecialOfferService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -41,7 +45,6 @@ public class SpecialOfferEndpoint {
         specialOfferCreateDto.setName(name);
         specialOfferCreateDto.setPricePerPax(pricePerPax);
         specialOfferCreateDto.setImage(image);
-
         LOGGER.info("POST /api/v1/special-offers " + "/{}", specialOfferCreateDto);
         return specialOfferService.createSpecialOffer(specialOfferCreateDto);
     }
@@ -52,4 +55,15 @@ public class SpecialOfferEndpoint {
         LOGGER.info("GET /api/v1/special-offers");
         return specialOfferService.getAllSpecialOffers();
     }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Secured("ROLE_ADMIN")
+    @DeleteMapping
+    @Operation(summary = "Delete a special offer")
+    public ResponseEntity<Void> deleteSpecialOffer(@RequestBody Long id) {
+        LOGGER.info("DELETE /api/v1/special-offers?id={}", id);
+        specialOfferService.deleteSpecialOffer(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

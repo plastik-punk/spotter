@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.mapper;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferListDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SpecialOffer;
 import org.mapstruct.IterableMapping;
@@ -14,6 +15,8 @@ import java.util.List;
 
 @Mapper
 public interface SpecialOfferMapper {
+
+    SpecialOfferDetailDto specialOfferToSpecialOfferDetailDto(SpecialOffer specialOffer);
 
     @Mapping(target = "image", source = "image", qualifiedByName = "multipartFileToByteArray")
     SpecialOffer specialOfferCreateDtoToSpecialOffer(SpecialOfferCreateDto specialOfferCreateDto);

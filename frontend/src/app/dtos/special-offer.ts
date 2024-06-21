@@ -18,3 +18,10 @@ export interface SpecialOfferCreateDto {
   pricePerPax: number;
   image: File;
 }
+
+export interface SpecialOfferDetailDto {
+  id: number;
+  name: string;
+  pricePerPax: number;
+  image: File;
+}

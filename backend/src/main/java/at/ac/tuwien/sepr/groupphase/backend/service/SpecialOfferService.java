@@ -24,4 +24,11 @@ public interface SpecialOfferService {
      * @return all special offers
      */
     List<SpecialOfferListDto> getAllSpecialOffers();
+
+    /**
+     * Deletes a special offer.
+     *
+     * @param id the id of the special offer to delete
+     */
+    void deleteSpecialOffer(Long id);
 }
