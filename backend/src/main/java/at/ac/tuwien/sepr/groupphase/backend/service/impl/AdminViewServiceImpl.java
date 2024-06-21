@@ -147,7 +147,7 @@ public class AdminViewServiceImpl implements AdminViewService {
         //9. Calculate the amount of the Employees
         List<ApplicationUser> employeeList = applicationUserRepository.findAllByRole(RoleEnum.EMPLOYEE);
         long maxPaxAtSameTimeExpected = Collections.max(amountOfCustomersPerHourMap.values()); // + Collections.max(amountOfWalkInCustomersPerHourMap.values());
-        long totalEmployeeCount = employeeList.size() / 2 * (maxPaxAtSameTimeExpected / totalPax);
+        float totalEmployeeCount = ((float) employeeList.size() * ((float) maxPaxAtSameTimeExpected / maxPaxAtSameTimeInThePast)) / 2;
 
 
         long averagePaxInThePast = amountOfCustomersPerDayMapInThePast.values().stream().mapToLong(Long::longValue).sum() / amountOfCustomersPerDayMapInThePast.size();
