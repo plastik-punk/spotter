@@ -19,9 +19,11 @@ import {
 } from "ng-apexcharts";
 import {Observable} from "rxjs";
 import {NotificationService} from "../../services/notification.service";
-import {SpecialOfferCreateDto, SpecialOfferListDto} from "../../dtos/special-offer";
+import {SpecialOfferCreateDto, SpecialOfferDetailDto, SpecialOfferListDto} from "../../dtos/special-offer";
 import {SpecialOfferService} from "../../services/special-offer.service";
 import {formatDay, formatDotDate, formatTime} from "../../util/date-helper";
+import * as bootstrap from 'bootstrap';
+
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -56,6 +58,13 @@ export class AdminViewComponent implements OnInit {
     image: undefined
   }
   specialOfferToDelete: SpecialOfferListDto;
+  specialOfferDetail: SpecialOfferDetailDto= {
+    id: undefined,
+    name: undefined,
+    pricePerPax: undefined,
+    image: undefined
+  };
+  imageUrl: string | null = null;
 
 
   public chartOptions: Partial<ChartOptions>;
@@ -174,6 +183,28 @@ export class AdminViewComponent implements OnInit {
       }
     });
   }
+
+  showSpecialOfferDetail(id: number) {
+    this.specialOfferService.getSpecialOffer(id).subscribe({
+      next: (specialOfferDetail) => {
+        console.log(specialOfferDetail);
+        this.specialOfferDetail.id = specialOfferDetail.id;
+        this.specialOfferDetail.name = specialOfferDetail.name;
+        this.specialOfferDetail.pricePerPax = specialOfferDetail.pricePerPax;
+        this.specialOfferDetail.image = specialOfferDetail.image;
+        if (this.specialOfferDetail.image) {
+          this.imageUrl = `data:image/jpeg;base64,${this.specialOfferDetail.image}`;
+        }
+        console.log(this.specialOfferDetail)
+        const modalDetail = new bootstrap.Modal(document.getElementById('specialOfferDetailModal'));
+        modalDetail.show();
+      },
+      error: (error) => {
+        this.notificationService.showError("Failed to load special offer details");
+      }
+    });
+  }
+
 
   onClickDetailView() {
     this.router.navigate(['/admin-view/prediction'])

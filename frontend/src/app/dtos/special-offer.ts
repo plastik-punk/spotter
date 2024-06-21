@@ -23,5 +23,5 @@ export interface SpecialOfferDetailDto {
   id: number;
   name: string;
   pricePerPax: number;
-  image: File;
+  image: Uint8Array;
 }

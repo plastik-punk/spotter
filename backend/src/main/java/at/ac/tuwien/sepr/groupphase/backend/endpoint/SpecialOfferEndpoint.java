@@ -63,7 +63,9 @@ public class SpecialOfferEndpoint {
     @Secured("ROLE_ADMIN")
     public SpecialOfferDetailDto getSpecialOffer(@RequestParam("id") Long id) {
         LOGGER.info("GET /api/v1/special-offers?id={}", id);
-        return specialOfferService.getSpecialOffer(id);
+        SpecialOfferDetailDto specialOfferDetailDto = specialOfferService.getSpecialOffer(id);
+        System.out.println("Special Offer:" + specialOfferDetailDto.toString());
+        return specialOfferDetailDto;
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

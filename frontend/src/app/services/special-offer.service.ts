@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Globals} from "../global/globals";
 import {HttpClient, HttpParams, HttpResponse} from "@angular/common/http";
 import {Observable} from "rxjs";
-import {SpecialOfferCreateDto, SpecialOfferListDto} from "../dtos/special-offer";
+import {SpecialOfferCreateDto, SpecialOfferDetailDto, SpecialOfferListDto} from "../dtos/special-offer";
 import {formatIsoDate} from "../util/date-helper";
 
 @Injectable({
@@ -46,5 +46,9 @@ export class SpecialOfferService {
    */
   delete(id: number): Observable<HttpResponse<void>> {
     return this.httpClient.delete<void>(this.placeBaseUri, {observe: 'response', body: id});
+  }
+
+  getSpecialOffer(id: number): Observable<SpecialOfferDetailDto> {
+    return this.httpClient.get<SpecialOfferDetailDto>(this.placeBaseUri + "/detail", {params: new HttpParams().set('id', id)});
   }
 }
