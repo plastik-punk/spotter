@@ -16,7 +16,8 @@
 </div>
 
 <ng-template #tipContent
->{{ tooltip }}</ng-template
+>{{ tooltip }}
+</ng-template
 >
 
 <div class="container-fluid">
@@ -75,7 +76,8 @@
             <div class="col-6">
               <div class="row">
                 <h4 class="column">Weekly Prediction</h4>
-                <button *ngIf="isUnusual" type="button" class="col-2 btn btn-warning me-2" placement="right" [ngbTooltip]="tipContent">
+                <button *ngIf="isUnusual" type="button" class="col-2 btn btn-warning me-2" placement="right"
+                        [ngbTooltip]="tipContent">
                   <i class="bi bi-exclamation-circle-fill"></i>
                 </button>
 
@@ -105,7 +107,8 @@
                     [series]="chartPredictionOptions.series"
                     [chart]="chartPredictionOptions.chart"
                     [labels]="chartPredictionOptions.labels">
-                  ></apx-chart>
+                    >
+                  </apx-chart>
                 </div>
               </div>
             </div>
