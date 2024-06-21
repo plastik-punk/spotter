@@ -20,9 +20,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.lang.invoke.MethodHandles;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -35,6 +33,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    /**
+     * Handles exceptions thrown when manually validating parameters (not via Valid annotation).
+     *
+     * @param e the exception
+     * @return the error response
+     */
     @ExceptionHandler
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     @ResponseBody
@@ -66,23 +70,23 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Override methods from ResponseEntityExceptionHandler to send a customized HTTP response for a know exception
-     * from e.g. Spring
+     * Override methods from ResponseEntityExceptionHandler to send a customized HTTP response for a validation exception as thrown by jakarta annotations.
      */
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-                                                                  HttpHeaders headers,
-                                                                  HttpStatusCode status, WebRequest request) {
-        Map<String, Object> body = new LinkedHashMap<>();
+    public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException e,
+                                                               HttpHeaders headers,
+                                                               HttpStatusCode status, WebRequest request) {
+        LOGGER.warn("Terminating request processing with status 422 due to {}: {}", e.getClass().getSimpleName(), e.getMessage());
         //Get all errors
-        List<String> errors = ex.getBindingResult()
+        List<String> errors = e.getBindingResult()
             .getFieldErrors()
             .stream()
             .map(err -> err.getField() + " " + err.getDefaultMessage())
             .collect(Collectors.toList());
-        body.put("Validation errors", errors);
 
-        return new ResponseEntity<>(body.toString(), headers, status);
+        ValidationErrorRestDto errorResponse = new ValidationErrorRestDto(e.getMessage(), errors);
+
+        return new ResponseEntity<>(errorResponse, headers, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     @ExceptionHandler
@@ -92,5 +96,4 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         LOGGER.warn("Terminating request processing with status 409 due to {}: {}", e.getClass().getSimpleName(), e.getMessage());
         return new ConflictErrorRestDto(e.summary(), e.errors());
     }
-
 }
