@@ -112,17 +112,130 @@
                 </div>
               </div>
             </div>
-
           </div>
           <hr class="my-4">
           <div class="col-6">
             <div class="row">
               <h5>Edit Special Offers</h5>
-              PlaceHolder for Special Offers
+              <div class="row">
+                <div class="row">
+                  <div class="column">
+                    <h5>Special Offers</h5>
+                  </div>
+                  <div class="column">
+                    <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#createSpecialOfferModal">
+                      <i class="bi bi-plus-lg"></i>
+                      Create new special offer
+                    </button>
+                  </div>
+                </div>
+                <table class="table table-hover">
+                  <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Price per Pax</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr *ngFor="let specialOffer of specialOfferList">
+                    <td>{{ specialOffer.id }}</td>
+                    <td>{{ specialOffer.name }}</td>
+                    <td>{{ specialOffer.pricePerPax }}</td>
+                    <td>
+                      <div class="btn-group">
+                        <a class="btn btn-sm responsive-info-button"
+                           aria-label="Show reservation details"
+                           (click)="showSpecialOfferDetail(specialOffer.id)">
+                          <i class="bi bi-info-lg"></i>
+                        </a>
+                        <a class="btn btn-sm responsive-danger-button"
+                           aria-label="Delete reservation"
+                           data-bs-toggle="modal"
+                           data-bs-target="#confirmation-dialog-delete"
+                           (click)="specialOfferToDelete = specialOffer">
+                          <i class="bi bi-trash"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
-      </form>
+    </form>
+  </div>
+</div>
+</div>
+
+<!-- Modal for creating a new special offer -->
+<div class="modal fade" id="createSpecialOfferModal" tabindex="-1" aria-labelledby="createSpecialOfferModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createSpecialOfferModalLabel">Create New Special Offer</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form #specialOfferForm="ngForm" (ngSubmit)="createSpecialOffer(specialOfferForm)"
+              enctype="multipart/form-data">
+          <div class="mb-3">
+            <label for="specialOfferName" class="form-label">Name</label>
+            <input type="text" class="form-control" id="specialOfferName" name="specialOfferName"
+                   [(ngModel)]="specialOfferCreateDto.name" required>
+          </div>
+          <div class="mb-3">
+            <label for="specialOfferPricePerPax" class="form-label">Price per Pax</label>
+            <input type="number" class="form-control" id="specialOfferPricePerPax" name="specialOfferPricePerPax"
+                   [(ngModel)]="specialOfferCreateDto.pricePerPax" required>
+          </div>
+          <div class="mb-3">
+            <label for="specialOfferImage" class="form-label">Image</label>
+            <input type="file" class="form-control" id="specialOfferImage" name="specialOfferImage"
+                   (change)="onFileChangeSpecialOffer($event)" required>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Save changes</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </div>
+<!-- Modal for displaying special offer details -->
+<div class="modal fade" id="specialOfferDetailModal" tabindex="-1" aria-labelledby="specialOfferDetailModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="specialOfferDetailModalLabel">Special Offer Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="specialOfferDetail">
+          <p>ID: {{ specialOfferDetail.id }}</p>
+          <p>Name: {{ specialOfferDetail.name }}</p>
+          <p>Price per Pax: {{ specialOfferDetail.pricePerPax }}</p>
+          <div *ngIf="specialOfferDetail.image">
+            Image:
+            <img [src]="imageUrl" alt="Image of Special Offer" class="img-fluid special-offer-image col-5"/>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-confirmation-dialog-delete
+  [dialogTitle]="'Delete this Reservation?'"
+  [dialogText]="'Do you really want to delete this reservation?'"
+  (confirm)="deleteSpecialOffer()"
+></app-confirmation-dialog-delete>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
