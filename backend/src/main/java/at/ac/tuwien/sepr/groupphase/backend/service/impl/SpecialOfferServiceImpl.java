@@ -1,8 +1,10 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferListDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SpecialOffer;
+import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SpecialOfferRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.SpecialOfferService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.SpecialOfferMapper;
@@ -50,5 +52,12 @@ public class SpecialOfferServiceImpl implements SpecialOfferService {
     public void deleteSpecialOffer(Long id) {
         LOGGER.trace("deleteSpecialOffer({})", id);
         specialOfferRepository.deleteById(id);
+    }
+
+    @Override
+    public SpecialOfferDetailDto getSpecialOffer(Long id) {
+        LOGGER.trace("getSpecialOffer({})", id);
+        SpecialOffer foundSpecialOffer = specialOfferRepository.findById(id).orElseThrow(() -> new NotFoundException("Special offer with ID " + id + " not found"));
+        return specialOfferMapper.specialOfferToSpecialOfferDetailDto(foundSpecialOffer);
     }
 }

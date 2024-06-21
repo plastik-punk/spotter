@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferListDto;
 
 import java.util.List;
@@ -31,4 +32,12 @@ public interface SpecialOfferService {
      * @param id the id of the special offer to delete
      */
     void deleteSpecialOffer(Long id);
+
+    /**
+     * Gets a special offer.
+     *
+     * @param id the id of the special offer to get
+     * @return the special offer
+     */
+    SpecialOfferDetailDto getSpecialOffer(Long id);
 }

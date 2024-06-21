@@ -1,14 +1,13 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
-import org.springframework.web.multipart.MultipartFile;
-
+import java.util.Arrays;
 import java.util.Objects;
 
 public class SpecialOfferDetailDto {
     private Long id;
     private String name;
     private Float pricePerPax;
-    private MultipartFile image;
+    private byte[] image;
 
     public Long getId() {
         return id;
@@ -37,11 +36,11 @@ public class SpecialOfferDetailDto {
         return this;
     }
 
-    public MultipartFile getImage() {
+    public byte[] getImage() {
         return image;
     }
 
-    public SpecialOfferDetailDto setImage(MultipartFile image) {
+    public SpecialOfferDetailDto setImage(byte[] image) {
         this.image = image;
         return this;
     }
@@ -65,12 +64,12 @@ public class SpecialOfferDetailDto {
             return false;
         }
         SpecialOfferDetailDto that = (SpecialOfferDetailDto) object;
-        return id.equals(that.id) && name.equals(that.name) && pricePerPax.equals(that.pricePerPax) && image.equals(that.image);
+        return id.equals(that.id) && name.equals(that.name) && pricePerPax.equals(that.pricePerPax) && Arrays.equals(image, that.image);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, pricePerPax, image);
+        return Objects.hash(id, name, pricePerPax, Arrays.hashCode(image));
     }
 
     public SpecialOfferDetailDto copy() {
@@ -86,7 +85,7 @@ public class SpecialOfferDetailDto {
         private Long id;
         private String name;
         private Float pricePerPax;
-        private MultipartFile image;
+        private byte[] image;
 
         private SpecialOfferDetailDtoBuilder() {
         }
@@ -110,7 +109,7 @@ public class SpecialOfferDetailDto {
             return this;
         }
 
-        public SpecialOfferDetailDtoBuilder withImage(MultipartFile image) {
+        public SpecialOfferDetailDtoBuilder withImage(byte[] image) {
             this.image = image;
             return this;
         }

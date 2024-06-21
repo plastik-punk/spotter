@@ -39,5 +39,7 @@ public interface SpecialOfferMapper {
             throw new RuntimeException("Error converting MultipartFile to byte[]", e);
         }
     }
+
+
 }
 

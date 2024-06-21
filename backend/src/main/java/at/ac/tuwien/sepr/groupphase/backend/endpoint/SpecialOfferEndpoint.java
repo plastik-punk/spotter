@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferListDto;
 import at.ac.tuwien.sepr.groupphase.backend.service.SpecialOfferService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,11 +50,20 @@ public class SpecialOfferEndpoint {
         return specialOfferService.createSpecialOffer(specialOfferCreateDto);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping
     @Secured("ROLE_ADMIN")
     public List<SpecialOfferListDto> getAllSpecialOffers() {
         LOGGER.info("GET /api/v1/special-offers");
         return specialOfferService.getAllSpecialOffers();
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping({"/detail"})
+    @Secured("ROLE_ADMIN")
+    public SpecialOfferDetailDto getSpecialOffer(@RequestParam("id") Long id) {
+        LOGGER.info("GET /api/v1/special-offers?id={}", id);
+        return specialOfferService.getSpecialOffer(id);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
