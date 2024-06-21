@@ -153,10 +153,6 @@ export class AdminViewComponent implements OnInit {
     this.adminViewDto.startTime = this.currTime;
   }
 
-  onSubmit(form: NgForm) {
-
-  }
-
   onFieldChange() {
     this.adminViewDto.date = this.currDate;
     this.adminViewDto.startTime = this.currTime;
@@ -192,22 +188,7 @@ export class AdminViewComponent implements OnInit {
 
   }
 
-  onFieldChange() {
-    console.log(this.adminViewDto)
-    let observable: Observable<ReservationForeCastDto>;
-    observable = this.service.getForeCast(this.adminViewDto);
-    observable.subscribe({
-      next: (value) => {
-        this.forecast = value;
-        this.generateChart();
-      },
-      error: (error) => {
-        this.notificationService.handleError(error);
-      }
-    });
-  }
-
-  onFileChange(event) {
+  onFileChangeSpecialOffer(event) {
     const file = event.target.files[0];
     if (file) {
       this.specialOfferCreateDto.image = file;
