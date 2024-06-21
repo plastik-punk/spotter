@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ForeCastDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PredictionDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnusualReservationsDto;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -27,4 +28,12 @@ public interface AdminViewService {
      * @return the forecast
      */
     ForeCastDto getForecast(Long areaId, LocalDate date);
+
+    /**
+     * Get the unusual reservations for a specific date and the following week.
+     *
+     * @param date the date
+     * @return the unusual reservations
+     */
+    UnusualReservationsDto getUnusualReservations(LocalDate date);
 }

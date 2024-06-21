@@ -27,6 +27,7 @@ import {LayoutService} from "../../services/layout.service";
 import {formatIsoDate} from "../../util/date-helper";
 import {ToastrService} from "ngx-toastr";
 
+
 export type ChartBarOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -38,6 +39,7 @@ export type ChartBarOptions = {
   tooltip: ApexTooltip;
   stroke: ApexStroke;
   legend: ApexLegend;
+  colors: string[];
 };
 export type ChartDonutOptions = {
   series: ApexNonAxisChartSeries;
@@ -72,6 +74,10 @@ export class AdminViewComponent implements OnInit {
 
   currDate: any;
   currTime: any;
+
+  isUnusual: any;
+  tooltip: string = "Forecast is being calculated";
+  barColors: string[] = ["#33b2df", "#33b2df", "#33b2df", "#33b2df", "#33b2df", "#33b2df", "#33b2df"];
 
   predictionTitle: string = "Prediction for Amount Of Employees needed";
 
@@ -148,6 +154,7 @@ export class AdminViewComponent implements OnInit {
         this.notificationService.handleError(error);
       }
     });
+    this.getUnusualReservationsNotification();
   }
 
 
@@ -182,7 +189,7 @@ export class AdminViewComponent implements OnInit {
     this.chartReservedTableOptions = {
       series: [{
         name: "# of reserved tables",
-        data: this.forecast.forecast
+        data: this.forecast.forecast,
       }],
 
       chart: {
@@ -191,11 +198,14 @@ export class AdminViewComponent implements OnInit {
       },
       plotOptions: {
         bar: {
+          distributed: true,
           dataLabels: {
             position: "top" // top, center, bottom
-          }
+          },
+
         }
       },
+      colors: ["#304758", "#304758", "#304758", "#33b2df", "#33b2df", "#33b2df", "#33b2df"],
 
       dataLabels: {
         enabled: true,
@@ -268,4 +278,22 @@ export class AdminViewComponent implements OnInit {
     });
   }
 
+  private getUnusualReservationsNotification() {
+    this.isUnusual = false;
+    this.service.getUnusualReservations(this.adminViewDto).subscribe({
+      next: (data) => {
+        if (data) {
+          this.tooltip = '';
+          this.isUnusual = data.unusual;
+          for (let i = 0; i < data.days.length; i++) {
+            if (data.days[i] && data.messages[i])
+              this.tooltip += '' + data.days[i] + ': ' + data.messages[i] + '\r\r';
+          }
+        }
+      },
+      error: () => {
+        this.notificationService.showError('Failed to fetch unusual reservations. Please try again later.');
+      },
+    });
+  }
 }

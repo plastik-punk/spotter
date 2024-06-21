@@ -14,6 +14,11 @@
     <img src="../../../../assets/images/logo.png" alt="Logo">
   </a>
 </div>
+
+<ng-template #tipContent
+>{{ tooltip }}</ng-template
+>
+
 <div class="container-fluid">
   <div class="col-12 col-lg-10 mx-auto">
     <div class="card custom-card">
@@ -65,19 +70,15 @@
             </div>
             <hr class="my-4">
           </div>
-          <div class="row">
-            <div class="col-9" style="height: 350px">
-              PlaceHolder for Area Viewd
-            </div>
-            <div class="col-3" style="height: 350px">
-              PlaceHolder for Edit Button
-            </div>
-          </div>
           <hr class="my-4">
           <div class="row">
             <div class="col-6">
               <div class="row">
                 <h4 class="column">Weekly Prediction</h4>
+                <button *ngIf="isUnusual" type="button" class="col-2 btn btn-warning me-2" placement="right" [ngbTooltip]="tipContent">
+                  <i class="bi bi-exclamation-circle-fill"></i>
+                </button>
+
               </div>
               <div id="chartReservedTable">
                 <h6> Number of reserved tables</h6>

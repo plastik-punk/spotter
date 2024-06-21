@@ -13,3 +13,8 @@ export interface ReservationForeCastDto{
   maxPlace: number,
   days: Array<string>
 }
+export interface UnusualReservationsDto{
+  days: Array<string>,
+  messages: Array<string>,
+  unusual: boolean
+}

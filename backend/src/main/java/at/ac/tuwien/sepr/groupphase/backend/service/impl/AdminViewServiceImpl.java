@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ForeCastDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PredictionDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnusualReservationsDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Area;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Event;
@@ -251,5 +252,58 @@ public class AdminViewServiceImpl implements AdminViewService {
         }
         foreCastDto.setForecast(forecast);
         return foreCastDto;
+    }
+
+    @Override
+    public UnusualReservationsDto getUnusualReservations(LocalDate date) {
+        LOGGER.info("Calculating Unusual Reservation Patters for next seven days following: {}", date);
+
+        LocalDate dateToCalculate = date;
+        long[] amountOfReservations = new long[7];
+        long[] reservationsForNextWeek = new long[7];
+        for (int i = 0; i < 7; i++) {
+            long amountOfReservation = 0;
+            long amountOfDaysWithReservations = 0;
+            for (int j = 1; j < 52; j++) {
+                List<Reservation> reservations = reservationRepository.findAllReservationsByDate(dateToCalculate.minusWeeks(j));
+                amountOfReservation += reservations.size();
+                if (!reservations.isEmpty()) {
+                    amountOfDaysWithReservations++;
+                }
+            }
+            if (amountOfDaysWithReservations == 0) {
+                amountOfReservations[i] = 0;
+            } else {
+                amountOfReservations[i] = amountOfReservation / amountOfDaysWithReservations;
+            }
+            reservationsForNextWeek[i] = reservationRepository.findAllByDate(dateToCalculate).size();
+            dateToCalculate = dateToCalculate.plusDays(1);
+        }
+
+        String[] days = new String[7];
+        days[0] = "TODAY";
+        days[1] = "TOMORROW";
+        for (int i = 2; i < 7; i++) {
+            days[i] = date.plusDays(i).getDayOfWeek().toString();
+        }
+        boolean isUnusual = false;
+        String[] messages = new String[7];
+        for (int i = 0; i < 7; i++) {
+            if (reservationsForNextWeek[i] > amountOfReservations[i] * 1.3) {
+                isUnusual = true;
+                messages[i] = "Unusually high amount of Reservations detected: " + reservationsForNextWeek[i];
+            } else if (reservationsForNextWeek[i] < amountOfReservations[i] * 0.7) {
+                isUnusual = true;
+                messages[i] = "Unusually low amount of Reservations detected: " + reservationsForNextWeek[i];
+            } else {
+                messages[i] = null;
+            }
+        }
+        UnusualReservationsDto unusualReservationsDto = new UnusualReservationsDto();
+        unusualReservationsDto.setDays(days);
+        unusualReservationsDto.setMessages(messages);
+        unusualReservationsDto.setIsUnusual(isUnusual);
+
+        return unusualReservationsDto;
     }
 }
