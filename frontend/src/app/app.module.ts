@@ -15,7 +15,6 @@ import {
 } from './components/reservation/reservation-overview/reservation-overview.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {httpInterceptorProviders} from './interceptors';
-import {ReservationDetailComponent} from './components/reservation/reservation-detail/reservation-detail.component';
 import {
   ConfirmationDialogDeleteComponent
 } from './components/confirmation-dialog/confirmation-dialog-delete/confirmation-dialog-delete.component';
@@ -46,7 +45,6 @@ import {EmployeeViewComponent} from "./components/employee-view/employee-view.co
     ReservationSimpleComponent,
     LoginComponent,
     MessageComponent,
-    ReservationDetailComponent,
     ReservationEditComponent,
     ReservationOverviewComponent,
     ConfirmationDialogDeleteComponent,
