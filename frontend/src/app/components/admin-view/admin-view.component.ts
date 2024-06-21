@@ -26,6 +26,11 @@ import {ReservationService} from "../../services/reservation.service";
 import {LayoutService} from "../../services/layout.service";
 import {formatIsoDate} from "../../util/date-helper";
 import {ToastrService} from "ngx-toastr";
+import {SpecialOfferCreateDto, SpecialOfferDetailDto, SpecialOfferListDto} from "../../dtos/special-offer";
+import {SpecialOfferService} from "../../services/special-offer.service";
+import {formatDay, formatDotDate, formatTime} from "../../util/date-helper";
+import * as bootstrap from 'bootstrap';
+
 
 export type ChartBarOptions = {
   series: ApexAxisChartSeries;
@@ -65,6 +70,21 @@ export class AdminViewComponent implements OnInit {
   };
 
   forecast: ReservationForeCastDto;
+  specialOfferList: SpecialOfferListDto[];
+  specialOfferCreateDto: SpecialOfferCreateDto = {
+    name: undefined,
+    pricePerPax: undefined,
+    image: undefined
+  }
+  specialOfferToDelete: SpecialOfferListDto;
+  specialOfferDetail: SpecialOfferDetailDto= {
+    id: undefined,
+    name: undefined,
+    pricePerPax: undefined,
+    image: undefined
+  };
+  imageUrl: string | null = null;
+
 
   public chartReservedTableOptions: Partial<ChartBarOptions>;
   public chartPredictionOptions: Partial<ChartDonutOptions>;
@@ -83,6 +103,8 @@ export class AdminViewComponent implements OnInit {
     private service: AdminViewService,
     private reservationService: ReservationService,
     private layoutService: LayoutService,
+    private adminViewService: AdminViewService,
+    private specialOfferService: SpecialOfferService,
     private notificationService: NotificationService,
     private notification: ToastrService,
     private router: Router
@@ -108,6 +130,7 @@ export class AdminViewComponent implements OnInit {
         type: "bar"
       },
     };
+    this.loadSpecialOffers();
 
     this.chartPredictionOptions = {
       series: [0],
@@ -138,6 +161,40 @@ export class AdminViewComponent implements OnInit {
     this.adminViewDto.date = this.currDate;
     this.adminViewDto.startTime = this.currTime;
     let observable: Observable<ReservationForeCastDto>;
+    observable = this.adminViewService.getForeCast(this.adminViewDto);
+    observable.subscribe({
+      next: (value) => {
+        this.forecast = value;
+        this.generateChart();
+      },
+      error: (error) => {
+        this.notificationService.handleError(error);
+      }
+    });
+
+
+  }
+
+  loadSpecialOffers() {
+    let observable: Observable<SpecialOfferListDto[]>;
+    observable = this.specialOfferService.getSpecialOffers();
+    observable.subscribe({
+      next: (value) => {
+        this.specialOfferList = value;
+      },
+      error: (error) => {
+        this.notificationService.showError("Failed to load special offers");
+      }
+    });
+  }
+
+  onSubmit(form: NgForm) {
+
+  }
+
+  onFieldChange() {
+    console.log(this.adminViewDto)
+    let observable: Observable<ReservationForeCastDto>;
     observable = this.service.getForeCast(this.adminViewDto);
     observable.subscribe({
       next: (value) => {
@@ -150,6 +207,67 @@ export class AdminViewComponent implements OnInit {
     });
   }
 
+  onFileChange(event) {
+    const file = event.target.files[0];
+    if (file) {
+      this.specialOfferCreateDto.image = file;
+    }
+  }
+
+  createSpecialOffer(specialOfferForm: NgForm) {
+    if (specialOfferForm.valid) {
+      this.specialOfferService.createSpecialOffer(this.specialOfferCreateDto).subscribe({
+        next: (data) => {
+          this.notificationService.showSuccess('Special Offer created successfully.');
+          this.loadSpecialOffers();
+        },
+        error: (error) => {
+          this.notificationService.showError("Couldn't create Special Offer" + error);
+        }
+      });
+    }
+  }
+
+  deleteSpecialOffer() {
+    if (!this.specialOfferToDelete) {
+      this.notificationService.showError('No special offer selected for deletion.');
+      return;
+    }
+    this.specialOfferService.delete(this.specialOfferToDelete.id).subscribe({
+      next: (data) => {
+        this.notificationService.showSuccess('Special Offer deleted successfully.');
+        this.loadSpecialOffers();
+      },
+      error: (error) => {
+        this.notificationService.showError("Couldn't delete Special Offer" + error);
+      }
+    });
+  }
+
+  showSpecialOfferDetail(id: number) {
+    this.specialOfferService.getSpecialOffer(id).subscribe({
+      next: (specialOfferDetail) => {
+        console.log(specialOfferDetail);
+        this.specialOfferDetail.id = specialOfferDetail.id;
+        this.specialOfferDetail.name = specialOfferDetail.name;
+        this.specialOfferDetail.pricePerPax = specialOfferDetail.pricePerPax;
+        this.specialOfferDetail.image = specialOfferDetail.image;
+        if (this.specialOfferDetail.image) {
+          this.imageUrl = `data:image/jpeg;base64,${this.specialOfferDetail.image}`;
+        }
+        console.log(this.specialOfferDetail)
+        const modalDetail = new bootstrap.Modal(document.getElementById('specialOfferDetailModal'));
+        modalDetail.show();
+      },
+      error: (error) => {
+        this.notificationService.showError("Failed to load special offer details");
+      }
+    });
+  }
+
+  onClickDetailView() {
+    this.router.navigate(['/admin-view/prediction'])
+  }
 
   onClickGetPrediction() {
 
@@ -176,7 +294,6 @@ export class AdminViewComponent implements OnInit {
       },
     });
   }
-
   generateChart() {
     this.chartReservedTableOptions = null;
     this.chartReservedTableOptions = {
