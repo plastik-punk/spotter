@@ -48,3 +48,19 @@ export interface AreaCreateDto {
 export interface LayoutCreateDto{
   areas: AreaCreateDto[]
 }
+
+export interface AreaDetailDto {
+  id: number;
+  name: string;
+  mainArea: boolean;
+  closingTime?: string;
+  openingTime?: string;
+  open: boolean;
+  width: number;
+  height: number;
+  places: PlaceVisualDto[];
+}
+
+export interface AreaDetailListDto {
+  areas: AreaDetailDto[];
+}

@@ -1,11 +1,11 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {ActivatedRoute, Router} from "@angular/router";
 import {NotificationService} from "../../../services/notification.service";
 import {LayoutService} from "../../../services/layout.service";
 import * as d3 from "d3";
 import * as bootstrap from 'bootstrap';
-import {AreaDto, AreaListDto} from "../../../dtos/layout";
+import {AreaDetailDto, AreaDto, AreaListDto} from "../../../dtos/layout";
 import {Observable} from "rxjs";
 
 export interface AreaCreateDto {
@@ -44,21 +44,22 @@ export interface CoordinateDto {
 export class EditLayoutComponent implements OnInit {
 
   id: number;
-  areaEditDto: AreaCreateDto = {
+  areaEditDto: AreaDetailDto = {
+    id: undefined,
     name: undefined,
-    isMainArea: false,
+    mainArea: false,
     closingTime: '',
     openingTime: '',
-    isOpen: false,
+    open: false,
     width: undefined,
     height: undefined,
     places: []
   };
 
-  @ViewChild('d3Container', { static: false }) d3Container: ElementRef<HTMLDivElement>;
+  @ViewChild('d3Container', {static: false}) d3Container: ElementRef<HTMLDivElement>;
   layoutForm: FormGroup;
   placeForm: FormGroup;
-  layoutCreateDto: LayoutCreateDto = { areas: [] };
+  layoutCreateDto: LayoutCreateDto = {areas: []};
   currentCell: { x: number, y: number } | null = null;
   createdTables: PlaceVisualDto[] = [];
   cellToDelete: { x: number, y: number, placeNumber: number } | null = null;
@@ -78,18 +79,24 @@ export class EditLayoutComponent implements OnInit {
     private notificationService: NotificationService,
     private layoutService: LayoutService,
     private route: ActivatedRoute
-  ) { }
+  ) {
+    this.layoutForm = this.fb.group({});
+    this.placeForm = this.fb.group({});
+  }
 
 
   ngOnInit(): void {
+    this.initializeForm();
     this.id = this.route.snapshot.params['id'];
     if (this.id) {
-      let observable: Observable<AreaCreateDto>;
+      let observable: Observable<AreaDetailDto>;
       observable = this.layoutService.getAreaById(this.id);
       observable.subscribe({
         next: (data) => {
           if (data != null) {
             this.areaEditDto = data;
+            console.log(this.areaEditDto)
+            this.patchFormValues();
           }
         },
         error: (error) => {
@@ -98,30 +105,58 @@ export class EditLayoutComponent implements OnInit {
       });
     }
 
+  }
+
+  initializeForm(): void {
+    this.layoutForm = this.fb.group({
+      name: ['', [Validators.required, Validators.maxLength(20)]],
+      isMainArea: [false],
+      closingTime: [''],
+      openingTime: [''],
+      isOpen: [false],
+      width: [null, [Validators.required, Validators.min(1), Validators.max(16)]],
+      height: [null, [Validators.required, Validators.min(1), Validators.max(9)]],
+      places: this.fb.array([])
+    });
+
+    this.placeForm = this.fb.group({
+      placeNumber: ['', Validators.required],
+      status: ['', Validators.required],
+      numberOfSeats: ['', Validators.required]
+    });
+  }
+
+  patchFormValues(): void {
+    this.layoutForm.patchValue({
+      name: this.areaEditDto.name,
+      isMainArea: this.areaEditDto.mainArea,
+      closingTime: this.areaEditDto.closingTime,
+      openingTime: this.areaEditDto.openingTime,
+      isOpen: this.areaEditDto.open,
+      width: this.areaEditDto.width,
+      height: this.areaEditDto.height
+    });
+
+    // Initialize the form array with the coordinates
+    const placesArray = this.layoutForm.get('places') as FormArray;
+    this.areaEditDto.places.forEach(place => {
+      const placeGroup = this.fb.group({
+        placeNumber: [place.placeNumber],
+        status: [place.status],
+        numberOfSeats: [place.numberOfSeats],
+        coordinates: this.fb.array(place.coordinates.map(coord => this.fb.group(coord)))
+      });
+      placesArray.push(placeGroup);
+    });
+
+    // Initialize the createdTables array with the places
+    this.createdTables = this.areaEditDto.places;
+
     if (this.areaEditDto) {
-
-      this.layoutForm = this.fb.group({
-        name: [this.areaEditDto.name, [Validators.required, Validators.maxLength(20)]],
-        isMainArea: [this.areaEditDto.isMainArea],
-        closingTime: [this.areaEditDto.closingTime],
-        openingTime: [this.areaEditDto.openingTime],
-        isOpen: [this.areaEditDto.isOpen],
-        width: [this.areaEditDto.width, [Validators.required, Validators.min(1), Validators.max(16)]],
-        height: [this.areaEditDto.height, [Validators.required, Validators.min(1), Validators.max(9)]],
-        places: this.fb.array([])
-      });
-
-      this.placeForm = this.fb.group({
-        placeNumber: ['', Validators.required],
-        status: ['', Validators.required],
-        numberOfSeats: ['', Validators.required]
-      });
-
       this.drawGrid();
     } else {
       this.notificationService.showError('Failed to load layout. Please try again later.');
     }
-
   }
 
   showExplanation() {
@@ -130,54 +165,63 @@ export class EditLayoutComponent implements OnInit {
   }
 
   drawGrid(): void {
-    if (this.layoutForm.valid || true) {
-      const width = this.layoutForm.value.width;
-      const height = this.layoutForm.value.height;
-      const containerElement = this.d3Container.nativeElement as HTMLDivElement;
-      const containerWidth = containerElement.getBoundingClientRect().width;
-      const cellSize = containerWidth / width; // Adjust cell size based on container width
 
-      // Clear previous drawings
-      d3.select(containerElement).selectAll('*').remove();
+    const width = this.layoutForm.value.width;
+    const height = this.layoutForm.value.height;
+    const containerElement = this.d3Container.nativeElement as HTMLDivElement;
+    const containerWidth = containerElement.getBoundingClientRect().width;
+    const cellSize = containerWidth / width; // Adjust cell size based on container width
 
-      const svg = d3.select(containerElement).append('svg')
-        .attr('width', containerWidth)
-        .attr('height', height * cellSize);
+    // Clear previous drawings
+    d3.select(containerElement).selectAll('*').remove();
 
-      for (let x = 0; x < width; x++) {
-        for (let y = 0; y < height; y++) {
-          const cell = svg.append('rect')
-            .attr('x', x * cellSize)
-            .attr('y', y * cellSize)
-            .attr('width', cellSize)
-            .attr('height', cellSize)
-            .attr('fill', '#d3d3d3')
-            .attr('stroke', '#ffffff')
-            .attr('class', `cell-${x}-${y}`)
-            .attr('rx', 10)
-            .attr('ry', 10)
-            .on('click', () => this.onCellClick(x, y));
+    const svg = d3.select(containerElement).append('svg')
+      .attr('width', containerWidth)
+      .attr('height', height * cellSize);
 
-          svg.append('text')
-            .attr('x', x * cellSize + cellSize / 2)
-            .attr('y', y * cellSize + cellSize / 2)
-            .attr('dy', '.35em')
-            .attr('text-anchor', 'middle')
-            .attr('class', `table-number-${x}-${y}`)
-            .style('fill', 'white');
-        }
+    for (let x = 0; x < width; x++) {
+      for (let y = 0; y < height; y++) {
+        const cell = svg.append('rect')
+          .attr('x', x * cellSize)
+          .attr('y', y * cellSize)
+          .attr('width', cellSize)
+          .attr('height', cellSize)
+          .attr('fill', '#d3d3d3')
+          .attr('stroke', '#ffffff')
+          .attr('class', `cell-${x}-${y}`)
+          .attr('rx', 10)
+          .attr('ry', 10)
+          .on('click', () => this.onCellClick(x, y));
+
+        svg.append('text')
+          .attr('x', x * cellSize + cellSize / 2)
+          .attr('y', y * cellSize + cellSize / 2)
+          .attr('dy', '.35em')
+          .attr('text-anchor', 'middle')
+          .attr('class', `table-number-${x}-${y}`)
+          .style('fill', 'white');
       }
-
-      // Disable fields
-      this.layoutForm.get('name').disable();
-      this.layoutForm.get('width').disable();
-      this.layoutForm.get('height').disable();
-
-      // Set the grid drawn flag to true
-      this.isGridDrawn = true;
-    } else {
-      this.notificationService.showError('Please fill out all required fields before drawing the grid.');
     }
+
+    this.drawPlaces();
+
+    // Set the grid drawn flag to true
+    this.isGridDrawn = true;
+
+  }
+
+  drawPlaces(): void {
+    // fill in the segments with the place data stored in the areaEditDto
+    this.areaEditDto.places.forEach(place => {
+      place.coordinates.forEach(coord => {
+        const container = d3.select(this.d3Container.nativeElement).select('svg');
+        const cellSize = (this.d3Container.nativeElement as HTMLDivElement).getBoundingClientRect().width / this.layoutForm.value.width;
+        container.select(`.table-number-${coord.x}-${coord.y}`)
+          .text(place.placeNumber);
+        container.select(`.cell-${coord.x}-${coord.y}`)
+          .attr('fill', '#212529');
+      });
+    });
   }
 
   addArea(): void {
@@ -199,8 +243,8 @@ export class EditLayoutComponent implements OnInit {
         closingTime: this.layoutForm.get('closingTime').value,
         openingTime: this.layoutForm.get('openingTime').value,
         isOpen: this.layoutForm.get('isOpen').value,
-        width: this.layoutForm.get('width').value -1,
-        height: this.layoutForm.get('height').value -1,
+        width: this.layoutForm.get('width').value - 1,
+        height: this.layoutForm.get('height').value - 1,
         places: this.createdTables // Use createdTables to save the places
       };
 
@@ -208,7 +252,7 @@ export class EditLayoutComponent implements OnInit {
 
       // Reset the form and the createdTables array for the new area
       this.layoutForm.reset();
-      this.layoutForm.patchValue({ isMainArea: false, isOpen: false }); // Reset main area and open checkboxes
+      this.layoutForm.patchValue({isMainArea: false, isOpen: false}); // Reset main area and open checkboxes
 
       // Re-enable the fields
       this.layoutForm.get('name').enable();
@@ -244,7 +288,7 @@ export class EditLayoutComponent implements OnInit {
   onCellClick(x: number, y: number): void {
     const table = this.findTableByCoordinates(x, y);
     if (table) {
-      this.cellToDelete = { x, y, placeNumber: table.placeNumber };
+      this.cellToDelete = {x, y, placeNumber: table.placeNumber};
       if (table.coordinates.length > 1) {
         // Directly delete the coordinate if it is not the last one
         this.deleteCoordinate(x, y, table.placeNumber);
@@ -257,7 +301,7 @@ export class EditLayoutComponent implements OnInit {
       if (adjacentTable) {
         this.addCoordinatesToAdjacentTable(adjacentTable, x, y);
       } else {
-        this.currentCell = { x, y };
+        this.currentCell = {x, y};
         this.placeForm.reset();
         const placeModal = new bootstrap.Modal(document.getElementById('placeModal'));
         placeModal.show();
@@ -316,7 +360,7 @@ export class EditLayoutComponent implements OnInit {
 
   confirmDelete(): void {
     if (this.cellToDelete) {
-      const { x, y, placeNumber } = this.cellToDelete;
+      const {x, y, placeNumber} = this.cellToDelete;
       this.finalizeDelete(x, y, placeNumber);
     } else {
       this.notificationService.showError('No cell selected for deletion.');
@@ -337,13 +381,13 @@ export class EditLayoutComponent implements OnInit {
 
   findAdjacentTable(x: number, y: number): PlaceVisualDto | undefined {
     const directions = [
-      { dx: -1, dy: 0 },
-      { dx: 1, dy: 0 },
-      { dx: 0, dy: -1 },
-      { dx: 0, dy: 1 }
+      {dx: -1, dy: 0},
+      {dx: 1, dy: 0},
+      {dx: 0, dy: -1},
+      {dx: 0, dy: 1}
     ];
 
-    for (const { dx, dy } of directions) {
+    for (const {dx, dy} of directions) {
       const adjacentCell = this.createdTables.find(table =>
         table.coordinates.some(coord => coord.x === x + dx && coord.y === y + dy)
       );
@@ -356,14 +400,14 @@ export class EditLayoutComponent implements OnInit {
   }
 
   addCoordinatesToAdjacentTable(table: PlaceVisualDto, x: number, y: number): void {
-    table.coordinates.push({ x, y });
+    table.coordinates.push({x, y});
 
     // Find the corresponding form group and update its coordinates array
     const placesArray = this.layoutForm.get('places') as FormArray;
     const placeGroup = placesArray.controls.find(control => control.value.placeNumber === table.placeNumber) as FormGroup;
     if (placeGroup) {
       const coordinatesArray = placeGroup.get('coordinates') as FormArray;
-      coordinatesArray.push(this.fb.group({ x, y }));
+      coordinatesArray.push(this.fb.group({x, y}));
     }
 
     const container = d3.select(this.d3Container.nativeElement).select('svg');
@@ -393,7 +437,7 @@ export class EditLayoutComponent implements OnInit {
         status: this.placeForm.value.status === 'true',
         reservation: false,
         numberOfSeats: this.placeForm.value.numberOfSeats,
-        coordinates: [{ x: this.currentCell.x, y: this.currentCell.y }]
+        coordinates: [{x: this.currentCell.x, y: this.currentCell.y}]
       };
 
       // Initialize the form group for the place with coordinates as a form array
@@ -432,13 +476,13 @@ export class EditLayoutComponent implements OnInit {
         closingTime: this.layoutForm.get('closingTime').value,
         openingTime: this.layoutForm.get('openingTime').value,
         isOpen: this.layoutForm.get('isOpen').value,
-        width: this.layoutForm.get('width').value -1,
-        height: this.layoutForm.get('height').value -1,
+        width: this.layoutForm.get('width').value - 1,
+        height: this.layoutForm.get('height').value - 1,
         places: this.layoutForm.get('places').value
       };
       this.layoutCreateDto.areas.push(area);
       this.layoutForm.reset();
-      this.layoutForm.patchValue({ isMainArea: false, isOpen: false }); // Reset main area and open checkboxes
+      this.layoutForm.patchValue({isMainArea: false, isOpen: false}); // Reset main area and open checkboxes
 
       // Clear the canvas and table data
       const containerElement = this.d3Container.nativeElement as HTMLDivElement;
@@ -457,9 +501,11 @@ export class EditLayoutComponent implements OnInit {
   getCurrentAreaTables(): PlaceVisualDto[] {
     return this.createdTables;
   }
+
   isMainAreaDisabled(): boolean {
     return this.layoutCreateDto.areas.some(area => area.isMainArea);
   }
+
   onSubmit(): void {
     if (this.layoutForm.valid) {
       // Show the confirm save layout modal
@@ -469,24 +515,26 @@ export class EditLayoutComponent implements OnInit {
       this.notificationService.showError('Please fill out all required fields before submitting.');
     }
   }
+
   confirmSaveLayout(): void {
     if (this.layoutForm.valid) {
-      this.addCurrentArea(); // Save the current area being edited
-      this.layoutService.createLayout(this.layoutCreateDto).subscribe({
-        next: (response) => {
-          this.notificationService.showSuccess('Layout saved successfully.');
+      this.areaEditDto.places = this.createdTables;
+      this.layoutService.updateArea(this.areaEditDto).subscribe({
+        next: () => {
+          this.notificationService.showSuccess('Area saved successfully.');
+          // Hide the modal after saving
+          const confirmSaveLayoutModal = bootstrap.Modal.getInstance(document.getElementById('confirmSaveLayoutModal'));
+          if (confirmSaveLayoutModal) {
+            confirmSaveLayoutModal.hide();
+          }
           this.router.navigate(['layout-overview']);
         },
         error: () => {
-          this.notificationService.showError('Failed to save layout. Please try again later.');
+          this.notificationService.showError('Failed to save area. Please try again later.');
         }
       });
 
-      // Hide the modal after saving
-      const confirmSaveLayoutModal = bootstrap.Modal.getInstance(document.getElementById('confirmSaveLayoutModal'));
-      if (confirmSaveLayoutModal) {
-        confirmSaveLayoutModal.hide();
-      }
+
     } else {
       this.notificationService.showError('Please fill out all required fields before saving.');
     }

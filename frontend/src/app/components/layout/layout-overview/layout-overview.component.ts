@@ -4,7 +4,7 @@ import {Router} from "@angular/router";
 import {NotificationService} from "../../../services/notification.service";
 import {LayoutService} from "../../../services/layout.service";
 
-import {AreaDto, AreaListDto} from "../../../dtos/layout";
+import {AreaDetailDto, AreaDetailListDto, AreaDto, AreaListDto} from "../../../dtos/layout";
 
 
 export interface AreaCreateDto {
@@ -42,7 +42,7 @@ export interface CoordinateDto {
 })
 export class LayoutOverviewComponent implements OnInit {
 
-  areas: AreaDto[] = [];
+  areas: AreaDetailDto[] = [];
   deleteWhat: number | null = null;
 
   constructor(
@@ -59,8 +59,8 @@ export class LayoutOverviewComponent implements OnInit {
   }
 
   private fetchAllAreas() {
-    this.layoutService.getAllAreas().subscribe({
-      next: (data: AreaListDto) => {
+    this.layoutService.getAllAreasDetailed().subscribe({
+      next: (data: AreaDetailListDto) => {
         this.areas = data.areas;
       },
       error: () => {
@@ -89,6 +89,36 @@ export class LayoutOverviewComponent implements OnInit {
 
   openConfirmationDialog(areaId: number): void {
     this.deleteWhat = areaId;
+  }
+
+  toggleOpen(areaId: number, isOpen: boolean): void {
+    this.layoutService.toggleOpen(areaId, !isOpen).subscribe({
+      next: () => {
+        this.notificationService.showSuccess('Area updated successfully');
+        this.fetchAllAreas();
+      },
+      error: (error) => {
+        this.notificationService.handleError(error);
+      }
+    });
+  }
+
+  toggleMain(areaId: number, isMainArea: boolean): void {
+    //there always has to be exactly one main area, so if the user tries to set the current main area to not main, we tell him, that he has to set another area to main first
+    if (!isMainArea && this.areas.filter(area => area.mainArea).length == 1) {
+      this.notificationService.showError('There always has to be exactly one main area. Please set another area to main first.');
+      return;
+    }
+
+    this.layoutService.toggleMain(areaId, !isMainArea).subscribe({
+      next: () => {
+        this.notificationService.showSuccess('Area updated successfully');
+        this.fetchAllAreas();
+      },
+      error: (error) => {
+        this.notificationService.handleError(error);
+      }
+    });
   }
 
 }

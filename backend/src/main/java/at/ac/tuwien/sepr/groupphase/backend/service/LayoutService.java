@@ -1,9 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaLayoutDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaListDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.LayoutCreateDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckAvailabilityDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.*;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 
 /**
@@ -46,5 +43,27 @@ public interface LayoutService {
      * @param id the id of the area
      * @return the area
      */
-    LayoutCreateDto.AreaCreateDto getAreaById(Long id);
+    AreaDetailDto getAreaById(Long id);
+
+    /**
+     * Get all areas with details.
+     *
+     * @return the list of all areas with details
+     */
+    AreaDetailListDto getAllAreasDetailed();
+
+    /**
+     * Toggle the open status of an area.
+     *
+     * @param id     the id of the area
+     * @param isOpen the new open status
+     */
+    void toggleOpen(Long id, boolean isOpen);
+
+    /**
+     * Update an area.
+     *
+     * @param areaDetailDto the area data
+     */
+    void updateArea(AreaDetailDto areaDetailDto);
 }

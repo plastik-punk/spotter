@@ -1,9 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaLayoutDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaListDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.LayoutCreateDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckAvailabilityDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.*;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.service.LayoutService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,6 +45,15 @@ public class LayoutEndpoint {
         return layoutService.getAllAreas();
     }
 
+    @ResponseStatus(HttpStatus.OK)
+    @PermitAll
+    @GetMapping("/areas/detailed")
+    @Operation(summary = "Get list of all areas with details")
+    public AreaDetailListDto getAllAreasDetailed() {
+        LOGGER.info("GET /api/v1/reservations/areas/detailed");
+        return layoutService.getAllAreasDetailed();
+    }
+
     @ResponseStatus(HttpStatus.CREATED)
     @PermitAll
     @PostMapping("/create")
@@ -68,8 +74,24 @@ public class LayoutEndpoint {
     @PermitAll
     @GetMapping("/area/{id}")
     @Operation(summary = "Get layout of area")
-    public LayoutCreateDto.AreaCreateDto getAreaById(@PathVariable("id") Long id) {
+    public AreaDetailDto getAreaById(@PathVariable("id") Long id) {
         return layoutService.getAreaById(id);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
+    @PutMapping("/toggleOpen/{id}")
+    @Operation(summary = "Toggle open status of area")
+    public void toggleOpen(@PathVariable("id") Long id, @RequestBody Boolean isOpen) {
+        layoutService.toggleOpen(id, isOpen);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Secured({"ROLE_ADMIN"})
+    @PutMapping("/area/update")
+    @Operation(summary = "Update area")
+    public void updateArea(@RequestBody AreaDetailDto areaDetailDto) {
+        layoutService.updateArea(areaDetailDto);
     }
 
 }
