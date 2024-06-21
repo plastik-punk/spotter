@@ -69,7 +69,7 @@ public class ReservationEndpoint {
     @GetMapping
     @Operation(summary = "Check if any tables are available for requested time and pax")
     public ReservationResponseEnum getAvailability(@Valid ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) {
-        LOGGER.info("GET /api/v1/reservations body: {}", reservationCheckAvailabilityDto);
+        LOGGER.info("GET /api/v1/reservations body: {}", reservationCheckAvailabilityDto.toString());
         return service.getAvailability(reservationCheckAvailabilityDto);
     }
 
@@ -79,7 +79,7 @@ public class ReservationEndpoint {
     @GetMapping({"/next"})
     @Operation(summary = "Get the next three available reservations")
     public ReservationCheckAvailabilityDto[] getNextAvailableTables(@Valid ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) {
-        LOGGER.info("GET /api/v1/reservations body: {}", reservationCheckAvailabilityDto);
+        LOGGER.info("GET /api/v1/reservations body: {}", reservationCheckAvailabilityDto.toString());
         return service.getNextAvailableTables(reservationCheckAvailabilityDto);
     }
 
@@ -115,7 +115,7 @@ public class ReservationEndpoint {
     @GetMapping({"/search"})
     public List<ReservationListDto> searchAllReservationsForAdmin(@Valid ReservationSearchDto searchParameters) {
         LOGGER.info("GET /api/v1/reservations/admin-search");
-        LOGGER.debug("request parameters: {}", searchParameters);
+        LOGGER.debug("request parameters: {}", searchParameters.toString());
 
         return service.search(searchParameters);
     }

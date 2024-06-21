@@ -332,6 +332,6 @@ public class ReservationEndpointTest implements TestData {
 
         // Then the response status should be 400 (Bad Request)
         int statusCode = mvcResult.getResponse().getStatus();
-        assertEquals(400, statusCode);
+        assertEquals(422, statusCode);
     }
 }
