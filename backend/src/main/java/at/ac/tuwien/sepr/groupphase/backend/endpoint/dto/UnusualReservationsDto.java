@@ -34,8 +34,12 @@ public class UnusualReservationsDto {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         UnusualReservationsDto that = (UnusualReservationsDto) o;
         return isUnusual == that.isUnusual && Objects.deepEquals(days, that.days) && Objects.deepEquals(messages, that.messages);
     }
