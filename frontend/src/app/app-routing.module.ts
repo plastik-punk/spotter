@@ -18,8 +18,10 @@ import {EventCreateComponent} from "./components/event/event-create/event-create
 
 import {ReservationLayoutComponent} from "./components/reservation/reservation-layout/reservation-layout.component";
 import {AdminViewComponent} from "./components/admin-view/admin-view.component";
-import {CreateLayoutComponent} from "./components/create-layout/create-layout.component";
+import {CreateLayoutComponent} from "./components/layout/create-layout/create-layout.component";
 import {EmployeeViewComponent} from "./components/employee-view/employee-view.component";
+import {EditLayoutComponent} from "./components/layout/edit-layout/edit-layout.component";
+import {LayoutOverviewComponent} from "./components/layout/layout-overview/layout-overview.component";
 
 const routes: Routes = [
   {path: '', redirectTo: 'login', pathMatch: 'full'},
@@ -39,6 +41,8 @@ const routes: Routes = [
   {path: 'admin-view', component: AdminViewComponent},
 
   {path: 'create-layout', canActivate: mapToCanActivate([AuthGuard]), component: CreateLayoutComponent},
+  {path: 'edit-layout/:id', canActivate: mapToCanActivate([AuthGuard]), component: EditLayoutComponent},
+  {path: 'layout-overview', canActivate: mapToCanActivate([AuthGuard]), component: LayoutOverviewComponent},
 
   {path: 'employee-view', component: EmployeeViewComponent}
 ];

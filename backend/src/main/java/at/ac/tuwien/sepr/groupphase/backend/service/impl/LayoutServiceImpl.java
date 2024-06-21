@@ -4,11 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaLayoutDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.LayoutCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckAvailabilityDto;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Area;
-import at.ac.tuwien.sepr.groupphase.backend.entity.AreaPlaceSegment;
-import at.ac.tuwien.sepr.groupphase.backend.entity.OpeningHours;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Segment;
+import at.ac.tuwien.sepr.groupphase.backend.entity.*;
 import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
@@ -184,12 +180,7 @@ public class LayoutServiceImpl implements LayoutService {
 
     @Override
     @Transactional
-    public void createLayout(LayoutCreateDto layoutCreateDto) throws ConflictException {
-        // Initial checks
-        if (areaRepository.count() > 0 || placeRepository.count() > 0 || segmentRepository.count() > 0 || areaPlaceSegmentRepository.count() > 0) {
-            throw new ConflictException("Layout already exists. Cannot create new layout.", Collections.singletonList("layout_already_exists"));
-        }
-
+    public void createLayout(LayoutCreateDto layoutCreateDto) {
         // Separate the main area and other areas
         LayoutCreateDto.AreaCreateDto mainAreaDto = null;
         List<LayoutCreateDto.AreaCreateDto> otherAreas = new ArrayList<>();
@@ -254,5 +245,63 @@ public class LayoutServiceImpl implements LayoutService {
         id.setSegmentId(segment.getId());
         areaPlaceSegment.setId(id);
         areaPlaceSegmentRepository.save(areaPlaceSegment);
+    }
+
+    public void deleteArea(Long id) throws ConflictException {
+        //check if there are any reservations in the future for any places in this area, if yes throw an error
+        //if no, delete all area_place_segments, then all places, then all segments, then the area
+        List<AreaPlaceSegment> areaPlaceSegments = areaPlaceSegmentRepository.findByAreaId(id);
+        List<Long> placeIds = areaPlaceSegments.stream().map(aps -> aps.getPlace().getId()).collect(Collectors.toList());
+
+        List<String> conflictExceptions = new ArrayList<>();
+
+        for (Long placeId : placeIds) {
+            List<ReservationPlace> reservationPlaces = reservationPlaceRepository.findByPlaceId(placeId);
+
+            if (!reservationPlaces.isEmpty()) {
+                conflictExceptions.add("There are reservations for the table with id " + placeId);
+            }
+        }
+
+        if (!conflictExceptions.isEmpty()) {
+            throw new ConflictException("Cannot delete area", conflictExceptions);
+        }
+
+        areaPlaceSegmentRepository.deleteAll(areaPlaceSegments);
+        List<Place> places = placeRepository.findAllById(placeIds);
+        placeRepository.deleteAll(places);
+
+        areaRepository.deleteById(id);
+
+    }
+
+    public LayoutCreateDto.AreaCreateDto getAreaById(Long id) {
+        Area area = areaRepository.findById(id).orElseThrow();
+        List<AreaPlaceSegment> areaPlaceSegments = areaPlaceSegmentRepository.findByAreaId(id);
+        List<Long> placeIds = areaPlaceSegments.stream().map(aps -> aps.getPlace().getId()).collect(Collectors.toList());
+        List<Place> places = placeRepository.findAllById(placeIds);
+        List<LayoutCreateDto.AreaCreateDto.PlaceVisualDto> placeVisuals = places.stream().map(place -> {
+            LayoutCreateDto.AreaCreateDto.PlaceVisualDto placeVisual = new LayoutCreateDto.AreaCreateDto.PlaceVisualDto();
+            placeVisual.setPlaceNumber(place.getNumber());
+            placeVisual.setNumberOfSeats(place.getPax());
+            List<Segment> segments = areaPlaceSegments.stream()
+                .filter(aps -> aps.getPlace().getId().equals(place.getId()))
+                .map(AreaPlaceSegment::getSegment)
+                .toList();
+            List<LayoutCreateDto.AreaCreateDto.PlaceVisualDto.CoordinateDto> coordinates = segments.stream().map(segment -> {
+                LayoutCreateDto.AreaCreateDto.PlaceVisualDto.CoordinateDto coordinate = new LayoutCreateDto.AreaCreateDto.PlaceVisualDto.CoordinateDto();
+                coordinate.setX(segment.getX());
+                coordinate.setY(segment.getY());
+                return coordinate;
+            }).collect(Collectors.toList());
+            placeVisual.setCoordinates(coordinates);
+            return placeVisual;
+        }).collect(Collectors.toList());
+        LayoutCreateDto.AreaCreateDto areaDto = new LayoutCreateDto.AreaCreateDto();
+        areaDto.setPlaces(placeVisuals);
+        areaDto.setIsOpen(area.isOpen());
+        areaDto.setName(area.getName());
+        areaDto.setMainArea(false);
+        return areaDto;
     }
 }

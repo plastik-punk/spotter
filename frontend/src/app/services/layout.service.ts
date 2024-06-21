@@ -2,7 +2,13 @@ import {Injectable} from "@angular/core";
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {Globals} from "../global/globals";
 import {Observable} from "rxjs";
-import {AreaLayoutDto, AreaListDto, LayoutCreateDto, ReservationLayoutCheckAvailabilityDto} from "../dtos/layout";
+import {
+  AreaCreateDto,
+  AreaLayoutDto,
+  AreaListDto,
+  LayoutCreateDto,
+  ReservationLayoutCheckAvailabilityDto
+} from "../dtos/layout";
 
 @Injectable({
   providedIn: 'root'
@@ -44,6 +50,24 @@ export class LayoutService {
    */
   createLayout(layoutCreateDto: LayoutCreateDto): Observable<any> {
     return this.httpClient.post<any>(`${this.layoutBaseUri}/create`, layoutCreateDto);
+  }
+
+  /**
+   * Delete an area
+   * @param areaId the id of the area to be deleted
+   * @return an Observable for the deleted area
+   */
+  deleteArea(areaId: number): Observable<any> {
+    return this.httpClient.delete<any>(`${this.layoutBaseUri}/delete/${areaId}`);
+  }
+
+  /**
+   * Get an area by id
+   * @param id the id of the area to be retrieved
+   * @return an Observable for the area
+   */
+  getAreaById(id: number): Observable<AreaCreateDto> {
+    return this.httpClient.get<AreaCreateDto>(`${this.layoutBaseUri}/area/${id}`);
   }
 }
 

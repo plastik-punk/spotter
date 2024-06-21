@@ -26,5 +26,25 @@ public interface LayoutService {
      */
     AreaLayoutDto getAreaLayout(ReservationLayoutCheckAvailabilityDto reservationLayoutCheckAvailabilityDto);
 
-    void createLayout(LayoutCreateDto layoutCreateDto) throws ConflictException;
+    /**
+     * Create a layout.
+     *
+     * @param layoutCreateDto the layout data
+     */
+    void createLayout(LayoutCreateDto layoutCreateDto);
+
+    /**
+     * Delete an area.
+     *
+     * @param id the id of the area
+     */
+    void deleteArea(Long id) throws ConflictException;
+
+    /**
+     * Get area by id.
+     *
+     * @param id the id of the area
+     * @return the area
+     */
+    LayoutCreateDto.AreaCreateDto getAreaById(Long id);
 }
