@@ -116,4 +116,12 @@ public interface ReservationService {
      * @return the permanent reservation as provided from the persistence layer after creation in the data storage
      */
     PermanentReservationCreateDto createPermanent(PermanentReservationCreateDto permanentReservationCreateDto);
+
+
+    /**
+     * Confirm a Permanent Reservation and create single reservations for it.
+     *
+     * @param id ID to confirm
+     */
+    void confirmPermanentReservation(Long id) throws MessagingException;
 }

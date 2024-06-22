@@ -5,7 +5,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -55,12 +54,20 @@ public class PermanentReservation {
     @Column(nullable = false)
     private Boolean confirmed;
 
+    @NotNull(message = "Pax required")
+    @Column(nullable = false)
+    private Long pax;
+
+    @NotNull(message = "hashedId required")
+    @Column(nullable = false)
+    private String hashedId;
+
     // Getters
     public Long getId() {
         return id;
     }
 
-    public ApplicationUser getUser() {
+    public ApplicationUser getApplicationUser() {
         return applicationUser;
     }
 
@@ -97,7 +104,7 @@ public class PermanentReservation {
         this.id = id;
     }
 
-    public void setUser(ApplicationUser applicationUser) {
+    public void setApplicationUser(ApplicationUser applicationUser) {
         this.applicationUser = applicationUser;
     }
 
@@ -129,6 +136,22 @@ public class PermanentReservation {
         this.confirmed = confirmed;
     }
 
+    public String getHashedId() {
+        return hashedId;
+    }
+
+    public void setHashedId(String hashedId) {
+        this.hashedId = hashedId;
+    }
+
+    public Long getPax() {
+        return pax;
+    }
+
+    public void setPax(Long pax) {
+        this.pax = pax;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -145,7 +168,8 @@ public class PermanentReservation {
             && Objects.equals(endDate, that.endDate)
             && repetition == that.repetition
             && Objects.equals(period, that.period)
-            && Objects.equals(confirmed, that.confirmed);
+            && Objects.equals(confirmed, that.confirmed)
+            && Objects.equals(pax, that.pax);
     }
 
     @Override
@@ -164,7 +188,8 @@ public class PermanentReservation {
             + ", endDate=" + endDate
             + ", repetition=" + repetition
             + ", period=" + period
-            + ", confirmed=" + confirmed + '}';
+            + ", confirmed=" + confirmed
+            + ", pax=" + pax + '}';
     }
 
     // Builder
@@ -178,6 +203,8 @@ public class PermanentReservation {
         private RepetitionEnum repetition;
         private Integer period;
         private Boolean confirmed;
+        private Long pax;
+        private String hashedId;
 
         private PermanentReservationBuilder() {
         }
@@ -227,10 +254,20 @@ public class PermanentReservation {
             return this;
         }
 
+        public PermanentReservationBuilder withPax(Long pax) {
+            this.pax = pax;
+            return this;
+        }
+
+        public PermanentReservationBuilder withHashedId(String hashedId) {
+            this.hashedId = hashedId;
+            return this;
+        }
+
         public PermanentReservation build() {
             PermanentReservation permanentReservation = new PermanentReservation();
             permanentReservation.setId(id);
-            permanentReservation.setUser(applicationUser);
+            permanentReservation.setApplicationUser(applicationUser);
             permanentReservation.setStartDate(startDate);
             permanentReservation.setStartTime(startTime);
             permanentReservation.setEndTime(endTime);
@@ -238,6 +275,8 @@ public class PermanentReservation {
             permanentReservation.setRepetition(repetition);
             permanentReservation.setPeriod(period);
             permanentReservation.setConfirmed(confirmed);
+            permanentReservation.setPax(pax);
+            permanentReservation.setHashedId(hashedId);
             return permanentReservation;
         }
     }

@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ApplicationUserOverviewDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
@@ -24,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -72,6 +74,16 @@ public class ReservationEndpoint {
     public PermanentReservationCreateDto createPermanent(@Valid @RequestBody PermanentReservationCreateDto permanentReservationCreateDto) {
         LOGGER.info("POST /api/v1/reservations/permanent body: {}", permanentReservationCreateDto.toString());
         return service.createPermanent(permanentReservationCreateDto);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PutMapping("/permanent-confirmation/{id}")
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
+    @Operation(summary = "Confirm a new permanent reservation")
+    public ResponseEntity<Void> update(@PathVariable("id") Long id, @RequestBody PermanentReservationCreateDto toConfirm) throws MessagingException {
+        LOGGER.info("POST /api/v1/reservations/permanent/{} body: {}", id, toConfirm.toString());
+        service.confirmPermanentReservation(id);
+        return ResponseEntity.noContent().build();
     }
 
     @ResponseStatus(HttpStatus.OK)

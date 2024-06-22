@@ -54,7 +54,7 @@
 
             </div>
             <!-- Start row for recurring reservation option -->
-            <div class ="column">
+            <div class ="column" *ngIf="authService.isLoggedIn()">
             <div class="row">
               <div class="column">
                 <div class="form-check">
@@ -89,7 +89,7 @@
               <!-- Note on Default Duration -->
               <div class="col-12 text-center mt-2">
                 <small class="form-text text-muted">
-                  Note: Default runtime for recurring reservations is 3 months. Choose a date if you want to end it earlier.
+                  Note: Default runtime for recurring reservations is 1 year. Choose a date if you want to end it at a different time.
                 </small>
 
               </div>

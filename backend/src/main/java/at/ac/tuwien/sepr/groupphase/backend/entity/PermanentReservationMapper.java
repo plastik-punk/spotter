@@ -110,4 +110,35 @@ public class PermanentReservationMapper {
             return Objects.hash(permanentReservationId, reservationId);
         }
     }
+
+    public static final class PermanentReservationMapperBuilder {
+        private PermanentReservationMapperId id;
+        private Reservation reservation;
+        private PermanentReservation permanentReservation;
+
+        private PermanentReservationMapperBuilder() {
+        }
+
+        public static PermanentReservationMapperBuilder aPermanentReservationMapper() {
+            return new PermanentReservationMapperBuilder();
+        }
+
+        public PermanentReservationMapperBuilder withReservation(Reservation reservation) {
+            this.reservation = reservation;
+            return this;
+        }
+
+        public PermanentReservationMapperBuilder withPermanentReservation(PermanentReservation permanentReservation) {
+            this.permanentReservation = permanentReservation;
+            return this;
+        }
+
+        public PermanentReservationMapper build() {
+            PermanentReservationMapper permanentReservationMapper = new PermanentReservationMapper();
+            permanentReservationMapper.setId(id);
+            permanentReservationMapper.setPermanentReservation(permanentReservation);
+            permanentReservationMapper.setReservation(reservation);
+            return permanentReservationMapper;
+        }
+    }
 }

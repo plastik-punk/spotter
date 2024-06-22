@@ -29,7 +29,7 @@ public interface ReservationMapper {
     // @Mapping(source = "period", target = "period")
     // @Mapping(source = "confirmed", target = "confirmed")
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "user", ignore = true)
+    //@Mapping(target = "user", ignore = true)
     PermanentReservation permanentReservationCreateDtoToPermanentReservation(PermanentReservationCreateDto permanentReservationCreateDto);
 
     // @Mapping(source = "applicationUser", target = "applicationUser")
@@ -40,7 +40,7 @@ public interface ReservationMapper {
     // @Mapping(source = "repetition", target = "repetition")
     // @Mapping(source = "period", target = "period")
     // @Mapping(source = "confirmed", target = "confirmed")
-    @Mapping(target = "applicationUser", ignore = true)
+    //@Mapping(target = "applicationUser", ignore = true)
     PermanentReservationCreateDto permanentReservationToPermanentReservationCreateDto(PermanentReservation permanentReservation);
 
     @Mapping(target = "id", ignore = true)

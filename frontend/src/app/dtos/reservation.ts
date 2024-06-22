@@ -101,6 +101,8 @@ export interface PermanentReservationDto {
   repetition: RepetitionEnum;
   period: number;
   confirmed: boolean;
+  pax:number;
+  hashedId:String;
 }
 
 export enum RepetitionEnum{

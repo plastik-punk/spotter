@@ -49,7 +49,7 @@ export class ReservationSimpleComponent implements OnInit {
   repeatEvery: number; // Initialize appropriately based on your default or user's last input
   repetitionType: RepetitionEnum = RepetitionEnum.DAYS; // Default to 'days', can also be 'weeks'
   permanentReservation: PermanentReservationDto;
-  endDate:string;
+  endDate: string;
 
   constructor(
     public authService: AuthService,
@@ -290,12 +290,14 @@ export class ReservationSimpleComponent implements OnInit {
           repetition: this.repetitionType,
           period: this.repeatEvery,
           confirmed: false, // Assuming it's automatically confirmed for simplicity
-          endDate: this.endDate ? new Date(this.endDate) : null // Set endDate to null if not provided
+          endDate: this.endDate ? new Date(this.endDate) : null, // Set endDate to null if not provided
+          pax: this.reservationCreateDto.pax,
+          hashedId: null
         };
         console.log(this.permanentReservation);
         this.service.createPermanentReservation(this.permanentReservation).subscribe({
           next: response => {
-            this.notificationService.showSuccess('Permanent reservation saved successfully.');
+            this.notificationService.showSuccess('Permanent reservation saved successfully. You will get an email once it gets confirmed by the restaurant');
             this.resetForm(form);
           },
           error: error => {
@@ -375,4 +377,5 @@ export class ReservationSimpleComponent implements OnInit {
   protected readonly formatIsoTime = formatIsoTime;
   protected readonly Math = Math;
   protected readonly RepetitionEnum = RepetitionEnum;
+  protected readonly AuthService = AuthService;
 }

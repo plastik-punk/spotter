@@ -12,9 +12,11 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ClosedDay;
 import at.ac.tuwien.sepr.groupphase.backend.entity.OpeningHours;
 import at.ac.tuwien.sepr.groupphase.backend.entity.PermanentReservation;
+import at.ac.tuwien.sepr.groupphase.backend.entity.PermanentReservationMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ReservationPlace;
+import at.ac.tuwien.sepr.groupphase.backend.enums.RepetitionEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
@@ -25,6 +27,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.AreaPlaceSegmentRepositor
 import at.ac.tuwien.sepr.groupphase.backend.repository.AreaRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ClosedDayRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.OpeningHoursRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.PermanentReservationMapperRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PermanentReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationPlaceRepository;
@@ -38,6 +41,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
+import org.apache.juli.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +81,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final AreaRepository areaRepository;
     private final AreaPlaceSegmentRepository areaPlaceSegmentRepository;
     private final PermanentReservationRepository permanentReservationRepository;
+    private final PermanentReservationMapperRepository permanentReservationMapperRepository;
 
     @Autowired
     private Validator validator;
@@ -94,7 +99,8 @@ public class ReservationServiceImpl implements ReservationService {
                                   ApplicationUserServiceImpl applicationUserService,
                                   AreaRepository areaRepository,
                                   AreaPlaceSegmentRepository areaPlaceSegmentRepository,
-                                  PermanentReservationRepository permanentReservationRepository) {
+                                  PermanentReservationRepository permanentReservationRepository,
+                                  PermanentReservationMapperRepository permanentReservationMapperRepository) {
         this.mapper = mapper;
         this.reservationRepository = reservationRepository;
         this.applicationUserRepository = applicationUserRepository;
@@ -108,6 +114,7 @@ public class ReservationServiceImpl implements ReservationService {
         this.areaRepository = areaRepository;
         this.areaPlaceSegmentRepository = areaPlaceSegmentRepository;
         this.permanentReservationRepository = permanentReservationRepository;
+        this.permanentReservationMapperRepository = permanentReservationMapperRepository;
     }
 
     @Override
@@ -648,11 +655,22 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public PermanentReservationCreateDto createPermanent(PermanentReservationCreateDto permanentReservationCreateDto) {
-        LOGGER.trace("createPermanent {}", permanentReservationCreateDto);
-        LOGGER.info("MAPPED Perma: {}", mapper.permanentReservationCreateDtoToPermanentReservation(permanentReservationCreateDto));
-        PermanentReservation savedPermanentReservation = permanentReservationRepository.save(mapper.permanentReservationCreateDtoToPermanentReservation(permanentReservationCreateDto));
+    public PermanentReservationCreateDto createPermanent(PermanentReservationCreateDto createDto) {
+        LOGGER.trace("createPermanent {}", createDto);
 
+
+        createDto.setApplicationUser(applicationUserService.getCurrentApplicationUser());
+        System.out.println(applicationUserService.getCurrentApplicationUser());
+        createDto.setEndDate(createDto.getEndDate() == null ? createDto.getStartDate().plusYears(1) : createDto.getEndDate());
+        createDto.setEndTime(createDto.getStartTime().plusHours(2));
+
+        String hashedValue = hashService.hashSha256(createDto.getStartDate().toString()
+            + createDto.getStartTime().toString() + createDto.getEndTime().toString()
+            + createDto.getPax().toString()) + createDto.getEndDate();
+        createDto.setHashedId(hashedValue);
+
+        LOGGER.debug("MAPPED Perma: {}", mapper.permanentReservationCreateDtoToPermanentReservation(createDto));
+        PermanentReservation savedPermanentReservation = permanentReservationRepository.save(mapper.permanentReservationCreateDtoToPermanentReservation(createDto));
         return mapper.permanentReservationToPermanentReservationCreateDto(savedPermanentReservation);
     }
 
@@ -697,4 +715,79 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setConfirmed(false);
         reservationRepository.save(reservation);
     }
+
+    public void confirmPermanentReservation(Long permanentReservationId) throws MessagingException {
+        Optional<PermanentReservation> optionalPermanent = permanentReservationRepository.findById(permanentReservationId);
+        if (optionalPermanent.isEmpty()) {
+            throw new NotFoundException("Permanent reservation not found");
+        }
+
+        PermanentReservation permanentReservation = optionalPermanent.get();
+        permanentReservation.setConfirmed(true);
+        permanentReservationRepository.save(permanentReservation);
+
+        LocalDate currentDate = permanentReservation.getStartDate();
+        LocalDate endDate = permanentReservation.getEndDate();
+        List<LocalDate> skippedDates = new ArrayList<>();
+        int period = permanentReservation.getPeriod();
+        RepetitionEnum repetition = permanentReservation.getRepetition();
+
+        while (currentDate.isBefore(endDate) || currentDate.isEqual(endDate)) {
+            ReservationCheckAvailabilityDto reservationCheckAvailabilityDto =
+                ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+                    .withDate(currentDate)
+                    .withStartTime(permanentReservation.getStartTime())
+                    .withEndTime(permanentReservation.getEndTime())
+                    .withPax(permanentReservation.getPax())
+                    .build();
+
+            ReservationResponseEnum tableStatus = getAvailability(reservationCheckAvailabilityDto);
+
+            if (tableStatus == ReservationResponseEnum.AVAILABLE) {
+                Reservation newReservation = createSingleReservationFromPermanent(permanentReservation, currentDate);
+                reservationRepository.save(newReservation);
+
+                PermanentReservationMapper mapping =
+                    PermanentReservationMapper.PermanentReservationMapperBuilder.aPermanentReservationMapper()
+                        .withReservation(newReservation)
+                        .withPermanentReservation(permanentReservation)
+                        .build();
+            } else {
+                skippedDates.add(currentDate);
+            }
+
+            if (repetition == RepetitionEnum.DAYS) {
+                currentDate = currentDate.plusDays(period);
+            } else if (repetition == RepetitionEnum.WEEKS) {
+                currentDate = currentDate.plusWeeks(period);
+            }
+        }
+
+        sendConfirmationEmail(permanentReservation, skippedDates);
+    }
+
+    private Reservation createSingleReservationFromPermanent(PermanentReservation perm, LocalDate date) {
+        LOGGER.trace("createSingleReservationFromPermanent");
+        Reservation reservation = new Reservation();
+        reservation.setDate(date);
+        reservation.setStartTime(perm.getStartTime());
+        reservation.setEndTime(perm.getEndTime());
+        reservation.setPax(perm.getPax()); // Assuming Pax is part of PermanentReservation
+        reservation.setUser(perm.getApplicationUser());
+        reservation.setConfirmed(true);
+        return reservation;
+    }
+
+
+    private void sendConfirmationEmail(PermanentReservation permanentReservation, List<LocalDate> skippedDates) throws MessagingException {
+        LOGGER.trace("sendConfirmationEmail");
+        Map<String, Object> templateModel = new HashMap<>();
+        templateModel.put("recipientName", permanentReservation.getApplicationUser().getFirstName() + " " + permanentReservation.getApplicationUser().getLastName());
+        templateModel.put("permanentReservationDetails", permanentReservation.toString());
+        templateModel.put("skippedDates", skippedDates);
+        templateModel.put("link", "http://localhost:8080/reservations/" + permanentReservation.getHashedId()); // Adjust link as necessary
+
+        emailService.sendMessageUsingThymeleafTemplate(permanentReservation.getApplicationUser().getEmail(), "Permanent Reservation Confirmation", templateModel);
+    }
+
 }

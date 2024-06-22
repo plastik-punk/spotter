@@ -35,6 +35,11 @@ public class PermanentReservationCreateDto {
     @NotNull(message = "Confirmation status is required")
     private Boolean confirmed;
 
+    @NotNull(message = "Pax is required")
+    private Long pax;
+
+    private String hashedId;
+
     public ApplicationUser getApplicationUser() {
         return applicationUser;
     }
@@ -99,6 +104,23 @@ public class PermanentReservationCreateDto {
         this.confirmed = confirmed;
     }
 
+
+    public Long getPax() {
+        return pax;
+    }
+
+    public void setPax(Long pax) {
+        this.pax = pax;
+    }
+
+    public String getHashedId() {
+        return hashedId;
+    }
+
+    public void setHashedId(String hashedId) {
+        this.hashedId = hashedId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -114,7 +136,8 @@ public class PermanentReservationCreateDto {
             && Objects.equals(endDate, that.endDate)
             && repetition == that.repetition
             && Objects.equals(period, that.period)
-            && Objects.equals(confirmed, that.confirmed);
+            && Objects.equals(confirmed, that.confirmed)
+            && Objects.equals(pax, that.pax);
     }
 
     @Override
@@ -132,7 +155,8 @@ public class PermanentReservationCreateDto {
             + ", endDate=" + endDate
             + ", repetition=" + repetition
             + ", period=" + period
-            + ", confirmed=" + confirmed + '}';
+            + ", confirmed=" + confirmed
+            + ", pax=" + pax + '}';
     }
 
     public static final class PermanentReservationCreateDtoBuilder {
@@ -144,6 +168,8 @@ public class PermanentReservationCreateDto {
         private RepetitionEnum repetition;
         private Integer period;
         private Boolean confirmed;
+        private Long pax;
+        private String hashedId;
 
         private PermanentReservationCreateDtoBuilder() {
         }
@@ -192,6 +218,16 @@ public class PermanentReservationCreateDto {
             return this;
         }
 
+        public PermanentReservationCreateDtoBuilder withPax(Long pax) {
+            this.pax = pax;
+            return this;
+        }
+
+        public PermanentReservationCreateDtoBuilder withHashedId(String hashedId) {
+            this.hashedId = hashedId;
+            return this;
+        }
+
         public PermanentReservationCreateDto build() {
             PermanentReservationCreateDto dto = new PermanentReservationCreateDto();
             dto.setApplicationUser(applicationUser);
@@ -202,6 +238,8 @@ public class PermanentReservationCreateDto {
             dto.setRepetition(repetition);
             dto.setPeriod(period);
             dto.setConfirmed(confirmed);
+            dto.setPax(pax);
+            dto.setHashedId(hashedId);
             return dto;
         }
     }
