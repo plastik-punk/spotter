@@ -439,6 +439,7 @@ public class ReservationServiceImpl implements ReservationService {
         return reservationModalDetailDto;
     }
 
+    // TODO: find reservation to update via hash?
     @Override
     public ReservationEditDto update(ReservationEditDto reservationEditDto) {
         LOGGER.trace("update ({})", reservationEditDto.toString());
