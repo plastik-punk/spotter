@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.mapper;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.LayoutCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Area;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
@@ -36,4 +37,5 @@ public interface LayoutMapper {
     default StatusEnum mapStatus(Boolean status) {
         return status ? StatusEnum.AVAILABLE : StatusEnum.OCCUPIED;
     }
+
 }

@@ -210,8 +210,6 @@ public class ReservationServiceImpl implements ReservationService {
             selectedPlaces.add(places.get(0));
         }
 
-        // TODO: add Restaurant name to DTO
-
         String hashedValue = hashService.hashSha256(reservation.getDate().toString()
             + reservation.getStartTime().toString() + reservation.getEndTime().toString()
             + reservation.getPax().toString()) + reservation.isConfirmed();
@@ -445,13 +443,15 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         Reservation reservation = reservations.getFirst();
-        ReservationModalDetailDto reservationModalDetailDto = mapper.reservationToReservationModalDetailDto(reservation);
+        List<Long> placeIds = reservationPlaceRepository.findPlaceIdsByReservationIds(Collections.singletonList(reservation.getId()));
+        ReservationModalDetailDto reservationModalDetailDto = mapper.reservationToReservationModalDetailDto(reservation, placeIds);
 
         LOGGER.debug("Found reservation: {}", reservationModalDetailDto.toString());
 
         return reservationModalDetailDto;
     }
 
+    // TODO: find reservation to update via hash?
     @Override
     public ReservationEditDto update(ReservationEditDto reservationEditDto) {
         LOGGER.trace("update ({})", reservationEditDto.toString());
@@ -555,6 +555,9 @@ public class ReservationServiceImpl implements ReservationService {
         LOGGER.debug("Found {} reservations for the given params", reservations.size());
         for (Reservation reservation : reservations) {
             List<Long> placeIds = reservationPlaceRepository.findPlaceIdsByReservationIds(Collections.singletonList(reservation.getId()));
+            LOGGER.debug("Found {} places for reservation {}", placeIds.size(), reservation.getId());
+            ReservationListDto dto = mapper.reservationToReservationListDto(reservation, placeIds);
+            LOGGER.debug("Mapped reservation to DTO: {}", dto.toString());
             reservationListDtos.add(mapper.reservationToReservationListDto(reservation, placeIds));
         }
         return reservationListDtos;

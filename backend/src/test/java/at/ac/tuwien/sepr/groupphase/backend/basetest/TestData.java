@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.basetest;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ApplicationUserRegistrationDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
@@ -19,6 +20,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Restaurant;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Segment;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -164,6 +166,15 @@ public interface TestData {
     String TEST_APPLICATION_USER_MOBILE_NUMBER_2 = "06501234568";
     String TEST_APPLICATION_USER_PASSWORD_2 = "naughtybiber";
 
+    ApplicationUserRegistrationDto TEST_REGISTRATION_CUSTOMER = ApplicationUserRegistrationDto.ApplicationUserRegistrationDtoBuilder.anApplicationUserRegistrationDto()
+        .withFirstName(TEST_APPLICATION_USER_FIRST_NAME)
+        .withLastName(TEST_APPLICATION_USER_LAST_NAME)
+        .withEmail(TEST_APPLICATION_USER_EMAIL)
+        .withMobileNumber(TEST_APPLICATION_USER_MOBILE_NUMBER)
+        .withPassword(TEST_APPLICATION_USER_PASSWORD)
+        .withRole(TEST_APPLICATION_USER_ROLE)
+        .build();
+
     ApplicationUser TEST_APPLICATION_USER_CUSTOMER_1 = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
         .withId(1L)
         .withFirstName(TEST_APPLICATION_USER_FIRST_NAME)
@@ -306,10 +317,20 @@ public interface TestData {
     LocalDate TEST_RESERVATION_DATE = LocalDate.of(2025, 1, 2);
     Long TEST_RESERVATION_PAX = 4L;
     String TEST_RESERVATION_NOTES = "Test Notes";
+    String TEST_RESERVATION_NOTES_EDIT = "Test Notes Edit";
     Long TEST_RESERVATION_DETAIL_ID = 1L;
     String TEST_RESERVATION_HASH_VALUE = "TestHashValue";
-    String TEST_RESERVATION_HASH_VALUE_1 = "44A17E9E592AA9951A3A0853524BE799A333DFD8522182D79D990A24EB94A7FEfalse";
+    String TEST_RESERVATION_HASH_VALUE_1 = "44A17E9E592AA9951A3A0853524BE799A333DFD8522182D79D990A24EB94A7FE";
+    String TEST_RESERVATION_HASH_VALUE_2 = "44A17E9E592AA9951A3A0853524BE799A333DFD8522182D79D990A24EB94A7FEfalse";
     LocalDate TEST_RESERVATION_DATE_INVALID = LocalDate.of(2022, 1, 2);
+
+
+    List<Long> TEST_PLACE_IDS = new ArrayList<>() {
+        {
+            add(TEST_PLACE_AVAILABLE_1.getId());
+            add(TEST_PLACE_AVAILABLE_2.getId());
+        }
+    };
 
     ReservationCreateDto TEST_RESERVATION_CREATE_DTO_CUSTOMER = ReservationCreateDto.ReservationCreateDtoBuilder.aReservationCreateDto()
         .withApplicationUser(TEST_APPLICATION_USER_CUSTOMER_1)
@@ -337,14 +358,6 @@ public interface TestData {
         .withMobileNumber(TEST_APPLICATION_USER_GUEST.getMobileNumber())
         .build();
 
-
-    List<Long> TEST_PLACE_IDS = new ArrayList<>() {
-        {
-            add(TEST_PLACE_AVAILABLE_1.getId());
-            add(TEST_PLACE_AVAILABLE_2.getId());
-        }
-    };
-
     ReservationEditDto TEST_RESERVATION_EDIT_DTO = ReservationEditDto.ReservationEditDtoBuilder.aReservationEditDto()
         .withReservationId(TEST_RESERVATION_DETAIL_ID)
         .withUser(TEST_APPLICATION_USER_CUSTOMER_1)
@@ -353,7 +366,6 @@ public interface TestData {
         .withDate(TEST_RESERVATION_DATE)
         .withPax(TEST_RESERVATION_PAX)
         .withNotes(TEST_RESERVATION_NOTES)
-        .withHashedId(TEST_RESERVATION_HASH_VALUE)
         .withPlaceIds(TEST_PLACE_IDS)
         .build();
 
@@ -375,6 +387,7 @@ public interface TestData {
         .withDate(TEST_RESERVATION_DATE)
         .withPax(TEST_RESERVATION_PAX)
         .withNotes(TEST_RESERVATION_NOTES)
+        .withHashValue(TEST_RESERVATION_HASH_VALUE_1)
         .withConfirmed(false)
         .build();
 
@@ -386,6 +399,7 @@ public interface TestData {
         .withDate(TEST_RESERVATION_DATE)
         .withPax(TEST_RESERVATION_PAX)
         .withNotes(TEST_RESERVATION_NOTES)
+        .withHashValue(TEST_RESERVATION_HASH_VALUE_1)
         .withConfirmed(false)
         .build();
 

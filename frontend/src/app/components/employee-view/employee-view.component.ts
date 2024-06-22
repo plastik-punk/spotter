@@ -36,7 +36,7 @@ export class EmployeeViewComponent {
   areaLayout: AreaLayoutDto;
   selectedPlaces: { placeId: number, numberOfSeats: number }[] = [];
   areas: AreaDto[] = [];
-  selectedAreaId: number = 1;
+  selectedAreaId: number;
 
   isPaxValid: boolean = true;
   timer: any;
@@ -58,8 +58,8 @@ export class EmployeeViewComponent {
     this.reservationLayoutCheckAvailabilityDto = this.initializeReservationLayoutCheckAvailabilityDto();
   }
 
-  ngOnInit() {
-    this.fetchAllAreas();
+  async ngOnInit() {
+    await this.fetchAllAreas();
     this.fetchLayoutAvailability();
     this.d3DrawService.createSeatingPlan(this.d3Container);
     this.onResize();
@@ -100,7 +100,7 @@ export class EmployeeViewComponent {
     return {
       startTime: this.sharedStartTime,
       date: this.sharedDate,
-      areaId: 1,
+      areaId: this.selectedAreaId,
       idToExclude: -1
     };
   }
@@ -129,20 +129,17 @@ export class EmployeeViewComponent {
   }
 
 
-  private fetchAllAreas() {
-    this.layoutService.getAllAreas().subscribe({
-      next: (data: AreaListDto) => {
-        this.areas = data.areas;
-        if (this.areas.length > 0) {
-          this.selectedAreaId = this.selectedAreaId || this.areas[0].id;
-          this.reservationLayoutCheckAvailabilityDto.areaId = this.selectedAreaId;
-          this.fetchLayoutAvailability();
-        }
-      },
-      error: () => {
-        this.notificationService.showError('Failed to fetch areas. Please try again later.');
-      },
-    });
+  private async fetchAllAreas() {
+    try {
+      const data: AreaListDto = await this.layoutService.getAllAreas().toPromise();
+      this.areas = data.areas;
+      if (this.areas.length > 0) {
+        this.selectedAreaId = this.areas[0].id;
+        this.reservationLayoutCheckAvailabilityDto.areaId = this.selectedAreaId;
+      }
+    } catch (error) {
+      this.notificationService.showError('Failed to fetch areas. Please try again later.');
+    }
   }
 
   onAreaChange(event: Event) {

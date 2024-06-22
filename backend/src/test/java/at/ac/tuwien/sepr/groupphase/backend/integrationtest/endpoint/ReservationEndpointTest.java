@@ -19,13 +19,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.http.MediaType;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -125,6 +124,7 @@ public class ReservationEndpointTest implements TestData {
             () -> assertEquals(TEST_RESERVATION_DATE, response.getDate()),
             () -> assertEquals(TEST_RESERVATION_PAX, response.getPax()),
             () -> assertEquals(TEST_RESERVATION_NOTES, response.getNotes()),
+            () -> assertEquals(TEST_RESERVATION_HASH_VALUE_1, response.getHashedId()),
             () -> assertEquals(TEST_PLACE_IDS, response.getPlaceIds())
         );
     }
@@ -254,6 +254,7 @@ public class ReservationEndpointTest implements TestData {
             .withNotes(TEST_RESERVATION_NOTES)
             .withEmail(TEST_APPLICATION_USER_CUSTOMER_1.getEmail())
             .withMobileNumber(TEST_APPLICATION_USER_CUSTOMER_1.getMobileNumber())
+            .withPlaceIds(TEST_PLACE_IDS)
             .build();
         service.create(dto);
 
@@ -264,10 +265,11 @@ public class ReservationEndpointTest implements TestData {
             .withStartTime(TEST_RESERVATION_START_TIME)
             .withEndTime(TEST_RESERVATION_END_TIME)
             .withNotes(TEST_RESERVATION_NOTES)
+            .withPlaceIds(TEST_PLACE_IDS)
             .build();
 
         MvcResult mvcResult = this.mockMvc.perform(get(RESERVATION_BASE_URI + "/modal")
-                .param("id", TEST_RESERVATION_HASH_VALUE_1)
+                .param("id", TEST_RESERVATION_HASH_VALUE_2)
                 .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(TEST_USER_CUSTOMER, TEST_ROLES_CUSTOMER)))
             .andDo(print())
             .andReturn();
@@ -332,6 +334,6 @@ public class ReservationEndpointTest implements TestData {
 
         // Then the response status should be 400 (Bad Request)
         int statusCode = mvcResult.getResponse().getStatus();
-        assertEquals(400, statusCode);
+        assertEquals(422, statusCode);
     }
 }

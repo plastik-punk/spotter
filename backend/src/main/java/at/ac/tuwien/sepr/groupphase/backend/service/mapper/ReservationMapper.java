@@ -68,15 +68,10 @@ public interface ReservationMapper {
         }
     }
 
-    @Mapping(target = "placeIds", ignore = true)
-    ReservationDetailDto reservationToReservationDetailDto(Reservation reservation);
+    @Mapping(source = "reservation.applicationUser.firstName", target = "firstName")
+    @Mapping(source = "reservation.applicationUser.lastName", target = "lastName")
+    ReservationModalDetailDto reservationToReservationModalDetailDto(Reservation reservation, List<Long> placeIds);
 
-    @Mapping(target = "placeIds", ignore = true)
-    @Mapping(source = "applicationUser.firstName", target = "firstName")
-    @Mapping(source = "applicationUser.lastName", target = "lastName")
-    ReservationModalDetailDto reservationToReservationModalDetailDto(Reservation reservation);
-
-    @Mapping(target = "placeIds", ignore = true)
     @Mapping(source = "reservation.applicationUser.firstName", target = "userFirstName")
     @Mapping(source = "reservation.applicationUser.lastName", target = "userLastName")
     @Mapping(source = "reservation.startTime", target = "startTime")

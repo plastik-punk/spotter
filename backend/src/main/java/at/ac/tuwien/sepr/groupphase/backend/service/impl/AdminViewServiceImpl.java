@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ForeCastDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PredictionDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnusualReservationsDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Area;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Event;
@@ -120,14 +121,8 @@ public class AdminViewServiceImpl implements AdminViewService {
             totalPax += place.getPax();
         }
 
-        long maxPaxAtSameTimeExpected = Collections.max(amountOfCustomersPerHourMap.values()); // + Collections.max(amountOfWalkInCustomersPerHourMap.values());
 
-
-        //7. Calculate the amount of the Employees
-        List<ApplicationUser> employeeList = applicationUserRepository.findAllByRole(RoleEnum.EMPLOYEE);
-        long totalEmployeeCount = 5; //employeeList.size() / 2 * (maxPaxAtSameTimeExpected / totalPax); //TODO get the real count of employees with test Data
-
-        //8. Take Events in consideration
+        //7. Take Events in consideration
         List<Event> events = eventRepository.findAllByStartTimeBetween(dateToCalculate.atStartOfDay(),
             dateToCalculate.atStartOfDay().toLocalDate().atTime(23, 59));
         float eventInfluence = 1.0f;
@@ -136,16 +131,42 @@ public class AdminViewServiceImpl implements AdminViewService {
         }
 
 
-        //9. calculate the percentage of the Employees
-        long maxPaxAtSameTimeCurrDay = Collections.max(amountOfCustomersPerHourMap.values());
-        long maxPaxAtSameTimeInThePast = Collections.max(amountOfCustomersPerDayMapInThePast.values());
-        long maxPaxAtSameTimeWalkIn = Collections.max(amountOfWalkInCustomersPerDayMapInThePast.values());
+        //8. calculate the percentage of the Employees
+        long maxPaxAtSameTimeCurrDay = 1;
+        if (!amountOfCustomersPerDayMapInThePast.isEmpty()) {
+            maxPaxAtSameTimeCurrDay = Collections.max(amountOfCustomersPerHourMap.values());
+        }
+        long maxPaxAtSameTimeInThePast = 0;
+        if (!amountOfCustomersPerDayMapInThePast.isEmpty()) {
+            maxPaxAtSameTimeInThePast = Collections.max(amountOfCustomersPerDayMapInThePast.values());
+        }
+        long maxPaxAtSameTimeWalkIn = 0;
+        if (!amountOfWalkInCustomersPerDayMapInThePast.isEmpty()) {
+            maxPaxAtSameTimeWalkIn = Collections.max(amountOfWalkInCustomersPerDayMapInThePast.values());
+        }
+
+        //9. Calculate the amount of the Employees
+        List<ApplicationUser> employeeList = applicationUserRepository.findAllByRole(RoleEnum.EMPLOYEE);
+        long maxPaxAtSameTimeExpected = Collections.max(amountOfCustomersPerHourMap.values()); // + Collections.max(amountOfWalkInCustomersPerHourMap.values());
+        float totalEmployeeCount = ((float) employeeList.size() * ((float) maxPaxAtSameTimeExpected / maxPaxAtSameTimeInThePast)) / 2;
+
+
         long averagePaxInThePast = amountOfCustomersPerDayMapInThePast.values().stream().mapToLong(Long::longValue).sum() / amountOfCustomersPerDayMapInThePast.size();
 
         float offsetFromAverage = (float) maxPaxAtSameTimeCurrDay / (float) averagePaxInThePast;
+
+
         float offsetFromWalkIn = (float) maxPaxAtSameTimeCurrDay / (float) maxPaxAtSameTimeWalkIn;
+        if (maxPaxAtSameTimeWalkIn == 0) {
+            offsetFromWalkIn = 1.0f;
+        }
 
         float percentageOfPax = (float) maxPaxAtSameTimeCurrDay / (float) maxPaxAtSameTimeInThePast;
+        if (maxPaxAtSameTimeInThePast == 0) {
+            percentageOfPax = 1.0f;
+        }
+
+
         long employeePrediction = (long) (totalEmployeeCount * percentageOfPax * offsetFromAverage * offsetFromWalkIn * eventInfluence);
 
         predictedList.add(employeePrediction);
@@ -170,7 +191,7 @@ public class AdminViewServiceImpl implements AdminViewService {
             LocalTime startTime = reservation.getStartTime();
             LocalTime endTime = reservation.getEndTime();
             for (LocalTime time = startTime; time.isBefore(endTime); time = time.plusHours(1)) {
-                amountOfCustomersPerHourMap.put(time.getHour(), reservation.getPax());
+                amountOfCustomersPerHourMap.put(time.getHour(), amountOfCustomersPerHourMap.getOrDefault(time.getHour(), 0L) + reservation.getPax());
             }
         }
         return amountOfCustomersPerHourMap;
@@ -231,5 +252,58 @@ public class AdminViewServiceImpl implements AdminViewService {
         }
         foreCastDto.setForecast(forecast);
         return foreCastDto;
+    }
+
+    @Override
+    public UnusualReservationsDto getUnusualReservations(LocalDate date) {
+        LOGGER.info("Calculating Unusual Reservation Patters for next seven days following: {}", date);
+
+        LocalDate dateToCalculate = date;
+        long[] amountOfReservations = new long[7];
+        long[] reservationsForNextWeek = new long[7];
+        for (int i = 0; i < 7; i++) {
+            long amountOfReservation = 0;
+            long amountOfDaysWithReservations = 0;
+            for (int j = 1; j < 52; j++) {
+                List<Reservation> reservations = reservationRepository.findAllReservationsByDate(dateToCalculate.minusWeeks(j));
+                amountOfReservation += reservations.size();
+                if (!reservations.isEmpty()) {
+                    amountOfDaysWithReservations++;
+                }
+            }
+            if (amountOfDaysWithReservations == 0) {
+                amountOfReservations[i] = 0;
+            } else {
+                amountOfReservations[i] = amountOfReservation / amountOfDaysWithReservations;
+            }
+            reservationsForNextWeek[i] = reservationRepository.findAllByDate(dateToCalculate).size();
+            dateToCalculate = dateToCalculate.plusDays(1);
+        }
+
+        String[] days = new String[7];
+        days[0] = "TODAY";
+        days[1] = "TOMORROW";
+        for (int i = 2; i < 7; i++) {
+            days[i] = date.plusDays(i).getDayOfWeek().toString();
+        }
+        boolean isUnusual = false;
+        String[] messages = new String[7];
+        for (int i = 0; i < 7; i++) {
+            if (reservationsForNextWeek[i] > amountOfReservations[i] * 1.3) {
+                isUnusual = true;
+                messages[i] = "Unusually high amount of Reservations detected: " + reservationsForNextWeek[i];
+            } else if (reservationsForNextWeek[i] < amountOfReservations[i] * 0.7) {
+                isUnusual = true;
+                messages[i] = "Unusually low amount of Reservations detected: " + reservationsForNextWeek[i];
+            } else {
+                messages[i] = null;
+            }
+        }
+        UnusualReservationsDto unusualReservationsDto = new UnusualReservationsDto();
+        unusualReservationsDto.setDays(days);
+        unusualReservationsDto.setMessages(messages);
+        unusualReservationsDto.setIsUnusual(isUnusual);
+
+        return unusualReservationsDto;
     }
 }
