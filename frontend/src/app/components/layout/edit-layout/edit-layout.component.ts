@@ -245,67 +245,6 @@ export class EditLayoutComponent implements OnInit {
     });
   }
 
-  addArea(): void {
-    if (!this.isGridDrawn) {
-      this.notificationService.showError('Please draw the grid before adding an area.');
-      return;
-    }
-
-    const confirmAddAreaModal = new bootstrap.Modal(document.getElementById('confirmAddAreaModal'));
-    confirmAddAreaModal.show();
-  }
-
-  confirmAddArea(): void {
-    if (this.layoutForm.valid) {
-      // Save the current area's properties
-      const area: AreaCreateDto = {
-        name: this.layoutForm.get('name').value,
-        isMainArea: this.layoutForm.get('isMainArea').value,
-        closingTime: this.layoutForm.get('closingTime').value,
-        openingTime: this.layoutForm.get('openingTime').value,
-        isOpen: this.layoutForm.get('isOpen').value,
-        width: this.layoutForm.get('width').value - 1,
-        height: this.layoutForm.get('height').value - 1,
-        places: this.createdTables // Use createdTables to save the places
-      };
-
-      this.layoutCreateDto.areas.push(area);
-
-      // Reset the form and the createdTables array for the new area
-      this.layoutForm.reset();
-      this.layoutForm.patchValue({isMainArea: false, isOpen: false}); // Reset main area and open checkboxes
-
-      // Re-enable the fields
-      this.layoutForm.get('name').enable();
-      this.layoutForm.get('width').enable();
-      this.layoutForm.get('height').enable();
-
-      // Clear the canvas and table data
-      const containerElement = this.d3Container.nativeElement as HTMLDivElement;
-      d3.select(containerElement).selectAll('*').remove();
-
-      // Set the grid drawn flag to false
-      this.isGridDrawn = false;
-
-      // Clear the createdTables array
-      this.createdTables = [];
-
-      // Remove all place controls from the form array
-      const placesArray = this.layoutForm.get('places') as FormArray;
-      while (placesArray.length) {
-        placesArray.removeAt(0);
-      }
-
-      // Hide the modal if it was shown
-      const confirmAddAreaModal = bootstrap.Modal.getInstance(document.getElementById('confirmAddAreaModal'));
-      if (confirmAddAreaModal) {
-        confirmAddAreaModal.hide();
-      }
-    } else {
-      this.notificationService.showError('Please fill out all required fields to add an area.');
-    }
-  }
-
   onCellClick(x: number, y: number): void {
     const table = this.findTableByCoordinates(x, y);
     if (table) {
@@ -489,36 +428,6 @@ export class EditLayoutComponent implements OnInit {
     }
   }
 
-  addCurrentArea(): void {
-    if (this.layoutForm.valid) {
-      const area: AreaCreateDto = {
-        name: this.layoutForm.get('name').value,
-        isMainArea: this.layoutForm.get('isMainArea').value,
-        closingTime: this.layoutForm.get('closingTime').value,
-        openingTime: this.layoutForm.get('openingTime').value,
-        isOpen: this.layoutForm.get('isOpen').value,
-        width: this.layoutForm.get('width').value - 1,
-        height: this.layoutForm.get('height').value - 1,
-        places: this.layoutForm.get('places').value
-      };
-      this.layoutCreateDto.areas.push(area);
-      this.layoutForm.reset();
-      this.layoutForm.patchValue({isMainArea: false, isOpen: false}); // Reset main area and open checkboxes
-
-      // Clear the canvas and table data
-      const containerElement = this.d3Container.nativeElement as HTMLDivElement;
-      d3.select(containerElement).selectAll('*').remove();
-
-      // Clear the createdTables array
-      this.createdTables = [];
-
-      // Set the grid drawn flag to false
-      this.isGridDrawn = false;
-    } else {
-      this.notificationService.showError('Please fill out all required fields to add the current area.');
-    }
-  }
-
   getCurrentAreaTables(): PlaceVisualDto[] {
     return this.createdTables;
   }
@@ -528,6 +437,11 @@ export class EditLayoutComponent implements OnInit {
   }
 
   onSubmit(): void {
+    //check, if there is exactly one main area, if not, show error
+    if (this.layoutCreateDto.areas.filter(area => area.isMainArea).length !== 1) {
+      this.notificationService.showError('There has to be exactly one Main Area.');
+      return;
+    }
     if (this.layoutForm.valid) {
       // Show the confirm save layout modal
       const confirmSaveLayoutModal = new bootstrap.Modal(document.getElementById('confirmSaveLayoutModal'));

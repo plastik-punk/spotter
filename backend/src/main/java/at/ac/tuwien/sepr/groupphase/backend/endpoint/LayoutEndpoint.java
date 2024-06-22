@@ -94,4 +94,11 @@ public class LayoutEndpoint {
         layoutService.updateArea(areaDetailDto);
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Secured({"ROLE_ADMIN"})
+    @PutMapping("/toggleMain/{id}")
+    @Operation(summary = "Toggle main status of area")
+    public void toggleMain(@PathVariable("id") Long id, @RequestBody Boolean isMain) {
+        layoutService.toggleMain(id, isMain);
+    }
 }

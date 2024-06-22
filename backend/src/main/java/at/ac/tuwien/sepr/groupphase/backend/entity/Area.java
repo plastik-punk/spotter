@@ -24,6 +24,9 @@ public class Area {
     @Column(nullable = false)
     private boolean isOpen;
 
+    @Column(nullable = false)
+    private boolean isMain;
+
     @Column(nullable = true)
     private LocalTime openingTime;
 
@@ -63,6 +66,14 @@ public class Area {
 
     public void setIsOpen(boolean isOpen) {
         this.isOpen = isOpen;
+    }
+
+    public boolean isMain() {
+        return isMain;
+    }
+
+    public void setIsMain(boolean isMain) {
+        this.isMain = isMain;
     }
 
     public LocalTime getOpeningTime() {
@@ -111,13 +122,14 @@ public class Area {
             && Objects.equals(id, area.id)
             && Objects.equals(name, area.name)
             && Objects.equals(isOpen, area.isOpen)
+            && Objects.equals(isMain, area.isMain)
             && Objects.equals(openingTime, area.openingTime)
             && Objects.equals(closingTime, area.closingTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, isOpen, openingTime, closingTime, width, height);
+        return Objects.hash(id, name, isOpen, isMain, openingTime, closingTime, width, height);
     }
 
     @Override
@@ -126,6 +138,7 @@ public class Area {
             + "id=" + id
             + ", name='" + name + '\''
             + ", isOpen=" + isOpen
+            + ", isMain=" + isMain
             + ", openingTime=" + openingTime
             + ", closingTime=" + closingTime
             + '}';
@@ -135,6 +148,7 @@ public class Area {
         private Long id;
         private String name;
         private boolean isOpen;
+        private boolean isMain;
         private LocalTime openingTime;
         private LocalTime closingTime;
         private int width;
@@ -159,6 +173,11 @@ public class Area {
 
         public AreaBuilder withOpen(boolean open) {
             this.isOpen = open;
+            return this;
+        }
+
+        public AreaBuilder withMain(boolean main) {
+            this.isMain = main;
             return this;
         }
 
@@ -187,6 +206,7 @@ public class Area {
             area.setId(id);
             area.setName(name);
             area.setIsOpen(isOpen);
+            area.setIsMain(isMain);
             area.setOpeningTime(openingTime);
             area.setClosingTime(closingTime);
             area.setWidth(width);

@@ -42,7 +42,7 @@
             <td>{{ area.name }}</td>
             <td>
               <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="main-area" [checked]="area.mainArea" (change)="toggleMain(area.id, area.mainArea)">
+                <input class="form-check-input" type="checkbox" id="main-area" [checked]="area.mainArea" (change)="toggleMain(area.id, !area.mainArea)">
                 <label class="form-check-label" for="main-area">Main Area</label>
               </div>
             </td>

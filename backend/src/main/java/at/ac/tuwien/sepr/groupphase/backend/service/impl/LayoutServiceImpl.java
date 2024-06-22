@@ -307,8 +307,7 @@ public class LayoutServiceImpl implements LayoutService {
         areaDto.setPlaces(placeVisuals);
         areaDto.setOpen(area.isOpen());
         areaDto.setName(area.getName());
-        //TODO Main Area
-        areaDto.setMainArea(false);
+        areaDto.setMainArea(area.isMain());
         areaDto.setHeight(area.getHeight());
         areaDto.setWidth(area.getWidth());
         LocalTime opening = area.getOpeningTime();
@@ -369,7 +368,7 @@ public class LayoutServiceImpl implements LayoutService {
             area.setClosingTime(LocalTime.parse(closing));
         }
         area.setIsOpen(areaDetailDto.isOpen());
-        //TODO Main
+        area.setIsMain(areaDetailDto.isMainArea());
         areaRepository.save(area);
 
         List<LayoutCreateDto.AreaCreateDto.PlaceVisualDto> newPlaces = areaDetailDto.getPlaces();
@@ -450,5 +449,33 @@ public class LayoutServiceImpl implements LayoutService {
         }
 
 
+    }
+
+    @Override
+    public void toggleMain(Long id, Boolean isMain) {
+        //if isMain is true, get all areas and set their isMain to false, then get the area with the id and set its isMain to true
+        List<Area> areas = areaRepository.findAll();
+        if (isMain) {
+            for (Area area : areas) {
+                area.setIsMain(false);
+                areaRepository.save(area);
+            }
+            //get the area with the id and set the isMain to true
+            Area area = areaRepository.findById(id).orElseThrow();
+            area.setIsMain(true);
+            areaRepository.save(area);
+        } else {
+            //check if there is exactly one area with isMain set to true, if not, set all of them to false and the one with the lowest id to true
+            List<Area> mainAreas = areas.stream().filter(Area::isMain).toList();
+            if (mainAreas.size() != 1) {
+                for (Area area : areas) {
+                    area.setIsMain(false);
+                    areaRepository.save(area);
+                }
+                Area area = areaRepository.findFirstByOrderByIdAsc().orElseThrow();
+                area.setIsMain(true);
+                areaRepository.save(area);
+            }
+        }
     }
 }

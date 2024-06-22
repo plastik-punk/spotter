@@ -66,4 +66,12 @@ public interface LayoutService {
      * @param areaDetailDto the area data
      */
     void updateArea(AreaDetailDto areaDetailDto) throws ConflictException;
+
+    /**
+     * Toggle the main status of an area.
+     *
+     * @param id     the id of the area
+     * @param isMain the new main status
+     */
+    void toggleMain(Long id, Boolean isMain);
 }

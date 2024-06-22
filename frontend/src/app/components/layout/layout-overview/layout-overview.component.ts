@@ -104,13 +104,13 @@ export class LayoutOverviewComponent implements OnInit {
   }
 
   toggleMain(areaId: number, isMainArea: boolean): void {
-    //there always has to be exactly one main area, so if the user tries to set the current main area to not main, we tell him, that he has to set another area to main first
-    if (!isMainArea && this.areas.filter(area => area.mainArea).length == 1) {
-      this.notificationService.showError('There always has to be exactly one main area. Please set another area to main first.');
+    if (!isMainArea) {
+      this.notificationService.showError("There always has to be one main area");
+      this.fetchAllAreas();
       return;
     }
 
-    this.layoutService.toggleMain(areaId, !isMainArea).subscribe({
+    this.layoutService.toggleMain(areaId, isMainArea).subscribe({
       next: () => {
         this.notificationService.showSuccess('Area updated successfully');
         this.fetchAllAreas();
