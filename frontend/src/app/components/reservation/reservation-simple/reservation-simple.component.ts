@@ -11,6 +11,8 @@ import {EventDetailDto, EventListDto} from "../../../dtos/event";
 import {EventService} from "../../../services/event.service";
 import {formatDay, formatDotDate, formatDotDateShort, formatIsoTime, formatTime} from "../../../util/date-helper";
 import {ActivatedRoute} from "@angular/router";
+import {SpecialOfferDetailDto, SpecialOfferListDto} from "../../../dtos/special-offer";
+import {SpecialOfferService} from "../../../services/special-offer.service";
 
 @Component({
   selector: 'app-reservation-simple',
@@ -42,9 +44,14 @@ export class ReservationSimpleComponent implements OnInit {
   itemsPerPage: number = 3;
   upcomingEventsExist: boolean = false;
 
+  specialOffers: SpecialOfferListDto[] = [];
+  selectedOffers: SpecialOfferListDto[] = [];
+  totalPrice: number = 0;
+
   constructor(
     public authService: AuthService,
     private service: ReservationService,
+    private offerService: SpecialOfferService,
     private eventService: EventService,
     private notificationService: NotificationService,
   ) {
@@ -54,6 +61,8 @@ export class ReservationSimpleComponent implements OnInit {
 
   ngOnInit() {
     this.startTimer()
+
+    this.fetchOffers();
 
     this.eventService.getUpcomingEvents().subscribe({
       next: (data) => {
@@ -340,4 +349,39 @@ export class ReservationSimpleComponent implements OnInit {
   protected readonly formatDotDateShort = formatDotDateShort;
   protected readonly formatIsoTime = formatIsoTime;
   protected readonly Math = Math;
+
+  fetchOffers() {
+    this.offerService.getSpecialOffers().subscribe({
+      next: (data) => {
+        this.specialOffers = data;
+      },
+      error: () => {
+        this.notificationService.showError('Failed to get special offers. Please try again later.');
+      },
+    });
+  }
+
+  selectOffer(offer: SpecialOfferListDto) {
+    this.selectedOffers.push(offer);
+    this.calcTotal();
+  }
+
+  removeOffer(offer: SpecialOfferListDto) {
+    this.selectedOffers.splice(this.selectedOffers.indexOf(offer), 1);
+    this.calcTotal();
+  }
+
+  showOfferInfo():void {
+    this.notificationService.showSuccess('This is a special offer!');
+  }
+
+  calcTotal() {
+    let total = 0;
+    for (let i = 0; i < this.selectedOffers.length; i++) {
+      total += this.selectedOffers[i].pricePerPax;
+    }
+    this.totalPrice = total;
+  }
+
+
 }
