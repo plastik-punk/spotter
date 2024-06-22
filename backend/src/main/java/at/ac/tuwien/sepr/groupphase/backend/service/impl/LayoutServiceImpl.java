@@ -352,14 +352,18 @@ public class LayoutServiceImpl implements LayoutService {
     public void updateArea(AreaDetailDto areaDetailDto) throws ConflictException {
         Area area = areaRepository.findById(areaDetailDto.getId()).orElseThrow();
         area.setName(areaDetailDto.getName());
+        area.setWidth(areaDetailDto.getWidth() - 1);
+        area.setHeight(areaDetailDto.getHeight() - 1);
         String opening = areaDetailDto.getOpeningTime();
         String closing = areaDetailDto.getClosingTime();
-        if (opening == null) {
+
+        if (opening == null || opening.isBlank()) {
             area.setOpeningTime(null);
         } else {
             area.setOpeningTime(LocalTime.parse(opening));
         }
-        if (closing == null) {
+
+        if (closing == null || closing.isBlank()) {
             area.setClosingTime(null);
         } else {
             area.setClosingTime(LocalTime.parse(closing));

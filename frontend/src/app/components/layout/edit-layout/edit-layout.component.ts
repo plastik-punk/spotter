@@ -87,6 +87,7 @@ export class EditLayoutComponent implements OnInit {
 
   ngOnInit(): void {
     this.initializeForm();
+    this.setupFormListeners();
     this.id = this.route.snapshot.params['id'];
     if (this.id) {
       let observable: Observable<AreaDetailDto>;
@@ -133,8 +134,8 @@ export class EditLayoutComponent implements OnInit {
       closingTime: this.areaEditDto.closingTime,
       openingTime: this.areaEditDto.openingTime,
       isOpen: this.areaEditDto.open,
-      width: this.areaEditDto.width,
-      height: this.areaEditDto.height
+      width: this.areaEditDto.width + 1,
+      height: this.areaEditDto.height + 1
     });
 
     // Initialize the form array with the coordinates
@@ -156,6 +157,26 @@ export class EditLayoutComponent implements OnInit {
       this.drawGrid();
     } else {
       this.notificationService.showError('Failed to load layout. Please try again later.');
+    }
+  }
+
+  setupFormListeners(): void {
+    this.layoutForm.valueChanges.subscribe(values => {
+      this.updateAreaEditDto(values);
+    });
+  }
+
+  updateAreaEditDto(values: any): void {
+    this.areaEditDto.name = values.name;
+    this.areaEditDto.mainArea = values.isMainArea;
+    this.areaEditDto.closingTime = values.closingTime;
+    this.areaEditDto.openingTime = values.openingTime;
+    this.areaEditDto.open = values.isOpen;
+
+    if (this.areaEditDto.width != values.width || this.areaEditDto.height != values.height) {
+      this.areaEditDto.width = values.width;
+      this.areaEditDto.height = values.height;
+      this.drawGrid();
     }
   }
 
