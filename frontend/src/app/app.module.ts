@@ -32,9 +32,11 @@ import {RouterLink} from "@angular/router";
 import {AdminViewComponent} from "./components/admin-view/admin-view.component";
 import {ReservationEditComponent} from "./components/reservation/reservation-edit/reservation-edit.component";
 import {NgApexchartsModule} from "ng-apexcharts";
-import {CreateLayoutComponent} from "./components/create-layout/create-layout.component";
+import {CreateLayoutComponent} from "./components/layout/create-layout/create-layout.component";
 import {ConfirmDialogComponent} from "./components/confirm-dialog/confirm-dialog.component";
 import {EmployeeViewComponent} from "./components/employee-view/employee-view.component";
+import {EditLayoutComponent} from "./components/layout/edit-layout/edit-layout.component";
+import {LayoutOverviewComponent} from "./components/layout/layout-overview/layout-overview.component";
 
 @NgModule({
 
@@ -56,7 +58,9 @@ import {EmployeeViewComponent} from "./components/employee-view/employee-view.co
     ReservationLayoutComponent,
     AdminViewComponent,
     CreateLayoutComponent,
-    EmployeeViewComponent
+    EmployeeViewComponent,
+    EditLayoutComponent,
+    LayoutOverviewComponent
   ],
   imports: [
     BrowserModule,
