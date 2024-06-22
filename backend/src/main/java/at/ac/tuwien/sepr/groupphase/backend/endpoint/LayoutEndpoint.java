@@ -52,6 +52,7 @@ public class LayoutEndpoint {
         return layoutService.getAllAreas();
     }
 
+    // TODO: logging
     @ResponseStatus(HttpStatus.CREATED)
     @PermitAll
     @PostMapping("/create")

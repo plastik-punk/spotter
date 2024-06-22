@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.basetest;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ApplicationUserRegistrationDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
@@ -19,6 +20,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Restaurant;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Segment;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -163,6 +165,15 @@ public interface TestData {
     String TEST_APPLICATION_USER_EMAIL_2 = "biber@example.at";
     String TEST_APPLICATION_USER_MOBILE_NUMBER_2 = "06501234568";
     String TEST_APPLICATION_USER_PASSWORD_2 = "naughtybiber";
+
+    ApplicationUserRegistrationDto TEST_REGISTRATION_CUSTOMER = ApplicationUserRegistrationDto.ApplicationUserRegistrationDtoBuilder.anApplicationUserRegistrationDto()
+        .withFirstName(TEST_APPLICATION_USER_FIRST_NAME)
+        .withLastName(TEST_APPLICATION_USER_LAST_NAME)
+        .withEmail(TEST_APPLICATION_USER_EMAIL)
+        .withMobileNumber(TEST_APPLICATION_USER_MOBILE_NUMBER)
+        .withPassword(TEST_APPLICATION_USER_PASSWORD)
+        .withRole(TEST_APPLICATION_USER_ROLE)
+        .build();
 
     ApplicationUser TEST_APPLICATION_USER_CUSTOMER_1 = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
         .withId(1L)
@@ -309,6 +320,12 @@ public interface TestData {
     Long TEST_RESERVATION_DETAIL_ID = 1L;
     String TEST_RESERVATION_HASH_VALUE = "TestHashValue";
     String TEST_RESERVATION_HASH_VALUE_1 = "44A17E9E592AA9951A3A0853524BE799A333DFD8522182D79D990A24EB94A7FEfalse";
+    List<Long> TEST_RESERVATION_PLACE_IDS = new ArrayList<>() {
+        {
+            add(1L);
+            add(2L);
+        }
+    };
     LocalDate TEST_RESERVATION_DATE_INVALID = LocalDate.of(2022, 1, 2);
 
     ReservationCreateDto TEST_RESERVATION_CREATE_DTO_CUSTOMER = ReservationCreateDto.ReservationCreateDtoBuilder.aReservationCreateDto()

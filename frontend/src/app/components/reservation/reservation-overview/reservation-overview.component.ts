@@ -161,7 +161,11 @@ export class ReservationOverviewComponent implements OnInit {
             this.reservationModalDetailDto.lastName = data.lastName;
             this.reservationModalDetailDto.startTime = data.startTime;
             this.reservationModalDetailDto.endTime = data.endTime;
-            this.reservationModalDetailDto.notes = data.notes;
+            if (data.notes === null) {
+              this.reservationModalDetailDto.notes = 'No notes';
+            } else {
+              this.reservationModalDetailDto.notes = data.notes;
+            }
             this.reservationModalDetailDto.placeIds = data.placeIds;
 
             const modalDetail = new bootstrap.Modal(document.getElementById('confirmation-dialog-reservation-detail'));

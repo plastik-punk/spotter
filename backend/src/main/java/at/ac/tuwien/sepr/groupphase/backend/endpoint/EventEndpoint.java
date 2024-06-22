@@ -42,13 +42,12 @@ public class EventEndpoint {
         this.service = service;
     }
 
+    // TODO: validation
     @PermitAll
     @Operation(summary = "Get list of events that match the given parameters", security = @SecurityRequirement(name = "apiKey"))
     @GetMapping({"/search"})
     public List<EventListDto> searchEvents(EventSearchDto searchParameters) {
-        LOGGER.info("GET /api/v1/events");
-        // TODO: this should be done in info-log and not in a separate log
-        LOGGER.debug("request parameters: {}", searchParameters.toString());
+        LOGGER.info("GET /api/v1/events body: {}", searchParameters.toString());
         return service.search(searchParameters);
     }
 

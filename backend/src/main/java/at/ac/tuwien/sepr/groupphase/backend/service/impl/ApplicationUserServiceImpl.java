@@ -67,7 +67,7 @@ public class ApplicationUserServiceImpl implements ApplicationUserService {
         if (currentAuthentication == null) {
             return null;
         } else {
-            ApplicationUser existingUser = applicationUserRepository.findByEmail(currentAuthentication.getName());
+            ApplicationUser existingUser = applicationUserRepository.findByEmailAndRoleNot(currentAuthentication.getName(), RoleEnum.GUEST);
             return existingUser;
         }
     }
@@ -109,7 +109,7 @@ public class ApplicationUserServiceImpl implements ApplicationUserService {
     @Override
     public ApplicationUser findApplicationUserByEmail(String email) {
         LOGGER.debug("Find application user by email");
-        ApplicationUser applicationUser = applicationUserRepository.findByEmail(email);
+        ApplicationUser applicationUser = applicationUserRepository.findByEmailAndRoleNot(email, RoleEnum.GUEST);
         System.out.println(email);
         System.out.println(applicationUser);
         if (applicationUser != null) {
@@ -138,8 +138,15 @@ public class ApplicationUserServiceImpl implements ApplicationUserService {
     }
 
     @Override
-    public void register(ApplicationUserRegistrationDto applicationUserRegistrationDto) {
+    public void register(ApplicationUserRegistrationDto applicationUserRegistrationDto) throws ConflictException {
         LOGGER.trace("register ({})", applicationUserRegistrationDto);
+
+        ApplicationUser existingUser = applicationUserRepository.findByEmailAndRoleNot(applicationUserRegistrationDto.getEmail(), RoleEnum.GUEST);
+        LOGGER.debug("Existing User: {}", existingUser);
+        if (existingUser != null) {
+            throw new ConflictException("Account already exists",
+                List.of("An account for " + applicationUserRegistrationDto.getEmail() + " already exists."));
+        }
         ApplicationUser applicationUser = applicationUserMapper.userRegistrationDtoToApplicationUser(applicationUserRegistrationDto);
         applicationUser.setPassword(passwordEncoder.encode(applicationUserRegistrationDto.getPassword()));
         applicationUserRepository.save(applicationUser);
