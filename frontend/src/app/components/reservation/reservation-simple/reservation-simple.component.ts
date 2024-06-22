@@ -10,6 +10,7 @@ import {SimpleViewReservationStatusEnum} from '../../../dtos/status-enum';
 import {EventDetailDto, EventListDto} from "../../../dtos/event";
 import {EventService} from "../../../services/event.service";
 import {formatDay, formatDotDate, formatDotDateShort, formatIsoTime, formatTime} from "../../../util/date-helper";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-reservation-simple',

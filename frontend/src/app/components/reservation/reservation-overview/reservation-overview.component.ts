@@ -7,11 +7,13 @@ import {
   ReservationListDto,
   ReservationSearch
 } from "../../../dtos/reservation";
-import {debounceTime, Observable, Subject} from "rxjs";
+import {interval, debounceTime, Observable, Subject, Subscription} from "rxjs";
 import {ReservationService} from "../../../services/reservation.service";
 import {HttpResponse} from "@angular/common/http";
 import {NotificationService} from "../../../services/notification.service";
 import moment from 'moment';
+import {Router} from "@angular/router";
+import {now} from "lodash";
 import {formatDay, formatDotDate, formatTime} from "../../../util/date-helper";
 
 @Component({
@@ -40,6 +42,7 @@ export class ReservationOverviewComponent implements OnInit {
   searchChangedObservable = new Subject<void>();
   deleteWhat: ReservationEditDto | null = null;
   untouched: boolean = true;
+  fetchIntervalSubscription!: Subscription;
 
   currentPage = 1;
   pageSize = 25;
@@ -48,14 +51,25 @@ export class ReservationOverviewComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private reservationService: ReservationService,
-    private notificationService: NotificationService) {
+    private notificationService: NotificationService,
+    private router: Router) {
   }
 
   ngOnInit(): void {
     this.loadReservations();
-    this.searchChangedObservable
-      .pipe(debounceTime(100))
-      .subscribe({next: () => this.loadReservations()});
+    this.searchChangedObservable.pipe(debounceTime(100)).subscribe(() => this.loadReservations());
+
+    // Set up the interval to reload reservations every 2 minutes
+    this.fetchIntervalSubscription = interval(120000).subscribe(() => {
+      console.log('Fetching new reservations automatically...');
+      this.loadReservations();
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.fetchIntervalSubscription) {
+      this.fetchIntervalSubscription.unsubscribe();
+    }
   }
 
   isAdmin(): boolean {
@@ -66,13 +80,18 @@ export class ReservationOverviewComponent implements OnInit {
     return this.authService.getUserRole() === 'EMPLOYEE';
   }
 
+  isAdminOrEmployee(): boolean {
+    const role = this.authService.getUserRole();
+    return role === 'ADMIN' || role === 'EMPLOYEE';
+  }
+
 
   loadReservations() {
     const today = moment().startOf('day');
     const nextWeek = moment().add(7, 'days').endOf('day');
 
     if (this.searchEarliestDate == null || this.searchEarliestDate === "") {
-      this.searchParams.earliestDate = null;
+      this.searchParams.earliestDate = this.isAdminOrEmployee() ? null : today.toDate();
     } else {
       this.searchParams.earliestDate = new Date(this.searchEarliestDate);
     }
@@ -155,22 +174,22 @@ export class ReservationOverviewComponent implements OnInit {
   }
 
   showReservationDetails(hashId: string): void {
-      this.reservationService.getModalDetail(hashId).subscribe( {
-        next: (data: ReservationModalDetailDto) => {
-            this.reservationModalDetailDto.firstName = data.firstName;
-            this.reservationModalDetailDto.lastName = data.lastName;
-            this.reservationModalDetailDto.startTime = data.startTime;
-            this.reservationModalDetailDto.endTime = data.endTime;
-            this.reservationModalDetailDto.notes = data.notes;
-            this.reservationModalDetailDto.placeIds = data.placeIds;
+    this.reservationService.getModalDetail(hashId).subscribe({
+      next: (data: ReservationModalDetailDto) => {
+        this.reservationModalDetailDto.firstName = data.firstName;
+        this.reservationModalDetailDto.lastName = data.lastName;
+        this.reservationModalDetailDto.startTime = data.startTime;
+        this.reservationModalDetailDto.endTime = data.endTime;
+        this.reservationModalDetailDto.notes = data.notes;
+        this.reservationModalDetailDto.placeIds = data.placeIds;
 
-            const modalDetail = new bootstrap.Modal(document.getElementById('confirmation-dialog-reservation-detail'));
-            modalDetail.show();
-        },
-        error: error => {
-          this.notificationService.showError('Failed to load reservation details. Please try again later.');
-        }
-      });
+        const modalDetail = new bootstrap.Modal(document.getElementById('confirmation-dialog-reservation-detail'));
+        modalDetail.show();
+      },
+      error: error => {
+        this.notificationService.showError('Failed to load reservation details. Please try again later.');
+      }
+    });
   }
 
   onDelete(): void {
@@ -252,4 +271,14 @@ export class ReservationOverviewComponent implements OnInit {
   protected readonly formatTime = formatTime;
   protected readonly formatDotDate = formatDotDate;
   protected readonly formatDay = formatDay;
+
+  createNewReservationGuest() {
+    // Navigate to the target page with a query parameter
+    this.router.navigate(['reservation-simple'], {queryParams: {guestView: 'true'}});
+  }
+
+  createNewReservation() {
+    // Navigate to the target page with a query parameter
+    this.router.navigate(['reservation-simple']);
+  }
 }

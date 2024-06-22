@@ -64,7 +64,6 @@ public class ForeCastDto {
     public static final class ForeCastBuilder {
         int[] forecast;
         int maxPlace;
-
         String[] days;
 
         private ForeCastBuilder() {
