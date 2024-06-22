@@ -80,6 +80,16 @@ public class LayoutServiceImpl implements LayoutService {
         List<Area> areas = areaRepository.findAll();
         LOGGER.debug("Found {} areas", areas.size());
 
+        areas.sort((a, b) -> {
+            if (a.isMain() && !b.isMain()) {
+                return -1;
+            } else if (!a.isMain() && b.isMain()) {
+                return 1;
+            } else {
+                return Integer.compare(Math.toIntExact(a.getId()), Math.toIntExact(b.getId()));
+            }
+        });
+
         List<AreaListDto.AreaDto> areaDtos = areas.stream()
             .map(area -> {
                 AreaListDto.AreaDto dto = new AreaListDto.AreaDto();
@@ -88,6 +98,7 @@ public class LayoutServiceImpl implements LayoutService {
                 return dto;
             })
             .collect(Collectors.toList());
+
 
         AreaListDto areaListDto = new AreaListDto();
         areaListDto.setAreas(areaDtos);
