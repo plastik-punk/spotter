@@ -14,4 +14,8 @@ import java.util.List;
 public interface AreaPlaceSegmentRepository extends JpaRepository<AreaPlaceSegment, Long> {
     @Query("SELECT aps FROM AreaPlaceSegment aps WHERE aps.id.areaId = :areaId")
     List<AreaPlaceSegment> findByAreaId(@Param("areaId") Long areaId);
+
+    void deleteAreaPlaceSegmentByAreaIdAndPlaceIdAndSegmentId(Long areaId, Long placeId, Long segmentId);
+
+    void deleteAreaPlaceSegmentByAreaIdAndPlaceId(Long areaId, Long placeId);
 }

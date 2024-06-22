@@ -3,8 +3,8 @@ import { FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import * as d3 from 'd3';
 import * as bootstrap from 'bootstrap';
 import { Router } from '@angular/router';
-import { NotificationService } from "../../services/notification.service";
-import {LayoutService} from "../../services/layout.service";
+import { NotificationService } from "../../../services/notification.service";
+import {LayoutService} from "../../../services/layout.service";
 
 export interface AreaCreateDto {
   name: string;
@@ -83,7 +83,9 @@ export class CreateLayoutComponent implements OnInit {
       numberOfSeats: ['', Validators.required]
     });
 
-    // Show the info modal on page load
+  }
+
+  showExplanation() {
     const infoModal = new bootstrap.Modal(document.getElementById('infoModal'));
     infoModal.show();
   }
@@ -434,7 +436,7 @@ export class CreateLayoutComponent implements OnInit {
       this.layoutService.createLayout(this.layoutCreateDto).subscribe({
         next: (response) => {
           this.notificationService.showSuccess('Layout saved successfully.');
-          this.router.navigate(['/admin-view']);
+          this.router.navigate(['layout-overview']);
         },
         error: () => {
           this.notificationService.showError('Failed to save layout. Please try again later.');
