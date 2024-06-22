@@ -25,17 +25,15 @@ import {AreaDto, AreaListDto} from "../../dtos/layout";
 import {ReservationService} from "../../services/reservation.service";
 import {LayoutService} from "../../services/layout.service";
 import {formatIsoDate} from "../../util/date-helper";
-import {ToastrService} from "ngx-toastr";
 import {SpecialOfferCreateDto, SpecialOfferDetailDto, SpecialOfferListDto} from "../../dtos/special-offer";
 import {SpecialOfferService} from "../../services/special-offer.service";
-import {formatDay, formatDotDate, formatTime} from "../../util/date-helper";
 import * as bootstrap from 'bootstrap';
-
 
 
 export type ChartBarOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
+
   dataLabels: ApexDataLabels;
   plotOptions: ApexPlotOptions;
   yaxis: ApexYAxis;
@@ -79,7 +77,7 @@ export class AdminViewComponent implements OnInit {
     image: undefined
   }
   specialOfferToDelete: SpecialOfferListDto;
-  specialOfferDetail: SpecialOfferDetailDto= {
+  specialOfferDetail: SpecialOfferDetailDto = {
     id: undefined,
     name: undefined,
     pricePerPax: undefined,
@@ -112,7 +110,6 @@ export class AdminViewComponent implements OnInit {
     private adminViewService: AdminViewService,
     private specialOfferService: SpecialOfferService,
     private notificationService: NotificationService,
-    private notification: ToastrService,
     private router: Router
   ) {
 
@@ -167,15 +164,12 @@ export class AdminViewComponent implements OnInit {
     observable.subscribe({
       next: (value) => {
         this.forecast = value;
-        this.generateChart();
       },
       error: (error) => {
         this.notificationService.handleError(error);
       }
     });
     this.getUnusualReservationsNotification();
-
-
   }
 
   loadSpecialOffers() {
@@ -191,9 +185,6 @@ export class AdminViewComponent implements OnInit {
     });
   }
 
-  onSubmit(form: NgForm) {
-
-  }
 
   onFileChangeSpecialOffer(event) {
     const file = event.target.files[0];
@@ -235,7 +226,6 @@ export class AdminViewComponent implements OnInit {
   showSpecialOfferDetail(id: number) {
     this.specialOfferService.getSpecialOffer(id).subscribe({
       next: (specialOfferDetail) => {
-        console.log(specialOfferDetail);
         this.specialOfferDetail.id = specialOfferDetail.id;
         this.specialOfferDetail.name = specialOfferDetail.name;
         this.specialOfferDetail.pricePerPax = specialOfferDetail.pricePerPax;
@@ -282,6 +272,7 @@ export class AdminViewComponent implements OnInit {
       },
     });
   }
+
   generateChart() {
     this.chartReservedTableOptions = null;
     this.chartReservedTableOptions = {
@@ -300,10 +291,9 @@ export class AdminViewComponent implements OnInit {
           dataLabels: {
             position: "top" // top, center, bottom
           },
-
         }
       },
-      colors: ["#304758", "#304758", "#304758", "#33b2df", "#33b2df", "#33b2df", "#33b2df"],
+      colors: this.barColors,
 
       dataLabels: {
         enabled: true,
@@ -356,8 +346,6 @@ export class AdminViewComponent implements OnInit {
   onAreaChange(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
     this.selectedAreaId = Number(selectElement.value);
-    //this.reservationLayoutCheckAvailabilityDto.areaId = this.selectedAreaId;
-    //this.fetchLayoutAvailability();
   }
 
   private fetchAllAreas() {
@@ -366,8 +354,6 @@ export class AdminViewComponent implements OnInit {
         this.areas = data.areas;
         if (this.areas.length > 0) {
           this.selectedAreaId = this.selectedAreaId || this.areas[0].id;
-          //this.reservationLayoutCheckAvailabilityDto.areaId = this.selectedAreaId;
-          //this.fetchLayoutAvailability(); TODO: Implement Layout to edit in Admin view
         }
       },
       error: () => {
@@ -378,16 +364,23 @@ export class AdminViewComponent implements OnInit {
 
   private getUnusualReservationsNotification() {
     this.isUnusual = false;
+    for (let i = 0; i < 7; i++) {
+      this.barColors[i] = "#33b2df";
+    }
+
     this.service.getUnusualReservations(this.adminViewDto).subscribe({
       next: (data) => {
         if (data) {
           this.tooltip = '';
           this.isUnusual = data.unusual;
           for (let i = 0; i < data.days.length; i++) {
-            if (data.days[i] && data.messages[i])
+            if (data.days[i] && data.messages[i]) {
               this.tooltip += '' + data.days[i] + ': ' + data.messages[i] + '\r\r';
+              this.barColors[i] = "#ffc107";
+            }
           }
         }
+        this.generateChart();
       },
       error: () => {
         this.notificationService.showError('Failed to fetch unusual reservations. Please try again later.');

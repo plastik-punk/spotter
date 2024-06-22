@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head >
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Lexend+Giga:wght@500&display=swap"
         rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Leckerli+One&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>admin-view</title>
 </head>
 <body>
 <div class="top-left-logo">
@@ -57,7 +58,7 @@
                 required
               />
             </div>
-            <div class="column">
+            <div *ngIf="false" class="column">
               <select
                 id="reservationArea"
                 name="reservationArea"
@@ -92,6 +93,7 @@
                   [yaxis]="chartReservedTableOptions.yaxis"
                   [fill]="chartReservedTableOptions.fill"
                   [xaxis]="chartReservedTableOptions.xaxis"
+                  [colors]="chartReservedTableOptions.colors"
                 ></apx-chart>
               </div>
             </div>
@@ -237,5 +239,4 @@
   (confirm)="deleteSpecialOffer()"
 ></app-confirmation-dialog-delete>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
