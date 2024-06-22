@@ -174,14 +174,18 @@ export class ReservationOverviewComponent implements OnInit {
   }
 
   showReservationDetails(hashId: string): void {
-    this.reservationService.getModalDetail(hashId).subscribe({
-      next: (data: ReservationModalDetailDto) => {
-        this.reservationModalDetailDto.firstName = data.firstName;
-        this.reservationModalDetailDto.lastName = data.lastName;
-        this.reservationModalDetailDto.startTime = data.startTime;
-        this.reservationModalDetailDto.endTime = data.endTime;
-        this.reservationModalDetailDto.notes = data.notes;
-        this.reservationModalDetailDto.placeIds = data.placeIds;
+      this.reservationService.getModalDetail(hashId).subscribe( {
+        next: (data: ReservationModalDetailDto) => {
+            this.reservationModalDetailDto.firstName = data.firstName;
+            this.reservationModalDetailDto.lastName = data.lastName;
+            this.reservationModalDetailDto.startTime = data.startTime;
+            this.reservationModalDetailDto.endTime = data.endTime;
+            if (data.notes === null) {
+              this.reservationModalDetailDto.notes = 'No notes';
+            } else {
+              this.reservationModalDetailDto.notes = data.notes;
+            }
+            this.reservationModalDetailDto.placeIds = data.placeIds;
 
         const modalDetail = new bootstrap.Modal(document.getElementById('confirmation-dialog-reservation-detail'));
         modalDetail.show();

@@ -73,8 +73,9 @@ public interface ApplicationUserService extends UserDetailsService {
      * Register a user.
      *
      * @param applicationUserRegistrationDto registration Data
+     * @throws ConflictException if the user already exists
      */
-    void register(ApplicationUserRegistrationDto applicationUserRegistrationDto);
+    void register(ApplicationUserRegistrationDto applicationUserRegistrationDto) throws ConflictException;
 
     /**
      * Updates a user.

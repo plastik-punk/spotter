@@ -69,6 +69,7 @@ public class LayoutEndpoint {
         return layoutService.getAllAreasDetailed();
     }
 
+    // TODO: logging
     @ResponseStatus(HttpStatus.CREATED)
     @PermitAll
     @PostMapping("/create")
@@ -77,6 +78,7 @@ public class LayoutEndpoint {
         layoutService.createLayout(layoutCreateDto);
     }
 
+    // TODO: logging
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Secured({"ROLE_ADMIN"})
     @DeleteMapping("/delete/{id}")
@@ -85,6 +87,7 @@ public class LayoutEndpoint {
         layoutService.deleteArea(id);
     }
 
+    // TODO: logging
     @ResponseStatus(HttpStatus.OK)
     @PermitAll
     @GetMapping("/area/{id}")
@@ -93,6 +96,7 @@ public class LayoutEndpoint {
         return layoutService.getAreaById(id);
     }
 
+    // TODO: logging
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
     @PutMapping("/toggleOpen/{id}")
@@ -101,6 +105,7 @@ public class LayoutEndpoint {
         layoutService.toggleOpen(id, isOpen);
     }
 
+    // TODO: logging
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Secured({"ROLE_ADMIN"})
     @PutMapping("/area/update")
@@ -109,6 +114,7 @@ public class LayoutEndpoint {
         layoutService.updateArea(areaDetailDto);
     }
 
+    // TODO: logging
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Secured({"ROLE_ADMIN"})
     @PutMapping("/toggleMain/{id}")

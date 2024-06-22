@@ -19,6 +19,7 @@ import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+// TODO: address should be plural
 @RestController
 @RequestMapping(value = "/api/v1/adminView")
 public class AdminViewEndpoint {
@@ -30,7 +31,7 @@ public class AdminViewEndpoint {
     }
 
 
-    // TODO: use a DTO instead of RequestParam and then validate the DTO
+    // TODO: use a DTO instead of RequestParam and then validate the DTO (also, log body in info level and remove debug)
     @ResponseStatus(HttpStatus.OK)
     @Secured("ROLE_ADMIN")
     @GetMapping({"/prediction"})
@@ -43,6 +44,7 @@ public class AdminViewEndpoint {
         return service.getPrediction(startTime, date);
     }
 
+    // TODO: s. above
     @ResponseStatus(HttpStatus.OK)
     @Secured("ROLE_ADMIN")
     @GetMapping({"/forecast"})

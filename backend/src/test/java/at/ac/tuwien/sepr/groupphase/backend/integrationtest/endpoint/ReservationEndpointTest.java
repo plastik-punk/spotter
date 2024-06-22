@@ -254,6 +254,7 @@ public class ReservationEndpointTest implements TestData {
             .withNotes(TEST_RESERVATION_NOTES)
             .withEmail(TEST_APPLICATION_USER_CUSTOMER_1.getEmail())
             .withMobileNumber(TEST_APPLICATION_USER_CUSTOMER_1.getMobileNumber())
+            .withPlaceIds(TEST_PLACE_IDS)
             .build();
         service.create(dto);
 
@@ -264,6 +265,7 @@ public class ReservationEndpointTest implements TestData {
             .withStartTime(TEST_RESERVATION_START_TIME)
             .withEndTime(TEST_RESERVATION_END_TIME)
             .withNotes(TEST_RESERVATION_NOTES)
+            .withPlaceIds(TEST_PLACE_IDS)
             .build();
 
         MvcResult mvcResult = this.mockMvc.perform(get(RESERVATION_BASE_URI + "/modal")

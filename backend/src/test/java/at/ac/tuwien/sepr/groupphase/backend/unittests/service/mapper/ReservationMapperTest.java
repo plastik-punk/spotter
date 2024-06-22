@@ -41,13 +41,7 @@ public class ReservationMapperTest implements TestData {
 
     @Test
     public void givenValidReservation_whenMapEntityToReservationModalDetailDto_thenDtoHasAllProperties() {
-        // Arrange
-        Reservation reservation = TEST_RESERVATION_1;
-
-        // Act
-        ReservationModalDetailDto dto = reservationMapper.reservationToReservationModalDetailDto(reservation);
-
-        // Assert
+        ReservationModalDetailDto dto = reservationMapper.reservationToReservationModalDetailDto(TEST_RESERVATION_1, null);
         assertAll(
             () -> assertEquals(TEST_APPLICATION_USER_FIRST_NAME, dto.getFirstName()),
             () -> assertEquals(TEST_APPLICATION_USER_LAST_NAME, dto.getLastName()),

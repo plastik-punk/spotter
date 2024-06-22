@@ -18,15 +18,14 @@ import java.util.List;
 @Repository
 public interface ApplicationUserRepository extends JpaRepository<ApplicationUser, Long> {
 
-    // TODO: this seems to expect to find exactly one user (or none) with the given email. Hence, validation on user creation needs to check if email is already in use for a registered user
-
     /**
-     * Find an application user based on the email address.
+     * Find an application user based on the email address and role.
      *
      * @param email the email address
+     * @param role  the role we exclude
      * @return an application user
      */
-    ApplicationUser findByEmail(String email);
+    ApplicationUser findByEmailAndRoleNot(String email, RoleEnum role);
 
     /**
      * Find all users by role.

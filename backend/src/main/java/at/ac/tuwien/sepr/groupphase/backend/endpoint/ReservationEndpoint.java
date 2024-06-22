@@ -114,9 +114,7 @@ public class ReservationEndpoint {
     @Operation(summary = "Get list of all reservations for admins and employees", security = @SecurityRequirement(name = "apiKey"))
     @GetMapping({"/search"})
     public List<ReservationListDto> searchAllReservationsForAdmin(@Valid ReservationSearchDto searchParameters) {
-        LOGGER.info("GET /api/v1/reservations/admin-search");
-        LOGGER.debug("request parameters: {}", searchParameters.toString());
-
+        LOGGER.info("GET /api/v1/reservations/admin-search body: {}", searchParameters.toString());
         return service.search(searchParameters);
     }
 
