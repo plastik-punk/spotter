@@ -1,6 +1,5 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ApplicationUserOverviewDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
@@ -80,7 +79,7 @@ public class ReservationEndpoint {
     @PutMapping("/permanent-confirmation/{id}")
     @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
     @Operation(summary = "Confirm a new permanent reservation")
-    public ResponseEntity<Void> update(@PathVariable("id") Long id, @RequestBody PermanentReservationCreateDto toConfirm) throws MessagingException {
+    public ResponseEntity<Void> confirmPermanentReservation(@PathVariable("id") Long id, @RequestBody PermanentReservationCreateDto toConfirm) throws MessagingException {
         LOGGER.info("POST /api/v1/reservations/permanent/{} body: {}", id, toConfirm.toString());
         service.confirmPermanentReservation(id);
         return ResponseEntity.noContent().build();

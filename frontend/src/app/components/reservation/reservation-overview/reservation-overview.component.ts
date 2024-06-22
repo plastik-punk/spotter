@@ -47,6 +47,8 @@ export class ReservationOverviewComponent implements OnInit {
   currentPage = 1;
   pageSize = 25;
   totalUpcomingReservations = 0;
+  isPermanentView: boolean = false;  // To toggle between views
+  permanentReservations: ReservationListDto[] = [];  // To store permanent reservations
 
   constructor(
     private authService: AuthService,
@@ -83,6 +85,31 @@ export class ReservationOverviewComponent implements OnInit {
   isAdminOrEmployee(): boolean {
     const role = this.authService.getUserRole();
     return role === 'ADMIN' || role === 'EMPLOYEE';
+  }
+
+
+  toggleView(): void {
+    this.isPermanentView = !this.isPermanentView;
+    if (this.isPermanentView) {
+      this.loadPermanentReservations();
+    } else {
+      this.loadReservations();
+    }
+  }
+
+  loadPermanentReservations(): void {
+    // Logic to load permanent reservations
+    // This might involve calling a service method to fetch permanent reservations from the backend
+    this.reservationService.search(this.searchParams)
+      .subscribe({
+        next: (reservations: ReservationListDto[]) => {
+          this.permanentReservations = reservations;
+          // Potentially process or filter reservations as needed
+        },
+        error: error => {
+          this.notificationService.showError('Failed to load permanent reservations. Please try again later.');
+        }
+      });
   }
 
 
