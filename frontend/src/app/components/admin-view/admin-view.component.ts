@@ -25,11 +25,15 @@ import {AreaDto, AreaListDto} from "../../dtos/layout";
 import {ReservationService} from "../../services/reservation.service";
 import {LayoutService} from "../../services/layout.service";
 import {formatIsoDate} from "../../util/date-helper";
-import {ToastrService} from "ngx-toastr";
+import {SpecialOfferCreateDto, SpecialOfferDetailDto, SpecialOfferListDto} from "../../dtos/special-offer";
+import {SpecialOfferService} from "../../services/special-offer.service";
+import * as bootstrap from 'bootstrap';
+
 
 export type ChartBarOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
+
   dataLabels: ApexDataLabels;
   plotOptions: ApexPlotOptions;
   yaxis: ApexYAxis;
@@ -38,6 +42,7 @@ export type ChartBarOptions = {
   tooltip: ApexTooltip;
   stroke: ApexStroke;
   legend: ApexLegend;
+  colors: string[];
 };
 export type ChartDonutOptions = {
   series: ApexNonAxisChartSeries;
@@ -65,6 +70,21 @@ export class AdminViewComponent implements OnInit {
   };
 
   forecast: ReservationForeCastDto;
+  specialOfferList: SpecialOfferListDto[];
+  specialOfferCreateDto: SpecialOfferCreateDto = {
+    name: undefined,
+    pricePerPax: undefined,
+    image: undefined
+  }
+  specialOfferToDelete: SpecialOfferListDto;
+  specialOfferDetail: SpecialOfferDetailDto = {
+    id: undefined,
+    name: undefined,
+    pricePerPax: undefined,
+    image: undefined
+  };
+  imageUrl: string | null = null;
+
 
   public chartReservedTableOptions: Partial<ChartBarOptions>;
   public chartPredictionOptions: Partial<ChartDonutOptions>;
@@ -72,6 +92,10 @@ export class AdminViewComponent implements OnInit {
 
   currDate: any;
   currTime: any;
+
+  isUnusual: any;
+  tooltip: string = "Forecast is being calculated";
+  barColors: string[] = ["#33b2df", "#33b2df", "#33b2df", "#33b2df", "#33b2df", "#33b2df", "#33b2df"];
 
   predictionTitle: string = "Prediction for Amount Of Employees needed";
 
@@ -83,8 +107,9 @@ export class AdminViewComponent implements OnInit {
     private service: AdminViewService,
     private reservationService: ReservationService,
     private layoutService: LayoutService,
+    private adminViewService: AdminViewService,
+    private specialOfferService: SpecialOfferService,
     private notificationService: NotificationService,
-    private notification: ToastrService,
     private router: Router
   ) {
 
@@ -108,6 +133,7 @@ export class AdminViewComponent implements OnInit {
         type: "bar"
       },
     };
+    this.loadSpecialOffers();
 
     this.chartPredictionOptions = {
       series: [0],
@@ -130,26 +156,96 @@ export class AdminViewComponent implements OnInit {
     this.adminViewDto.startTime = this.currTime;
   }
 
-  onSubmit(form: NgForm) {
-
-  }
-
   onFieldChange() {
     this.adminViewDto.date = this.currDate;
     this.adminViewDto.startTime = this.currTime;
     let observable: Observable<ReservationForeCastDto>;
-    observable = this.service.getForeCast(this.adminViewDto);
+    observable = this.adminViewService.getForeCast(this.adminViewDto);
     observable.subscribe({
       next: (value) => {
         this.forecast = value;
-        this.generateChart();
       },
       error: (error) => {
         this.notificationService.handleError(error);
       }
     });
+    this.getUnusualReservationsNotification();
   }
 
+  loadSpecialOffers() {
+    let observable: Observable<SpecialOfferListDto[]>;
+    observable = this.specialOfferService.getSpecialOffers();
+    observable.subscribe({
+      next: (value) => {
+        this.specialOfferList = value;
+      },
+      error: (error) => {
+        this.notificationService.showError("Failed to load special offers");
+      }
+    });
+  }
+
+
+  onFileChangeSpecialOffer(event) {
+    const file = event.target.files[0];
+    if (file) {
+      this.specialOfferCreateDto.image = file;
+    }
+  }
+
+  createSpecialOffer(specialOfferForm: NgForm) {
+    if (specialOfferForm.valid) {
+      this.specialOfferService.createSpecialOffer(this.specialOfferCreateDto).subscribe({
+        next: (data) => {
+          this.notificationService.showSuccess('Special Offer created successfully.');
+          this.loadSpecialOffers();
+        },
+        error: (error) => {
+          this.notificationService.showError("Couldn't create Special Offer" + error);
+        }
+      });
+    }
+  }
+
+  deleteSpecialOffer() {
+    if (!this.specialOfferToDelete) {
+      this.notificationService.showError('No special offer selected for deletion.');
+      return;
+    }
+    this.specialOfferService.delete(this.specialOfferToDelete.id).subscribe({
+      next: (data) => {
+        this.notificationService.showSuccess('Special Offer deleted successfully.');
+        this.loadSpecialOffers();
+      },
+      error: (error) => {
+        this.notificationService.showError("Couldn't delete Special Offer" + error);
+      }
+    });
+  }
+
+  showSpecialOfferDetail(id: number) {
+    this.specialOfferService.getSpecialOffer(id).subscribe({
+      next: (specialOfferDetail) => {
+        this.specialOfferDetail.id = specialOfferDetail.id;
+        this.specialOfferDetail.name = specialOfferDetail.name;
+        this.specialOfferDetail.pricePerPax = specialOfferDetail.pricePerPax;
+        this.specialOfferDetail.image = specialOfferDetail.image;
+        if (this.specialOfferDetail.image) {
+          this.imageUrl = `data:image/jpeg;base64,${this.specialOfferDetail.image}`;
+        }
+        console.log(this.specialOfferDetail)
+        const modalDetail = new bootstrap.Modal(document.getElementById('specialOfferDetailModal'));
+        modalDetail.show();
+      },
+      error: (error) => {
+        this.notificationService.showError("Failed to load special offer details");
+      }
+    });
+  }
+
+  onClickDetailView() {
+    this.router.navigate(['/admin-view/prediction'])
+  }
 
   onClickGetPrediction() {
 
@@ -182,7 +278,7 @@ export class AdminViewComponent implements OnInit {
     this.chartReservedTableOptions = {
       series: [{
         name: "# of reserved tables",
-        data: this.forecast.forecast
+        data: this.forecast.forecast,
       }],
 
       chart: {
@@ -191,11 +287,13 @@ export class AdminViewComponent implements OnInit {
       },
       plotOptions: {
         bar: {
+          distributed: true,
           dataLabels: {
             position: "top" // top, center, bottom
-          }
+          },
         }
       },
+      colors: this.barColors,
 
       dataLabels: {
         enabled: true,
@@ -248,8 +346,6 @@ export class AdminViewComponent implements OnInit {
   onAreaChange(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
     this.selectedAreaId = Number(selectElement.value);
-    //this.reservationLayoutCheckAvailabilityDto.areaId = this.selectedAreaId;
-    //this.fetchLayoutAvailability();
   }
 
   private fetchAllAreas() {
@@ -258,8 +354,6 @@ export class AdminViewComponent implements OnInit {
         this.areas = data.areas;
         if (this.areas.length > 0) {
           this.selectedAreaId = this.selectedAreaId || this.areas[0].id;
-          //this.reservationLayoutCheckAvailabilityDto.areaId = this.selectedAreaId;
-          //this.fetchLayoutAvailability(); TODO: Implement Layout to edit in Admin view
         }
       },
       error: () => {
@@ -268,4 +362,29 @@ export class AdminViewComponent implements OnInit {
     });
   }
 
+  private getUnusualReservationsNotification() {
+    this.isUnusual = false;
+    for (let i = 0; i < 7; i++) {
+      this.barColors[i] = "#33b2df";
+    }
+
+    this.service.getUnusualReservations(this.adminViewDto).subscribe({
+      next: (data) => {
+        if (data) {
+          this.tooltip = '';
+          this.isUnusual = data.unusual;
+          for (let i = 0; i < data.days.length; i++) {
+            if (data.days[i] && data.messages[i]) {
+              this.tooltip += '' + data.days[i] + ': ' + data.messages[i] + '\r\r';
+              this.barColors[i] = "#ffc107";
+            }
+          }
+        }
+        this.generateChart();
+      },
+      error: () => {
+        this.notificationService.showError('Failed to fetch unusual reservations. Please try again later.');
+      },
+    });
+  }
 }

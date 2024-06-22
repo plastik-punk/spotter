@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ForeCastDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PredictionDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.UnusualReservationsDto;
 import at.ac.tuwien.sepr.groupphase.backend.service.AdminViewService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
@@ -54,5 +55,16 @@ public class AdminViewEndpoint {
         LOGGER.info("GET /api/v1/admin-view/forecast");
         LOGGER.debug("GET /api/v1/admin-view/forecast body: {} {}, {}", areaId, startTime, date);
         return service.getForecast(areaId, date);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @Secured("ROLE_ADMIN")
+    @GetMapping({"/unusualReservations"})
+    @Operation(summary = "Get the unusual reservations for the next week")
+    public UnusualReservationsDto getUnusualReservations(@RequestParam("areaId") Long areaId,
+                                                         @RequestParam("startTime") LocalTime startTime,
+                                                         @RequestParam("date") LocalDate date) {
+        LOGGER.info("GET /api/v1/admin-view/unusualReservations");
+        return service.getUnusualReservations(date);
     }
 }

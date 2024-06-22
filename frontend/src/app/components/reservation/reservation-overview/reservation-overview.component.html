@@ -60,6 +60,17 @@
           <button type="button" class="btn btn-primary" (click)="resetSearchParams()"><i
             class="bi bi-arrow-clockwise"></i></button>
         </div>
+
+        <div class="ms-auto" *ngIf="isAdminOrEmployee()">
+          <button type="button" class="btn btn-success" (click)="createNewReservationGuest()">
+            <i class="bi bi-plus"></i> Create New Reservation
+          </button>
+        </div>
+        <div class="ms-auto" *ngIf="!isAdminOrEmployee()">
+          <button type="button" class="btn btn-success" (click)="createNewReservation()">
+            <i class="bi bi-plus"></i> Create New Reservation
+          </button>
+        </div>
       </form>
 
       <!-- Admin and Employee Views -->
@@ -204,6 +215,7 @@
       <div *ngIf="!isAdmin() && !isEmployee()">
         <div>
           <h3>Your Reservations</h3>
+          <div *ngIf="reservations.length > 0; else noReservations">
           <table class="table table-hover">
             <thead>
             <tr>
@@ -250,6 +262,7 @@
             </tbody>
           </table>
         </div>
+        </div>
       </div>
 
       <!-- Modal for details -->
@@ -288,6 +301,14 @@
     </div>
   </div>
 </div>
+
+<ng-template #noReservations>
+  <div class="alert alert-info" role="alert">
+    <h4 class="alert-heading">You currently have no upcoming Reservations.</h4>
+    <p>Change the filter parameters to search for your past reservations or <a routerLink="/reservation-simple" class="alert-link">make a new one.</a></p>
+  </div>
+</ng-template>
+
 
 <app-confirmation-dialog-delete
   [dialogTitle]="'Delete this Reservation?'"
