@@ -1,7 +1,18 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.*;
-import at.ac.tuwien.sepr.groupphase.backend.entity.*;
+
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaDetailListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaLayoutDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.LayoutCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckAvailabilityDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Area;
+import at.ac.tuwien.sepr.groupphase.backend.entity.AreaPlaceSegment;
+import at.ac.tuwien.sepr.groupphase.backend.entity.OpeningHours;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ReservationPlace;
+import at.ac.tuwien.sepr.groupphase.backend.entity.Segment;
 import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;

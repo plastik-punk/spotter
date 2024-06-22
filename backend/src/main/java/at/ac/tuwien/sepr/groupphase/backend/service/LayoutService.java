@@ -1,6 +1,11 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.*;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaDetailListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaLayoutDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.LayoutCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 
 /**
