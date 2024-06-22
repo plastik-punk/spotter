@@ -16,4 +16,6 @@ public interface AreaPlaceSegmentRepository extends JpaRepository<AreaPlaceSegme
     List<AreaPlaceSegment> findByAreaId(@Param("areaId") Long areaId);
 
     void deleteAreaPlaceSegmentByAreaIdAndPlaceIdAndSegmentId(Long areaId, Long placeId, Long segmentId);
+
+    void deleteAreaPlaceSegmentByAreaIdAndPlaceId(Long areaId, Long placeId);
 }

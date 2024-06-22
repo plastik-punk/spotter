@@ -65,5 +65,5 @@ public interface LayoutService {
      *
      * @param areaDetailDto the area data
      */
-    void updateArea(AreaDetailDto areaDetailDto);
+    void updateArea(AreaDetailDto areaDetailDto) throws ConflictException;
 }

@@ -90,7 +90,7 @@ public class LayoutEndpoint {
     @Secured({"ROLE_ADMIN"})
     @PutMapping("/area/update")
     @Operation(summary = "Update area")
-    public void updateArea(@RequestBody AreaDetailDto areaDetailDto) {
+    public void updateArea(@RequestBody AreaDetailDto areaDetailDto) throws ConflictException {
         layoutService.updateArea(areaDetailDto);
     }
 

@@ -347,8 +347,9 @@ public class LayoutServiceImpl implements LayoutService {
         areaRepository.save(area);
     }
 
+    @Transactional
     @Override
-    public void updateArea(AreaDetailDto areaDetailDto) {
+    public void updateArea(AreaDetailDto areaDetailDto) throws ConflictException {
         Area area = areaRepository.findById(areaDetailDto.getId()).orElseThrow();
         area.setName(areaDetailDto.getName());
         String opening = areaDetailDto.getOpeningTime();
@@ -417,6 +418,33 @@ public class LayoutServiceImpl implements LayoutService {
                 savePlace(area, newPlace);
             }
         }
+
+        //Check for places that are in the old list but not in the new list
+        //If they are not in the new list, but there is a reservation for them, throw an error
+        //If they are not in the new list and there is no reservation for them, delete the area_place_segment first, then the segments attached to it, then the place attached to it
+        for (LayoutCreateDto.AreaCreateDto.PlaceVisualDto oldPlace : oldPlaces) {
+            Place place = places.stream().filter(p -> p.getNumber().equals(oldPlace.getPlaceNumber())).findFirst().orElse(null);
+            if (place != null) {
+                LayoutCreateDto.AreaCreateDto.PlaceVisualDto newPlace = newPlaces.stream().filter(p -> p.getPlaceNumber().equals(oldPlace.getPlaceNumber())).findFirst().orElse(null);
+                if (newPlace == null) {
+                    List<ReservationPlace> reservationPlaces = reservationPlaceRepository.findByPlaceId(place.getId());
+                    if (!reservationPlaces.isEmpty()) {
+                        throw new ConflictException("Cannot delete place", List.of("There are reservations for the table with id " + place.getId()));
+                    }
+                    areaPlaceSegmentRepository.deleteAreaPlaceSegmentByAreaIdAndPlaceId(area.getId(), place.getId());
+                    List<Segment> segments = areaPlaceSegments.stream()
+                        .filter(aps -> aps.getPlace().getId().equals(place.getId()))
+                        .map(AreaPlaceSegment::getSegment)
+                        .toList();
+                    for (Segment segment : segments) {
+                        areaPlaceSegmentRepository.deleteAreaPlaceSegmentByAreaIdAndPlaceIdAndSegmentId(area.getId(), place.getId(), segment.getId());
+                        segmentRepository.deleteById(segment.getId());
+                    }
+                    placeRepository.deleteById(place.getId());
+                }
+            }
+        }
+
 
     }
 }
