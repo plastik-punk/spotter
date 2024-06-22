@@ -1,6 +1,10 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -8,14 +12,29 @@ import java.util.List;
 import java.util.Objects;
 
 public class ReservationEditDto {
+
     private ApplicationUser user;
+
     private Long reservationId;
+
+    @NotNull(message = "startTime is required")
     private LocalTime startTime;
+
     private LocalTime endTime;
+
+    @NotNull(message = "Date must not be null")
+    @FutureOrPresent(message = "Date cannot be in the past")
     private LocalDate date;
+
+    @NotNull(message = "Pax must not be null")
+    @Positive(message = "Pax should be greater than 0")
     private Long pax;
+
+    @Size(max = 100000, message = "Notes shouldn't be longer than 100000 characters")
     private String notes;
+
     private String hashedId;
+
     private List<Long> placeIds;
 
     public ApplicationUser getUser() {

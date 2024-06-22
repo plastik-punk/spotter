@@ -63,11 +63,11 @@
 
         <hr class="my-4">
 
-        <!-- Start row with advanced view -->
+        <!-- Start row with advanced view
         <div class="row" style="justify-content: center; padding: 2vh">
-          <button class="btn av-btn" routerLink="">Advanced View -></button>
+          <button class="btn av-btn" routerLink="/reservation-layout">Advanced View -></button>
         </div>
-        <!-- End row with advanced view -->
+        End row with advanced view -->
 
         <!-- Start row with pax -->
         <div class="row">
@@ -155,7 +155,7 @@
 
         <div class="row">
           <div class="column">
-            <button type="submit" class="btn btn-danger" [disabled]="!form.valid">
+            <button type="submit" class="btn btn-danger" [disabled]="!form.valid||!tableAvailable">
               Save
             </button>
           </div>

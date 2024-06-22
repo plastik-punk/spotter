@@ -50,6 +50,7 @@ export class ReservationEditComponent implements OnInit {
   enumReservationTableStatus = SimpleViewReservationStatusEnum;
   reservationStatusText: string = 'Provide Time, Date and Pax';
   reservationStatusClass: string = 'reservation-table-incomplete';
+  tableAvailable: boolean = false;
 
   constructor(
     public authService: AuthService,
@@ -121,24 +122,31 @@ export class ReservationEditComponent implements OnInit {
         if (data.valueOf() === this.enumReservationTableStatus.available.valueOf()) {
           this.reservationStatusText = 'Tables available';
           this.reservationStatusClass = 'reservation-table-available';
+          this.tableAvailable = true;
         } else if (data.valueOf() === this.enumReservationTableStatus.closed.valueOf()) {
           this.reservationStatusText = 'Location Closed This Day';
           this.reservationStatusClass = 'reservation-table-conflict';
+          this.tableAvailable = false;
         } else if (data.valueOf() === this.enumReservationTableStatus.outsideOpeningHours.valueOf()) {
           this.reservationStatusText = 'Outside Of Opening Hours';
           this.reservationStatusClass = 'reservation-table-conflict';
+          this.tableAvailable = false;
         } else if (data.valueOf() === this.enumReservationTableStatus.respectClosingHour.valueOf()) {
           this.reservationStatusText = 'Respect Closing Hour';
           this.reservationStatusClass = 'reservation-table-conflict';
+          this.tableAvailable = false;
         } else if (data.valueOf() === this.enumReservationTableStatus.tooManyPax.valueOf()) {
           this.reservationStatusText = 'Too Many Pax for available tables (try advanced reservation)';
           this.reservationStatusClass = 'reservation-table-conflict';
+          this.tableAvailable = false;
         } else if (data.valueOf() === this.enumReservationTableStatus.allOccupied.valueOf()) {
           this.reservationStatusText = 'All Tables Occupied';
           this.reservationStatusClass = 'reservation-table-conflict';
+          this.tableAvailable = false;
         } else if (data.valueOf() === this.enumReservationTableStatus.dateInPast.valueOf()) {
           this.reservationStatusText = 'Date In The Past';
           this.reservationStatusClass = 'reservation-table-conflict';
+          this.tableAvailable = false;
         }
       },
       error: (error) => {
@@ -147,4 +155,5 @@ export class ReservationEditComponent implements OnInit {
       },
     });
   } // onFieldChange
+
 }
