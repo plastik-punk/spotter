@@ -233,23 +233,23 @@
           <div class="row">
             <div class="custom-order-card m-2 p-2 column" *ngFor="let offer of specialOffers">
               <div class="row">
-                {{offer.name}}
+                {{ offer.name }}
               </div>
               <div class="row">
                 <a class="custom-order-button" (click)="selectOffer(offer)">
-                   {{offer.pricePerPax}}€
+                  {{ offer.pricePerPax }}€
                 </a>
               </div>
             </div>
           </div>
-          <div class="row" *ngIf="selectedOffers.length > 0" >
+          <div class="row" *ngIf="selectedOffers.length > 0">
             <table>
               <tr *ngFor="let offer of selectedOffers">
                 <td>
-                  {{offer.name}}
+                  {{ offer.name }}
                 </td>
                 <td>
-                  {{offer.pricePerPax}}€
+                  {{ offer.pricePerPax }}€
                 </td>
                 <td>
                   <button type="button" class="btn btn-sm btn-light" (click)="removeOffer(offer)">
@@ -262,7 +262,7 @@
                   Total:
                 </td>
                 <td>
-                  {{totalPrice}}€
+                  {{ totalPrice }}€
                 </td>
               </tr>
             </table>
@@ -323,5 +323,26 @@
   </div>
 </div>
 
+<!-- Info Modal -->
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="infoModalLabel">Special Offer Information</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Add special offers to your table reservation at a reduced price.</p>
+        <p>Your selected items will be ready for you when you arrive.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Got it!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
+
+
 </html>

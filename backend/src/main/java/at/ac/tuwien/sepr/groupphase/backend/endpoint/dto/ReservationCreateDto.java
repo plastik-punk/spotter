@@ -54,6 +54,8 @@ public class ReservationCreateDto {
 
     private List<Long> placeIds;
 
+    private List<Long> specialOffers;
+
     public ApplicationUser getUser() {
         return applicationUser;
     }
@@ -142,6 +144,14 @@ public class ReservationCreateDto {
         this.placeIds = placeIds;
     }
 
+    public List<Long> getSpecialOffers() {
+        return specialOffers;
+    }
+
+    public void setSpecialOffers(List<Long> specialOffers) {
+        this.specialOffers = specialOffers;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -160,12 +170,13 @@ public class ReservationCreateDto {
             && Objects.equals(notes, that.notes)
             && Objects.equals(email, that.email)
             && Objects.equals(mobileNumber, that.mobileNumber)
-            && Objects.equals(placeIds, that.placeIds);
+            && Objects.equals(placeIds, that.placeIds)
+            && Objects.equals(specialOffers, that.specialOffers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(applicationUser, firstName, lastName, startTime, endTime, date, pax, notes, email, mobileNumber, placeIds);
+        return Objects.hash(applicationUser, firstName, lastName, startTime, endTime, date, pax, notes, email, mobileNumber, placeIds, specialOffers);
     }
 
     @Override
@@ -182,6 +193,7 @@ public class ReservationCreateDto {
             + ", email='" + email + '\''
             + ", mobileNumber=" + mobileNumber
             + ", placeIds=" + placeIds
+            + ", specialOffers=" + specialOffers
             + '}';
     }
 
@@ -197,7 +209,8 @@ public class ReservationCreateDto {
             .withNotes(this.notes)
             .withEmail(this.email)
             .withMobileNumber(this.mobileNumber)
-            .withPlaceIds(this.placeIds) // Update builder with list of place IDs
+            .withPlaceIds(this.placeIds)
+            .withSpecialOffers(this.specialOffers)
             .build();
     }
 
@@ -212,7 +225,8 @@ public class ReservationCreateDto {
         private String notes;
         private String email;
         private String mobileNumber;
-        private List<Long> placeIds; // Change type to List<Long>
+        private List<Long> placeIds;
+        private List<Long> specialOffers;
 
         private ReservationCreateDtoBuilder() {
         }
@@ -276,6 +290,11 @@ public class ReservationCreateDto {
             return this;
         }
 
+        public ReservationCreateDtoBuilder withSpecialOffers(List<Long> specialOffers) {
+            this.specialOffers = specialOffers;
+            return this;
+        }
+
         public ReservationCreateDto build() {
             ReservationCreateDto reservationCreateDto = new ReservationCreateDto();
             reservationCreateDto.setUser(applicationUser);
@@ -289,6 +308,7 @@ public class ReservationCreateDto {
             reservationCreateDto.setEmail(email);
             reservationCreateDto.setMobileNumber(mobileNumber);
             reservationCreateDto.setPlaceIds(placeIds);
+            reservationCreateDto.setSpecialOffers(specialOffers);
             return reservationCreateDto;
         }
     }

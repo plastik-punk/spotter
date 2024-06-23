@@ -12,7 +12,9 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ClosedDay;
 import at.ac.tuwien.sepr.groupphase.backend.entity.OpeningHours;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ReservationOffer;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ReservationPlace;
+import at.ac.tuwien.sepr.groupphase.backend.entity.SpecialOffer;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
@@ -24,8 +26,10 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.AreaRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ClosedDayRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.OpeningHoursRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationOfferRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationPlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.SpecialOfferRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.EmailService;
 import at.ac.tuwien.sepr.groupphase.backend.service.HashService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
@@ -74,6 +78,8 @@ public class ReservationServiceImpl implements ReservationService {
     private final ApplicationUserServiceImpl applicationUserService;
     private final AreaRepository areaRepository;
     private final AreaPlaceSegmentRepository areaPlaceSegmentRepository;
+    private final SpecialOfferRepository specialOfferRepository;
+    private final ReservationOfferRepository reservationOfferRepository;
 
     @Autowired
     private Validator validator;
@@ -90,7 +96,7 @@ public class ReservationServiceImpl implements ReservationService {
                                   HashService hashService,
                                   ApplicationUserServiceImpl applicationUserService,
                                   AreaRepository areaRepository,
-                                  AreaPlaceSegmentRepository areaPlaceSegmentRepository) {
+                                  AreaPlaceSegmentRepository areaPlaceSegmentRepository, SpecialOfferRepository specialOfferRepository, ReservationOfferRepository reservationOfferRepository) {
         this.mapper = mapper;
         this.reservationRepository = reservationRepository;
         this.applicationUserRepository = applicationUserRepository;
@@ -103,6 +109,8 @@ public class ReservationServiceImpl implements ReservationService {
         this.applicationUserService = applicationUserService;
         this.areaRepository = areaRepository;
         this.areaPlaceSegmentRepository = areaPlaceSegmentRepository;
+        this.specialOfferRepository = specialOfferRepository;
+        this.reservationOfferRepository = reservationOfferRepository;
     }
 
     @Override
@@ -205,6 +213,30 @@ public class ReservationServiceImpl implements ReservationService {
 
         // 6. Save Reservation in database and return it mapped to a DTO
         Reservation savedReservation = reservationRepository.save(reservation);
+
+        // Add special offers if there are any
+        if (reservationCreateDto.getSpecialOffers() != null && !reservationCreateDto.getSpecialOffers().isEmpty()) {
+            //cound how often each special offerId appears in the order and save the amount in the reservationOffer
+            Map<Long, Integer> specialOfferAmounts = new HashMap<>();
+            for (Long specialOfferId : reservationCreateDto.getSpecialOffers()) {
+                if (specialOfferAmounts.containsKey(specialOfferId)) {
+                    specialOfferAmounts.put(specialOfferId, specialOfferAmounts.get(specialOfferId) + 1);
+                } else {
+                    specialOfferAmounts.put(specialOfferId, 1);
+                }
+            }
+            for (Map.Entry<Long, Integer> entry : specialOfferAmounts.entrySet()) {
+                Optional<SpecialOffer> specialOffer = specialOfferRepository.findById(entry.getKey());
+                if (specialOffer.isPresent()) {
+                    ReservationOffer reservationOffer = ReservationOffer.ReservationOfferBuilder.aReservationOffer()
+                        .withReservation(savedReservation)
+                        .withOffer(specialOffer.get())
+                        .withAmount(entry.getValue())
+                        .build();
+                    reservationOfferRepository.save(reservationOffer);
+                }
+            }
+        }
 
         // Validate after changes being made as an additional layer of defense
         Set<ConstraintViolation<Reservation>> reservationViolations = validator.validate(savedReservation);

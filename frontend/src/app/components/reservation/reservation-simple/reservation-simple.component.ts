@@ -275,6 +275,9 @@ export class ReservationSimpleComponent implements OnInit {
     }
 
     if (form.valid) {
+      this.reservationCreateDto.specialOffers = this.selectedOffers.map(offer => offer.id);
+      console.log(this.reservationCreateDto.specialOffers)
+      this.selectedOffers = [];
       this.isBookButtonTimeout = true;
       setTimeout(() => {
         this.isBookButtonTimeout = false;
@@ -290,8 +293,8 @@ export class ReservationSimpleComponent implements OnInit {
             this.initializeDtos();
           }
         },
-        error: () => {
-          this.notificationService.showError('Location Closed');
+        error: (error) => {
+          this.notificationService.handleError(error);
         },
       });
     } else {
@@ -372,7 +375,8 @@ export class ReservationSimpleComponent implements OnInit {
   }
 
   showOfferInfo():void {
-    this.notificationService.showSuccess('This is a special offer!');
+    const infoModal = new bootstrap.Modal(document.getElementById('infoModal'))
+    infoModal.show();
   }
 
   calcTotal() {

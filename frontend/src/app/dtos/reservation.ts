@@ -22,6 +22,7 @@ export interface ReservationCreateDto {
   email: string;
   mobileNumber: number;
   placeIds?: number[];
+  specialOffers?: number[];
 }
 
 export interface ReservationListDto {
