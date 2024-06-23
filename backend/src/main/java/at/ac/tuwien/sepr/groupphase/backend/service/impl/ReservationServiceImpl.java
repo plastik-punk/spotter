@@ -446,11 +446,27 @@ public class ReservationServiceImpl implements ReservationService {
             }
         }
 
-        // fetch places for reservation
         ReservationEditDto reservationEditDto = mapper.reservationToReservationEditDto(reservation);
+
+        // fetch ReservationOffers
+        List<ReservationOffer> reservationOffers = reservationOfferRepository.findByReservationId(reservation.getId());
+        List<SpecialOfferAmountDto> specialOffers = new ArrayList<>();
+        for (ReservationOffer reservationOffer : reservationOffers) {
+            SpecialOfferListDto specialOfferListDto = mapper.specialOfferToSpecialOfferListDto(reservationOffer.getOffer());
+            SpecialOfferAmountDto specialOfferAmountDto =
+                SpecialOfferAmountDto.SpecialOfferAmountDtoBuilder.aSpecialOfferAmountDto()
+                    .withSpecialOffer(specialOfferListDto)
+                    .withAmount(reservationOffer.getAmount())
+                    .build();
+            specialOffers.add(specialOfferAmountDto);
+        }
+        reservationEditDto.setSpecialOffers(specialOffers);
+
+        // fetch places for reservation
         List<Long> reservationIds = Collections.singletonList(reservation.getId());
         List<Long> reservationPlaces = reservationPlaceRepository.findPlaceIdsByReservationIds(reservationIds);
         reservationEditDto.setPlaceIds(reservationPlaces);
+
         return reservationEditDto;
     }
 
@@ -543,6 +559,29 @@ public class ReservationServiceImpl implements ReservationService {
                 reservationPlaceRepository.save(newReservationPlace);
             } else {
                 // TODO: Handle the case where no place with the given ID exists.
+            }
+        }
+
+        // update special offers
+        List<ReservationOffer> reservationOffers = reservationOfferRepository.findByReservationId(updatedReservation.getId());
+        reservationOfferRepository.deleteAll(reservationOffers);
+        if (reservationEditDto.getSpecialOffers() != null && !reservationEditDto.getSpecialOffers().isEmpty()) {
+            Map<Long, Integer> specialOfferAmounts = new HashMap<>();
+            for (SpecialOfferAmountDto specialOffer : reservationEditDto.getSpecialOffers()) {
+                specialOfferAmounts.put(specialOffer.getSpecialOffer().getId(), specialOffer.getAmount());
+            }
+            for (Map.Entry<Long, Integer> entry : specialOfferAmounts.entrySet()) {
+                Optional<SpecialOffer> specialOffer = specialOfferRepository.findById(entry.getKey());
+                if (specialOffer.isPresent()) {
+                    ReservationOffer reservationOffer = ReservationOffer.ReservationOfferBuilder.aReservationOffer()
+                        .withReservation(updatedReservation)
+                        .withOffer(specialOffer.get())
+                        .withAmount(entry.getValue())
+                        .build();
+                    reservationOfferRepository.save(reservationOffer);
+                } else {
+                    throw new NotFoundException("Special offer " + entry.getKey() + " not found");
+                }
             }
         }
 
