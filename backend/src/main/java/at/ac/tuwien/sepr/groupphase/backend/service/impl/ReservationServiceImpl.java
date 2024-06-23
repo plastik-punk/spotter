@@ -7,6 +7,8 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationModalDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationWalkInDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferAmountDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferListDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ClosedDay;
 import at.ac.tuwien.sepr.groupphase.backend.entity.OpeningHours;
@@ -465,6 +467,21 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = reservations.getFirst();
         List<Long> placeIds = reservationPlaceRepository.findPlaceIdsByReservationIds(Collections.singletonList(reservation.getId()));
         ReservationModalDetailDto reservationModalDetailDto = mapper.reservationToReservationModalDetailDto(reservation, placeIds);
+
+        //go through the Reservation Offers and add the special offers to the list
+        List<ReservationOffer> reservationOffers = reservationOfferRepository.findByReservationId(reservation.getId());
+        List<SpecialOfferAmountDto> specialOffers = new ArrayList<>();
+        for (ReservationOffer reservationOffer : reservationOffers) {
+            SpecialOfferListDto specialOfferListDto = mapper.specialOfferToSpecialOfferListDto(reservationOffer.getOffer());
+            SpecialOfferAmountDto specialOfferAmountDto =
+                SpecialOfferAmountDto.SpecialOfferAmountDtoBuilder.aSpecialOfferAmountDto()
+                    .withSpecialOffer(specialOfferListDto)
+                    .withAmount(reservationOffer.getAmount())
+                    .build();
+            specialOffers.add(specialOfferAmountDto);
+        }
+
+        reservationModalDetailDto.setSpecialOffers(specialOffers);
 
         LOGGER.debug("Found reservation: {}", reservationModalDetailDto.toString());
 
