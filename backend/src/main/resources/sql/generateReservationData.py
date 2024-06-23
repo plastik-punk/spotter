@@ -5,7 +5,7 @@ from faker import Faker
 fake = Faker()
 
 # Configuration for the script
-num_reservations = 30000
+num_reservations = 15000
 num_places = 23  # Number of places to create
 user_id_range = (-200, -1)
 opening_hour = 11
@@ -81,12 +81,12 @@ with open('insert_data_script.sql', 'w') as file:
     reservation_place_entries = []
     current_reservation_id = start_reservation_id
 
-    for _ in range(num_reservations):
+    for i in range(num_reservations):
         attempt = 0
         max_attempts = 100  # Avoid infinite loop
         while attempt < max_attempts:
             attempt += 1
-            user_id = random.randint(*user_id_range)
+            user_id = 0 if i % 3 == 0 else random.randint(*user_id_range)
             place_id = random.randint(start_place_id, start_place_id + num_places - 1, )
             date = date_start + timedelta(days=random.randint(0, (date_end - date_start).days))
             start_time = random_time()
@@ -102,7 +102,7 @@ with open('insert_data_script.sql', 'w') as file:
                 if place_id in reservations:
                     for existing in reservations[place_id]:
                         if existing['date'] == date and (
-                                existing['start_time'] <= start_time < existing['end_time'] or existing[
+                            existing['start_time'] <= start_time < existing['end_time'] or existing[
                             'start_time'] < end_time <= existing['end_time']):
                             overlap = True
                             break
