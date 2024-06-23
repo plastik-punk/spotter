@@ -254,7 +254,6 @@ public class ReservationEndpointTest implements TestData {
             .withEmail(TEST_APPLICATION_USER_CUSTOMER_1.getEmail())
             .withMobileNumber(TEST_APPLICATION_USER_CUSTOMER_1.getMobileNumber())
             .withPlaceIds(TEST_PLACE_IDS)
-            .withSpecialOffers(TEST_SPECIAL_OFFER_IDS)
             .build();
         service.create(dto);
 

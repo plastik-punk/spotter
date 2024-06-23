@@ -237,34 +237,56 @@
               </div>
               <div class="row">
                 <a class="custom-order-button" (click)="selectOffer(offer)">
-                  {{ offer.pricePerPax }}€
+                  Add
                 </a>
               </div>
             </div>
           </div>
           <div class="row" *ngIf="selectedOffers.length > 0">
             <table>
+              <thead>
+              <th>
+                Amount
+              </th>
+              <th>
+                Special Offer
+              </th>
+              <th>
+                Price
+              </th>
+              <th>
+                Actions
+              </th>
+              </thead>
+              <tbody>
               <tr *ngFor="let offer of selectedOffers">
                 <td>
-                  {{ offer.name }}
+                  {{ offer.amount }}x
                 </td>
                 <td>
-                  {{ offer.pricePerPax }}€
+                  {{ offer.specialOffer.name }}
                 </td>
                 <td>
-                  <button type="button" class="btn btn-sm btn-light" (click)="removeOffer(offer)">
-                    <i class="bi bi-x-lg"></i>
+                  {{ offer.specialOffer.pricePerPax }}€
+                </td>
+                <td>
+                  <button type="button" class="btn btn-sm btn-secondary me-1" (click)="removeOffer(offer)">
+                    <i class="bi bi-dash-lg text-white"></i>
+                  </button>
+                  <button type="button" class="btn btn-sm btn-primary ms-1" (click)="addOffer(offer)">
+                    <i class="bi bi-plus-lg text-white"></i>
                   </button>
                 </td>
               </tr>
               <tr>
+                <td></td>
+                <td></td>
                 <td>
-                  Total:
+                  Total: {{ totalPrice }}€
                 </td>
-                <td>
-                  {{ totalPrice }}€
-                </td>
+
               </tr>
+              </tbody>
             </table>
           </div>
         </div>

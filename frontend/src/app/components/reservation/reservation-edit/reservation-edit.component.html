@@ -168,7 +168,7 @@
               </div>
               <div class="row">
                 <a class="custom-order-button" (click)="selectOffer(offer.id)">
-                  {{ offer.pricePerPax }}€
+                  Add
                 </a>
               </div>
             </div>
@@ -201,11 +201,11 @@
                 <td>
                   {{ specialOffer.specialOffer.pricePerPax }}€
                 </td>
-                <td class="btn group">
-                  <button type="button" class="btn btn-sm btn-secondary" (click)="removeSpecialOffer(i)">
+                <td>
+                  <button type="button" class="btn btn-sm btn-secondary me-1" (click)="removeSpecialOffer(i)">
                     <i class="bi bi-dash-lg text-white"></i>
                   </button>
-                  <button type="button" class="btn btn-sm btn-primary" (click)="addSpecialOffer(i)">
+                  <button type="button" class="btn btn-sm btn-primary ms-1" (click)="addSpecialOffer(i)">
                     <i class="bi bi-plus-lg text-white"></i>
                   </button>
                 </td>

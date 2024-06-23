@@ -1,5 +1,5 @@
 import {AppUser} from "./app-user";
-import {SpecialOfferAmountDto, SpecialOfferListDto} from "./special-offer";
+import {SpecialOffer, SpecialOfferAmountDto, SpecialOfferListDto} from "./special-offer";
 
 export interface Reservation {
   id: number;
@@ -23,7 +23,7 @@ export interface ReservationCreateDto {
   email: string;
   mobileNumber: number;
   placeIds?: number[];
-  specialOffers?: number[];
+  specialOffers?: SpecialOfferAmountDto[];
 }
 
 export interface ReservationListDto {
