@@ -18,6 +18,7 @@ public interface SpecialOfferMapper {
 
     SpecialOfferDetailDto specialOfferToSpecialOfferDetailDto(SpecialOffer specialOffer);
 
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "image", source = "image", qualifiedByName = "multipartFileToByteArray")
     SpecialOffer specialOfferCreateDtoToSpecialOffer(SpecialOfferCreateDto specialOfferCreateDto);
 

@@ -35,4 +35,3 @@ public class RegistrationEndpoint {
         return ResponseEntity.status(201).build();
     }
 }
-

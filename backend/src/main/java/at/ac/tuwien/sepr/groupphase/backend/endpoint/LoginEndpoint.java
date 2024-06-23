@@ -44,6 +44,4 @@ public class LoginEndpoint {
         ApplicationUserOverviewDto fetchedUser = applicationUserMapper.applicationUserToUserOverviewDto(applicationUserService.getCurrentApplicationUser());
         return fetchedUser;
     }
-
 }
-
