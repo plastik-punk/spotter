@@ -11,7 +11,7 @@ import {EventDetailDto, EventListDto} from "../../../dtos/event";
 import {EventService} from "../../../services/event.service";
 import {formatDay, formatDotDate, formatDotDateShort, formatIsoTime, formatTime} from "../../../util/date-helper";
 import {ActivatedRoute} from "@angular/router";
-import {SpecialOfferDetailDto, SpecialOfferListDto} from "../../../dtos/special-offer";
+import {SpecialOfferAmountDto, SpecialOfferDetailDto, SpecialOfferListDto} from "../../../dtos/special-offer";
 import {SpecialOfferService} from "../../../services/special-offer.service";
 
 @Component({
@@ -45,7 +45,7 @@ export class ReservationSimpleComponent implements OnInit {
   upcomingEventsExist: boolean = false;
 
   specialOffers: SpecialOfferListDto[] = [];
-  selectedOffers: SpecialOfferListDto[] = [];
+  selectedOffers: SpecialOfferAmountDto[] = [];
   totalPrice: number = 0;
 
   constructor(
@@ -275,7 +275,7 @@ export class ReservationSimpleComponent implements OnInit {
     }
 
     if (form.valid) {
-      this.reservationCreateDto.specialOffers = this.selectedOffers.map(offer => offer.id);
+      this.reservationCreateDto.specialOffers = this.selectedOffers;
       console.log(this.reservationCreateDto.specialOffers)
       this.selectedOffers = [];
       this.isBookButtonTimeout = true;
@@ -365,12 +365,49 @@ export class ReservationSimpleComponent implements OnInit {
   }
 
   selectOffer(offer: SpecialOfferListDto) {
-    this.selectedOffers.push(offer);
+    //check if the selected offer is already in the selected offer list. if it is, increase the amount by one. if it is not, add the offer to the list
+    let found = false;
+    for (let i = 0; i < this.selectedOffers.length; i++) {
+      if (this.selectedOffers[i].specialOffer.id === offer.id) {
+        this.selectedOffers[i].amount++;
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      let specialOfferAmountDto: SpecialOfferAmountDto = {
+        specialOffer: offer,
+        amount: 1
+      }
+      this.selectedOffers.push(specialOfferAmountDto);
+    }
+
     this.calcTotal();
   }
 
-  removeOffer(offer: SpecialOfferListDto) {
-    this.selectedOffers.splice(this.selectedOffers.indexOf(offer), 1);
+  removeOffer(offer: SpecialOfferAmountDto) {
+    //decrease the amount in the selected offer list by one. if the amount gets to 0, remove the offer from the list
+    for (let i = 0; i < this.selectedOffers.length; i++) {
+      if (this.selectedOffers[i].specialOffer.id === offer.specialOffer.id) {
+        if (this.selectedOffers[i].amount > 1) {
+          this.selectedOffers[i].amount--;
+        } else {
+          this.selectedOffers.splice(i, 1);
+        }
+        break;
+      }
+    }
+    this.calcTotal();
+  }
+
+  addOffer(offer: SpecialOfferAmountDto) {
+    //increase the amount in the selected offer list by one
+    for (let i = 0; i < this.selectedOffers.length; i++) {
+      if (this.selectedOffers[i].specialOffer.id === offer.specialOffer.id) {
+        this.selectedOffers[i].amount++;
+        break;
+      }
+    }
     this.calcTotal();
   }
 
@@ -382,7 +419,7 @@ export class ReservationSimpleComponent implements OnInit {
   calcTotal() {
     let total = 0;
     for (let i = 0; i < this.selectedOffers.length; i++) {
-      total += this.selectedOffers[i].pricePerPax;
+      total += this.selectedOffers[i].specialOffer.pricePerPax * this.selectedOffers[i].amount;
     }
     this.totalPrice = total;
   }

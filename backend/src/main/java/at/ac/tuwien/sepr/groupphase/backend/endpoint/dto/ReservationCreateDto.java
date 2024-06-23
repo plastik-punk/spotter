@@ -54,7 +54,7 @@ public class ReservationCreateDto {
 
     private List<Long> placeIds;
 
-    private List<Long> specialOffers;
+    private List<SpecialOfferAmountDto> specialOffers;
 
     public ApplicationUser getUser() {
         return applicationUser;
@@ -144,11 +144,11 @@ public class ReservationCreateDto {
         this.placeIds = placeIds;
     }
 
-    public List<Long> getSpecialOffers() {
+    public List<SpecialOfferAmountDto> getSpecialOffers() {
         return specialOffers;
     }
 
-    public void setSpecialOffers(List<Long> specialOffers) {
+    public void setSpecialOffers(List<SpecialOfferAmountDto> specialOffers) {
         this.specialOffers = specialOffers;
     }
 
@@ -226,7 +226,7 @@ public class ReservationCreateDto {
         private String email;
         private String mobileNumber;
         private List<Long> placeIds;
-        private List<Long> specialOffers;
+        private List<SpecialOfferAmountDto> specialOffers;
 
         private ReservationCreateDtoBuilder() {
         }
@@ -290,7 +290,7 @@ public class ReservationCreateDto {
             return this;
         }
 
-        public ReservationCreateDtoBuilder withSpecialOffers(List<Long> specialOffers) {
+        public ReservationCreateDtoBuilder withSpecialOffers(List<SpecialOfferAmountDto> specialOffers) {
             this.specialOffers = specialOffers;
             return this;
         }

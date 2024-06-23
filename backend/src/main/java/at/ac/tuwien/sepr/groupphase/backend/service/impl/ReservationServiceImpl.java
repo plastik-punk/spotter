@@ -218,24 +218,18 @@ public class ReservationServiceImpl implements ReservationService {
 
         // Add special offers if there are any
         if (reservationCreateDto.getSpecialOffers() != null && !reservationCreateDto.getSpecialOffers().isEmpty()) {
-            //cound how often each special offerId appears in the order and save the amount in the reservationOffer
-            Map<Long, Integer> specialOfferAmounts = new HashMap<>();
-            for (Long specialOfferId : reservationCreateDto.getSpecialOffers()) {
-                if (specialOfferAmounts.containsKey(specialOfferId)) {
-                    specialOfferAmounts.put(specialOfferId, specialOfferAmounts.get(specialOfferId) + 1);
-                } else {
-                    specialOfferAmounts.put(specialOfferId, 1);
-                }
-            }
-            for (Map.Entry<Long, Integer> entry : specialOfferAmounts.entrySet()) {
-                Optional<SpecialOffer> specialOffer = specialOfferRepository.findById(entry.getKey());
+            // Map special offers to ReservationOffers
+            for (SpecialOfferAmountDto specialOfferAmountDto : reservationCreateDto.getSpecialOffers()) {
+                Optional<SpecialOffer> specialOffer = specialOfferRepository.findById(specialOfferAmountDto.getSpecialOffer().getId());
                 if (specialOffer.isPresent()) {
                     ReservationOffer reservationOffer = ReservationOffer.ReservationOfferBuilder.aReservationOffer()
                         .withReservation(savedReservation)
                         .withOffer(specialOffer.get())
-                        .withAmount(entry.getValue())
+                        .withAmount(specialOfferAmountDto.getAmount())
                         .build();
                     reservationOfferRepository.save(reservationOffer);
+                } else {
+                    throw new NotFoundException("Special offer " + specialOfferAmountDto.getSpecialOffer().getId() + " not found");
                 }
             }
         }
