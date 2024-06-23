@@ -25,3 +25,8 @@ export interface SpecialOfferDetailDto {
   pricePerPax: number;
   image: Uint8Array;
 }
+
+export interface SpecialOfferAmountDto {
+  specialOffer: SpecialOfferListDto;
+  amount: number;
+}

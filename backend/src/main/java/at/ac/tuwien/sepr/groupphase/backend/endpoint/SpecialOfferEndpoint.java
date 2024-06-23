@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferListDto;
 import at.ac.tuwien.sepr.groupphase.backend.service.SpecialOfferService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.annotation.security.PermitAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,7 @@ public class SpecialOfferEndpoint {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    @Secured("ROLE_ADMIN")
+    @PermitAll
     public List<SpecialOfferListDto> getAllSpecialOffers() {
         LOGGER.info("GET /api/v1/special-offers");
         return specialOfferService.getAllSpecialOffers();

@@ -93,10 +93,11 @@ public class SpecialOfferEndpointTest implements TestData {
             .andReturn();
 
         String content = mvcResult.getResponse().getContentAsString();
-        List<SpecialOfferListDto> specialOffers = objectMapper.readValue(content, new TypeReference<List<SpecialOfferListDto>>() {});
+        List<SpecialOfferListDto> specialOffers = objectMapper.readValue(content, new TypeReference<List<SpecialOfferListDto>>() {
+        });
 
         assertAll(
-            () -> assertEquals(2, specialOffers.size()),
+            () -> assertEquals(7, specialOffers.size()),
             () -> assertEquals(TEST_SPECIAL_OFFER_NAME_1, specialOffers.get(0).getName()),
             () -> assertEquals(TEST_SPECIAL_OFFER_PRICE_PER_PAX_1, specialOffers.get(0).getPricePerPax()),
             () -> assertEquals(TEST_SPECIAL_OFFER_NAME_2, specialOffers.get(1).getName()),

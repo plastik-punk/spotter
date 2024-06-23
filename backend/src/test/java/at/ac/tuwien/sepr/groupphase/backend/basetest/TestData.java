@@ -12,6 +12,9 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailab
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferAmountDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationWalkInDto;
@@ -25,9 +28,11 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Message;
 import at.ac.tuwien.sepr.groupphase.backend.entity.OpeningHours;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ReservationOffer;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ReservationPlace;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Restaurant;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Segment;
+import at.ac.tuwien.sepr.groupphase.backend.entity.SpecialOffer;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
 import org.springframework.mock.web.MockMultipartFile;
@@ -304,10 +309,10 @@ public interface TestData {
     // SPECIAL OFFER TEST DATA
     // ---------------------------------------------
 
-    String TEST_SPECIAL_OFFER_NAME_1 = "Special Offer";
-    String TEST_SPECIAL_OFFER_NAME_2 = "Brokkoli-Spezial";
-    Float TEST_SPECIAL_OFFER_PRICE_PER_PAX_1 = 5.0f;
-    Float TEST_SPECIAL_OFFER_PRICE_PER_PAX_2 = 10.0f;
+    String TEST_SPECIAL_OFFER_NAME_1 = "Margaritas";
+    String TEST_SPECIAL_OFFER_NAME_2 = "Mojitos";
+    Float TEST_SPECIAL_OFFER_PRICE_PER_PAX_1 = 10.0f;
+    Float TEST_SPECIAL_OFFER_PRICE_PER_PAX_2 = 20.0f;
 
     SpecialOfferCreateDto TEST_SPECIAL_OFFER_CREATE_DTO_1 = SpecialOfferCreateDto.SpecialOfferCreateBuilder.aSpecialOfferCreateDto()
         .withName(TEST_SPECIAL_OFFER_NAME_1)
@@ -318,6 +323,54 @@ public interface TestData {
         .withName(TEST_SPECIAL_OFFER_NAME_2)
         .withPricePerPax(TEST_SPECIAL_OFFER_PRICE_PER_PAX_2)
         .build();
+
+    SpecialOffer TEST_SPECIAL_OFFER_1 = SpecialOffer.SpecialOfferBuilder.aSpecialOffer()
+        .withId(1L)
+        .withName("Test Special Offer 1")
+        .withPricePerPax(10.0f)
+        .build();
+
+    SpecialOffer TEST_SPECIAL_OFFER_2 = SpecialOffer.SpecialOfferBuilder.aSpecialOffer()
+        .withId(2L)
+        .withName("Test Special Offer 2")
+        .withPricePerPax(15.0f)
+        .build();
+
+    List<Long> TEST_SPECIAL_OFFER_IDS = new ArrayList<>() {
+        {
+            add(1L);
+            add(2L);
+        }
+    };
+
+    SpecialOfferListDto TEST_OFFER_LIST_DTO_1 = SpecialOfferListDto.SpecialOfferListBuilder.aSpecialOfferListDto()
+        .withId(1L)
+        .withName("Test Special Offer 1")
+        .withPricePerPax(10.0f)
+        .build();
+
+    SpecialOfferListDto TEST_OFFER_LIST_DTO_2 = SpecialOfferListDto.SpecialOfferListBuilder.aSpecialOfferListDto()
+        .withId(2L)
+        .withName("Test Special Offer 2")
+        .withPricePerPax(15.0f)
+        .build();
+
+    SpecialOfferAmountDto TEST_OFFER_AMOUNT_DTO_1 = SpecialOfferAmountDto.SpecialOfferAmountDtoBuilder.aSpecialOfferAmountDto()
+        .withAmount(1)
+        .withSpecialOffer(TEST_OFFER_LIST_DTO_1)
+        .build();
+
+    SpecialOfferAmountDto TEST_OFFER_AMOUNT_DTO_2 = SpecialOfferAmountDto.SpecialOfferAmountDtoBuilder.aSpecialOfferAmountDto()
+        .withAmount(2)
+        .withSpecialOffer(TEST_OFFER_LIST_DTO_2)
+        .build();
+
+    List<SpecialOfferAmountDto> TEST_RESERVATION_SPECIAL_OFFERS = new ArrayList<>() {
+        {
+            add(TEST_OFFER_AMOUNT_DTO_1);
+            add(TEST_OFFER_AMOUNT_DTO_2);
+        }
+    };
 
     // ---------------------------------------------
     // ADMIN VIEW TEST DATA
@@ -734,18 +787,18 @@ public interface TestData {
         .withOpen(false)
         .build();
 
-// ---------------------------------------------
-// SEGMENT TEST DATA
-// ---------------------------------------------
+    // ---------------------------------------------
+    // SEGMENT TEST DATA
+    // ---------------------------------------------
 
     Segment TEST_SEGMENT_1 = Segment.SegmentBuilder.aSegment()
         .withX(0)
         .withY(0)
         .build();
 
-// ---------------------------------------------
-// AREAPLACESEGMENT TEST DATA
-// ---------------------------------------------
+    // ---------------------------------------------
+    // AREAPLACESEGMENT TEST DATA
+    // ---------------------------------------------
 
     AreaPlaceSegment TEST_LOCATION_1 = AreaPlaceSegment.AreaPlaceSegmentBuilder.anAreaPlaceSegment()
         .withArea(TEST_AREA_1)

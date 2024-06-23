@@ -29,7 +29,8 @@ export class ReservationOverviewComponent implements OnInit {
     startTime: undefined,
     endTime: undefined,
     notes: undefined,
-    placeIds: undefined
+    placeIds: undefined,
+    specialOffers: undefined
   };
   todaysReservations: ReservationListDto[] = [];
   upcomingReservations: ReservationListDto[] = [];
@@ -186,6 +187,7 @@ export class ReservationOverviewComponent implements OnInit {
               this.reservationModalDetailDto.notes = data.notes;
             }
             this.reservationModalDetailDto.placeIds = data.placeIds;
+            this.reservationModalDetailDto.specialOffers = data.specialOffers;
 
         const modalDetail = new bootstrap.Modal(document.getElementById('confirmation-dialog-reservation-detail'));
         modalDetail.show();
