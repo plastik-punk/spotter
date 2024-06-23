@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
@@ -12,6 +13,7 @@ import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import jakarta.mail.MessagingException;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -124,4 +126,12 @@ public interface ReservationService {
      * @param id ID to confirm
      */
     void confirmPermanentReservation(Long id) throws MessagingException;
+
+    /**
+     * Find all permanent reservations that match the search parameters ordered by startDate (desc).
+     *
+     * @param searchParams the search parameters to use in filtering.
+     * @return List of PermanentReservationCreateDto that match the search parameters
+     */
+    List<PermanentReservationCreateDto> searchPermanent(PermanentReservationSearchDto searchParams);
 }

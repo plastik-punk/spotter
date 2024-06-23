@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
@@ -167,5 +168,14 @@ public class ReservationEndpoint {
         LOGGER.info("PUT /api/v1/reservations/unconfirm body: {}", hashedId);
         service.unconfirm(hashedId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/permanent")
+    @Operation(summary = "Get all permanent reservations")
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_USER"})
+    public List<PermanentReservationCreateDto> getPermanentReservations(
+        PermanentReservationSearchDto searchParams) {
+        LOGGER.info("GET /api/v1/reservations/permanent with search params: {}", searchParams);
+        return service.searchPermanent(searchParams);
     }
 }

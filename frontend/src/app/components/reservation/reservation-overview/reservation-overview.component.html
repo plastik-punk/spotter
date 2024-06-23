@@ -313,6 +313,64 @@
       </div>
 
     </div>
+
+      <div *ngIf="isPermanentView">
+        <h3 class="text-center mb-5">Permanent Reservations</h3>
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <!-- Column headers -->
+            <th *ngIf="isAdminOrEmployee()">First Name</th>
+            <th *ngIf="isAdminOrEmployee()">Last Name</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Repetition</th>
+            <th *ngIf="isAdminOrEmployee()">Confirmed</th>
+            <th> Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let reservation of permanentReservations">
+            <!-- Data rows -->
+            <td *ngIf="isAdminOrEmployee()">{{ reservation.user.firstName }}</td>
+            <td *ngIf="isAdminOrEmployee()">{{ reservation.user.lastName }}</td>
+            <td>{{ reservation.startDate | date }}</td>
+            <td>{{ reservation.endDate | date }}</td>
+            <td>{{ reservation.startTime }}</td>
+            <td>{{ reservation.endTime }}</td>
+            <td>{{ getFrequency(reservation) }}</td>
+            <td *ngIf="isAdminOrEmployee()">
+              <i class="bi" [ngClass]="{
+                  'bi-check-circle-fill text-success': reservation.confirmed,
+                  'bi-x-circle-fill text-danger': !reservation.confirmed
+                }"></i>
+            </td>
+            <td >
+              <a class="btn btn-sm responsive-info-button"
+                 aria-label="Show reservation details"
+                 (click)="showPermanentReservationDetails(reservation.hashedId)">
+                <i class="bi bi-info-lg"></i>
+              </a>
+              <!-- Action buttons -->
+              <a class="btn btn-sm responsive-warning-button"
+                 aria-label="Edit reservation" [routerLink]="['/reservation-edit',reservation.hashedId]">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <a class="btn btn-sm responsive-danger-button"
+                 aria-label="Delete reservation"
+                 data-bs-toggle="modal"
+                 data-bs-target="#confirmation-dialog-delete"
+                 (click)="openConfirmationDialog(reservation.hashedId)">
+                <i class="bi bi-trash"></i>
+              </a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
   </div>
 </div>
 </div>

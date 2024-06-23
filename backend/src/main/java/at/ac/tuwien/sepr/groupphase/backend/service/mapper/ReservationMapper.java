@@ -88,4 +88,6 @@ public interface ReservationMapper {
     @Mapping(source = "reservation.hashValue", target = "hashedId")
     @Mapping(source = "reservation.notes", target = "notes")
     ReservationEditDto reservationToReservationEditDto(Reservation reservation);
+
+    
 }

@@ -2,18 +2,19 @@ import {Component, OnInit} from '@angular/core';
 import * as bootstrap from 'bootstrap';
 import {AuthService} from '../../../services/auth.service';
 import {
-  ReservationModalDetailDto,
+  PermanentReservationDto, permanentReservationSearch,
+  RepetitionEnum,
   ReservationEditDto,
   ReservationListDto,
+  ReservationModalDetailDto,
   ReservationSearch
 } from "../../../dtos/reservation";
-import {interval, debounceTime, Observable, Subject, Subscription} from "rxjs";
+import {debounceTime, interval, Observable, Subject, Subscription} from "rxjs";
 import {ReservationService} from "../../../services/reservation.service";
 import {HttpResponse} from "@angular/common/http";
 import {NotificationService} from "../../../services/notification.service";
 import moment from 'moment';
 import {Router} from "@angular/router";
-import {now} from "lodash";
 import {formatDay, formatDotDate, formatTime} from "../../../util/date-helper";
 
 @Component({
@@ -48,7 +49,8 @@ export class ReservationOverviewComponent implements OnInit {
   pageSize = 25;
   totalUpcomingReservations = 0;
   isPermanentView: boolean = false;  // To toggle between views
-  permanentReservations: ReservationListDto[] = [];  // To store permanent reservations
+  permanentReservations: PermanentReservationDto[] = [];  // To store permanent reservations
+  permanentSearchParams: permanentReservationSearch = {};
 
   constructor(
     private authService: AuthService,
@@ -98,11 +100,39 @@ export class ReservationOverviewComponent implements OnInit {
   }
 
   loadPermanentReservations(): void {
-    // Logic to load permanent reservations
-    // This might involve calling a service method to fetch permanent reservations from the backend
-    this.reservationService.search(this.searchParams)
+    if (!this.isAdminOrEmployee()) {
+      this.permanentSearchParams.userId = this.authService.getCurrentUser()?.id;
+    }
+    const today = moment().startOf('day');
+    const nextWeek = moment().add(7, 'days').endOf('day');
+
+    if (this.searchEarliestDate == null || this.searchEarliestDate === "") {
+      this.permanentSearchParams.earliestDate = this.isAdminOrEmployee() ? null : today.toDate();
+    } else {
+      this.permanentSearchParams.earliestDate = new Date(this.searchEarliestDate);
+    }
+
+    if (this.searchLatestDate == null || this.searchLatestDate === "") {
+      this.permanentSearchParams.latestDate = null;
+    } else {
+      this.permanentSearchParams.latestDate = new Date(this.searchLatestDate);
+    }
+
+    if (this.searchEarliestStartTime == null || this.searchEarliestStartTime === "") {
+      this.permanentSearchParams.earliestStartTime = null;
+    } else {
+      this.permanentSearchParams.earliestStartTime = this.searchEarliestStartTime;
+    }
+
+    if (this.searchLatestEndTime == null || this.searchLatestEndTime === "") {
+      this.permanentSearchParams.latestEndTime = null;
+    } else {
+      this.permanentSearchParams.latestEndTime = this.searchLatestEndTime;
+    }
+  console.log("get perma "+this.permanentSearchParams);
+    this.reservationService.getPermanentReservations(this.permanentSearchParams)
       .subscribe({
-        next: (reservations: ReservationListDto[]) => {
+        next: (reservations: PermanentReservationDto[]) => {
           this.permanentReservations = reservations;
           // Potentially process or filter reservations as needed
         },
@@ -112,6 +142,21 @@ export class ReservationOverviewComponent implements OnInit {
       });
   }
 
+  getFrequency(permanentReservationDto:PermanentReservationDto):String {
+    if (permanentReservationDto.repetition === RepetitionEnum.DAYS) {
+    if (permanentReservationDto.period == 1) {
+    return 'Daily'
+    }else{
+      return 'every '+permanentReservationDto.period+' days'
+    }
+  }else if(permanentReservationDto.repetition === RepetitionEnum.WEEKS){
+      if (permanentReservationDto.period == 1) {
+        return 'Weekly'
+      }else{
+        return 'every '+permanentReservationDto.period+' weeks'
+      }
+    }
+  }
 
   loadReservations() {
     const today = moment().startOf('day');
@@ -213,6 +258,29 @@ export class ReservationOverviewComponent implements OnInit {
               this.reservationModalDetailDto.notes = data.notes;
             }
             this.reservationModalDetailDto.placeIds = data.placeIds;
+
+        const modalDetail = new bootstrap.Modal(document.getElementById('confirmation-dialog-reservation-detail'));
+        modalDetail.show();
+      },
+      error: error => {
+        this.notificationService.showError('Failed to load reservation details. Please try again later.');
+      }
+    });
+  }
+
+  showPermanentReservationDetails(hashId: string): void {
+    this.reservationService.getModalDetail(hashId).subscribe( {
+      next: (data: ReservationModalDetailDto) => {
+        this.reservationModalDetailDto.firstName = data.firstName;
+        this.reservationModalDetailDto.lastName = data.lastName;
+        this.reservationModalDetailDto.startTime = data.startTime;
+        this.reservationModalDetailDto.endTime = data.endTime;
+        if (data.notes === null) {
+          this.reservationModalDetailDto.notes = 'No notes';
+        } else {
+          this.reservationModalDetailDto.notes = data.notes;
+        }
+        this.reservationModalDetailDto.placeIds = data.placeIds;
 
         const modalDetail = new bootstrap.Modal(document.getElementById('confirmation-dialog-reservation-detail'));
         modalDetail.show();

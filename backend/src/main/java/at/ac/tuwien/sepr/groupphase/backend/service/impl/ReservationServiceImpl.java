@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
@@ -41,10 +42,10 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
-import org.apache.juli.logging.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -767,6 +768,40 @@ public class ReservationServiceImpl implements ReservationService {
         }
 
         sendConfirmationEmail(permanentReservation, skippedDates);
+    }
+
+    @Override
+    public List<PermanentReservationCreateDto> searchPermanent(PermanentReservationSearchDto searchParams) {
+        LOGGER.trace("searchPermanent ({})", searchParams);
+
+        if (searchParams.getUserId() == null) {
+            List<PermanentReservation> reservations = permanentReservationRepository.findPermanentReservationsWithoutUserId(
+                searchParams.getEarliestDate(),
+                searchParams.getLatestDate(),
+                searchParams.getEarliestStartTime(),
+                searchParams.getLatestEndTime());
+
+            List<PermanentReservationCreateDto> dtos = reservations.stream()
+                .map(mapper::permanentReservationToPermanentReservationCreateDto)
+                .collect(Collectors.toList());
+
+            LOGGER.debug("Found {} reservations for admin/employee without a specific user", dtos.size());
+            return dtos;
+        }
+
+        List<PermanentReservation> reservations = permanentReservationRepository.findPermanentReservationsByUserId(
+            searchParams.getUserId(),
+            searchParams.getEarliestDate(),
+            searchParams.getLatestDate(),
+            searchParams.getEarliestStartTime(),
+            searchParams.getLatestEndTime());
+
+        List<PermanentReservationCreateDto> dtos = reservations.stream()
+            .map(mapper::permanentReservationToPermanentReservationCreateDto)
+            .collect(Collectors.toList());
+
+        LOGGER.debug("Found {} reservations for user id {}", dtos.size(), searchParams.getUserId());
+        return dtos;
     }
 
     private Reservation createSingleReservationFromPermanent(PermanentReservation perm, LocalDate date) {

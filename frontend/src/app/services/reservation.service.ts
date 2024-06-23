@@ -11,7 +11,7 @@ import {
   ReservationListDto,
   ReservationEditDto,
   ReservationModalDetailDto,
-  ReservationWalkInDto, PermanentReservationDto
+  ReservationWalkInDto, PermanentReservationDto, permanentReservationSearch
 } from "../dtos/reservation";
 import {SimpleViewReservationStatusEnum} from "../dtos/status-enum";
 
@@ -22,6 +22,7 @@ import {SimpleViewReservationStatusEnum} from "../dtos/status-enum";
 export class ReservationService {
 
   private reservationBaseUri : string = this.globals.backendUri + "/reservations";
+  private permanentReservationUri: string = this.globals.backendUri + "/reservations/permanent";
 
   constructor(private httpClient: HttpClient, private globals: Globals) {}
 
@@ -165,5 +166,37 @@ export class ReservationService {
    */
   createPermanentReservation(permanentReservationDto: PermanentReservationDto) : Observable<PermanentReservationDto> {
     return this.httpClient.post<PermanentReservationDto>(this.reservationBaseUri+"/permanent", permanentReservationDto);
+  }
+
+  /**
+   * Fetch permanent reservations with optional user filtering
+   *
+   * @param userId (optional) user ID for filtering reservations for non-admin users
+   * @return an Observable with an array of permanent reservations
+   */
+  getPermanentReservations(searchParams: permanentReservationSearch): Observable<PermanentReservationDto[]> {
+    let params = new HttpParams();
+
+    // Add date and time parameters
+    if (searchParams.earliestDate) {
+      params = params.append('earliestDate', formatIsoDate(searchParams.earliestDate));
+    }
+    if (searchParams.latestDate) {
+      params = params.append('latestDate', formatIsoDate(searchParams.latestDate));
+    }
+    if (searchParams.earliestStartTime) {
+      params = params.append('earliestStartTime', searchParams.earliestStartTime);
+    }
+    if (searchParams.latestEndTime) {
+      params = params.append('latestEndTime', searchParams.latestEndTime);
+    }
+
+    // Check if a user ID is included and append it to the query parameters
+    if (searchParams.userId) {
+      params = params.append('userId', searchParams.userId.toString());
+    }
+
+    // Assuming `permanentReservationUri` points to the backend URI handling permanent reservations
+    return this.httpClient.get<PermanentReservationDto[]>(this.permanentReservationUri, { params });
   }
 }
