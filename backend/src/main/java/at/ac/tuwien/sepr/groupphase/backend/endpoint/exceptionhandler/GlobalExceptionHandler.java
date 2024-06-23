@@ -1,7 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.exceptionhandler;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ConflictErrorRestDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ValidationErrorRestDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.resterrors.ConflictErrorRestDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.resterrors.ValidationErrorRestDto;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import jakarta.validation.ConstraintViolationException;
