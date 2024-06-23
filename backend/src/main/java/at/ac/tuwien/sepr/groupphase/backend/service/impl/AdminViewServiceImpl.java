@@ -112,7 +112,7 @@ public class AdminViewServiceImpl implements AdminViewService {
 
         //5. Calculate the maximum Pax per Hour
         Map<Integer, Long> amountOfCustomersPerHourMap = getIntegerLongMap(reservationsListSameDay);
-        //Map<Integer, Long> amountOfWalkInCustomersPerHourMap = getIntegerLongMap(walkInsByDateMap.get(dateToCalculate)); TODO fix with Test data
+        //Map<Integer, Long> amountOfWalkInCustomersPerHourMap = getIntegerLongMap(walkInsByDateMap.get(dateToCalculate)); //TODO fix with Test data
 
         //6. Calculate the Pax of the Restaurant
         List<Place> totalPlaces = placeRepository.findAll();
@@ -147,8 +147,8 @@ public class AdminViewServiceImpl implements AdminViewService {
 
         //9. Calculate the amount of the Employees
         List<ApplicationUser> employeeList = applicationUserRepository.findAllByRole(RoleEnum.EMPLOYEE);
-        long maxPaxAtSameTimeExpected = Collections.max(amountOfCustomersPerHourMap.values()); // + Collections.max(amountOfWalkInCustomersPerHourMap.values());
-        float totalEmployeeCount = ((float) employeeList.size() * ((float) maxPaxAtSameTimeExpected / maxPaxAtSameTimeInThePast)) / 2;
+        long maxPaxAtSameTimeExpected = Collections.max(amountOfCustomersPerHourMap.values()); //+ Collections.max(amountOfWalkInCustomersPerHourMap.values());
+        float totalEmployeeCount = ((float) employeeList.size() * ((float) maxPaxAtSameTimeExpected / maxPaxAtSameTimeInThePast));
 
 
         long averagePaxInThePast = amountOfCustomersPerDayMapInThePast.values().stream().mapToLong(Long::longValue).sum() / amountOfCustomersPerDayMapInThePast.size();
@@ -167,10 +167,16 @@ public class AdminViewServiceImpl implements AdminViewService {
         }
 
 
-        long employeePrediction = (long) (totalEmployeeCount * percentageOfPax * offsetFromAverage * offsetFromWalkIn * eventInfluence);
+        long employeePrediction = (long) (totalEmployeeCount * clamp(percentageOfPax, 0.8f, 1.2f)
+            * clamp(offsetFromAverage, 0.8f, 1.2f) * clamp(offsetFromWalkIn, 0.8f, 1.2f)
+            * clamp(eventInfluence, 0.8f, 1.25f));
 
         predictedList.add(employeePrediction);
         return employeePrediction;
+    }
+
+    private static float clamp(float val, float min, float max) {
+        return Math.max(min, Math.min(max, val));
     }
 
     private void getReservationsByDayMap(List<Reservation> sameDayReservationListInThePastWithReservation, Map<LocalDate, List<Reservation>> reservationsByDateMap) {
@@ -214,7 +220,7 @@ public class AdminViewServiceImpl implements AdminViewService {
     }
 
     private float calculateEventInfluence(List<Event> events, LocalDate dateToCalculate) {
-        float result = 0.0f;
+        float result = 1.0f;
 
         List<Area> areas = areaRepository.findAll();
 

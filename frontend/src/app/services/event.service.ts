@@ -36,6 +36,10 @@ export class EventService {
     if (searchParams.latestEndTime) {
       params = params.append('latestEndTime', formatIsoDate(searchParams.latestEndTime))
     }
+
+    // TODO: remove
+    console.log(params.toString());
+
     return this.httpClient.get<EventListDto[]>(this.eventBaseUri + "/search", { params });
   }
 

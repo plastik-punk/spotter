@@ -1,7 +1,13 @@
 package at.ac.tuwien.sepr.groupphase.backend.basetest;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AdminViewDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ApplicationUserLoginDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ApplicationUserOverviewDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ApplicationUserRegistrationDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
@@ -9,6 +15,10 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferAmountDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckAvailabilityDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationWalkInDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Area;
 import at.ac.tuwien.sepr.groupphase.backend.entity.AreaPlaceSegment;
@@ -25,8 +35,13 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Segment;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SpecialOffer;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
-import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -56,7 +71,11 @@ public interface TestData {
     String RESERVATION_BASE_URI = BASE_URI + "/reservations";
     String MESSAGE_BASE_URI = BASE_URI + "/messages";
     String EVENT_BASE_URI = BASE_URI + "/events";
-    String EMPLOYEES_BASE_URI = BASE_URI + "/employees";
+    String LOGIN_URI = BASE_URI + "/authentication";
+    String ADMIN_VIEW_URI = BASE_URI + "/adminView";
+    String PLACE_URI = BASE_URI + "/places";
+    String SPECIAL_OFFER_URI = BASE_URI + "/special-offers";
+    String STAFF_ACCOUNT_URI = BASE_URI + "/employees";
     Long TEST_VALID_ID = 1L;
     Long TEST_INVALID_ID = -1L;
 
@@ -64,10 +83,17 @@ public interface TestData {
     // ROLE TEST DATA
     // ---------------------------------------------
 
-    String TEST_USER_ADMIN = "admin@email.com";
+    String TEST_USER_ADMIN = "admin@example.com";
+    String TEST_USER_EMPLOYEE = "employee@example.com";
     List<String> TEST_ROLES_ADMIN = new ArrayList<>() {
         {
             add("ROLE_ADMIN");
+            add("ROLE_USER");
+        }
+    };
+    List<String> TEST_ROLES_EMPLOYEE = new ArrayList<>() {
+        {
+            add("ROLE_EMPLOYEE");
             add("ROLE_USER");
         }
     };
@@ -171,6 +197,38 @@ public interface TestData {
     String TEST_APPLICATION_USER_MOBILE_NUMBER_2 = "06501234568";
     String TEST_APPLICATION_USER_PASSWORD_2 = "naughtybiber";
 
+    String TEST_APPLICATION_USER_FIRST_NAME_EMPLOYEE_1 = "Otter";
+    String TEST_APPLICATION_USER_LAST_NAME_EMPLOYEE_1 = "McOtterface";
+    String TEST_APPLICATION_USER_EMAIL_EMPLOYEE_1 = "otter@example.at";
+    String TEST_APPLICATION_USER_MOBILE_NUMBER_EMPLOYEE_1 = "06501234567";
+    String TEST_APPLICATION_USER_PASSWORD_EMPLOYEE_1 = "naughtyotter";
+    RoleEnum TEST_APPLICATION_USER_ROLE_EMPLOYEE_1 = RoleEnum.EMPLOYEE;
+
+    String TEST_APPLICATION_USER_FIRST_NAME_EMPLOYEE_2 = "Biber";
+    String TEST_APPLICATION_USER_LAST_NAME_EMPLOYEE_2 = "McBiberface";
+    String TEST_APPLICATION_USER_EMAIL_EMPLOYEE_2 = "biber@example.at";
+    String TEST_APPLICATION_USER_MOBILE_NUMBER_EMPLOYEE_2 = "06501234568";
+    String TEST_APPLICATION_USER_PASSWORD_EMPLOYEE_2 = "naughtybiber";
+    RoleEnum TEST_APPLICATION_USER_ROLE_EMPLOYEE_2 = RoleEnum.EMPLOYEE;
+
+    ApplicationUser TEST_REGISTRATION_EMPLOYEE_1 = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
+        .withFirstName(TEST_APPLICATION_USER_FIRST_NAME_EMPLOYEE_1)
+        .withLastName(TEST_APPLICATION_USER_LAST_NAME_EMPLOYEE_1)
+        .withEmail(TEST_APPLICATION_USER_EMAIL_EMPLOYEE_1)
+        .withMobileNumber(TEST_APPLICATION_USER_MOBILE_NUMBER_EMPLOYEE_1)
+        .withPassword(TEST_APPLICATION_USER_PASSWORD_EMPLOYEE_1)
+        .withRole(TEST_APPLICATION_USER_ROLE_EMPLOYEE_1)
+        .build();
+
+    ApplicationUser TEST_REGISTRATION_EMPLOYEE_2 = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
+        .withFirstName(TEST_APPLICATION_USER_FIRST_NAME_EMPLOYEE_2)
+        .withLastName(TEST_APPLICATION_USER_LAST_NAME_EMPLOYEE_2)
+        .withEmail(TEST_APPLICATION_USER_EMAIL_EMPLOYEE_2)
+        .withMobileNumber(TEST_APPLICATION_USER_MOBILE_NUMBER_EMPLOYEE_2)
+        .withPassword(TEST_APPLICATION_USER_PASSWORD_EMPLOYEE_2)
+        .withRole(TEST_APPLICATION_USER_ROLE_EMPLOYEE_2)
+        .build();
+
     ApplicationUserRegistrationDto TEST_REGISTRATION_CUSTOMER = ApplicationUserRegistrationDto.ApplicationUserRegistrationDtoBuilder.anApplicationUserRegistrationDto()
         .withFirstName(TEST_APPLICATION_USER_FIRST_NAME)
         .withLastName(TEST_APPLICATION_USER_LAST_NAME)
@@ -248,6 +306,83 @@ public interface TestData {
         .build();
 
     // ---------------------------------------------
+    // SPECIAL OFFER TEST DATA
+    // ---------------------------------------------
+
+    String TEST_SPECIAL_OFFER_NAME_1 = "Special Offer";
+    String TEST_SPECIAL_OFFER_NAME_2 = "Brokkoli-Spezial";
+    Float TEST_SPECIAL_OFFER_PRICE_PER_PAX_1 = 5.0f;
+    Float TEST_SPECIAL_OFFER_PRICE_PER_PAX_2 = 10.0f;
+
+    SpecialOfferCreateDto TEST_SPECIAL_OFFER_CREATE_DTO_1 = SpecialOfferCreateDto.SpecialOfferCreateBuilder.aSpecialOfferCreateDto()
+        .withName(TEST_SPECIAL_OFFER_NAME_1)
+        .withPricePerPax(TEST_SPECIAL_OFFER_PRICE_PER_PAX_1)
+        .build();
+
+    SpecialOfferCreateDto TEST_SPECIAL_OFFER_CREATE_DTO_2 = SpecialOfferCreateDto.SpecialOfferCreateBuilder.aSpecialOfferCreateDto()
+        .withName(TEST_SPECIAL_OFFER_NAME_2)
+        .withPricePerPax(TEST_SPECIAL_OFFER_PRICE_PER_PAX_2)
+        .build();
+
+    // ---------------------------------------------
+    // ADMIN VIEW TEST DATA
+    // ---------------------------------------------
+
+    Long TEST_ADMIN_VIEW_AREA_ID = 1L;
+    LocalTime TEST_ADMIN_VIEW_START_TIME = LocalTime.of(12, 0);
+    LocalDate TEST_ADMIN_VIEW_DATE = LocalDate.of(2024, 7, 1);
+
+    AdminViewDto TEST_ADMIN_VIEW_DTO = AdminViewDto.AdminViewBuilder.anAdminViewDto()
+        .withAreaId(TEST_ADMIN_VIEW_AREA_ID)
+        .withStartTime(TEST_ADMIN_VIEW_START_TIME)
+        .withDate(TEST_ADMIN_VIEW_DATE)
+        .build();
+
+    // ---------------------------------------------
+    // LOGIN TEST DATA
+    // ---------------------------------------------
+
+    String TEST_LOGIN_EMAIL_1 = "otter@example.at";
+    String TEST_LOGIN_PASSWORD_1 = "naughtyotter";
+    Long TEST_LOGIN_ID_1 = 1L;
+    String TEST_LOGIN_FIRST_NAME_1 = "Otter";
+    String TEST_LOGIN_LAST_NAME_1 = "McOtterface";
+    String TEST_LOGIN_MOBILE_NUMBER_1 = "06501234567";
+    RoleEnum TEST_LOGIN_ROLE_1 = RoleEnum.CUSTOMER;
+
+    ApplicationUserLoginDto TEST_LOGIN_DTO_1 = ApplicationUserLoginDto.UserLoginDtoBuilder.anUserLoginDto()
+        .withEmail(TEST_LOGIN_EMAIL_1)
+        .withPassword(TEST_LOGIN_PASSWORD_1)
+        .build();
+
+    ApplicationUserOverviewDto TEST_LOGIN_OVERVIEW_DTO_1 = ApplicationUserOverviewDto.ApplicationUserOverviewDtoBuilder.anApplicationUserOverviewDto()
+        .withId(TEST_LOGIN_ID_1)
+        .withFirstName(TEST_LOGIN_FIRST_NAME_1)
+        .withLastName(TEST_LOGIN_LAST_NAME_1)
+        .withEmail(TEST_LOGIN_EMAIL_1)
+        .withMobileNumber(TEST_LOGIN_MOBILE_NUMBER_1)
+        .withRole(TEST_LOGIN_ROLE_1)
+        .build();
+
+    // ---------------------------------------------
+    // LAYOUT TEST DATA
+    // ---------------------------------------------
+
+    LocalTime TEST_LAYOUT_START_TIME_1 = LocalTime.of(12, 00);
+    LocalTime TEST_LAYOUT_END_TIME_1 = LocalTime.of(15, 0);
+    LocalDate TEST_LAYOUT_DATE_1 = LocalDate.of(2024, 7, 1);
+    Long TEST_ID_TO_EXCLUDE_1 = 2L;
+    Long TEST_LAYOUT_AREA_ID = 1L;
+
+    ReservationLayoutCheckAvailabilityDto TEST_LAYOUT_CHECK_AVAILABILITY_DTO = ReservationLayoutCheckAvailabilityDto.ReservationLayoutCheckAvailabilityDtoBuilder.aReservationLayoutCheckAvailabilityDto()
+        .withStartTime(TEST_LAYOUT_START_TIME_1)
+        .withEndTime(TEST_LAYOUT_END_TIME_1)
+        .withDate(TEST_LAYOUT_DATE_1)
+        .withIdToExclude(TEST_ID_TO_EXCLUDE_1)
+        .withAreaId(TEST_LAYOUT_AREA_ID)
+        .build();
+
+    // ---------------------------------------------
     // EVENT TEST DATA
     // ---------------------------------------------
 
@@ -264,6 +399,18 @@ public interface TestData {
     String TEST_EVENT_NAME_2 = "Fussball EM";
     String TEST_EVENT_DESC_1 = "Let's laugh about some dad jokes.";
     String TEST_EVENT_DESC_2 = "Free shots!";
+
+    LocalDate TEST_EVENT_EARLIEST_DATE_1 = TEST_EVENT_START_TIME_1.toLocalDate();
+    LocalDate TEST_EVENT_LATEST_DATE_1 = TEST_EVENT_START_TIME_2.toLocalDate();
+    LocalTime TEST_EVENT_EARLIEST_START_TIME_1 = TEST_EVENT_START_TIME_1.toLocalTime();
+    LocalTime TEST_EVENT_LATEST_START_TIME_1 = TEST_EVENT_END_TIME_2.toLocalTime();
+
+    EventSearchDto TEST_EVENT_SEARCH_DTO = EventSearchDto.EventSearchDtoBuilder.anEventSearchDto()
+        .withEarliestDate(TEST_EVENT_EARLIEST_DATE_1)
+        .withLatestDate(TEST_EVENT_LATEST_DATE_1)
+        .withEarliestStartTime(TEST_EVENT_EARLIEST_START_TIME_1)
+        .withLatestEndTime(TEST_EVENT_LATEST_START_TIME_1)
+        .build();
 
     Event TEST_EVENT_1 = Event.EventBuilder.anEvent()
         .withId(TEST_EVENT_ID_1)
@@ -313,6 +460,22 @@ public interface TestData {
         .withHashId(TEST_EVENT_HASH_2)
         .build();
 
+    EventCreateDto TEST_EVENT_CREATE = EventCreateDto.EventCreateDtoBuilder.anEventCreateDto()
+        .withStartTime(TEST_EVENT_START_TIME_1.toLocalTime())
+        .withStartDate(TEST_EVENT_END_TIME_1.toLocalDate())
+        .withEndDate(TEST_EVENT_END_TIME_1.toLocalDate())
+        .withEndTime(TEST_EVENT_START_TIME_1.toLocalTime())
+        .withName(TEST_EVENT_NAME_1)
+        .withDescription(TEST_EVENT_DESC_1)
+        .build();
+
+    EventEditDto TEST_EVENT_EDIT = EventEditDto.EventEditDtoBuilder.anEventEditDto()
+        .startTime(TEST_EVENT_START_TIME_1)
+        .endTime(TEST_EVENT_START_TIME_1)
+        .name(TEST_EVENT_NAME_1)
+        .description(TEST_EVENT_DESC_1)
+        .build();
+
     // ---------------------------------------------
     // RESERVATION TEST DATA
     // ---------------------------------------------
@@ -328,7 +491,32 @@ public interface TestData {
     String TEST_RESERVATION_HASH_VALUE_1 = "44A17E9E592AA9951A3A0853524BE799A333DFD8522182D79D990A24EB94A7FE";
     String TEST_RESERVATION_HASH_VALUE_2 = "44A17E9E592AA9951A3A0853524BE799A333DFD8522182D79D990A24EB94A7FEfalse";
     LocalDate TEST_RESERVATION_DATE_INVALID = LocalDate.of(2022, 1, 2);
+    List<Long> TEST_RESERVATION_PLACE_IDS = new ArrayList<>() {
+        {
+            add(TEST_PLACE_AVAILABLE_1.getId());
+            add(TEST_PLACE_AVAILABLE_2.getId());
+        }
+    };
 
+    ReservationWalkInDto TEST_RESERVATION_WALK_IN = ReservationWalkInDto.WalkInReservationDtoBuilder.aWalkInReservationDto()
+        .withStartTime(TEST_RESERVATION_START_TIME)
+        .withDate(TEST_RESERVATION_DATE)
+        .withPax(TEST_RESERVATION_PAX)
+        .withPlaceIds(TEST_RESERVATION_PLACE_IDS)
+        .build();
+
+
+    LocalDate TEST_RESERVATION_EARLIEST_DATE = LocalDate.of(2023, 1, 2);
+    LocalDate TEST_RESERVATION_LATEST_DATE = LocalDate.of(2026, 1, 2);
+    LocalTime TEST_RESERVATION_EARLIEST_START_TIME = LocalTime.of(12, 0);
+    LocalTime TEST_RESERVATION_LATEST_END_TIME = LocalTime.of(14, 0);
+
+    ReservationSearchDto TEST_RESERVATION_SEARCH_DTO = ReservationSearchDto.ReservationSearchDtoBuilder.aReservationSearchDto()
+        .withEarliestDate(TEST_RESERVATION_EARLIEST_DATE)
+        .withLatestDate(TEST_RESERVATION_LATEST_DATE)
+        .withEarliestStartTime(TEST_RESERVATION_EARLIEST_START_TIME)
+        .withLatestEndTime(TEST_RESERVATION_LATEST_END_TIME)
+        .build();
 
     List<Long> TEST_PLACE_IDS = new ArrayList<>() {
         {

@@ -159,6 +159,7 @@ export class AdminViewComponent implements OnInit {
   onFieldChange() {
     this.adminViewDto.date = this.currDate;
     this.adminViewDto.startTime = this.currTime;
+    this.chartPredictionOptions = null;
     let observable: Observable<ReservationForeCastDto>;
     observable = this.adminViewService.getForeCast(this.adminViewDto);
     observable.subscribe({
