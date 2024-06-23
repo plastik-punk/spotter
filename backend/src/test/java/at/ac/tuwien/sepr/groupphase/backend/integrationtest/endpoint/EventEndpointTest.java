@@ -4,6 +4,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import com.fasterxml.jackson.core.type.TypeReference;
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
@@ -34,6 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -182,11 +184,28 @@ public class EventEndpointTest implements TestData {
         );
     }
 
+    @Test
+    @Transactional
+    public void givenValidId_whenDelete_thenNoContent() throws Exception {
+        Event savedEvent = eventRepository.save(TEST_EVENT_1);
 
-    // TODO: delete
+        MvcResult mvcResult = this.mockMvc.perform(delete(EVENT_BASE_URI)
+                .content(savedEvent.getHashId())
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(TEST_USER_ADMIN, TEST_ROLES_ADMIN)))
+            .andDo(print())
+            .andReturn();
+        int statusCode = mvcResult.getResponse().getStatus();
 
+        mvcResult = this.mockMvc.perform(get(EVENT_BASE_URI + "/detail")
+                .param("hashId", savedEvent.getHashId())
+                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(TEST_USER_ADMIN, TEST_ROLES_ADMIN)))
+            .andDo(print())
+            .andReturn();
+        int statusCode2 = mvcResult.getResponse().getStatus();
 
-    // TODO: importIcsFile
-
-    
+        assertAll(
+            () -> assertEquals(204, statusCode),
+            () -> assertEquals(404, statusCode2)
+        );
+    }
 }

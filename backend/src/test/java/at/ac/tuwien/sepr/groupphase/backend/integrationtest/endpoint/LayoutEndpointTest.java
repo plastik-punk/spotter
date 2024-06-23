@@ -78,4 +78,27 @@ public class LayoutEndpointTest implements TestData {
         );
     }
 
+    // TODO: getAllAreas
+
+
+    // TODO: getAllAreasDetailed
+
+
+    // TODO: createLayout
+
+
+    // TODO: deleteArea
+
+
+    // TODO: getAreaById
+
+
+    // TODO: toggleOpen
+
+
+    // TODO: updateArea
+
+
+    // TODO: toggleMain
+
 }
