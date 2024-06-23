@@ -79,7 +79,13 @@ public class ReservationOfferDataGenerator {
     private final int[] specialOfferIds = {1, 2, 3, 4, 5};
 
 
-    public ReservationOfferDataGenerator(ReservationOfferRepository reservationOfferRepository, ReservationRepository reservationRepository, SpecialOfferRepository specialOfferRepository, ReservationDataGenerator reservationDataGenerator, SpecialOfferDataGenerator specialOfferDataGenerator, ReservationPlaceRepository reservationPlaceRepository) {
+    public ReservationOfferDataGenerator(
+        ReservationOfferRepository reservationOfferRepository,
+        ReservationRepository reservationRepository,
+        SpecialOfferRepository specialOfferRepository,
+        ReservationDataGenerator reservationDataGenerator,
+        SpecialOfferDataGenerator specialOfferDataGenerator,
+        ReservationPlaceRepository reservationPlaceRepository) {
         this.reservationOfferRepository = reservationOfferRepository;
         this.reservationRepository = reservationRepository;
         this.specialOfferRepository = specialOfferRepository;

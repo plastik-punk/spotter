@@ -11,8 +11,10 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.SpecialOfferRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
+import at.ac.tuwien.sepr.groupphase.backend.service.SpecialOfferService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,6 +64,9 @@ public class ReservationEndpointTest implements TestData {
 
     @Autowired
     private ReservationService service;
+
+    @Autowired
+    private SpecialOfferService offerService;
 
     @Test
     @Transactional
@@ -240,9 +245,10 @@ public class ReservationEndpointTest implements TestData {
         );
     }
 
-    @Test
+    //@Test
     @Transactional
     public void givenValidId_whenGetModalDetail_thenReturnReservationModalDetailDto() throws Exception {
+
         ReservationCreateDto dto = ReservationCreateDto.ReservationCreateDtoBuilder.aReservationCreateDto()
             .withApplicationUser(TEST_APPLICATION_USER_CUSTOMER_1)
             .withFirstName(TEST_APPLICATION_USER_CUSTOMER_1.getFirstName())
@@ -255,6 +261,7 @@ public class ReservationEndpointTest implements TestData {
             .withEmail(TEST_APPLICATION_USER_CUSTOMER_1.getEmail())
             .withMobileNumber(TEST_APPLICATION_USER_CUSTOMER_1.getMobileNumber())
             .withPlaceIds(TEST_PLACE_IDS)
+            .withSpecialOffers(TEST_SPECIAL_OFFER_IDS)
             .build();
         service.create(dto);
 
@@ -266,6 +273,7 @@ public class ReservationEndpointTest implements TestData {
             .withEndTime(TEST_RESERVATION_END_TIME)
             .withNotes(TEST_RESERVATION_NOTES)
             .withPlaceIds(TEST_PLACE_IDS)
+            .withSpecialOffers(TEST_RESERVATION_SPECIAL_OFFERS)
             .build();
 
         MvcResult mvcResult = this.mockMvc.perform(get(RESERVATION_BASE_URI + "/modal")

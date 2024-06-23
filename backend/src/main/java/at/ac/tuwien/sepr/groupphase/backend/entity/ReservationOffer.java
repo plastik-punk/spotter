@@ -81,8 +81,12 @@ public class ReservationOffer {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             ReservationOfferId that = (ReservationOfferId) o;
             return reservationId.equals(that.reservationId) && offerId.equals(that.offerId);
         }
@@ -95,8 +99,12 @@ public class ReservationOffer {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ReservationOffer reservationOffer)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ReservationOffer reservationOffer)) {
+            return false;
+        }
         return id.equals(reservationOffer.id);
     }
 
@@ -107,12 +115,12 @@ public class ReservationOffer {
 
     @Override
     public String toString() {
-        return "ReservationOffer{" +
-            "id=" + id +
-            ", reservation=" + reservation +
-            ", offer=" + offer +
-            ", amount=" + amount +
-            '}';
+        return "ReservationOffer{"
+            + "id=" + id
+            + ", reservation=" + reservation
+            + ", offer=" + offer
+            + ", amount=" + amount
+            + '}';
     }
 
     public ReservationOffer copy() {
