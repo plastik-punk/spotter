@@ -4,7 +4,7 @@ import {Globals} from '../global/globals';
 import {HttpClient, HttpParams, HttpResponse, HttpHeaders} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {EventCreateDto, EventDetailDto, EventEditDto, EventListDto, EventSearchDto} from "../dtos/event";
-import {formatIsoDate} from "../util/date-helper";
+import {formatIsoDate, formatIsoTime} from "../util/date-helper";
 
 @Injectable({
   providedIn: 'root'
@@ -31,10 +31,10 @@ export class EventService {
       params = params.append('latestDate', formatIsoDate(searchParams.latestEndDate));
     }
     if (searchParams.earliestStartTime) {
-      params = params.append('earliestStartTime', formatIsoDate(searchParams.earliestStartTime))
+      params = params.append('earliestStartTime', searchParams.earliestStartTime)
     }
     if (searchParams.latestEndTime) {
-      params = params.append('latestEndTime', formatIsoDate(searchParams.latestEndTime))
+      params = params.append('latestEndTime', searchParams.latestEndTime)
     }
 
     // TODO: remove

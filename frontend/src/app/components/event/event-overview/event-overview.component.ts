@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormsModule} from "@angular/forms";
-import {NgForOf, NgIf} from "@angular/common";
+import {NgForOf, NgIf, Time} from "@angular/common";
 import {debounceTime, Observable, Subject} from "rxjs";
 import {HttpResponse} from "@angular/common/http";
 import {AuthService} from "../../../services/auth.service";
@@ -20,10 +20,10 @@ export class EventOverviewComponent implements OnInit {
   events: EventListDto[] = [];
   displayedEvents: EventListDto[] = [];
   searchParams: EventSearchDto = {};
-  searchEarliestDate: Date | null = null;
-  searchLatestDate: Date | null = null;
-  searchEarliestStartTime: Date | null = null;
-  searchLatestEndTime: Date | null = null;
+  searchEarliestDate: string | null = null;
+  searchLatestDate: string | null = null;
+  searchEarliestStartTime: string | null = null;
+  searchLatestEndTime: string | null = null;
   searchChangedObservable = new Subject<void>();
   deleteWhat: string = null;
   selectedFile: File | null = null;
@@ -59,12 +59,12 @@ export class EventOverviewComponent implements OnInit {
     if (this.searchEarliestDate == null) {
       delete this.searchParams.earliestStartDate;
     } else {
-      this.searchParams.earliestStartDate = this.searchEarliestDate;
+      this.searchParams.earliestStartDate = new Date(this.searchEarliestDate);
     }
     if (this.searchLatestDate == null) {
       delete this.searchParams.latestEndDate;
     } else {
-      this.searchParams.latestEndDate = this.searchLatestDate;
+      this.searchParams.latestEndDate = new Date(this.searchLatestDate);
     }
     if (this.searchEarliestStartTime == null) {
       delete this.searchParams.earliestStartTime;
@@ -146,5 +146,17 @@ export class EventOverviewComponent implements OnInit {
         }
       );
     }
+  }
+
+  formatDateTime(dateTime: string): string {
+    if (!dateTime) {
+      return "";
+    }
+    const date = new Date(dateTime);
+    const formattedDate = date.toISOString().split('T')[0];
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+
+    return `${formattedDate} ${hours}:${minutes}`;
   }
 }

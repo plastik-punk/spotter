@@ -30,7 +30,7 @@
                    pattern="\d{4}-\d{2}-\d{2}"
                    placeholder="yyyy-mm-dd"
                    class="form-control"
-                   [(ngModel)]="searchEarliestStartTime"
+                   [(ngModel)]="searchEarliestDate"
                    (ngModelChange)="searchChanged()"
             >
           </div>
@@ -45,7 +45,7 @@
                    pattern="\d{4}-\d{2}-\d{2}"
                    placeholder="yyyy-mm-dd"
                    class="form-control"
-                   [(ngModel)]="searchLatestEndTime"
+                   [(ngModel)]="searchLatestDate"
                    (ngModelChange)="searchChanged()"
             >
           </div>
@@ -95,8 +95,8 @@
         </thead>
         <tbody>
         <tr *ngFor="let event of displayedEvents">
-          <td>{{ event.startTime.toString().replace("T"," ") }}</td>
-          <td>{{ event.endTime.toString().replace("T"," ") }}</td>
+          <td>{{ formatDateTime(event.startTime.toString()) }}</td>
+          <td>{{ formatDateTime(event.endTime.toString()) }}</td>
           <td>{{ event.name }}</td>
           <td>
             <div class="btn-group">
