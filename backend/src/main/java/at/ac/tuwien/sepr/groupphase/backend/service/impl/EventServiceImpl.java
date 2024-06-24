@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -56,21 +57,36 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventListDto> search(EventSearchDto searchParameters) {
         LOGGER.trace("search({})", searchParameters);
-        LocalDateTime startTime;
-        if (searchParameters.getEarliestDate() == null || searchParameters.getEarliestStartTime() == null) {
+
+        LocalDate startDate;
+        if (searchParameters.getEarliestDate() == null) {
+            startDate = null;
+        } else {
+            startDate = searchParameters.getEarliestDate();
+        }
+
+        LocalDate endDate;
+        if (searchParameters.getLatestDate() == null) {
+            endDate = null;
+        } else {
+            endDate = searchParameters.getLatestDate();
+        }
+
+        LocalTime startTime;
+        if (searchParameters.getEarliestStartTime() == null) {
             startTime = null;
         } else {
-            startTime = LocalDateTime.of(searchParameters.getEarliestDate(), searchParameters.getEarliestStartTime());
+            startTime = searchParameters.getEarliestStartTime();
         }
 
-        LocalDateTime endTime;
-        if (searchParameters.getLatestDate() == null || searchParameters.getLatestEndTime() == null) {
+        LocalTime endTime;
+        if (searchParameters.getLatestEndTime() == null) {
             endTime = null;
         } else {
-            endTime = LocalDateTime.of(searchParameters.getLatestDate(), searchParameters.getLatestEndTime());
+            endTime = searchParameters.getLatestEndTime();
         }
 
-        List<Event> events = eventRepository.findEventsByDate(startTime, endTime);
+        List<Event> events = eventRepository.findEventsByDate(startDate, endDate, startTime, endTime);
         return mapper.eventToEventListDto(events);
     }
 

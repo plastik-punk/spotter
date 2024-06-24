@@ -5,7 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 /**
@@ -15,13 +17,17 @@ import java.util.List;
 public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query(value = "SELECT e.* FROM event e "
-        + "WHERE (:startTime IS NULL OR e.end_time >= :startTime) "
-        + "AND (:endTime IS NULL OR e.start_time <= :endTime) "
+        + "WHERE (:startDate IS NULL OR CAST(e.start_time AS DATE) >= :startDate) "
+        + "AND (:endDate IS NULL OR CAST(e.start_time AS DATE) <= :endDate) "
+        + "AND (:startTime IS NULL OR CAST(e.start_time AS TIME) >= :startTime) "
+        + "AND (:endTime IS NULL OR CAST(e.end_time AS TIME) <= :endTime) "
         + "ORDER BY e.start_time ASC",
         nativeQuery = true)
     List<Event> findEventsByDate(
-        @Param("startTime") LocalDateTime startTime,
-        @Param("endTime") LocalDateTime endTime);
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate,
+        @Param("startTime") LocalTime startTime,
+        @Param("endTime") LocalTime endTime);
 
     @Query(value = "SELECT e.* FROM event e "
         + "WHERE e.end_time >= CURRENT_TIMESTAMP "
