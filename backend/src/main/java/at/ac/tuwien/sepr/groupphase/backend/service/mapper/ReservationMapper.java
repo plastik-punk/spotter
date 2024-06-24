@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.mapper;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
@@ -83,6 +84,16 @@ public interface ReservationMapper {
     @Named("reservationList")
     ReservationListDto reservationToReservationListDto(Reservation reservation, List<Long> placeIds);
 
+    @Mapping(source = "reservation.applicationUser.firstName", target = "userFirstName")
+    @Mapping(source = "reservation.applicationUser.lastName", target = "userLastName")
+    @Mapping(source = "reservation.startTime", target = "startTime")
+    @Mapping(source = "reservation.date", target = "date")
+    @Mapping(source = "reservation.endTime", target = "endTime")
+    @Mapping(source = "reservation.hashValue", target = "hashId")
+    @Mapping(source = "reservation.confirmed", target = "confirmed")
+    @Named("reservationList")
+    ReservationListDto reservationToReservationListDto(Reservation reservation);
+
     @Mapping(target = "placeIds", ignore = true)
     @Mapping(source = "reservation.applicationUser", target = "user")
     @Mapping(source = "reservation.id", target = "reservationId")
@@ -93,4 +104,20 @@ public interface ReservationMapper {
     @Mapping(source = "applicationUser.firstName", target = "userFirstName")
     @Mapping(source = "applicationUser.lastName", target = "userLastName")
     PermanentReservationListDto permanentReservationToPermanentReservationListDto(PermanentReservation permanentReservation);
+
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "userFirstName", source = "applicationUser.firstName")
+    @Mapping(target = "userLastName", source = "applicationUser.lastName")
+    @Mapping(target = "startTime", source = "startTime")
+    @Mapping(target = "endTime", source = "endTime")
+    @Mapping(target = "startDate", source = "startDate")
+    @Mapping(target = "endDate", source = "endDate")
+    @Mapping(target = "repetition", source = "repetition")
+    @Mapping(target = "period", source = "period")
+    @Mapping(target = "confirmed", source = "confirmed")
+    @Mapping(target = "pax", source = "pax")
+    @Mapping(target = "hashedId", source = "hashedId")
+    @Mapping(target = "singleReservationList", ignore = true)
+        // This will be set after mapping
+    PermanentReservationDetailDto permanentReservationToDetailDto(PermanentReservation permanentReservation);
 }

@@ -11,7 +11,11 @@ import {
   ReservationListDto,
   ReservationEditDto,
   ReservationModalDetailDto,
-  ReservationWalkInDto, PermanentReservationDto, permanentReservationSearch, PermanentReservationListDto
+  ReservationWalkInDto,
+  PermanentReservationDto,
+  permanentReservationSearch,
+  PermanentReservationListDto,
+  PermanentReservationDetailDto
 } from "../dtos/reservation";
 import {SimpleViewReservationStatusEnum} from "../dtos/status-enum";
 
@@ -207,6 +211,16 @@ export class ReservationService {
    */
   confirmPermanentReservation(id: string): Observable<void> {
     return this.httpClient.put<void>(`${this.permanentReservationUri}/confirmation/${id}`, null);
+  }
+
+  /**
+   * Fetch details of a permanent reservation by its hashed ID
+   *
+   * @param hashedId the hashed ID of the permanent reservation
+   * @return an Observable for the detailed data of the permanent reservation
+   */
+  getPermanentReservationDetailsByHashedId(hashedId: string): Observable<PermanentReservationDetailDto> {
+    return this.httpClient.get<PermanentReservationDetailDto>(`${this.permanentReservationUri}/detail/${hashedId}`);
   }
 
 }

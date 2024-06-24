@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
@@ -14,7 +15,6 @@ import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import jakarta.mail.MessagingException;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -135,4 +135,13 @@ public interface ReservationService {
      * @return List of PermanentReservationCreateDto that match the search parameters
      */
     List<PermanentReservationListDto> searchPermanent(PermanentReservationSearchDto searchParams);
+
+
+    /**
+     * Get the details for a permanent reservation with the given hashedId.
+     *
+     * @param hashedId the unique hashedId for the permanent reservation
+     * @return a PermanentReservationDetailDto with the details of the permanent reservation
+     */
+    PermanentReservationDetailDto getPermanentDetails(String hashedId);
 }

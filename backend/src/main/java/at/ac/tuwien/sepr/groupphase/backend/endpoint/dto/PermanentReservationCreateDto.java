@@ -33,7 +33,7 @@ public class PermanentReservationCreateDto {
     @NotNull(message = "Period is required")
     @Positive(message = "Period should be greater than 0")
     @Min(1)
-    @Max(10)
+    @Max(14)
     private Integer period;
 
     @NotNull(message = "Confirmation status is required")

@@ -327,12 +327,13 @@
             <th>Start Time</th>
             <th>End Time</th>
             <th>Repetition</th>
-            <th *ngIf="isAdminOrEmployee()">Confirmed</th>
+            <th >Confirmed</th>
             <th> Actions</th>
           </tr>
           </thead>
           <tbody>
-          <tr *ngFor="let reservation of permanentReservations">
+          <div *ngIf="permanentReservations.length===0">No permanent reservations </div>
+          <tr  *ngFor="let reservation of permanentReservations">
             <!-- Data rows -->
             <td *ngIf="isAdminOrEmployee()">{{ reservation.userFirstName }}</td>
             <td *ngIf="isAdminOrEmployee()">{{ reservation.userLastName }}</td>
@@ -341,7 +342,7 @@
             <td>{{ reservation.startTime }}</td>
             <td>{{ reservation.endTime }}</td>
             <td>{{ getFrequency(reservation) }}</td>
-            <td *ngIf="isAdminOrEmployee()">
+            <td >
 
               <i *ngIf="!reservation?.confirmed" style="color:red;" class="bi bi-x-octagon-fill"></i>
               <i *ngIf="reservation?.confirmed" style="color:green;" class="bi bi-check-circle-fill"></i>
@@ -350,7 +351,7 @@
             <td >
               <a class="btn btn-sm responsive-info-button"
                  aria-label="Show reservation details"
-                 (click)="showPermanentReservationDetails(reservation.hashedId)">
+                 [routerLink]="['/permanent-reservation-details',reservation.hashedId]">
                 <i class="bi bi-info-lg"></i>
               </a>
               <!-- Action buttons -->

@@ -9,6 +9,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {ToastrService} from "ngx-toastr";
 import {NotificationService} from "../../../services/notification.service";
 import {NgIf} from "@angular/common";
+import {NavigationStateService} from "../../../services/navigation-state.service";
 
 @Component({
   selector: 'app-reservation-edit',
@@ -47,9 +48,14 @@ export class ReservationEditComponent implements OnInit {
     idToExclude: undefined
   }
 
+  returnHashId: string;
+  fromPermanentDetail: boolean = false;
+  returnUrl: string = '/reservation-overview';
+
   enumReservationTableStatus = SimpleViewReservationStatusEnum;
   reservationStatusText: string = 'Provide Time, Date and Pax';
   reservationStatusClass: string = 'reservation-table-incomplete';
+
 
   constructor(
     public authService: AuthService,
@@ -57,11 +63,16 @@ export class ReservationEditComponent implements OnInit {
     private route: ActivatedRoute,
     private notification: ToastrService,
     private notificationService: NotificationService,
-    private router: Router
+    private router: Router,
+    private navigationStateService: NavigationStateService
   ) {
   } // constructor
 
   ngOnInit() {
+
+    const state = this.navigationStateService.getNavigationState();
+    this.fromPermanentDetail = state.fromPermanentDetail || false;
+    this.returnUrl = state.returnUrl || '/reservation-overview';
     // 1. get reservation id from service
     this.hashId = this.route.snapshot.paramMap.get('id');
     if (this.hashId) {
@@ -90,7 +101,7 @@ export class ReservationEditComponent implements OnInit {
         next: (data) => {
           this.notification.success("Reservation updated successfully");
           if (this.authService.isLoggedIn()) {
-            this.router.navigate(['/reservation-overview']);
+            this.router.navigate([this.returnUrl]);
           }
         },
         error: (error) => {

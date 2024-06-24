@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface PermanentReservationRepository extends JpaRepository<PermanentReservation, Long> {
 
-    List<PermanentReservation> findByHashedId(String hashValue);
+    PermanentReservation findByHashedId(String hashValue);
 
     @Query("SELECT pr FROM PermanentReservation pr "
         + "WHERE (:startDate IS NULL OR pr.startDate >= :startDate) "
@@ -40,5 +40,6 @@ public interface PermanentReservationRepository extends JpaRepository<PermanentR
         @Param("endDate") LocalDate endDate,
         @Param("startTime") LocalTime startTime,
         @Param("endTime") LocalTime endTime);
+
 }
 

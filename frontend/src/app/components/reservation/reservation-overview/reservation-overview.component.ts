@@ -16,6 +16,7 @@ import {NotificationService} from "../../../services/notification.service";
 import moment from 'moment';
 import {Router} from "@angular/router";
 import {formatDay, formatDotDate, formatTime} from "../../../util/date-helper";
+import {NavigationStateService} from "../../../services/navigation-state.service";
 
 @Component({
   selector: 'app-reservation-overview',
@@ -51,22 +52,36 @@ export class ReservationOverviewComponent implements OnInit {
   isPermanentView: boolean = false;  // To toggle between views
   permanentReservations: PermanentReservationListDto[] = [];  // To store permanent reservations
   permanentSearchParams: permanentReservationSearch = {};
+  fromPermanentDetail = false;
+  showPermanentReservation=false;
 
   constructor(
     private authService: AuthService,
     private reservationService: ReservationService,
     private notificationService: NotificationService,
-    private router: Router) {
+    private router: Router,
+    private navigationStateService: NavigationStateService) {
   }
 
   ngOnInit(): void {
-    this.loadReservations();
+    const state = this.navigationStateService.getNavigationState();
+    this.showPermanentReservation = state.showPermanentReservations || false;
+    if (this.showPermanentReservation) {
+      this.isPermanentView = true;
+      this.loadPermanentReservations();
+    } else {
+      this.loadReservations();
+    }
     this.searchChangedObservable.pipe(debounceTime(100)).subscribe(() => this.loadReservations());
 
     // Set up the interval to reload reservations every 2 minutes
     this.fetchIntervalSubscription = interval(120000).subscribe(() => {
       console.log('Fetching new reservations automatically...');
-      this.loadReservations();
+      if (this.isPermanentView) {
+        this.loadPermanentReservations();
+      } else {
+        this.loadReservations();
+      }
     });
   }
 
@@ -129,12 +144,11 @@ export class ReservationOverviewComponent implements OnInit {
     } else {
       this.permanentSearchParams.latestEndTime = this.searchLatestEndTime;
     }
-  console.log("get perma "+this.permanentSearchParams);
+    console.log("get perma " + this.permanentSearchParams);
     this.reservationService.getPermanentReservations(this.permanentSearchParams)
       .subscribe({
         next: (reservations: PermanentReservationListDto[]) => {
           this.permanentReservations = reservations;
-          console.log(this.permanentReservations[0].confirmed);
           // Potentially process or filter reservations as needed
         },
         error: error => {
@@ -144,18 +158,18 @@ export class ReservationOverviewComponent implements OnInit {
 
   }
 
-  getFrequency(permanentReservationListDto:PermanentReservationListDto):String {
+  getFrequency(permanentReservationListDto: PermanentReservationListDto): String {
     if (permanentReservationListDto.repetition === RepetitionEnum.DAYS) {
-    if (permanentReservationListDto.period == 1) {
-    return 'Daily'
-    }else{
-      return 'every '+permanentReservationListDto.period+' days'
-    }
-  }else if(permanentReservationListDto.repetition === RepetitionEnum.WEEKS){
+      if (permanentReservationListDto.period == 1) {
+        return 'Daily'
+      } else {
+        return 'every ' + permanentReservationListDto.period + ' days'
+      }
+    } else if (permanentReservationListDto.repetition === RepetitionEnum.WEEKS) {
       if (permanentReservationListDto.period == 1) {
         return 'Weekly'
-      }else{
-        return 'every '+permanentReservationListDto.period+' weeks'
+      } else {
+        return 'every ' + permanentReservationListDto.period + ' weeks'
       }
     }
   }
@@ -248,18 +262,18 @@ export class ReservationOverviewComponent implements OnInit {
   }
 
   showReservationDetails(hashId: string): void {
-      this.reservationService.getModalDetail(hashId).subscribe( {
-        next: (data: ReservationModalDetailDto) => {
-            this.reservationModalDetailDto.firstName = data.firstName;
-            this.reservationModalDetailDto.lastName = data.lastName;
-            this.reservationModalDetailDto.startTime = data.startTime;
-            this.reservationModalDetailDto.endTime = data.endTime;
-            if (data.notes === null) {
-              this.reservationModalDetailDto.notes = 'No notes';
-            } else {
-              this.reservationModalDetailDto.notes = data.notes;
-            }
-            this.reservationModalDetailDto.placeIds = data.placeIds;
+    this.reservationService.getModalDetail(hashId).subscribe({
+      next: (data: ReservationModalDetailDto) => {
+        this.reservationModalDetailDto.firstName = data.firstName;
+        this.reservationModalDetailDto.lastName = data.lastName;
+        this.reservationModalDetailDto.startTime = data.startTime;
+        this.reservationModalDetailDto.endTime = data.endTime;
+        if (data.notes === null) {
+          this.reservationModalDetailDto.notes = 'No notes';
+        } else {
+          this.reservationModalDetailDto.notes = data.notes;
+        }
+        this.reservationModalDetailDto.placeIds = data.placeIds;
 
         const modalDetail = new bootstrap.Modal(document.getElementById('confirmation-dialog-reservation-detail'));
         modalDetail.show();
@@ -271,7 +285,7 @@ export class ReservationOverviewComponent implements OnInit {
   }
 
   showPermanentReservationDetails(hashId: string): void {
-    this.reservationService.getModalDetail(hashId).subscribe( {
+    this.reservationService.getModalDetail(hashId).subscribe({
       next: (data: ReservationModalDetailDto) => {
         this.reservationModalDetailDto.firstName = data.firstName;
         this.reservationModalDetailDto.lastName = data.lastName;

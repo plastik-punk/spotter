@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
@@ -178,5 +179,14 @@ public class ReservationEndpoint {
         PermanentReservationSearchDto searchParams) {
         LOGGER.info("GET /api/v1/reservations/permanent with search params: {}", searchParams);
         return service.searchPermanent(searchParams);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_USER"})
+    @GetMapping({"/permanent/detail/{hashedId}"})
+    @Operation(summary = "Get detail information for a single reservation")
+    public PermanentReservationDetailDto getPermanentReservationDetailsByHashedId(@PathVariable("hashedId") String hashedId) {
+        LOGGER.info("GET /api/v1/reservations/permanent/detail/{}", hashedId);
+        return service.getPermanentDetails(hashedId);
     }
 }
