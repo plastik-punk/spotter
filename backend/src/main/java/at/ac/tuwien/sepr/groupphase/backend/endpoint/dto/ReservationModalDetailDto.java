@@ -1,7 +1,5 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
-import at.ac.tuwien.sepr.groupphase.backend.entity.SpecialOffer;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
