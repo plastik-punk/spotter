@@ -37,7 +37,6 @@ import at.ac.tuwien.sepr.groupphase.backend.service.HashService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ReservationMapper;
 import jakarta.mail.MessagingException;
-import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;

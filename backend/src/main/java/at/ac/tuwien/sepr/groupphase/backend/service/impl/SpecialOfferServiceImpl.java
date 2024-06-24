@@ -8,7 +8,6 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SpecialOfferRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.SpecialOfferService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.SpecialOfferMapper;
-import jakarta.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +22,6 @@ public class SpecialOfferServiceImpl implements SpecialOfferService {
 
     private final SpecialOfferRepository specialOfferRepository;
     private final SpecialOfferMapper specialOfferMapper;
-
-    @Autowired
-    private Validator validator;
 
     @Autowired
     public SpecialOfferServiceImpl(SpecialOfferRepository specialOfferRepository, SpecialOfferMapper specialOfferMapper) {

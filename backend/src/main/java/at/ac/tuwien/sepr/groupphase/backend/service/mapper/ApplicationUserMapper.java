@@ -17,9 +17,6 @@ public interface ApplicationUserMapper {
     @Mapping(target = "password", ignore = true)
     ApplicationUser userRegistrationDtoToApplicationUser(ApplicationUserRegistrationDto applicationUserRegistrationDto);
 
-    @Mapping(target = "password", ignore = true)
-    ApplicationUserRegistrationDto applicationUserToUserRegistrationDto(ApplicationUser applicationUser);
-
     @Named("userOverview")
     ApplicationUserOverviewDto applicationUserToUserOverviewDto(ApplicationUser applicationUser);
 

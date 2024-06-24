@@ -37,6 +37,7 @@ public class SpecialOfferEndpoint {
         this.specialOfferService = specialOfferService;
     }
 
+    // TODO: dto as param and validation
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     @Secured("ROLE_ADMIN")
