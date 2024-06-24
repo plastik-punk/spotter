@@ -13,7 +13,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @Service
@@ -33,6 +37,14 @@ public class SpecialOfferServiceImpl implements SpecialOfferService {
     public SpecialOfferCreateDto createSpecialOffer(SpecialOfferCreateDto specialOfferCreateDto) {
         LOGGER.trace("createSpecialOffer({})", specialOfferCreateDto);
         SpecialOffer specialOfferToCreate = specialOfferMapper.specialOfferCreateDtoToSpecialOffer(specialOfferCreateDto);
+        if (specialOfferToCreate.getImage() == null) {
+            try {
+                byte[] image = readImageAsBytes("../backend/src/main/resources/special-offer-pictures/default.jpeg");
+                specialOfferToCreate.setImage(image);
+            } catch (IOException e) {
+                LOGGER.error("Failed to read default image", e);
+            }
+        }
         SpecialOffer createdSpecialOffer = specialOfferRepository.save(specialOfferToCreate);
         return specialOfferMapper.specialOfferToSpecialOfferCreateDto(createdSpecialOffer);
     }
@@ -62,5 +74,10 @@ public class SpecialOfferServiceImpl implements SpecialOfferService {
         LOGGER.trace("getAllSpecialOfferDetails()");
         List<SpecialOffer> foundSpecialOffers = specialOfferRepository.findAll();
         return specialOfferMapper.specialOffersToSpecialOfferDetailDtos(foundSpecialOffers);
+    }
+
+    private byte[] readImageAsBytes(String relativePath) throws IOException {
+        Path imagePath = Paths.get(relativePath).toAbsolutePath().normalize();
+        return Files.readAllBytes(imagePath);
     }
 }
