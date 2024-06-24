@@ -48,6 +48,12 @@ export class SpecialOfferService {
     return this.httpClient.delete<void>(this.placeBaseUri, {observe: 'response', body: id});
   }
 
+  /**
+   * Get a special offer by its ID
+   *
+   * @param id
+   * @return an Observable for the HttpResponse
+   */
   getSpecialOffer(id: number): Observable<SpecialOfferDetailDto> {
     return this.httpClient.get<SpecialOfferDetailDto>(this.placeBaseUri + "/detail", {params: new HttpParams().set('id', id)});
   }

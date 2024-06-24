@@ -2,15 +2,12 @@ package at.ac.tuwien.sepr.groupphase.backend.integrationtest.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.config.properties.SecurityProperties;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferListDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SpecialOffer;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SpecialOfferRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.SpecialOfferMapper;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -19,25 +16,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -65,12 +57,13 @@ public class SpecialOfferEndpointTest implements TestData {
 
     @Test
     @Transactional
+
     public void givenNothing_whenCreateSpecialOffer_then201() throws Exception {
         String body = objectMapper.writeValueAsString(TEST_SPECIAL_OFFER_CREATE_DTO_1);
-
         MvcResult mvcResult = mockMvc.perform(post(SPECIAL_OFFER_URI)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(body)
+                .param("name", TEST_SPECIAL_OFFER_NAME_1)
+                .param("pricePerPax", String.valueOf(TEST_SPECIAL_OFFER_PRICE_PER_PAX_1))
                 .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(TEST_USER_ADMIN, TEST_ROLES_ADMIN)))
             .andDo(print())
             .andReturn();
@@ -133,7 +126,8 @@ public class SpecialOfferEndpointTest implements TestData {
         SpecialOffer saved = repository.save(specialOffer);
 
         MvcResult mvcResult = mockMvc.perform(delete(SPECIAL_OFFER_URI)
-                .param("id", String.valueOf(saved.getId()))
+                .content(saved.getId().toString())
+                .contentType(MediaType.APPLICATION_JSON)
                 .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(TEST_USER_ADMIN, TEST_ROLES_ADMIN)))
             .andDo(print())
             .andReturn();

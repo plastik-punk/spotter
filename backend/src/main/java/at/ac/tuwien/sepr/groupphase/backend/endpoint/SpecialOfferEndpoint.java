@@ -40,8 +40,15 @@ public class SpecialOfferEndpoint {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     @Secured("ROLE_ADMIN")
-    public SpecialOfferCreateDto createSpecialOffer(@RequestBody SpecialOfferCreateDto specialOfferCreateDto) {
-        LOGGER.info("POST /api/v1/special-offers body: {}", specialOfferCreateDto);
+    public SpecialOfferCreateDto createSpecialOffer(@RequestParam("name") String name,
+                                                    @RequestParam("pricePerPax") Float pricePerPax,
+                                                    @RequestParam(value = "image", required = false) MultipartFile image) {
+        SpecialOfferCreateDto specialOfferCreateDto = new SpecialOfferCreateDto();
+        specialOfferCreateDto.setName(name);
+        specialOfferCreateDto.setPricePerPax(pricePerPax);
+        specialOfferCreateDto.setImage(image);
+
+        LOGGER.info("POST /api/v1/special-offers " + "/{}", specialOfferCreateDto);
         return specialOfferService.createSpecialOffer(specialOfferCreateDto);
     }
 
@@ -58,17 +65,15 @@ public class SpecialOfferEndpoint {
     @Secured("ROLE_ADMIN")
     public SpecialOfferDetailDto getSpecialOffer(@RequestParam("id") Long id) {
         LOGGER.info("GET /api/v1/special-offers id: {}", id);
-        SpecialOfferDetailDto specialOfferDetailDto = specialOfferService.getSpecialOffer(id);
-        System.out.println("Special Offer:" + specialOfferDetailDto.toString());
-        return specialOfferDetailDto;
+        return specialOfferService.getSpecialOffer(id);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Secured("ROLE_ADMIN")
     @DeleteMapping
     @Operation(summary = "Delete a special offer")
-    public ResponseEntity<Void> deleteSpecialOffer(@RequestParam("id") Long id) {
-        LOGGER.info("DELETE /api/v1/special-offers id: {}", id);
+    public ResponseEntity<Void> deleteSpecialOffer(@RequestBody Long id) {
+        LOGGER.info("DELETE /api/v1/special-offers?id={}", id);
         specialOfferService.deleteSpecialOffer(id);
         return ResponseEntity.noContent().build();
     }
