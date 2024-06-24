@@ -1,11 +1,19 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Objects;
 
 public class SpecialOfferCreateDto {
+    @Size(min = 1, message = "Name should not be empty")
+    @Size(max = 255, message = "Name shouldn't be longer than 255 characters")
+    @NotNull(message = "Name is required")
     private String name;
+    @NotNull(message = "Price per pax is required")
+    @Positive(message = "Price per pax should be greater than 0")
     private Float pricePerPax;
     private MultipartFile image;
 
