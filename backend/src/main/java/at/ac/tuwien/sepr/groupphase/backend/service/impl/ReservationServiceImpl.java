@@ -77,8 +77,6 @@ public class ReservationServiceImpl implements ReservationService {
     private final EmailService emailService;
     private final HashService hashService;
     private final ApplicationUserServiceImpl applicationUserService;
-    private final AreaRepository areaRepository;
-    private final AreaPlaceSegmentRepository areaPlaceSegmentRepository;
     private final SpecialOfferRepository specialOfferRepository;
     private final ReservationOfferRepository reservationOfferRepository;
 
@@ -96,8 +94,8 @@ public class ReservationServiceImpl implements ReservationService {
                                   ClosedDayRepository closedDayRepository,
                                   HashService hashService,
                                   ApplicationUserServiceImpl applicationUserService,
-                                  AreaRepository areaRepository,
-                                  AreaPlaceSegmentRepository areaPlaceSegmentRepository, SpecialOfferRepository specialOfferRepository, ReservationOfferRepository reservationOfferRepository) {
+                                  SpecialOfferRepository specialOfferRepository,
+                                  ReservationOfferRepository reservationOfferRepository) {
         this.mapper = mapper;
         this.reservationRepository = reservationRepository;
         this.applicationUserRepository = applicationUserRepository;
@@ -108,8 +106,6 @@ public class ReservationServiceImpl implements ReservationService {
         this.closedDayRepository = closedDayRepository;
         this.hashService = hashService;
         this.applicationUserService = applicationUserService;
-        this.areaRepository = areaRepository;
-        this.areaPlaceSegmentRepository = areaPlaceSegmentRepository;
         this.specialOfferRepository = specialOfferRepository;
         this.reservationOfferRepository = reservationOfferRepository;
     }
@@ -228,11 +224,10 @@ public class ReservationServiceImpl implements ReservationService {
                         .build();
                     reservationOfferRepository.save(reservationOffer);
                 } else {
-                    throw new NotFoundException("Special offer " + specialOfferAmountDto.getSpecialOffer().getId() + " not found");
+                    throw new NotFoundException("The chosen Special offer was not found");
                 }
             }
         }
-
         // Validate after changes being made as an additional layer of defense
         Set<ConstraintViolation<Reservation>> reservationViolations = validator.validate(savedReservation);
         if (!reservationViolations.isEmpty()) {
@@ -264,7 +259,6 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public ReservationResponseEnum getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) {
         LOGGER.trace("getAvailability ({})", reservationCheckAvailabilityDto.toString());
-        // reservationValidator.validateReservationCheckAvailabilityDto(reservationCheckAvailabilityDto);
         LocalDate date = reservationCheckAvailabilityDto.getDate();
         LocalTime startTime = reservationCheckAvailabilityDto.getStartTime();
         LocalTime endTime = reservationCheckAvailabilityDto.getEndTime();
@@ -573,7 +567,7 @@ public class ReservationServiceImpl implements ReservationService {
                         .build();
                     reservationOfferRepository.save(reservationOffer);
                 } else {
-                    throw new NotFoundException("Special offer " + entry.getKey() + " not found");
+                    throw new NotFoundException("Special offer not found");
                 }
             }
         }
@@ -712,7 +706,7 @@ public class ReservationServiceImpl implements ReservationService {
                 selectedPlaces.add(optionalPlace.get());
             } else {
                 List<String> errors = new ArrayList<>();
-                errors.add("Place with Id" + placeId + " not found");
+                errors.add("Place #" + placeId + " not found");
                 throw new ConflictException("Place not found", errors);
             }
         }

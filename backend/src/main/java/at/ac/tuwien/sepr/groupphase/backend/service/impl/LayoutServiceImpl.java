@@ -273,7 +273,7 @@ public class LayoutServiceImpl implements LayoutService {
             List<ReservationPlace> reservationPlaces = reservationPlaceRepository.findByPlaceId(placeId);
 
             if (!reservationPlaces.isEmpty()) {
-                conflictExceptions.add("There are reservations for the table with id " + placeId);
+                conflictExceptions.add("There are reservations for the table #" + placeId);
             }
         }
 
@@ -449,7 +449,7 @@ public class LayoutServiceImpl implements LayoutService {
                 if (newPlace == null) {
                     List<ReservationPlace> reservationPlaces = reservationPlaceRepository.findByPlaceId(place.getId());
                     if (!reservationPlaces.isEmpty()) {
-                        throw new ConflictException("Cannot delete place", List.of("There are reservations for the table with id " + place.getId()));
+                        throw new ConflictException("Cannot delete place", List.of("There are reservations for table #" + place.getId()));
                     }
                     areaPlaceSegmentRepository.deleteAreaPlaceSegmentByAreaIdAndPlaceId(area.getId(), place.getId());
                     List<Segment> segments = areaPlaceSegments.stream()
