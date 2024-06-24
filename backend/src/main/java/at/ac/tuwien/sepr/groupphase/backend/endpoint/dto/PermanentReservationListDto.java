@@ -12,9 +12,12 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Objects;
 
-public class PermanentReservationCreateDto {
+public class PermanentReservationListDto {
+    private Long id;
 
-    private ApplicationUser applicationUser;
+    private String userFirstName;
+
+    private String userLastName;
 
     @NotNull(message = "Start time is required")
     private LocalTime startTime;
@@ -44,12 +47,28 @@ public class PermanentReservationCreateDto {
 
     private String hashedId;
 
-    public ApplicationUser getApplicationUser() {
-        return applicationUser;
+    public Long getId() {
+        return id;
     }
 
-    public void setApplicationUser(ApplicationUser applicationUser) {
-        this.applicationUser = applicationUser;
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getUserFirstName() {
+        return userFirstName;
+    }
+
+    public void setUserFirstName(String userFirstName) {
+        this.userFirstName = userFirstName;
+    }
+
+    public String getUserLastName() {
+        return userLastName;
+    }
+
+    public void setUserLastName(String userLastName) {
+        this.userLastName = userLastName;
     }
 
     public LocalTime getStartTime() {
@@ -130,10 +149,12 @@ public class PermanentReservationCreateDto {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof PermanentReservationCreateDto that)) {
+        if (!(o instanceof PermanentReservationListDto that)) {
             return false;
         }
-        return Objects.equals(applicationUser, that.applicationUser)
+        return Objects.equals(id, that.id)
+            && Objects.equals(userFirstName, that.userFirstName)
+            && Objects.equals(userLastName, that.userLastName)
             && Objects.equals(startTime, that.startTime)
             && Objects.equals(endTime, that.endTime)
             && Objects.equals(startDate, that.startDate)
@@ -146,13 +167,15 @@ public class PermanentReservationCreateDto {
 
     @Override
     public int hashCode() {
-        return Objects.hash(applicationUser, startTime, endTime, startDate, endDate, repetition, period, confirmed);
+        return Objects.hash(id, userFirstName, userLastName, startTime, endTime, startDate, endDate, repetition, period, confirmed);
     }
 
     @Override
     public String toString() {
         return "PermanentReservationCreateDto{"
-            + "applicationUser=" + applicationUser
+            + "id=" + id
+            + "userFirstName=" + userFirstName
+            + "userLastName=" + userLastName
             + ", startTime=" + startTime
             + ", endTime=" + endTime
             + ", startDate=" + startDate
@@ -163,8 +186,12 @@ public class PermanentReservationCreateDto {
             + ", pax=" + pax + '}';
     }
 
-    public static final class PermanentReservationCreateDtoBuilder {
-        private ApplicationUser applicationUser;
+    public static final class PermanentReservationListDtoBuilder {
+        private Long id;
+
+        private String userFirstName;
+
+        private String userLastName;
         private LocalTime startTime;
         private LocalTime endTime;
         private LocalDate startDate;
@@ -175,66 +202,79 @@ public class PermanentReservationCreateDto {
         private Long pax;
         private String hashedId;
 
-        private PermanentReservationCreateDtoBuilder() {
+        private PermanentReservationListDtoBuilder() {
         }
 
-        public static PermanentReservationCreateDtoBuilder aPermanentReservationCreateDto() {
-            return new PermanentReservationCreateDtoBuilder();
+        public static PermanentReservationListDtoBuilder aPermanentReservationListDto() {
+            return new PermanentReservationListDtoBuilder();
         }
 
-        public PermanentReservationCreateDtoBuilder withApplicationUser(ApplicationUser applicationUser) {
-            this.applicationUser = applicationUser;
+        public PermanentReservationListDtoBuilder withId(Long id) {
+            this.id = id;
             return this;
         }
 
-        public PermanentReservationCreateDtoBuilder withStartTime(LocalTime startTime) {
+        public PermanentReservationListDtoBuilder withUserFirstName(String userFirstName) {
+            this.userFirstName = userFirstName;
+            return this;
+        }
+
+        public PermanentReservationListDtoBuilder withUserLastName(String userLastName) {
+            this.userLastName = userLastName;
+            return this;
+        }
+
+
+        public PermanentReservationListDtoBuilder withStartTime(LocalTime startTime) {
             this.startTime = startTime;
             return this;
         }
 
-        public PermanentReservationCreateDtoBuilder withEndTime(LocalTime endTime) {
+        public PermanentReservationListDtoBuilder withEndTime(LocalTime endTime) {
             this.endTime = endTime;
             return this;
         }
 
-        public PermanentReservationCreateDtoBuilder withStartDate(LocalDate startDate) {
+        public PermanentReservationListDtoBuilder withStartDate(LocalDate startDate) {
             this.startDate = startDate;
             return this;
         }
 
-        public PermanentReservationCreateDtoBuilder withEndDate(LocalDate endDate) {
+        public PermanentReservationListDtoBuilder withEndDate(LocalDate endDate) {
             this.endDate = endDate;
             return this;
         }
 
-        public PermanentReservationCreateDtoBuilder withRepetition(RepetitionEnum repetition) {
+        public PermanentReservationListDtoBuilder withRepetition(RepetitionEnum repetition) {
             this.repetition = repetition;
             return this;
         }
 
-        public PermanentReservationCreateDtoBuilder withPeriod(Integer period) {
+        public PermanentReservationListDtoBuilder withPeriod(Integer period) {
             this.period = period;
             return this;
         }
 
-        public PermanentReservationCreateDtoBuilder withConfirmed(Boolean confirmed) {
+        public PermanentReservationListDtoBuilder withConfirmed(Boolean confirmed) {
             this.confirmed = confirmed;
             return this;
         }
 
-        public PermanentReservationCreateDtoBuilder withPax(Long pax) {
+        public PermanentReservationListDtoBuilder withPax(Long pax) {
             this.pax = pax;
             return this;
         }
 
-        public PermanentReservationCreateDtoBuilder withHashedId(String hashedId) {
+        public PermanentReservationListDtoBuilder withHashedId(String hashedId) {
             this.hashedId = hashedId;
             return this;
         }
 
-        public PermanentReservationCreateDto build() {
-            PermanentReservationCreateDto dto = new PermanentReservationCreateDto();
-            dto.setApplicationUser(applicationUser);
+        public PermanentReservationListDto build() {
+            PermanentReservationListDto dto = new PermanentReservationListDto();
+            dto.setId(id);
+            dto.setUserFirstName(userFirstName);
+            dto.setUserLastName(userLastName);
             dto.setStartTime(startTime);
             dto.setEndTime(endTime);
             dto.setStartDate(startDate);

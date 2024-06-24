@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
@@ -749,13 +750,17 @@ public class ReservationServiceImpl implements ReservationService {
 
             if (tableStatus == ReservationResponseEnum.AVAILABLE) {
                 Reservation newReservation = createSingleReservationFromPermanent(permanentReservation, currentDate);
-                reservationRepository.save(newReservation);
+
+                Reservation createdReservation = reservationRepository.save(newReservation);
+                LOGGER.debug("Single Reservation for Permanent Reservation: {}", createdReservation);
 
                 PermanentReservationMapper mapping =
                     PermanentReservationMapper.PermanentReservationMapperBuilder.aPermanentReservationMapper()
                         .withReservation(newReservation)
                         .withPermanentReservation(permanentReservation)
                         .build();
+                permanentReservationMapperRepository.save(mapping);
+                LOGGER.debug("Saved mapping between PermanentReservation and new Reservation.");
             } else {
                 skippedDates.add(currentDate);
             }
@@ -766,12 +771,12 @@ public class ReservationServiceImpl implements ReservationService {
                 currentDate = currentDate.plusWeeks(period);
             }
         }
-
+        LOGGER.debug("Skipped Dates: {}", skippedDates);
         sendConfirmationEmail(permanentReservation, skippedDates);
     }
 
     @Override
-    public List<PermanentReservationCreateDto> searchPermanent(PermanentReservationSearchDto searchParams) {
+    public List<PermanentReservationListDto> searchPermanent(PermanentReservationSearchDto searchParams) {
         LOGGER.trace("searchPermanent ({})", searchParams);
 
         if (searchParams.getUserId() == null) {
@@ -781,8 +786,8 @@ public class ReservationServiceImpl implements ReservationService {
                 searchParams.getEarliestStartTime(),
                 searchParams.getLatestEndTime());
 
-            List<PermanentReservationCreateDto> dtos = reservations.stream()
-                .map(mapper::permanentReservationToPermanentReservationCreateDto)
+            List<PermanentReservationListDto> dtos = reservations.stream()
+                .map(mapper::permanentReservationToPermanentReservationListDto)
                 .collect(Collectors.toList());
 
             LOGGER.debug("Found {} reservations for admin/employee without a specific user", dtos.size());
@@ -796,8 +801,8 @@ public class ReservationServiceImpl implements ReservationService {
             searchParams.getEarliestStartTime(),
             searchParams.getLatestEndTime());
 
-        List<PermanentReservationCreateDto> dtos = reservations.stream()
-            .map(mapper::permanentReservationToPermanentReservationCreateDto)
+        List<PermanentReservationListDto> dtos = reservations.stream()
+            .map(mapper::permanentReservationToPermanentReservationListDto)
             .collect(Collectors.toList());
 
         LOGGER.debug("Found {} reservations for user id {}", dtos.size(), searchParams.getUserId());
@@ -812,7 +817,11 @@ public class ReservationServiceImpl implements ReservationService {
         reservation.setEndTime(perm.getEndTime());
         reservation.setPax(perm.getPax()); // Assuming Pax is part of PermanentReservation
         reservation.setUser(perm.getApplicationUser());
-        reservation.setConfirmed(true);
+        reservation.setConfirmed(false);
+        String hashedValue = hashService.hashSha256(reservation.getDate().toString()
+            + reservation.getStartTime().toString() + reservation.getEndTime().toString()
+            + reservation.getPax().toString()) + reservation.isConfirmed();
+        reservation.setHashValue(hashedValue);
         return reservation;
     }
 

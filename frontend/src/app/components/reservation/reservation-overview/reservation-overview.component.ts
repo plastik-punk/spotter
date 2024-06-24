@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import * as bootstrap from 'bootstrap';
 import {AuthService} from '../../../services/auth.service';
 import {
-  PermanentReservationDto, permanentReservationSearch,
+  PermanentReservationDto, PermanentReservationListDto, permanentReservationSearch,
   RepetitionEnum,
   ReservationEditDto,
   ReservationListDto,
@@ -49,7 +49,7 @@ export class ReservationOverviewComponent implements OnInit {
   pageSize = 25;
   totalUpcomingReservations = 0;
   isPermanentView: boolean = false;  // To toggle between views
-  permanentReservations: PermanentReservationDto[] = [];  // To store permanent reservations
+  permanentReservations: PermanentReservationListDto[] = [];  // To store permanent reservations
   permanentSearchParams: permanentReservationSearch = {};
 
   constructor(
@@ -132,7 +132,7 @@ export class ReservationOverviewComponent implements OnInit {
   console.log("get perma "+this.permanentSearchParams);
     this.reservationService.getPermanentReservations(this.permanentSearchParams)
       .subscribe({
-        next: (reservations: PermanentReservationDto[]) => {
+        next: (reservations: PermanentReservationListDto[]) => {
           this.permanentReservations = reservations;
           console.log(this.permanentReservations[0].confirmed);
           // Potentially process or filter reservations as needed
@@ -144,18 +144,18 @@ export class ReservationOverviewComponent implements OnInit {
 
   }
 
-  getFrequency(permanentReservationDto:PermanentReservationDto):String {
-    if (permanentReservationDto.repetition === RepetitionEnum.DAYS) {
-    if (permanentReservationDto.period == 1) {
+  getFrequency(permanentReservationListDto:PermanentReservationListDto):String {
+    if (permanentReservationListDto.repetition === RepetitionEnum.DAYS) {
+    if (permanentReservationListDto.period == 1) {
     return 'Daily'
     }else{
-      return 'every '+permanentReservationDto.period+' days'
+      return 'every '+permanentReservationListDto.period+' days'
     }
-  }else if(permanentReservationDto.repetition === RepetitionEnum.WEEKS){
-      if (permanentReservationDto.period == 1) {
+  }else if(permanentReservationListDto.repetition === RepetitionEnum.WEEKS){
+      if (permanentReservationListDto.period == 1) {
         return 'Weekly'
       }else{
-        return 'every '+permanentReservationDto.period+' weeks'
+        return 'every '+permanentReservationListDto.period+' weeks'
       }
     }
   }
@@ -381,5 +381,17 @@ export class ReservationOverviewComponent implements OnInit {
   createNewReservation() {
     // Navigate to the target page with a query parameter
     this.router.navigate(['reservation-simple']);
+  }
+
+  confirmPermanentReservation(id: string): void {
+    this.reservationService.confirmPermanentReservation(id).subscribe({
+      next: () => {
+        this.notificationService.showSuccess('Permanent reservation confirmed successfully');
+        this.loadPermanentReservations();
+      },
+      error: error => {
+        this.notificationService.showError('Failed to confirm permanent reservation. Please try again later.');
+      }
+    });
   }
 }

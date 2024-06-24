@@ -126,6 +126,21 @@ export interface permanentReservationSearch {
   latestEndTime?: string;
   userId?: number;
 }
+
+export interface PermanentReservationListDto{
+  id: string;
+  userFirstName:String;
+  userLastName:String;
+  startDate: Date;
+  startTime: Date;
+  endTime: Date;
+  endDate?: Date;
+  repetition: RepetitionEnum;
+  period: number;
+  confirmed: boolean;
+  pax:number;
+  hashedId:String;
+}
 export enum RepetitionEnum{
   DAYS='DAYS',
   WEEKS='WEEKS'

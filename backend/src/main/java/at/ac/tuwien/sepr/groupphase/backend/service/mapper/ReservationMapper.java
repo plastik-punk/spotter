@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.mapper;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
@@ -89,5 +90,7 @@ public interface ReservationMapper {
     @Mapping(source = "reservation.notes", target = "notes")
     ReservationEditDto reservationToReservationEditDto(Reservation reservation);
 
-    
+    @Mapping(source = "applicationUser.firstName", target = "userFirstName")
+    @Mapping(source = "applicationUser.lastName", target = "userLastName")
+    PermanentReservationListDto permanentReservationToPermanentReservationListDto(PermanentReservation permanentReservation);
 }

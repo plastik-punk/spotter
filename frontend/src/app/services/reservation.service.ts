@@ -11,7 +11,7 @@ import {
   ReservationListDto,
   ReservationEditDto,
   ReservationModalDetailDto,
-  ReservationWalkInDto, PermanentReservationDto, permanentReservationSearch
+  ReservationWalkInDto, PermanentReservationDto, permanentReservationSearch, PermanentReservationListDto
 } from "../dtos/reservation";
 import {SimpleViewReservationStatusEnum} from "../dtos/status-enum";
 
@@ -174,7 +174,7 @@ export class ReservationService {
    * @param userId (optional) user ID for filtering reservations for non-admin users
    * @return an Observable with an array of permanent reservations
    */
-  getPermanentReservations(searchParams: permanentReservationSearch): Observable<PermanentReservationDto[]> {
+  getPermanentReservations(searchParams: permanentReservationSearch): Observable<PermanentReservationListDto[]> {
     let params = new HttpParams();
 
     // Add date and time parameters
@@ -197,6 +197,16 @@ export class ReservationService {
     }
 
     // Assuming `permanentReservationUri` points to the backend URI handling permanent reservations
-    return this.httpClient.get<PermanentReservationDto[]>(this.permanentReservationUri, { params });
+    return this.httpClient.get<PermanentReservationListDto[]>(this.permanentReservationUri, { params });
   }
+  /**
+   * Confirm a permanent Reservation
+   *
+   * @param id the  id of the permanent reservation to confirm
+   * @return an Observable for the HttpResponse
+   */
+  confirmPermanentReservation(id: string): Observable<void> {
+    return this.httpClient.put<void>(`${this.permanentReservationUri}/confirmation/${id}`, null);
+  }
+
 }

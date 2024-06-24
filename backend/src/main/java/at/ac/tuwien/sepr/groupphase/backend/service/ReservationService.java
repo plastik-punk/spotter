@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
@@ -133,5 +134,5 @@ public interface ReservationService {
      * @param searchParams the search parameters to use in filtering.
      * @return List of PermanentReservationCreateDto that match the search parameters
      */
-    List<PermanentReservationCreateDto> searchPermanent(PermanentReservationSearchDto searchParams);
+    List<PermanentReservationListDto> searchPermanent(PermanentReservationSearchDto searchParams);
 }

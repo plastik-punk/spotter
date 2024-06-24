@@ -334,8 +334,8 @@
           <tbody>
           <tr *ngFor="let reservation of permanentReservations">
             <!-- Data rows -->
-            <td *ngIf="isAdminOrEmployee()">{{ reservation.user.firstName }}</td>
-            <td *ngIf="isAdminOrEmployee()">{{ reservation.user.lastName }}</td>
+            <td *ngIf="isAdminOrEmployee()">{{ reservation.userFirstName }}</td>
+            <td *ngIf="isAdminOrEmployee()">{{ reservation.userLastName }}</td>
             <td>{{ reservation.startDate | date }}</td>
             <td>{{ reservation.endDate | date }}</td>
             <td>{{ reservation.startTime }}</td>
@@ -343,8 +343,8 @@
             <td>{{ getFrequency(reservation) }}</td>
             <td *ngIf="isAdminOrEmployee()">
 
-              <i *ngIf="reservation?.confirmed" style="color:red;" class="bi bi-x-octagon-fill"></i>
-              <i *ngIf="!reservation?.confirmed" style="color:green;" class="bi bi-check-circle-fill"></i>
+              <i *ngIf="!reservation?.confirmed" style="color:red;" class="bi bi-x-octagon-fill"></i>
+              <i *ngIf="reservation?.confirmed" style="color:green;" class="bi bi-check-circle-fill"></i>
 
             </td>
             <td >
@@ -367,8 +367,9 @@
               </a>
               <a *ngIf="isAdminOrEmployee() && !reservation.confirmed"
                 class="btn btn-sm responsive-success-button"
-                aria-label="Confirm reservation has arrived"
-              >
+                aria-label="Confirm permanent reservation"
+                 (click)="confirmPermanentReservation(reservation.id)">
+
                 <i class="bi bi-check-circle"></i>
               </a>
             </td>

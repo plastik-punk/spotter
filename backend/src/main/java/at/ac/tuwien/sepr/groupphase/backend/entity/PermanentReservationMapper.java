@@ -17,12 +17,12 @@ public class PermanentReservationMapper {
 
     @MapsId("permanentReservationId")
     @ManyToOne
-    @JoinColumn(name = "permanent_reservation_id", insertable = false, updatable = false)
+    @JoinColumn(name = "permanent_reservation_id", referencedColumnName = "id", insertable = false, updatable = false)
     private PermanentReservation permanentReservation;
 
     @MapsId("reservationId")
     @ManyToOne
-    @JoinColumn(name = "reservation_id", insertable = false, updatable = false)
+    @JoinColumn(name = "reservation_id", referencedColumnName = "id", insertable = false, updatable = false)
     private Reservation reservation;
 
     public PermanentReservationMapperId getId() {
@@ -68,7 +68,10 @@ public class PermanentReservationMapper {
 
     @Override
     public String toString() {
-        return "id=" + "PermanentReservationMapper{" + id + ", permanentReservation=" + permanentReservation + ", reservation=" + reservation + '}';
+        return "PermanentReservationMapper{"
+            + "id=" + id
+            + ", permanentReservation=" + (permanentReservation != null ? permanentReservation.getId() : null)
+            + ", reservation=" + (reservation != null ? reservation.getId() : null) + '}';
     }
 
     @Embeddable
@@ -112,9 +115,9 @@ public class PermanentReservationMapper {
     }
 
     public static final class PermanentReservationMapperBuilder {
-        private PermanentReservationMapperId id;
-        private Reservation reservation;
+        private PermanentReservationMapperId id = new PermanentReservationMapperId();
         private PermanentReservation permanentReservation;
+        private Reservation reservation;
 
         private PermanentReservationMapperBuilder() {
         }
@@ -135,6 +138,8 @@ public class PermanentReservationMapper {
 
         public PermanentReservationMapper build() {
             PermanentReservationMapper permanentReservationMapper = new PermanentReservationMapper();
+            id.setPermanentReservationId(permanentReservation.getId());
+            id.setReservationId(reservation.getId());
             permanentReservationMapper.setId(id);
             permanentReservationMapper.setPermanentReservation(permanentReservation);
             permanentReservationMapper.setReservation(reservation);

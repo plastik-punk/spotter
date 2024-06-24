@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
@@ -77,11 +78,11 @@ public class ReservationEndpoint {
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PutMapping("/permanent-confirmation/{id}")
+    @PutMapping("/permanent/confirmation/{id}")
     @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
     @Operation(summary = "Confirm a new permanent reservation")
-    public ResponseEntity<Void> confirmPermanentReservation(@PathVariable("id") Long id, @RequestBody PermanentReservationCreateDto toConfirm) throws MessagingException {
-        LOGGER.info("POST /api/v1/reservations/permanent/{} body: {}", id, toConfirm.toString());
+    public ResponseEntity<Void> confirmPermanentReservation(@PathVariable("id") Long id) throws MessagingException {
+        LOGGER.info("POST /api/v1/reservations/permanent/{}", id);
         service.confirmPermanentReservation(id);
         return ResponseEntity.noContent().build();
     }
@@ -173,7 +174,7 @@ public class ReservationEndpoint {
     @GetMapping("/permanent")
     @Operation(summary = "Get all permanent reservations")
     @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_USER"})
-    public List<PermanentReservationCreateDto> getPermanentReservations(
+    public List<PermanentReservationListDto> getPermanentReservations(
         PermanentReservationSearchDto searchParams) {
         LOGGER.info("GET /api/v1/reservations/permanent with search params: {}", searchParams);
         return service.searchPermanent(searchParams);
