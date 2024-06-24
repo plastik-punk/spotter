@@ -199,6 +199,9 @@ export class AdminViewComponent implements OnInit {
       this.specialOfferService.createSpecialOffer(this.specialOfferCreateDto).subscribe({
         next: (data) => {
           this.notificationService.showSuccess('Special Offer created successfully.');
+          this.specialOfferCreateDto.name = undefined;
+          this.specialOfferCreateDto.pricePerPax = undefined;
+          this.specialOfferCreateDto.image = undefined;
           this.loadSpecialOffers();
         },
         error: (error) => {
