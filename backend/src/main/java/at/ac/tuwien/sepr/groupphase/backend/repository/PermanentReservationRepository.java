@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface PermanentReservationRepository extends JpaRepository<PermanentReservation, Long> {
 
-    PermanentReservation findByHashedId(String hashValue);
+    PermanentReservation findByHashedId(String hashedId);
 
     @Query("SELECT pr FROM PermanentReservation pr "
         + "WHERE (:startDate IS NULL OR pr.startDate >= :startDate) "

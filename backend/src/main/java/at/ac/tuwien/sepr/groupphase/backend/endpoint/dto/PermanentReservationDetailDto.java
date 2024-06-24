@@ -154,17 +154,28 @@ public class PermanentReservationDetailDto {
         if (!(o instanceof PermanentReservationDetailDto that)) {
             return false;
         }
-        return Objects.equals(id, that.id) && Objects.equals(userFirstName, that.userFirstName) && Objects.equals(userLastName, that.userLastName) && Objects.equals(startTime, that.startTime) && Objects.equals(endTime, that.endTime) && Objects.equals(startDate, that.startDate) && Objects.equals(endDate, that.endDate) && repetition == that.repetition && Objects.equals(period, that.period) && Objects.equals(confirmed, that.confirmed) && Objects.equals(pax, that.pax);
+        return Objects.equals(id, that.id) && Objects.equals(userFirstName, that.userFirstName)
+            && Objects.equals(userLastName, that.userLastName) && Objects.equals(startTime, that.startTime)
+            && Objects.equals(endTime, that.endTime) && Objects.equals(startDate, that.startDate)
+            && Objects.equals(endDate, that.endDate) && repetition == that.repetition
+            && Objects.equals(period, that.period) && Objects.equals(confirmed, that.confirmed)
+            && Objects.equals(pax, that.pax);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, userFirstName, userLastName, startTime, endTime, startDate, endDate, repetition, period, confirmed, singleReservationList);
+        return Objects.hash(id, userFirstName, userLastName, startTime, endTime, startDate,
+            endDate, repetition, period, confirmed, singleReservationList);
     }
 
     @Override
     public String toString() {
-        return "PermanentReservationCreateDto{" + "id=" + id + "userFirstName=" + userFirstName + "userLastName=" + userLastName + ", startTime=" + startTime + ", endTime=" + endTime + ", startDate=" + startDate + ", endDate=" + endDate + ", repetition=" + repetition + ", period=" + period + ", confirmed=" + confirmed + ", pax=" + pax + ", singleReservationList=" + singleReservationList + '}';
+        return "PermanentReservationCreateDto{" + "id=" + id + "userFirstName=" + userFirstName
+            + "userLastName=" + userLastName + ", startTime=" + startTime
+            + ", endTime=" + endTime + ", startDate=" + startDate
+            + ", endDate=" + endDate + ", repetition=" + repetition
+            + ", period=" + period + ", confirmed=" + confirmed
+            + ", pax=" + pax + ", singleReservationList=" + singleReservationList + '}';
     }
 
     public List<ReservationListDto> getSingleReservationList() {

@@ -184,9 +184,20 @@ public class ReservationEndpoint {
     @ResponseStatus(HttpStatus.OK)
     @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_USER"})
     @GetMapping({"/permanent/detail/{hashedId}"})
-    @Operation(summary = "Get detail information for a single reservation")
+    @Operation(summary = "Get detail information for a permanent reservation")
     public PermanentReservationDetailDto getPermanentReservationDetailsByHashedId(@PathVariable("hashedId") String hashedId) {
         LOGGER.info("GET /api/v1/reservations/permanent/detail/{}", hashedId);
         return service.getPermanentDetails(hashedId);
     }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_USER"})
+    @DeleteMapping({"/permanent/delete/{hashedId}"})
+    @Operation(summary = "Delete a permanent reservation ")
+    public ResponseEntity<Void> deletePermanent(@PathVariable("hashedId") String hashedId) throws MessagingException {
+        LOGGER.info("DELETE /api/v1/reservations/permanent/delete/{} ", hashedId);
+        service.deletePermanentReservation(hashedId);
+        return ResponseEntity.noContent().build();
+    }
+
 }

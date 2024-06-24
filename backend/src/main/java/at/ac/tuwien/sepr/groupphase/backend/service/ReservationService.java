@@ -144,4 +144,13 @@ public interface ReservationService {
      * @return a PermanentReservationDetailDto with the details of the permanent reservation
      */
     PermanentReservationDetailDto getPermanentDetails(String hashedId);
+
+    /**
+     * Delete a permanent reservation and all its single reservations.
+     *
+     * @param permanentReservationHashId hashed id of the permanent reservation to delete
+     */
+    void deletePermanentReservation(String permanentReservationHashId) throws MessagingException;
 }
+
+

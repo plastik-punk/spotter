@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import * as bootstrap from 'bootstrap';
 import {AuthService} from '../../../services/auth.service';
 import {
+  PermanentReservationDetailDto,
   PermanentReservationDto, PermanentReservationListDto, permanentReservationSearch,
   RepetitionEnum,
   ReservationEditDto,
@@ -42,7 +43,7 @@ export class ReservationOverviewComponent implements OnInit {
   searchEarliestStartTime: string | null = null;
   searchLatestEndTime: string | null = null;
   searchChangedObservable = new Subject<void>();
-  deleteWhat: ReservationEditDto | null = null;
+  deleteWhat: ReservationEditDto | PermanentReservationDetailDto | null = null;
   untouched: boolean = true;
   fetchIntervalSubscription!: Subscription;
 
@@ -53,7 +54,7 @@ export class ReservationOverviewComponent implements OnInit {
   permanentReservations: PermanentReservationListDto[] = [];  // To store permanent reservations
   permanentSearchParams: permanentReservationSearch = {};
   fromPermanentDetail = false;
-  showPermanentReservation=false;
+  showPermanentReservation = false;
 
   constructor(
     private authService: AuthService,
@@ -75,7 +76,7 @@ export class ReservationOverviewComponent implements OnInit {
     this.searchChangedObservable.pipe(debounceTime(100)).subscribe(() => this.loadReservations());
 
     // Set up the interval to reload reservations every 2 minutes
-    this.fetchIntervalSubscription = interval(120000).subscribe(() => {
+    this.fetchIntervalSubscription = interval(240000).subscribe(() => {
       console.log('Fetching new reservations automatically...');
       if (this.isPermanentView) {
         this.loadPermanentReservations();
@@ -251,14 +252,25 @@ export class ReservationOverviewComponent implements OnInit {
   }
 
   openConfirmationDialog(hashId: string): void {
-    this.reservationService.getByHashedId(hashId).subscribe({
-      next: data => {
-        this.deleteWhat = data;
-      },
-      error: error => {
-        this.notificationService.showError('Failed to load reservation details. Please try again later.');
-      }
-    });
+    if (this.isPermanentView) {
+      this.reservationService.getPermanentReservationDetailsByHashedId(hashId).subscribe({
+        next: data => {
+          this.deleteWhat = data;
+        },
+        error: error => {
+          this.notificationService.showError('Failed to load permanent reservation details. Please try again later.');
+        }
+      });
+    } else {
+      this.reservationService.getByHashedId(hashId).subscribe({
+        next: data => {
+          this.deleteWhat = data;
+        },
+        error: error => {
+          this.notificationService.showError('Failed to load reservation details. Please try again later.');
+        }
+      });
+    }
   }
 
   showReservationDetails(hashId: string): void {
@@ -313,19 +325,35 @@ export class ReservationOverviewComponent implements OnInit {
       return;
     }
 
-    let observable: Observable<HttpResponse<void>>;
-    observable = this.reservationService.delete(this.deleteWhat.hashedId);
-    observable.subscribe({
-      next: (response) => {
-        if (response.status === 204) {
-          this.notificationService.showSuccess('Reservation cancelled successfully');
-          this.loadReservations();
+    if (this.isPermanentView) {
+      let observable: Observable<HttpResponse<void>>;
+      observable = this.reservationService.deletePermanent(this.deleteWhat.hashedId);
+      observable.subscribe({
+        next: (response) => {
+          if (response.status === 204) {
+            this.notificationService.showSuccess('Reservation cancelled successfully');
+            this.loadPermanentReservations();
+          }
+        },
+        error: (error) => {
+          this.notificationService.showError('Failed to cancel reservation. Please try again later.');
         }
-      },
-      error: (error) => {
-        this.notificationService.showError('Failed to cancel reservation. Please try again later.');
-      }
-    });
+      });
+    } else {
+      let observable: Observable<HttpResponse<void>>;
+      observable = this.reservationService.delete(this.deleteWhat.hashedId);
+      observable.subscribe({
+        next: (response) => {
+          if (response.status === 204) {
+            this.notificationService.showSuccess('Reservation cancelled successfully');
+            this.loadReservations();
+          }
+        },
+        error: (error) => {
+          this.notificationService.showError('Failed to cancel reservation. Please try again later.');
+        }
+      });
+    }
   }
 
   changePage(newPage: number): void {
@@ -350,7 +378,11 @@ export class ReservationOverviewComponent implements OnInit {
     this.searchParams.earliestStartTime = null;
     this.searchParams.latestEndTime = null;
 
-    this.loadReservations();
+    if (!this.isPermanentView) {
+      this.loadReservations();
+    } else if (this.isPermanentView) {
+      this.loadPermanentReservations();
+    }
   }
 
   reservationIsInTheFuture(reservation: ReservationListDto): boolean {

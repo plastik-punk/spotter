@@ -223,4 +223,14 @@ export class ReservationService {
     return this.httpClient.get<PermanentReservationDetailDto>(`${this.permanentReservationUri}/detail/${hashedId}`);
   }
 
+  /**
+   * Deletes a permanent reservation
+   *
+   * @param hash the hashed id of the permanent  reservation to delete
+   * @return an Observable for the HttpResponse
+   */
+  deletePermanent(hash: string):Observable<HttpResponse<void>>  {
+    return this.httpClient.delete<void>(`${this.permanentReservationUri}/delete/${hash}`,{ observe: 'response'});
+  }
+
 }

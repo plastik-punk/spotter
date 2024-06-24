@@ -4,7 +4,6 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationCre
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationModalDetailDto;
@@ -118,6 +117,5 @@ public interface ReservationMapper {
     @Mapping(target = "pax", source = "pax")
     @Mapping(target = "hashedId", source = "hashedId")
     @Mapping(target = "singleReservationList", ignore = true)
-        // This will be set after mapping
     PermanentReservationDetailDto permanentReservationToDetailDto(PermanentReservation permanentReservation);
 }
