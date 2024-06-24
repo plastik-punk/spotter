@@ -134,12 +134,14 @@ export class ReservationOverviewComponent implements OnInit {
       .subscribe({
         next: (reservations: PermanentReservationDto[]) => {
           this.permanentReservations = reservations;
+          console.log(this.permanentReservations[0].confirmed);
           // Potentially process or filter reservations as needed
         },
         error: error => {
           this.notificationService.showError('Failed to load permanent reservations. Please try again later.');
         }
       });
+
   }
 
   getFrequency(permanentReservationDto:PermanentReservationDto):String {

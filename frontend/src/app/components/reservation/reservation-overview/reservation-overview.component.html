@@ -342,10 +342,10 @@
             <td>{{ reservation.endTime }}</td>
             <td>{{ getFrequency(reservation) }}</td>
             <td *ngIf="isAdminOrEmployee()">
-              <i class="bi" [ngClass]="{
-                  'bi-check-circle-fill text-success': reservation.confirmed,
-                  'bi-x-circle-fill text-danger': !reservation.confirmed
-                }"></i>
+
+              <i *ngIf="reservation?.confirmed" style="color:red;" class="bi bi-x-octagon-fill"></i>
+              <i *ngIf="!reservation?.confirmed" style="color:green;" class="bi bi-check-circle-fill"></i>
+
             </td>
             <td >
               <a class="btn btn-sm responsive-info-button"
@@ -364,6 +364,12 @@
                  data-bs-target="#confirmation-dialog-delete"
                  (click)="openConfirmationDialog(reservation.hashedId)">
                 <i class="bi bi-trash"></i>
+              </a>
+              <a *ngIf="isAdminOrEmployee() && !reservation.confirmed"
+                class="btn btn-sm responsive-success-button"
+                aria-label="Confirm reservation has arrived"
+              >
+                <i class="bi bi-check-circle"></i>
               </a>
             </td>
           </tr>
