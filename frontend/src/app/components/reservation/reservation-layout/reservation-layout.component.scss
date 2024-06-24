@@ -27,12 +27,11 @@ body {
   margin-top: 2vh;
   height: 96vh; /* Adjust height to fill screen */
   width: 100%;
-  padding: 2vh;
   overflow-y: auto; /* Enable vertical scrolling */
 }
 
-.custom-seperator {
-  height: 2.5rem;
+.card-padding{
+  padding: 0 2vh 0 2vh;
 }
 
 .top-banner {
@@ -41,7 +40,7 @@ body {
   left: 0;
   right: 0;
   background: white;
-  z-index: 100;
+  z-index: 1000;
   border-radius: 20px 20px 0 0;
   padding-top: 2vh;
   margin: -2vh 0 2vh 0;
@@ -145,7 +144,6 @@ body {
 
 .notes-textarea {
   height: calc(4 * 38px + 3 * 1vh); /* adjust height as needed */
-  resize: none;
 }
 
 .row .column {
@@ -154,8 +152,20 @@ body {
   justify-content: center;
 }
 
-.notes-textarea::placeholder {
-  vertical-align: top;
+.row .column .notes-textarea {
+  height: calc(4 * 45px + 3 * 1.5vh); /* Default height for larger screens */
+}
+
+@media (max-width: 768px) {
+  .notes-textarea {
+    height: calc(4 * 40px + 3 * 1.2vh); /* Adjust height for medium screens */
+  }
+}
+
+@media (max-width: 576px) {
+  .notes-textarea {
+    height: calc(4 * 35px + 3 * 1vh); /* Adjust height for smaller screens */
+  }
 }
 
 .custom-btn {
@@ -188,12 +198,19 @@ body {
   color: white;
 }
 
-.pax-container {
-  display: flex;
+.available-btn {
+  background-color: transparent;
+  border: 2px solid darkgreen;
+  color: darkgreen;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  width: 30%;
 }
 
-.pax-input {
-  width: 20vw;
+.available-btn:hover {
+  background-color: darkgreen;
+  color: white;
 }
 
 @media (max-width: 768px) {
@@ -212,7 +229,7 @@ body {
 
 .event-info-btn {
   background-color: transparent;
-  border: 2px solid #377eb8;
+  border: 2px solid white;
   color: white;
   text-align: center;
   text-decoration: none;
@@ -221,7 +238,7 @@ body {
 }
 
 .event-info-btn:hover {
-  background-color: #377eb8;
+  background-color: white;
   color: white;
 }
 
@@ -236,16 +253,18 @@ body {
 }
 
 .custom-event-card {
-  width: 100%;
+  position: absolute;
+  right: 0;
+  width: 20%;
+  margin-top: -15vh;
   border-radius: 20px 0 0 20px;
   background: black;
-  margin-top: 2vh;
   padding: 1vh;
   overflow-x: hidden;
 }
 
 .custom-event-card h1 {
-  color: #377eb8;
+  color: white;
 }
 
 .custom-event-card,
@@ -275,13 +294,18 @@ body {
   flex-direction: column;
 }
 
+.custom-seperator {
+  height: 2.5rem;
+}
+
 .event-row {
   display: flex;
-
   justify-content: start;
   gap: 1rem;
   width: 100%;
   overflow: hidden;
+  margin-top: 0.5vh;
+  margin-bottom: 1vh;
 }
 
 .event-name {
@@ -316,7 +340,7 @@ body {
 
 .btn-event-skip {
   background-color: transparent;
-  border: 2px solid #377eb8;
+  border: 2px solid white;
   color: white;
   text-align: center;
   text-decoration: none;
@@ -326,7 +350,7 @@ body {
 }
 
 .btn-event-skip:hover {
-  background-color: #377eb8;
+  background-color: white;
   color: white;
 }
 
@@ -335,7 +359,4 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
   color: black;
-}
-
-.modal-content {
 }

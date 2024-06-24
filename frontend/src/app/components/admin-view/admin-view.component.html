@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<head >
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Lexend+Giga:wght@500&display=swap"
-        rel="stylesheet">
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Lexend+Giga:wght@500&display=swap" rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Leckerli+One&display=swap" rel="stylesheet">
@@ -16,59 +15,36 @@
   </a>
 </div>
 
-<ng-template #tipContent
->{{ tooltip }}
-</ng-template
->
+<ng-template #tipContent>{{ tooltip }}</ng-template>
 
 <div class="container-fluid">
   <div class="col-12 col-lg-10 mx-auto">
     <div class="card custom-card">
-      <form #form="ngForm"  novalidate>
+      <form #form="ngForm" novalidate>
         <div class="top-banner">
           <div class="row">
             <div class="column">
               <h1 class="font-heading">Admin View</h1>
             </div>
             <div class="column">
-              <input
-                type="time"
-                id="adminViewStartTime"
-                name="adminViewStartTime"
-                [defaultValue]="currTime"
-                placeholder="hh:mm"
-                class="form-control"
-                [(ngModel)]="currTime"
-                #adminViewStartTimeModel="ngModel"
-                (ngModelChange)="onFieldChange()"
-              />
+              <div class="form-floating mb-3">
+                <input type="time" id="adminViewStartTime" name="adminViewStartTime" [defaultValue]="currTime" placeholder="hh:mm" class="form-control" [(ngModel)]="currTime" #adminViewStartTimeModel="ngModel" (ngModelChange)="onFieldChange()">
+                <label for="adminViewStartTime">Start Time</label>
+              </div>
             </div>
             <div class="column">
-              <input
-                type="date"
-                id="adminViewDate"
-                name="adminViewDate"
-                pattern="\d{4}-\d{2}-\d{2}"
-                [defaultValue]="currDate"
-                placeholder="dd-mm-yyyy"
-                class="form-control"
-                [(ngModel)]="currDate"
-                #adminViewDateModel="ngModel"
-                (ngModelChange)="onFieldChange()"
-                required
-              />
+              <div class="form-floating mb-3">
+                <input type="date" id="adminViewDate" name="adminViewDate" pattern="\d{4}-\d{2}-\d{2}" [defaultValue]="currDate" placeholder="dd-mm-yyyy" class="form-control" [(ngModel)]="currDate" #adminViewDateModel="ngModel" (ngModelChange)="onFieldChange()" required>
+                <label for="adminViewDate">Date</label>
+              </div>
             </div>
             <div *ngIf="false" class="column">
-              <select
-                id="reservationArea"
-                name="reservationArea"
-                class="form-control"
-                [(ngModel)]="selectedAreaId"
-                (change)="onAreaChange($event)"
-                required
-              >
-                <option *ngFor="let area of areas" [value]="area.id">{{ area.name }}</option>
-              </select>
+              <div class="form-floating mb-3">
+                <select id="reservationArea" name="reservationArea" class="form-control" [(ngModel)]="selectedAreaId" (change)="onAreaChange($event)" required>
+                  <option *ngFor="let area of areas" [value]="area.id">{{ area.name }}</option>
+                </select>
+                <label for="reservationArea">Area</label>
+              </div>
             </div>
             <hr class="my-4">
           </div>
@@ -77,40 +53,23 @@
             <div class="col-6">
               <div class="row">
                 <h4 class="column">Weekly Prediction</h4>
-                <button *ngIf="isUnusual" type="button" class="col-2 btn btn-warning me-2" placement="right"
-                        [ngbTooltip]="tipContent">
+                <button *ngIf="isUnusual" type="button" class="col-2 btn btn-warning me-2" placement="right" [ngbTooltip]="tipContent">
                   <i class="bi bi-exclamation-circle-fill"></i>
                 </button>
-
               </div>
               <div id="chartReservedTable">
                 <h6> Number of reserved tables</h6>
-                <apx-chart
-                  [series]="chartReservedTableOptions.series"
-                  [chart]="chartReservedTableOptions.chart"
-                  [dataLabels]="chartReservedTableOptions.dataLabels"
-                  [plotOptions]="chartReservedTableOptions.plotOptions"
-                  [yaxis]="chartReservedTableOptions.yaxis"
-                  [fill]="chartReservedTableOptions.fill"
-                  [xaxis]="chartReservedTableOptions.xaxis"
-                  [colors]="chartReservedTableOptions.colors"
-                ></apx-chart>
+                <apx-chart [series]="chartReservedTableOptions.series" [chart]="chartReservedTableOptions.chart" [dataLabels]="chartReservedTableOptions.dataLabels" [plotOptions]="chartReservedTableOptions.plotOptions" [yaxis]="chartReservedTableOptions.yaxis" [fill]="chartReservedTableOptions.fill" [xaxis]="chartReservedTableOptions.xaxis" [colors]="chartReservedTableOptions.colors"></apx-chart>
               </div>
             </div>
-            <div class="col-6 ">
+            <div class="col-6">
               <div class="row">
                 <h4 class="column">
-                  <button type="button" class="col-4 btn btn-info " (click)="onClickGetPrediction()">Get Prediction
-                  </button>
+                  <button type="button" class="col-4 btn btn-info" (click)="onClickGetPrediction()">Get Prediction</button>
                 </h4>
                 <div id="chartPredictionTable">
                   <h6>{{ predictionTitle }}</h6>
-                  <apx-chart
-                    [series]="chartPredictionOptions.series"
-                    [chart]="chartPredictionOptions.chart"
-                    [labels]="chartPredictionOptions.labels">
-                    >
-                  </apx-chart>
+                  <apx-chart [series]="chartPredictionOptions.series" [chart]="chartPredictionOptions.chart" [labels]="chartPredictionOptions.labels"></apx-chart>
                 </div>
               </div>
             </div>
@@ -125,10 +84,8 @@
                     <h5>Special Offers</h5>
                   </div>
                   <div class="column">
-                    <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#createSpecialOfferModal">
-                      <i class="bi bi-plus-lg"></i>
-                      Create new special offer
+                    <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#createSpecialOfferModal">
+                      <i class="bi bi-plus-lg"></i> Create new special offer
                     </button>
                   </div>
                 </div>
@@ -147,16 +104,10 @@
                     <td>{{ specialOffer.pricePerPax }}</td>
                     <td>
                       <div class="btn-group">
-                        <a class="btn btn-sm responsive-info-button"
-                           aria-label="Show reservation details"
-                           (click)="showSpecialOfferDetail(specialOffer.id)">
+                        <a class="btn btn-sm responsive-info-button" aria-label="Show reservation details" (click)="showSpecialOfferDetail(specialOffer.id)">
                           <i class="bi bi-info-lg"></i>
                         </a>
-                        <a class="btn btn-sm responsive-danger-button"
-                           aria-label="Delete reservation"
-                           data-bs-toggle="modal"
-                           data-bs-target="#confirmation-dialog-delete"
-                           (click)="specialOfferToDelete = specialOffer">
+                        <a class="btn btn-sm responsive-danger-button" aria-label="Delete reservation" data-bs-toggle="modal" data-bs-target="#confirmation-dialog-delete" (click)="specialOfferToDelete = specialOffer">
                           <i class="bi bi-trash"></i>
                         </a>
                       </div>
@@ -168,14 +119,13 @@
             </div>
           </div>
         </div>
-    </form>
+      </form>
+    </div>
   </div>
-</div>
 </div>
 
 <!-- Modal for creating a new special offer -->
-<div class="modal fade" id="createSpecialOfferModal" tabindex="-1" aria-labelledby="createSpecialOfferModalLabel"
-     aria-hidden="true">
+<div class="modal fade" id="createSpecialOfferModal" tabindex="-1" aria-labelledby="createSpecialOfferModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -183,22 +133,18 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form #specialOfferForm="ngForm" (ngSubmit)="createSpecialOffer(specialOfferForm)"
-              enctype="multipart/form-data">
-          <div class="mb-3">
-            <label for="specialOfferName" class="form-label">Name</label>
-            <input type="text" class="form-control" id="specialOfferName" name="specialOfferName"
-                   [(ngModel)]="specialOfferCreateDto.name" required>
+        <form #specialOfferForm="ngForm" (ngSubmit)="createSpecialOffer(specialOfferForm)" enctype="multipart/form-data">
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="specialOfferName" name="specialOfferName" placeholder="Special Offer Name" [(ngModel)]="specialOfferCreateDto.name" required>
+            <label for="specialOfferName">Name</label>
           </div>
-          <div class="mb-3">
-            <label for="specialOfferPricePerPax" class="form-label">Price per Pax</label>
-            <input type="number" class="form-control" id="specialOfferPricePerPax" name="specialOfferPricePerPax"
-                   [(ngModel)]="specialOfferCreateDto.pricePerPax" required>
+          <div class="form-floating mb-3">
+            <input type="number" class="form-control" id="specialOfferPricePerPax" name="specialOfferPricePerPax" placeholder="Price per Pax" [(ngModel)]="specialOfferCreateDto.pricePerPax" required>
+            <label for="specialOfferPricePerPax">Price per Pax</label>
           </div>
           <div class="mb-3">
             <label for="specialOfferImage" class="form-label">Image</label>
-            <input type="file" class="form-control" id="specialOfferImage" name="specialOfferImage"
-                   (change)="onFileChangeSpecialOffer($event)" required>
+            <input type="file" class="form-control" id="specialOfferImage" name="specialOfferImage" (change)="onFileChangeSpecialOffer($event)" required>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -210,8 +156,7 @@
   </div>
 </div>
 <!-- Modal for displaying special offer details -->
-<div class="modal fade" id="specialOfferDetailModal" tabindex="-1" aria-labelledby="specialOfferDetailModalLabel"
-     aria-hidden="true">
+<div class="modal fade" id="specialOfferDetailModal" tabindex="-1" aria-labelledby="specialOfferDetailModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -238,5 +183,5 @@
   [dialogText]="'Do you really want to delete this reservation?'"
   (confirm)="deleteSpecialOffer()"
 ></app-confirmation-dialog-delete>
-
-
+</body>
+</html>

@@ -19,6 +19,7 @@ body {
   overflow: hidden;
 }
 
+
 .custom-card {
   position: relative;
   border-radius: 20px 20px 0 0;
@@ -26,8 +27,11 @@ body {
   margin-top: 2vh;
   height: 96vh; /* Adjust height to fill screen */
   width: 100%;
-  padding: 2vh;
   overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.card-padding{
+  padding: 0 2vh 0 2vh;
 }
 
 .top-banner {
@@ -36,7 +40,7 @@ body {
   left: 0;
   right: 0;
   background: white;
-  z-index: 100;
+  z-index: 1000;
   border-radius: 20px 20px 0 0;
   padding-top: 2vh;
   margin: -2vh 0 2vh 0;
@@ -140,7 +144,6 @@ body {
 
 .notes-textarea {
   height: calc(4 * 38px + 3 * 1vh); /* adjust height as needed */
-  resize: none;
 }
 
 .row .column {
@@ -149,8 +152,20 @@ body {
   justify-content: center;
 }
 
-.notes-textarea::placeholder {
-  vertical-align: top;
+.row .column .notes-textarea {
+  height: calc(4 * 45px + 3 * 1.5vh); /* Default height for larger screens */
+}
+
+@media (max-width: 768px) {
+  .notes-textarea {
+    height: calc(4 * 40px + 3 * 1.2vh); /* Adjust height for medium screens */
+  }
+}
+
+@media (max-width: 576px) {
+  .notes-textarea {
+    height: calc(4 * 35px + 3 * 1vh); /* Adjust height for smaller screens */
+  }
 }
 
 .custom-btn {
@@ -198,14 +213,6 @@ body {
   color: white;
 }
 
-.pax-container {
-  display: flex;
-}
-
-.pax-input {
-  width: 20vw;
-}
-
 @media (max-width: 768px) {
   .row {
     margin: 1vh;
@@ -222,7 +229,7 @@ body {
 
 .event-info-btn {
   background-color: transparent;
-  border: 2px solid #377eb8;
+  border: 2px solid white;
   color: white;
   text-align: center;
   text-decoration: none;
@@ -231,7 +238,7 @@ body {
 }
 
 .event-info-btn:hover {
-  background-color: #377eb8;
+  background-color: white;
   color: white;
 }
 
@@ -247,16 +254,18 @@ body {
 }
 
 .custom-event-card {
-  width: 100%;
+  position: absolute;
+  right: 0;
+  width: 25%;
+  margin-top: -15vh;
   border-radius: 20px 0 0 20px;
   background: black;
-  margin-top: 2vh;
   padding: 1vh;
   overflow-x: hidden;
 }
 
 .custom-event-card h1 {
-  color: #377eb8;
+  color: white;
 }
 
 .custom-event-card,
@@ -293,11 +302,12 @@ body {
 
 .event-row {
   display: flex;
-
   justify-content: start;
   gap: 1rem;
   width: 100%;
   overflow: hidden;
+  margin-top: 0.5vh;
+  margin-bottom: 1vh;
 }
 
 .event-name {
@@ -333,7 +343,7 @@ body {
 
 .btn-event-skip {
   background-color: transparent;
-  border: 2px solid #377eb8;
+  border: 2px solid white;
   color: white;
   text-align: center;
   text-decoration: none;
@@ -343,7 +353,7 @@ body {
 }
 
 .btn-event-skip:hover {
-  background-color: #377eb8;
+  background-color: white;
   color: white;
 }
 
