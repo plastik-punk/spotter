@@ -21,39 +21,55 @@
         <!-- Start row with Title, startTime and Date -->
         <div class="top-banner">
           <div class="row">
-            <div class="column">
-              <h1 class="font-heading">Reserve</h1>
+            <div class="row">
+              <!-- New div for restaurant info -->
+              <div class="restaurant-info">
+                <h1 class="font-heading pink">{{ restaurantInfo?.name }}</h1>
+                <p class="green">{{ restaurantInfo?.address }}</p>
+                <h1 class="font-heading pink">Opening Hours</h1>
+                <dl>
+                  <dt class="brown">Sunday - Thursday:</dt>
+                  <dd class="green">{{ formatTime(openingHours?.monday?.[0]) }} - {{ formatTime(openingHours?.monday?.[1]) }} & {{ formatTime(openingHours?.monday?.[2]) }} - {{ formatTime(openingHours?.monday?.[3]) }}</dd>
+
+                  <dt class="brown">Friday - Saturday:</dt>
+                  <dd class="green">{{ formatTime(openingHours?.friday?.[0]) }} - {{ formatTime(openingHours?.friday?.[1]) }} & {{ formatTime(openingHours?.friday?.[2]) }} - {{ formatTime(openingHours?.friday?.[3]) }}</dd>
+                </dl>
+              </div>
             </div>
-            <div class="column">
-              <input
-                type="time"
-                id="reservationStartTime"
-                name="reservationStartTime"
-                placeholder="hh:mm"
-                class="form-control"
-                [(ngModel)]="sharedStartTime"
-                #reservationStartTimeModel="ngModel"
-                (ngModelChange)="onFieldChange()"
-                (change)="onTimeChange($event)"
-                required
-              />
-            </div>
-            <div class="column">
-              <input
-                type="date"
-                id="reservationDate"
-                name="reservationDate"
-                pattern="\d{4}-\d{2}-\d{2}"
-                placeholder="dd-mm-yyyy"
-                class="form-control"
-                [(ngModel)]="sharedDate"
-                #reservationDateModel="ngModel"
-                (ngModelChange)="onFieldChange()"
-                required
-              />
+            <div class="row">
+              <div class="column">
+                <h1 class="font-heading">Reserve</h1>
+              </div>
+              <div class="column">
+                <input
+                  type="time"
+                  id="reservationStartTime"
+                  name="reservationStartTime"
+                  placeholder="hh:mm"
+                  class="form-control"
+                  [(ngModel)]="sharedStartTime"
+                  #reservationStartTimeModel="ngModel"
+                  (ngModelChange)="onFieldChange()"
+                  (change)="onTimeChange($event)"
+                  required
+                />
+              </div>
+              <div class="column">
+                <input
+                  type="date"
+                  id="reservationDate"
+                  name="reservationDate"
+                  pattern="\d{4}-\d{2}-\d{2}"
+                  placeholder="dd-mm-yyyy"
+                  class="form-control"
+                  [(ngModel)]="sharedDate"
+                  #reservationDateModel="ngModel"
+                  (ngModelChange)="onFieldChange()"
+                  required
+                />
+              </div>
             </div>
           </div>
-
           <hr class="my-4">
         </div>
 
@@ -303,6 +319,7 @@
           </div>
         </div>
       </form>
+
     </div>
   </div>
 </div>
@@ -365,6 +382,4 @@
 </div>
 
 </body>
-
-
 </html>

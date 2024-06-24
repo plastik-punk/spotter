@@ -2,6 +2,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint.exceptionhandler;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.resterrors.ConflictErrorRestDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.resterrors.IllegalArgumentErrorRestDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.resterrors.InternalServerErrorRestDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.resterrors.NotFoundErrorRestDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.resterrors.ValidationErrorRestDto;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -98,6 +100,23 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
+     * Handles exceptions thrown when an unexpected error occurs.
+     * Sends a customized HTTP response for an internal server error.
+     *
+     * @param ex the exception
+     * @return the error response
+     */
+    @ExceptionHandler
+    protected ResponseEntity<Object> handleRuntimeException(RuntimeException ex) {
+        LOGGER.warn("Terminating request processing with status 500 due to {}: {}", ex.getClass().getSimpleName(), ex.getMessage());
+
+        String defaultMessage = "An unexpected error occurred. Please try again later.";
+        InternalServerErrorRestDto errorResponse = new InternalServerErrorRestDto(defaultMessage);
+
+        return new ResponseEntity<>(errorResponse, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /**
      * Handles exceptions thrown when a resource is not found.
      * Sends a customized HTTP response for a not found exception.
      *
@@ -131,5 +150,23 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ConflictErrorRestDto errorResponse = new ConflictErrorRestDto(defaultMessage, errors);
 
         return new ResponseEntity<>(errorResponse, new HttpHeaders(), HttpStatus.CONFLICT);
+    }
+
+    /**
+     * Handles exceptions thrown when a resource is not found.
+     * Sends a customized HTTP response for a not found exception.
+     *
+     * @param e the exception
+     * @return the error response
+     */
+    @ExceptionHandler
+    public ResponseEntity<Object> handleBadCredentialException(BadCredentialsException e) {
+        LOGGER.warn("Terminating request processing with status 401 due to {}: {}", e.getClass().getSimpleName(), e.getMessage());
+
+        String defaultMessage = "Username or password not correct.";
+        List<String> errors = List.of(e.getMessage());
+        ConflictErrorRestDto errorResponse = new ConflictErrorRestDto(defaultMessage, errors);
+
+        return new ResponseEntity<>(errorResponse, new HttpHeaders(), HttpStatus.UNAUTHORIZED);
     }
 }

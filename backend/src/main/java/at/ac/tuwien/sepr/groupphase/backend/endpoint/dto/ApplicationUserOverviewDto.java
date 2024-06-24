@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.Objects;
@@ -19,7 +20,7 @@ public class ApplicationUserOverviewDto {
     private String lastName;
 
     @NotBlank(message = "Email must not be empty")
-    @Email(message = "Email should be valid")
+    @Email(message = "Email must be valid (e.g.: otter@spotter.com)")
     private String email;
 
     private String mobileNumber;  // Optional, no @NotNull or @NotBlank
