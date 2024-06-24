@@ -53,7 +53,7 @@ public class SpecialOfferServiceImpl implements SpecialOfferService {
     @Override
     public SpecialOfferDetailDto getSpecialOffer(Long id) {
         LOGGER.trace("getSpecialOffer({})", id);
-        SpecialOffer foundSpecialOffer = specialOfferRepository.findById(id).orElseThrow(() -> new NotFoundException("Special offer with ID " + id + " not found"));
+        SpecialOffer foundSpecialOffer = specialOfferRepository.findById(id).orElseThrow(() -> new NotFoundException("Special offer not found"));
         return specialOfferMapper.specialOfferToSpecialOfferDetailDto(foundSpecialOffer);
     }
 }

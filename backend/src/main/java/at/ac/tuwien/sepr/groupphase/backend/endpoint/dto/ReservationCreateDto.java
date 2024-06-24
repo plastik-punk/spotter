@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
@@ -20,13 +21,13 @@ public class ReservationCreateDto {
     @NotNull(message = "First name is required")
     @Size(min = 1, message = "First name should not be empty")
     @Size(max = 255, message = "First name shouldn't be longer than 255 characters")
-    @Pattern(regexp = "^[A-Za-zäöüÄÖÜß ]+$", message = "First name must consist of letters, umlauts, sharp s and spaces only")
+    @Pattern(regexp = "^[A-Za-zäöüÄÖÜß ]+$", message = "First name must consist of letters and spaces only")
     private String firstName;
 
     @NotNull(message = "Last name is required")
     @Size(min = 1, message = "Last name should not be empty")
     @Size(max = 255, message = "Last name shouldn't be longer than 255 characters")
-    @Pattern(regexp = "^[A-Za-zäöüÄÖÜß ]+$", message = "Last name must consist of letters, umlauts, sharp s and spaces only")
+    @Pattern(regexp = "^[A-Za-zäöüÄÖÜß ]+$", message = "Last name must consist of letters and spaces only")
     private String lastName;
 
     @NotNull(message = "startTime is required")
@@ -42,11 +43,12 @@ public class ReservationCreateDto {
     @Positive(message = "Pax should be greater than 0")
     private Long pax;
 
-    @Size(max = 100000, message = "Notes shouldn't be longer than 100000 characters")
+    @Size(max = 100000, message = "Notes shouldn't be longer than 100.000 characters")
     private String notes;
 
     @NotNull(message = "Email is required")
-    @Email(message = "Email must be valid")
+    @NotEmpty(message = "Email must not be empty")
+    @Email(message = "Email must be valid (e.g.: otter@spotter.com)")
     private String email;
 
     @Pattern(regexp = "^[0-9]{1,15}$", message = "Invalid mobile number. It must consist of max. 15 digits.")

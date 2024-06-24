@@ -32,7 +32,7 @@ public class PlaceServiceImpl implements PlaceService {
             Optional<Place> optionalPlace = placeRepository.findById(id);
             if (optionalPlace.isEmpty()) {
                 LOGGER.error("Error while blocking / unblocking place with id {}, Table not found", id);
-                throw new NotFoundException("Table with Number " + id + " not found.");
+                throw new NotFoundException("Table not found");
             }
 
             Place place = optionalPlace.get();

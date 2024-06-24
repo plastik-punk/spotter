@@ -115,7 +115,7 @@ public class ApplicationUserServiceImpl implements ApplicationUserService {
         if (applicationUser != null) {
             return applicationUser;
         }
-        throw new NotFoundException(String.format("Could not find the user with the email address %s", email));
+        throw new NotFoundException("Could not find the user with this email address");
     }
 
     @Override
@@ -145,7 +145,7 @@ public class ApplicationUserServiceImpl implements ApplicationUserService {
         LOGGER.debug("Existing User: {}", existingUser);
         if (existingUser != null) {
             throw new ConflictException("Account already exists",
-                List.of("An account for " + applicationUserRegistrationDto.getEmail() + " already exists."));
+                List.of("An account for this email address already exists"));
         }
         ApplicationUser applicationUser = applicationUserMapper.userRegistrationDtoToApplicationUser(applicationUserRegistrationDto);
         applicationUser.setPassword(passwordEncoder.encode(applicationUserRegistrationDto.getPassword()));
@@ -156,7 +156,7 @@ public class ApplicationUserServiceImpl implements ApplicationUserService {
     public void update(ApplicationUserOverviewDto toUpdate) throws NotFoundException {
         LOGGER.trace("update ({})", toUpdate);
         ApplicationUser existingUser = applicationUserRepository.findById(toUpdate.getId())
-            .orElseThrow(() -> new NotFoundException("User not found with id: " + toUpdate.getId()));
+            .orElseThrow(() -> new NotFoundException("No such user found in database"));
 
         existingUser.setFirstName(toUpdate.getFirstName());
         existingUser.setLastName(toUpdate.getLastName());
@@ -172,14 +172,12 @@ public class ApplicationUserServiceImpl implements ApplicationUserService {
         LOGGER.trace("delete ({})", id);
         if (reservationRepository.findByApplicationUserId(id).size() != 0) {
             throw new ConflictException("Error upon deleting user",
-                Arrays.asList("Couldn't delete user with id " + id + " because the user have open reservations."));
+                Arrays.asList("Couldn't delete this user because they have open reservations"));
         }
 
         if (!applicationUserRepository.existsById(id)) {
-            throw new NotFoundException("User not found with id: " + id);
+            throw new NotFoundException("No such user found in database");
         }
         applicationUserRepository.deleteById(id);
     }
 }
-
-

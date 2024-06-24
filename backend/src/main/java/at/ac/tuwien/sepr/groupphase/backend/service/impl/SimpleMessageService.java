@@ -39,7 +39,7 @@ public class SimpleMessageService implements MessageService {
         if (message.isPresent()) {
             return message.get();
         } else {
-            throw new NotFoundException(String.format("Could not find message with id %s", id));
+            throw new NotFoundException("Could not find message");
         }
     }
 
