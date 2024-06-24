@@ -2,7 +2,11 @@ import {Component, OnInit} from '@angular/core';
 import * as bootstrap from 'bootstrap';
 import {AuthService} from '../../../services/auth.service';
 import {NgForm} from '@angular/forms';
-import {ReservationCheckAvailabilityDto, ReservationCreateDto} from '../../../dtos/reservation';
+import {
+  ReservationCheckAvailabilityDto,
+  ReservationCreateDto,
+  ReservationModalDetailDto
+} from '../../../dtos/reservation';
 import {UserOverviewDto} from '../../../dtos/app-user';
 import {ReservationService} from '../../../services/reservation.service';
 import {NotificationService} from '../../../services/notification.service';
@@ -13,6 +17,8 @@ import {formatDay, formatDotDate, formatDotDateShort, formatIsoTime, formatTime}
 import {ActivatedRoute} from "@angular/router";
 import {SpecialOfferAmountDto, SpecialOfferDetailDto, SpecialOfferListDto} from "../../../dtos/special-offer";
 import {SpecialOfferService} from "../../../services/special-offer.service";
+import {RestaurantDto, RestaurantOpeningHoursDto} from "../../../dtos/restaurant";
+import {RestaurantService} from "../../../services/restaurant.service";
 
 @Component({
   selector: 'app-reservation-simple',
@@ -45,6 +51,22 @@ export class ReservationSimpleComponent implements OnInit {
   upcomingEventsExist: boolean = false;
 
   specialOffers: SpecialOfferDetailDto[] = [];
+
+  openingHours: RestaurantOpeningHoursDto = {
+    monday: undefined,
+    tuesday: undefined,
+    wednesday: undefined,
+    thursday: undefined,
+    friday: undefined,
+    saturday: undefined,
+    sunday: undefined
+  };
+
+  restaurantInfo: RestaurantDto = {
+    name: undefined,
+    address: undefined
+  }
+
   selectedOffers: SpecialOfferAmountDto[] = [];
   totalPrice: number = 0;
 
@@ -54,6 +76,7 @@ export class ReservationSimpleComponent implements OnInit {
     private offerService: SpecialOfferService,
     private eventService: EventService,
     private notificationService: NotificationService,
+    private restaurantService: RestaurantService
   ) {
     this.initializeSharedProperties();
     this.initializeDtos();
@@ -74,6 +97,31 @@ export class ReservationSimpleComponent implements OnInit {
       error: () => {
         this.notificationService.showError('Failed to get events. Please try again later.');
       },
+    });
+
+    this.restaurantService.getOpeningHours().subscribe( {
+      next: (data: RestaurantOpeningHoursDto) => {
+        this.openingHours.monday = data.monday;
+        this.openingHours.tuesday = data.tuesday;
+        this.openingHours.wednesday = data.wednesday;
+        this.openingHours.thursday = data.thursday;
+        this.openingHours.friday = data.friday;
+        this.openingHours.saturday = data.saturday;
+        this.openingHours.sunday = data.sunday;
+      },
+      error: error => {
+        this.notificationService.showError('Failed to load opening hours. Please try again later.');
+      }
+    });
+
+    this.restaurantService.getRestaurantInfo().subscribe( {
+      next: (data: RestaurantDto) => {
+        this.restaurantInfo.name = data.name;
+        this.restaurantInfo.address = data.address;
+      },
+      error: error => {
+        this.notificationService.showError('Failed to load restaurant info. Please try again later.');
+      }
     });
   }
 
@@ -427,6 +475,4 @@ export class ReservationSimpleComponent implements OnInit {
     }
     this.totalPrice = total;
   }
-
-
 }
