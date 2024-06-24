@@ -8,6 +8,7 @@ import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SpecialOfferRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.SpecialOfferService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.SpecialOfferMapper;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ public class SpecialOfferServiceImpl implements SpecialOfferService {
     }
 
     @Override
-    public SpecialOfferCreateDto createSpecialOffer(SpecialOfferCreateDto specialOfferCreateDto) {
+    public SpecialOfferCreateDto createSpecialOffer(@Valid SpecialOfferCreateDto specialOfferCreateDto) {
         LOGGER.trace("createSpecialOffer({})", specialOfferCreateDto);
         SpecialOffer specialOfferToCreate = specialOfferMapper.specialOfferCreateDtoToSpecialOffer(specialOfferCreateDto);
         if (specialOfferToCreate.getImage() == null) {
