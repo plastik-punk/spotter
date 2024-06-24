@@ -78,4 +78,12 @@ public class SpecialOfferEndpoint {
         specialOfferService.deleteSpecialOffer(id);
         return ResponseEntity.noContent().build();
     }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping({"/details"})
+    @PermitAll
+    public List<SpecialOfferDetailDto> getAllSpecialOfferDetails() {
+        LOGGER.info("GET /api/v1/special-offers/details");
+        return specialOfferService.getAllSpecialOfferDetails();
+    }
 }

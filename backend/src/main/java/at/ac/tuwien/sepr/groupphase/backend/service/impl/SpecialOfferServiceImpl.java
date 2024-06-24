@@ -56,4 +56,11 @@ public class SpecialOfferServiceImpl implements SpecialOfferService {
         SpecialOffer foundSpecialOffer = specialOfferRepository.findById(id).orElseThrow(() -> new NotFoundException("Special offer not found"));
         return specialOfferMapper.specialOfferToSpecialOfferDetailDto(foundSpecialOffer);
     }
+
+    @Override
+    public List<SpecialOfferDetailDto> getAllSpecialOfferDetails() {
+        LOGGER.trace("getAllSpecialOfferDetails()");
+        List<SpecialOffer> foundSpecialOffers = specialOfferRepository.findAll();
+        return specialOfferMapper.specialOffersToSpecialOfferDetailDtos(foundSpecialOffers);
+    }
 }

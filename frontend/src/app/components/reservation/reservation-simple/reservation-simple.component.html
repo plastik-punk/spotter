@@ -233,6 +233,9 @@
           <div class="row">
             <div class="custom-order-card m-2 p-2 column" *ngFor="let offer of specialOffers">
               <div class="row">
+                <img [src]="getImageUrl(offer.image)" alt="Special Offer" class="custom-order-image">
+              </div>
+              <div class="row">
                 {{ offer.name }}
               </div>
               <div class="row">

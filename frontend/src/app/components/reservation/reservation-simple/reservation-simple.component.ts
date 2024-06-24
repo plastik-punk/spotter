@@ -44,7 +44,7 @@ export class ReservationSimpleComponent implements OnInit {
   itemsPerPage: number = 3;
   upcomingEventsExist: boolean = false;
 
-  specialOffers: SpecialOfferListDto[] = [];
+  specialOffers: SpecialOfferDetailDto[] = [];
   selectedOffers: SpecialOfferAmountDto[] = [];
   totalPrice: number = 0;
 
@@ -354,7 +354,7 @@ export class ReservationSimpleComponent implements OnInit {
   protected readonly Math = Math;
 
   fetchOffers() {
-    this.offerService.getSpecialOffers().subscribe({
+    this.offerService.getAllSpecialOffersWithDetail().subscribe({
       next: (data) => {
         this.specialOffers = data;
       },
@@ -362,6 +362,10 @@ export class ReservationSimpleComponent implements OnInit {
         this.notificationService.showError('Failed to get special offers. Please try again later.');
       },
     });
+  }
+
+  getImageUrl(image: Uint8Array): string {
+    return `data:image/jpeg;base64,${image}`
   }
 
   selectOffer(offer: SpecialOfferListDto) {
