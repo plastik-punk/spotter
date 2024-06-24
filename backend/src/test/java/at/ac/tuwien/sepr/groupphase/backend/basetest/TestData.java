@@ -303,8 +303,8 @@ public interface TestData {
 
     String TEST_SPECIAL_OFFER_NAME_1 = "Margarita";
     String TEST_SPECIAL_OFFER_NAME_2 = "Mojito";
-    Float TEST_SPECIAL_OFFER_PRICE_PER_PAX_1 = 10.0f;
-    Float TEST_SPECIAL_OFFER_PRICE_PER_PAX_2 = 20.0f;
+    Float TEST_SPECIAL_OFFER_PRICE_PER_PAX_1 = 8.50f;
+    Float TEST_SPECIAL_OFFER_PRICE_PER_PAX_2 = 7.90f;
 
     SpecialOfferCreateDto TEST_SPECIAL_OFFER_CREATE_DTO_1 = SpecialOfferCreateDto.SpecialOfferCreateBuilder.aSpecialOfferCreateDto()
         .withName(TEST_SPECIAL_OFFER_NAME_1)

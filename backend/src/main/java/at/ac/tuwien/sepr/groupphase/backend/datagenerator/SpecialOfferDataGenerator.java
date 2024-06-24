@@ -33,11 +33,11 @@ public class SpecialOfferDataGenerator {
         "Tequila Sunrise"
     };
     private static final Float[] SPECIAL_OFFERS_PRICE_PER_PAX = {
-        10.0f,
-        20.0f,
-        30.0f,
-        40.0f,
-        50.0f
+        8.50f,
+        7.90f,
+        12.00f,
+        11.50f,
+        8.0f
     };
 
     public SpecialOfferDataGenerator(SpecialOfferRepository specialOfferRepository) {
