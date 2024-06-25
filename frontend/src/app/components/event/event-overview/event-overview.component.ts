@@ -24,6 +24,7 @@ export class EventOverviewComponent implements OnInit {
   searchLatestDate: string | null = null;
   searchEarliestStartTime: string | null = null;
   searchLatestEndTime: string | null = null;
+  searchName: string | null = null;
   searchChangedObservable = new Subject<void>();
   deleteWhat: string = null;
   selectedFile: File | null = null;
@@ -56,25 +57,30 @@ export class EventOverviewComponent implements OnInit {
   }
 
   loadEvents() {
-    if (this.searchEarliestDate == null) {
+    if (this.searchEarliestDate == null || this.searchEarliestDate === '') {
       delete this.searchParams.earliestStartDate;
     } else {
       this.searchParams.earliestStartDate = new Date(this.searchEarliestDate);
     }
-    if (this.searchLatestDate == null) {
+    if (this.searchLatestDate == null || this.searchLatestDate === '') {
       delete this.searchParams.latestEndDate;
     } else {
       this.searchParams.latestEndDate = new Date(this.searchLatestDate);
     }
-    if (this.searchEarliestStartTime == null) {
+    if (this.searchEarliestStartTime == null || this.searchEarliestStartTime === '') {
       delete this.searchParams.earliestStartTime;
     } else {
       this.searchParams.earliestStartTime = this.searchEarliestStartTime;
     }
-    if (this.searchLatestEndTime == null) {
+    if (this.searchLatestEndTime == null || this.searchLatestEndTime === '') {
       delete this.searchParams.latestEndTime;
     } else {
       this.searchParams.latestEndTime = this.searchLatestEndTime;
+    }
+    if (this.searchName == null || this.searchName === '') {
+      delete this.searchParams.name;
+    } else {
+      this.searchParams.name = this.searchName;
     }
 
     this.eventService.search(this.searchParams)

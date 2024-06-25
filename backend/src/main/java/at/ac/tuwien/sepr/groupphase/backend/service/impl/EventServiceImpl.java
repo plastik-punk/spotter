@@ -86,7 +86,16 @@ public class EventServiceImpl implements EventService {
             endTime = searchParameters.getLatestEndTime();
         }
 
-        List<Event> events = eventRepository.findEventsByDate(startDate, endDate, startTime, endTime);
+        String name;
+        if (searchParameters.getName() == null) {
+            name = null;
+        } else {
+            name = searchParameters.getName();
+        }
+
+        System.out.println(name);
+
+        List<Event> events = eventRepository.findEventsByDate(startDate, endDate, startTime, endTime, name);
         return mapper.eventToEventListDto(events);
     }
 

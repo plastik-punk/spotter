@@ -20,6 +20,17 @@
                to reload the reservations, is possible -->
           <button type="submit" hidden="hidden">submit</button>
           <div class="ms-1">
+            <label for="searchName" class="col-form-label">
+              Name
+            </label>
+            <input type="text" id="searchName" name="searchName"
+                   placeholder="Name"
+                   class="form-control"
+                   [(ngModel)]="searchName"
+                   (ngModelChange)="searchChanged()"
+            >
+          </div>
+          <div class="ms-1">
             <label for="searchEarliestEvent" class="col-form-label">
               Earliest Date
             </label>

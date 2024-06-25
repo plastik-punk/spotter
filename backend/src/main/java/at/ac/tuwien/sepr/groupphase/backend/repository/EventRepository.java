@@ -21,13 +21,15 @@ public interface EventRepository extends JpaRepository<Event, Long> {
         + "AND (:endDate IS NULL OR CAST(e.start_time AS DATE) <= :endDate) "
         + "AND (:startTime IS NULL OR CAST(e.start_time AS TIME) >= :startTime) "
         + "AND (:endTime IS NULL OR CAST(e.end_time AS TIME) <= :endTime) "
+        + "AND (:name IS NULL OR LOWER(e.name) LIKE LOWER('%' || :name || '%')) "
         + "ORDER BY e.start_time ASC",
         nativeQuery = true)
     List<Event> findEventsByDate(
         @Param("startDate") LocalDate startDate,
         @Param("endDate") LocalDate endDate,
         @Param("startTime") LocalTime startTime,
-        @Param("endTime") LocalTime endTime);
+        @Param("endTime") LocalTime endTime,
+        @Param("name") String name);
 
     @Query(value = "SELECT e.* FROM event e "
         + "WHERE e.end_time >= CURRENT_TIMESTAMP "

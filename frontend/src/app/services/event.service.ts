@@ -36,6 +36,9 @@ export class EventService {
     if (searchParams.latestEndTime) {
       params = params.append('latestEndTime', searchParams.latestEndTime)
     }
+    if (searchParams.name) {
+      params = params.append('name', searchParams.name);
+    }
 
     // TODO: remove
     console.log(params.toString());
