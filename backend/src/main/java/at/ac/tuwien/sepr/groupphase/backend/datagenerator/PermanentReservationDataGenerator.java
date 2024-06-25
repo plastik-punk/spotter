@@ -82,7 +82,6 @@ public class PermanentReservationDataGenerator {
 
         LOGGER.debug("Creating PermanentReservation: {}", createDto);
         PermanentReservationCreateDto savedDto = reservationService.createPermanent(createDto);
-        System.out.println(createDto.getHashedId());
         PermanentReservation permanentReservation = permanentReservationRepository.findByHashedId(createDto.getHashedId());
 
         if (confirm) {

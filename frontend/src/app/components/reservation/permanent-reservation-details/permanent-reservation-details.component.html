@@ -9,6 +9,18 @@
   <div class="col-12 col-lg-10 mx-auto h-90 py-3">
     <div class="card custom-card" *ngIf="permanentReservationDetails">
 <h1 class="text-center">Details for Permanent Reservation</h1>
+      <div class="d-flex justify-content-start mb-2">
+
+        <a class="btn btn-primary me-2" (click)="goBack()">
+          <i class="bi bi-arrow-return-left"></i> Back</a>
+        <a class="btn btn-danger"
+           aria-label="Delete reservation"
+           data-bs-toggle="modal"
+           data-bs-target="#confirmation-dialog-delete"
+           (click)="openPermanentDeleteConfirmDialog(permanentReservationDetails)">
+          Delete <i class="bi bi-trash"></i>
+        </a>
+      </div>
       <div class="row mb-3 align-items-center">
         <div class="col-md-4">
           <strong>Name</strong>
@@ -19,7 +31,6 @@
           <p>{{ permanentReservationDetails.pax }}</p>
         </div>
         <div class="col-md-4">
-          <button class="btn btn-primary" (click)="goBack()">Back</button>
         </div>
       </div>
 
