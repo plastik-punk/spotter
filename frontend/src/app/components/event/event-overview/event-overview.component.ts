@@ -1,14 +1,14 @@
 import {Component, OnInit} from '@angular/core';
-import {FormsModule} from "@angular/forms";
-import {NgForOf, NgIf} from "@angular/common";
 import {debounceTime, Observable, Subject} from "rxjs";
 import {HttpResponse} from "@angular/common/http";
 import {AuthService} from "../../../services/auth.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {NotificationService} from "../../../services/notification.service";
-import {Router, RouterLink} from "@angular/router";
-import {EventListDto, EventSearchDto} from "../../../dtos/event";
+import {Router} from "@angular/router";
+import {EventDetailDto, EventListDto, EventSearchDto} from "../../../dtos/event";
 import {EventService} from "../../../services/event.service";
+import {formatDay, formatDotDate, formatIsoTime} from "../../../util/date-helper";
+import * as bootstrap from 'bootstrap';
 
 @Component({
   selector: 'app-event-overview',
@@ -20,13 +20,22 @@ export class EventOverviewComponent implements OnInit {
   events: EventListDto[] = [];
   displayedEvents: EventListDto[] = [];
   searchParams: EventSearchDto = {};
-  searchEarliestDate: Date | null = null;
-  searchLatestDate: Date | null = null;
-  searchEarliestStartTime: Date | null = null;
-  searchLatestEndTime: Date | null = null;
+  searchEarliestDate: string | null = null;
+  searchLatestDate: string | null = null;
+  searchEarliestStartTime: string | null = null;
+  searchLatestEndTime: string | null = null;
+  searchName: string | null = null;
   searchChangedObservable = new Subject<void>();
   deleteWhat: string = null;
   selectedFile: File | null = null;
+
+  event: EventDetailDto = {
+    hashId: undefined,
+    name: undefined,
+    startTime: undefined,
+    endTime: undefined,
+    description: undefined
+  };
 
   constructor(
     private authService: AuthService,
@@ -37,10 +46,11 @@ export class EventOverviewComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.searchEarliestDate = new Date().toISOString().split('T')[0]
     this.loadEvents();
     this.searchChangedObservable
       .pipe(debounceTime(300))
-      .subscribe({ next: () => this.loadEvents() });
+      .subscribe({next: () => this.loadEvents()});
   }
 
   showMore() {
@@ -55,26 +65,48 @@ export class EventOverviewComponent implements OnInit {
     return this.authService.getUserRole() === 'ADMIN';
   }
 
+  showEventDetails(hashId: string): void {
+    this.eventService.getByHashId(hashId).subscribe({
+      next: (data: EventDetailDto) => {
+        this.event.name = data.name;
+        this.event.startTime = data.startTime;
+        this.event.endTime = data.endTime;
+        this.event.description = data.description;
+
+        const modalDetail = new bootstrap.Modal(document.getElementById('event-detail'));
+        modalDetail.show();
+      },
+      error: error => {
+        this.notificationService.showError('Failed to load event details. Please try again later.');
+      }
+    });
+  }
+
   loadEvents() {
-    if (this.searchEarliestDate == null) {
+    if (this.searchEarliestDate == null || this.searchEarliestDate === '') {
       delete this.searchParams.earliestStartDate;
     } else {
-      this.searchParams.earliestStartDate = this.searchEarliestDate;
+      this.searchParams.earliestStartDate = new Date(this.searchEarliestDate);
     }
-    if (this.searchLatestDate == null) {
+    if (this.searchLatestDate == null || this.searchLatestDate === '') {
       delete this.searchParams.latestEndDate;
     } else {
-      this.searchParams.latestEndDate = this.searchLatestDate;
+      this.searchParams.latestEndDate = new Date(this.searchLatestDate);
     }
-    if (this.searchEarliestStartTime == null) {
+    if (this.searchEarliestStartTime == null || this.searchEarliestStartTime === '') {
       delete this.searchParams.earliestStartTime;
     } else {
       this.searchParams.earliestStartTime = this.searchEarliestStartTime;
     }
-    if (this.searchLatestEndTime == null) {
+    if (this.searchLatestEndTime == null || this.searchLatestEndTime === '') {
       delete this.searchParams.latestEndTime;
     } else {
       this.searchParams.latestEndTime = this.searchLatestEndTime;
+    }
+    if (this.searchName == null || this.searchName === '') {
+      delete this.searchParams.name;
+    } else {
+      this.searchParams.name = this.searchName;
     }
 
     this.eventService.search(this.searchParams)
@@ -124,6 +156,7 @@ export class EventOverviewComponent implements OnInit {
       }
     });
   }
+
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
@@ -135,16 +168,30 @@ export class EventOverviewComponent implements OnInit {
     if (this.selectedFile) {
       this.eventService.uploadIcsFile(this.selectedFile).subscribe(
         response => {
-          console.log('File uploaded successfully');
           this.loadEvents();
           this.notificationService.showSuccess('File uploaded successfully');
         },
         error => {
-          console.error('Error uploading file', error);
           this.loadEvents();
           this.notificationService.showError('Error uploading file');
         }
       );
     }
   }
+
+  formatDateTime(dateTime: string): string {
+    if (!dateTime) {
+      return "";
+    }
+    const date = new Date(dateTime);
+    const formattedDate = date.toISOString().split('T')[0];
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+
+    return `${formattedDate} ${hours}:${minutes}`;
+  }
+
+  protected readonly formatIsoTime = formatIsoTime;
+  protected readonly formatDotDate = formatDotDate;
+  protected readonly formatDay = formatDay;
 }

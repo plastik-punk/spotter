@@ -13,6 +13,7 @@ public class LayoutCreateDto {
         this.areas = areas;
     }
 
+    // TODO: validation
     public static class AreaCreateDto {
         private String name;
         private boolean isMainArea;
@@ -89,6 +90,19 @@ public class LayoutCreateDto {
             this.places = places;
         }
 
+        @Override
+        public String toString() {
+            return "LayoutCreateDto{"
+                + "name=" + name + '\''
+                + ", isMainArea=" + isMainArea
+                + ", openingTime=" + openingTime
+                + ", closingTime=" + closingTime
+                + ", isOpen=" + isOpen
+                + ", width=" + width
+                + ", height=" + height
+                + ", places=" + (places == null ? "null" : places.toString())
+                + '}';
+        }
 
         public static class PlaceVisualDto {
             private Integer placeNumber;
@@ -139,6 +153,17 @@ public class LayoutCreateDto {
                 this.coordinates = coordinates;
             }
 
+            @Override
+            public String toString() {
+                return "PlaceVisualDto{"
+                    + "placeNumber=" + placeNumber
+                    + ", status=" + status
+                    + ", reservation=" + reservation
+                    + ", numberOfSeats=" + numberOfSeats
+                    + ", coordinates=" + (coordinates == null ? "null" : coordinates.toString())
+                    + '}';
+            }
+
             public static class CoordinateDto {
                 @SuppressWarnings("checkstyle:MemberName")
                 private Integer x;
@@ -161,6 +186,14 @@ public class LayoutCreateDto {
 
                 public void setY(Integer y) {
                     this.y = y;
+                }
+
+                @Override
+                public String toString() {
+                    return "CoordinateDto{"
+                        + "x=" + x
+                        + ", y=" + y
+                        + '}';
                 }
             }
         }

@@ -40,4 +40,11 @@ public interface SpecialOfferService {
      * @return the special offer
      */
     SpecialOfferDetailDto getSpecialOffer(Long id);
+
+    /**
+     * Gets all special offers with image.
+     *
+     * @return all special offers as detailDTOs
+     */
+    List<SpecialOfferDetailDto> getAllSpecialOfferDetails();
 }

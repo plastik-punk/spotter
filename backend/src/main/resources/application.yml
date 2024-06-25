@@ -3,7 +3,7 @@ logging:
   level:
     root: INFO
     org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping: TRACE
-    at.ac.tuwien.sepr.groupphase.backend: TRACE
+    at.ac.tuwien.sepr.groupphase.backend: DEBUG
   pattern:
     level: r=%X{r} ip=%X{ip} u=%X{u} %5p
 

@@ -34,8 +34,9 @@ public class PlaceDataGenerator {
             LOGGER.debug("Places already generated");
         } else {
             LOGGER.debug("Generating {} place entries", NUMBER_OF_PLACES_TO_GENERATE);
-            for (int i = 0; i < NUMBER_OF_PLACES_TO_GENERATE; i++) {
+            for (int i = 1; i < NUMBER_OF_PLACES_TO_GENERATE; i++) {
                 Place place = Place.PlaceBuilder.aPlace()
+                    .withId((long) (i * 2))
                     .withPax((long) (2 + i % 4))  // Assuming a variety of pax values
                     .withStatus(StatusEnum.AVAILABLE)
                     .withNumber(i + 1)

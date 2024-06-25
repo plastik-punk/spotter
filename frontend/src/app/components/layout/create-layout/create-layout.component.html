@@ -56,9 +56,9 @@
               <label for="area-height">Height</label>
             </div>
           </div>
-          <div class="column" *ngIf="!isMainAreaDisabled()">
+          <div class="column" hidden="hidden">
             <div class="form-check form-switch mb-3">
-              <input class="form-check-input" type="checkbox" id="main-area" formControlName="isMainArea">
+              <input class="form-check-input" type="checkbox" id="main-area" formControlName="isMainArea" >
               <label class="form-check-label" for="main-area">Main Area</label>
             </div>
           </div>

@@ -16,9 +16,9 @@ export class SpecialOfferService {
   }
 
   /**
-   * Get all special offers
+   * Get all special offers without image
    *
-   * @return an Observable for the HttpResponse
+   * @return all special offers as a ListDto
    */
   getSpecialOffers(): Observable<SpecialOfferListDto[]> {
     return this.httpClient.get<SpecialOfferListDto[]>(this.placeBaseUri);
@@ -48,7 +48,23 @@ export class SpecialOfferService {
     return this.httpClient.delete<void>(this.placeBaseUri, {observe: 'response', body: id});
   }
 
+  /**
+   * Get a special offer by its ID
+   *
+   * @param id
+   * @return the special offer as a DetailDto
+   */
   getSpecialOffer(id: number): Observable<SpecialOfferDetailDto> {
     return this.httpClient.get<SpecialOfferDetailDto>(this.placeBaseUri + "/detail", {params: new HttpParams().set('id', id)});
+  }
+
+
+  /**
+   * Get all special offers with image
+   *
+   * @return all special offers as a DetailDto
+   */
+  getAllSpecialOffersWithDetail(): Observable<SpecialOfferDetailDto[]> {
+    return this.httpClient.get<SpecialOfferDetailDto[]>(this.placeBaseUri + "/details");
   }
 }

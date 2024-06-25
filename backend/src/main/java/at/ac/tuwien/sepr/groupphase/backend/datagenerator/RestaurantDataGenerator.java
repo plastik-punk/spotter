@@ -33,7 +33,6 @@ public class RestaurantDataGenerator {
         } else {
             LOGGER.debug("Generating restaurants");
 
-            // TODO
             Restaurant restaurant = Restaurant.RestaurantBuilder.aRestaurant()
                 .withId(1L)
                 .withName("The Wet Otter")

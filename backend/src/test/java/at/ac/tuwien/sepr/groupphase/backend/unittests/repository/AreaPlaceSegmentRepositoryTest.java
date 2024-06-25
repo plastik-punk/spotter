@@ -16,5 +16,4 @@ public class AreaPlaceSegmentRepositoryTest implements TestData {
     @Autowired
     private AreaPlaceSegmentRepository areaPlaceSegmentRepository;
 
-    // TODO
 }

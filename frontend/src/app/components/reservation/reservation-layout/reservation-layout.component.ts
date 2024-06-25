@@ -18,6 +18,8 @@ import {formatDay, formatDotDate, formatIsoDate, formatIsoTime} from "../../../u
 import {SimpleViewReservationStatusEnum} from "../../../dtos/status-enum";
 import {EventDetailDto, EventListDto} from "../../../dtos/event";
 import {EventService} from "../../../services/event.service";
+import {SpecialOfferAmountDto, SpecialOfferDetailDto, SpecialOfferListDto} from "../../../dtos/special-offer";
+import {SpecialOfferService} from "../../../services/special-offer.service";
 
 @Component({
   selector: 'app-component-reservation-layout',
@@ -55,6 +57,9 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
   currentEventPage: number = 1;
   itemsPerPage: number = 3;
   upcomingEventsExist: boolean = false;
+  specialOffers: SpecialOfferDetailDto[] = [];
+  selectedOffers: SpecialOfferAmountDto[] = [];
+  totalPrice: number = 0;
 
   constructor(
     public authService: AuthService,
@@ -63,6 +68,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
     private notificationService: NotificationService,
     private d3DrawService: D3DrawService,
     private eventService: EventService,
+    private offerService: SpecialOfferService
   ) {
     this.initializeSharedProperties();
     this.reservationCreateDto = this.initializeReservationCreateDto();
@@ -75,7 +81,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
     this.d3DrawService.createSeatingPlan(this.d3Container);
     this.onResize();
     this.startTimer();
-
+    this.fetchOffers();
     this.eventService.getUpcomingEvents().subscribe({
       next: (data) => {
         this.events = data;
@@ -258,7 +264,6 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
 
   private updateTotalSeats() {
     const totalSeats = this.selectedPlaces.reduce((sum, place) => sum + place.numberOfSeats, 0);
-    console.log(`Total available seats: ${totalSeats}`);
     this.reservationCreateDto.pax = totalSeats;
   }
 
@@ -287,7 +292,11 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
 
   onSubmit(form: NgForm) {
     this.updateReservationCreateDto();
-    this.updateCheckAvailabilityDto()
+    this.updateCheckAvailabilityDto();
+
+    this.reservationCreateDto.specialOffers = this.selectedOffers;
+    console.log(this.reservationCreateDto.specialOffers);
+    this.selectedOffers = [];
 
     if (this.authService.isLoggedIn()) {
       this.setCurrentUserDetails();
@@ -369,6 +378,81 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
     clearInterval(this.timer);
     this.sharedStartTime = (event.target as HTMLInputElement).value;
     this.onFieldChange();
+  }
+
+  fetchOffers() {
+    this.offerService.getAllSpecialOffersWithDetail().subscribe({
+      next: (data) => {
+        this.specialOffers = data;
+      },
+      error: () => {
+        this.notificationService.showError('Failed to get special offers. Please try again later.');
+      },
+    });
+  }
+
+  getImageUrl(image: Uint8Array): string {
+    return `data:image/jpeg;base64,${image}`
+  }
+
+  selectOffer(offer: SpecialOfferListDto) {
+    //check if the selected offer is already in the selected offer list. if it is, increase the amount by one. if it is not, add the offer to the list
+    let found = false;
+    for (let i = 0; i < this.selectedOffers.length; i++) {
+      if (this.selectedOffers[i].specialOffer.id === offer.id) {
+        this.selectedOffers[i].amount++;
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      let specialOfferAmountDto: SpecialOfferAmountDto = {
+        specialOffer: offer,
+        amount: 1
+      }
+      this.selectedOffers.push(specialOfferAmountDto);
+    }
+
+    this.calcTotal();
+  }
+
+  removeOffer(offer: SpecialOfferAmountDto) {
+    //decrease the amount in the selected offer list by one. if the amount gets to 0, remove the offer from the list
+    for (let i = 0; i < this.selectedOffers.length; i++) {
+      if (this.selectedOffers[i].specialOffer.id === offer.specialOffer.id) {
+        if (this.selectedOffers[i].amount > 1) {
+          this.selectedOffers[i].amount--;
+        } else {
+          this.selectedOffers.splice(i, 1);
+        }
+        break;
+      }
+    }
+    this.calcTotal();
+  }
+
+  addOffer(offer: SpecialOfferAmountDto) {
+    //increase the amount in the selected offer list by one
+    for (let i = 0; i < this.selectedOffers.length; i++) {
+      if (this.selectedOffers[i].specialOffer.id === offer.specialOffer.id) {
+        this.selectedOffers[i].amount++;
+        break;
+      }
+    }
+    this.calcTotal();
+  }
+
+  showOfferInfo():void {
+    const infoModal = new bootstrap.Modal(document.getElementById('infoModal'))
+    infoModal.show();
+  }
+
+  calcTotal() {
+    let total = 0;
+    for (let i = 0; i < this.selectedOffers.length; i++) {
+      total += this.selectedOffers[i].specialOffer.pricePerPax * this.selectedOffers[i].amount;
+    }
+    this.totalPrice = total;
   }
 
   protected readonly SimpleViewReservationStatusEnum = SimpleViewReservationStatusEnum;

@@ -44,9 +44,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     List<Reservation> findAllByDate(LocalDate date);
 
-    List<Long> findPaxByDate(LocalDate date);
-
-
     @Query("SELECT r FROM Reservation r "
         + "LEFT JOIN ReservationPlace rp ON r.id = rp.reservation.id "
         + "LEFT JOIN AreaPlaceSegment aps ON rp.place.id = aps.place.id "
@@ -79,4 +76,6 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
         @Param("endTime") LocalTime endTime);
 
     List<Reservation> findAllReservationsByDate(LocalDate localDate);
+
+    List<Reservation> findAllByIdIn(List<Long> reservationIds);
 }

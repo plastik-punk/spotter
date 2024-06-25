@@ -22,15 +22,4 @@ public class PlaceRepositoryTest implements TestData {
     @Autowired
     private PlaceRepository placeRepository;
 
-    @Test
-    @Transactional
-    public void givenValidData_whenFindFreePlaceForReservation_thenReturnPlace() {
-        // TODO
-    }
-
-    @Test
-    @Transactional
-    public void givenValidData_whenFindFirstByPaxAndStatusOrderByPaxDesc_thenReturnPlace() {
-        // TODO
-    }
 }

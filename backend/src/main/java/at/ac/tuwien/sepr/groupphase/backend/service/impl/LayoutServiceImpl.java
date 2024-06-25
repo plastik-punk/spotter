@@ -1,6 +1,5 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
-
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaDetailListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaLayoutDto;
@@ -15,22 +14,16 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ReservationPlace;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Segment;
 import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
-import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.AreaPlaceSegmentRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.AreaRepository;
-import at.ac.tuwien.sepr.groupphase.backend.repository.ClosedDayRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.OpeningHoursRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationPlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SegmentRepository;
-import at.ac.tuwien.sepr.groupphase.backend.service.EmailService;
-import at.ac.tuwien.sepr.groupphase.backend.service.HashService;
 import at.ac.tuwien.sepr.groupphase.backend.service.LayoutService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.LayoutMapper;
-import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ReservationMapper;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,38 +41,28 @@ import java.util.stream.Collectors;
 public class LayoutServiceImpl implements LayoutService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final ReservationRepository reservationRepository;
-    private final ApplicationUserRepository applicationUserRepository;
     private final PlaceRepository placeRepository;
-    private final ReservationMapper reservationMapper;
     private final LayoutMapper layoutMapper;
     private final OpeningHoursRepository openingHoursRepository;
-    private final ClosedDayRepository closedDayRepository;
     private final ReservationPlaceRepository reservationPlaceRepository;
-    private final EmailService emailService;
-    private final HashService hashService;
-    private final ApplicationUserServiceImpl applicationUserService;
     private final AreaRepository areaRepository;
     private final SegmentRepository segmentRepository;
     private final AreaPlaceSegmentRepository areaPlaceSegmentRepository;
 
     @Autowired
-    private Validator validator;
-
-    @Autowired
-    public LayoutServiceImpl(ReservationRepository reservationRepository, ApplicationUserRepository applicationUserRepository, PlaceRepository placeRepository, ReservationMapper reservationMapper, LayoutMapper layoutMapper,
-                             OpeningHoursRepository openingHoursRepository, ClosedDayRepository closedDayRepository, ReservationPlaceRepository reservationPlaceRepository, EmailService emailService, HashService hashService,
-                             ApplicationUserServiceImpl applicationUserService, AreaRepository areaRepository, SegmentRepository segmentRepository, AreaPlaceSegmentRepository areaPlaceSegmentRepository) {
+    public LayoutServiceImpl(ReservationRepository reservationRepository,
+                             PlaceRepository placeRepository,
+                             LayoutMapper layoutMapper,
+                             OpeningHoursRepository openingHoursRepository,
+                             ReservationPlaceRepository reservationPlaceRepository,
+                             AreaRepository areaRepository,
+                             SegmentRepository segmentRepository,
+                             AreaPlaceSegmentRepository areaPlaceSegmentRepository) {
         this.reservationRepository = reservationRepository;
-        this.applicationUserRepository = applicationUserRepository;
         this.placeRepository = placeRepository;
-        this.reservationMapper = reservationMapper;
         this.layoutMapper = layoutMapper;
         this.openingHoursRepository = openingHoursRepository;
-        this.closedDayRepository = closedDayRepository;
         this.reservationPlaceRepository = reservationPlaceRepository;
-        this.emailService = emailService;
-        this.hashService = hashService;
-        this.applicationUserService = applicationUserService;
         this.areaRepository = areaRepository;
         this.segmentRepository = segmentRepository;
         this.areaPlaceSegmentRepository = areaPlaceSegmentRepository;
@@ -280,7 +263,7 @@ public class LayoutServiceImpl implements LayoutService {
             List<ReservationPlace> reservationPlaces = reservationPlaceRepository.findByPlaceId(placeId);
 
             if (!reservationPlaces.isEmpty()) {
-                conflictExceptions.add("There are reservations for the table with id " + placeId);
+                conflictExceptions.add("There are reservations for the table #" + placeId);
             }
         }
 
@@ -456,7 +439,7 @@ public class LayoutServiceImpl implements LayoutService {
                 if (newPlace == null) {
                     List<ReservationPlace> reservationPlaces = reservationPlaceRepository.findByPlaceId(place.getId());
                     if (!reservationPlaces.isEmpty()) {
-                        throw new ConflictException("Cannot delete place", List.of("There are reservations for the table with id " + place.getId()));
+                        throw new ConflictException("Cannot delete place", List.of("There are reservations for table #" + place.getId()));
                     }
                     areaPlaceSegmentRepository.deleteAreaPlaceSegmentByAreaIdAndPlaceId(area.getId(), place.getId());
                     List<Segment> segments = areaPlaceSegments.stream()
@@ -471,8 +454,6 @@ public class LayoutServiceImpl implements LayoutService {
                 }
             }
         }
-
-
     }
 
     @Override

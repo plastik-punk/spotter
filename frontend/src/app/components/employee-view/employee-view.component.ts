@@ -203,7 +203,6 @@ export class EmployeeViewComponent {
 
   private updateTotalSeats() {
     const totalSeats = this.selectedPlaces.reduce((sum, place) => sum + place.numberOfSeats, 0);
-    console.log(`Total available seats: ${totalSeats}`);
     this.reservationCreateDto.pax = totalSeats;
   }
 

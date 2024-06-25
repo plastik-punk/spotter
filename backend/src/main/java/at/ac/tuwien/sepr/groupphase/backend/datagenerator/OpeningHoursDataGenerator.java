@@ -54,7 +54,6 @@ public class OpeningHoursDataGenerator {
         } else {
             LOGGER.debug("Generating opening hours");
 
-            // TODO
             OpeningHours openingHours1 = OpeningHours.OpeningHourBuilder.anOpeningHour()
                 .withDayOfWeek(DayOfWeek.MONDAY)
                 .withRestaurant(restaurant)
@@ -83,56 +82,70 @@ public class OpeningHoursDataGenerator {
                 .withClosingTime(LocalTime.of(22, 0))
                 .build();
 
+            OpeningHours openingHours5 = OpeningHours.OpeningHourBuilder.anOpeningHour()
+                .withDayOfWeek(DayOfWeek.WEDNESDAY)
+                .withRestaurant(restaurant)
+                .withOpeningTime(LocalTime.of(11, 30))
+                .withClosingTime(LocalTime.of(15, 0))
+                .build();
+
             OpeningHours openingHours6 = OpeningHours.OpeningHourBuilder.anOpeningHour()
+                .withDayOfWeek(DayOfWeek.WEDNESDAY)
+                .withRestaurant(restaurant)
+                .withOpeningTime(LocalTime.of(17, 0))
+                .withClosingTime(LocalTime.of(22, 0))
+                .build();
+
+            OpeningHours openingHours7 = OpeningHours.OpeningHourBuilder.anOpeningHour()
                 .withDayOfWeek(DayOfWeek.THURSDAY)
                 .withRestaurant(restaurant)
                 .withOpeningTime(LocalTime.of(11, 30))
                 .withClosingTime(LocalTime.of(15, 0))
                 .build();
 
-            OpeningHours openingHours7 = OpeningHours.OpeningHourBuilder.anOpeningHour()
+            OpeningHours openingHours8 = OpeningHours.OpeningHourBuilder.anOpeningHour()
                 .withDayOfWeek(DayOfWeek.THURSDAY)
                 .withRestaurant(restaurant)
                 .withOpeningTime(LocalTime.of(17, 0))
                 .withClosingTime(LocalTime.of(22, 0))
                 .build();
 
-            OpeningHours openingHours8 = OpeningHours.OpeningHourBuilder.anOpeningHour()
+            OpeningHours openingHours9 = OpeningHours.OpeningHourBuilder.anOpeningHour()
                 .withDayOfWeek(DayOfWeek.FRIDAY)
                 .withRestaurant(restaurant)
                 .withOpeningTime(LocalTime.of(11, 30))
                 .withClosingTime(LocalTime.of(15, 0))
                 .build();
 
-            OpeningHours openingHours9 = OpeningHours.OpeningHourBuilder.anOpeningHour()
+            OpeningHours openingHours10 = OpeningHours.OpeningHourBuilder.anOpeningHour()
                 .withDayOfWeek(DayOfWeek.FRIDAY)
                 .withRestaurant(restaurant)
                 .withOpeningTime(LocalTime.of(17, 0))
                 .withClosingTime(LocalTime.of(23, 0))
-                .build();
-
-            OpeningHours openingHours10 = OpeningHours.OpeningHourBuilder.anOpeningHour()
-                .withDayOfWeek(DayOfWeek.SATURDAY)
-                .withRestaurant(restaurant)
-                .withOpeningTime(LocalTime.of(11, 30))
-                .withClosingTime(LocalTime.of(15, 0))
                 .build();
 
             OpeningHours openingHours11 = OpeningHours.OpeningHourBuilder.anOpeningHour()
                 .withDayOfWeek(DayOfWeek.SATURDAY)
                 .withRestaurant(restaurant)
+                .withOpeningTime(LocalTime.of(11, 30))
+                .withClosingTime(LocalTime.of(15, 0))
+                .build();
+
+            OpeningHours openingHours12 = OpeningHours.OpeningHourBuilder.anOpeningHour()
+                .withDayOfWeek(DayOfWeek.SATURDAY)
+                .withRestaurant(restaurant)
                 .withOpeningTime(LocalTime.of(17, 0))
                 .withClosingTime(LocalTime.of(23, 0))
                 .build();
 
-            OpeningHours openingHours12 = OpeningHours.OpeningHourBuilder.anOpeningHour()
+            OpeningHours openingHours13 = OpeningHours.OpeningHourBuilder.anOpeningHour()
                 .withDayOfWeek(DayOfWeek.SUNDAY)
                 .withRestaurant(restaurant)
                 .withOpeningTime(LocalTime.of(11, 30))
                 .withClosingTime(LocalTime.of(15, 0))
                 .build();
 
-            OpeningHours openingHours13 = OpeningHours.OpeningHourBuilder.anOpeningHour()
+            OpeningHours openingHours14 = OpeningHours.OpeningHourBuilder.anOpeningHour()
                 .withDayOfWeek(DayOfWeek.SUNDAY)
                 .withRestaurant(restaurant)
                 .withOpeningTime(LocalTime.of(17, 0))
@@ -143,6 +156,7 @@ public class OpeningHoursDataGenerator {
             openingHoursRepository.save(openingHours2);
             openingHoursRepository.save(openingHours3);
             openingHoursRepository.save(openingHours4);
+            openingHoursRepository.save(openingHours5);
             openingHoursRepository.save(openingHours6);
             openingHoursRepository.save(openingHours7);
             openingHoursRepository.save(openingHours8);
@@ -151,6 +165,7 @@ public class OpeningHoursDataGenerator {
             openingHoursRepository.save(openingHours11);
             openingHoursRepository.save(openingHours12);
             openingHoursRepository.save(openingHours13);
+            openingHoursRepository.save(openingHours14);
         }
     }
 }

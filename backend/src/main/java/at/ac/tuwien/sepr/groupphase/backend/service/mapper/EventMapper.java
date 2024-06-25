@@ -125,7 +125,6 @@ public interface EventMapper {
                 LocalDateTime startTime = mapStartTime(vevent);
                 return startTime.plusDays(1);
             } catch (Exception e2) {
-                System.out.println("Error mapping end time: " + e.getMessage() + "\n");
                 throw new IllegalArgumentException("Error mapping end time: " + e.getMessage());
             }
         }

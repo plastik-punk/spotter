@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -10,23 +11,21 @@ import java.util.Objects;
 
 public class AdminViewDto {
 
-    @NotEmpty(message = "Area is required")
-    @Size(max = 100)
-    @Pattern(regexp = "^[A-Za-zäöüÄÖÜß ]+$")
-    String area;
+    @NotNull(message = "AreaId is required")
+    Long areaId;
 
-    @NotEmpty(message = "Start time is required")
+    @NotNull(message = "startTime is required")
     LocalTime startTime;
 
-    @NotEmpty(message = "Date is required")
+    @NotNull(message = "Date must not be null")
     LocalDate date;
 
-    public String getArea() {
-        return area;
+    public Long getAreaId() {
+        return areaId;
     }
 
-    public void setArea(String area) {
-        this.area = area;
+    public void setAreaId(Long areaId) {
+        this.areaId = areaId;
     }
 
     public LocalTime getStartTime() {
@@ -54,18 +53,18 @@ public class AdminViewDto {
             return false;
         }
         AdminViewDto that = (AdminViewDto) object;
-        return Objects.equals(area, that.area) && Objects.equals(startTime, that.startTime) && Objects.equals(date, that.date);
+        return Objects.equals(areaId, that.areaId) && Objects.equals(startTime, that.startTime) && Objects.equals(date, that.date);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(area, startTime, date);
+        return Objects.hash(areaId, startTime, date);
     }
 
     @Override
     public String toString() {
         return "AdminViewDto{"
-            + "area='" + area + '\''
+            + "areaId='" + areaId + '\''
             + ", startTime=" + startTime
             + ", date=" + date
             + '}';
@@ -73,14 +72,14 @@ public class AdminViewDto {
 
     public AdminViewDto copy() {
         return AdminViewBuilder.anAdminViewDto()
-            .withArea(area)
+            .withAreaId(areaId)
             .withStartTime(startTime)
             .withDate(date)
             .build();
     }
 
     public static final class AdminViewBuilder {
-        private String area;
+        private Long areaId;
         private LocalTime startTime;
         private LocalDate date;
 
@@ -91,8 +90,8 @@ public class AdminViewDto {
             return new AdminViewBuilder();
         }
 
-        public AdminViewBuilder withArea(String area) {
-            this.area = area;
+        public AdminViewBuilder withAreaId(Long areaId) {
+            this.areaId = areaId;
             return this;
         }
 
@@ -108,7 +107,7 @@ public class AdminViewDto {
 
         public AdminViewDto build() {
             AdminViewDto adminViewDto = new AdminViewDto();
-            adminViewDto.setArea(area);
+            adminViewDto.setAreaId(areaId);
             adminViewDto.setStartTime(startTime);
             adminViewDto.setDate(date);
             return adminViewDto;

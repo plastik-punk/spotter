@@ -10,7 +10,6 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -24,11 +23,9 @@ import java.util.Optional;
 public class ReservationPlaceDataGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
     private final ReservationPlaceRepository reservationPlaceRepository;
     private final ReservationRepository reservationRepository;
     private final PlaceRepository placeRepository;
-
 
     public ReservationPlaceDataGenerator(ReservationPlaceRepository reservationPlaceRepository,
                                          ReservationRepository reservationRepository,

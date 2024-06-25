@@ -9,7 +9,6 @@ import {SidebarComponent} from './components/sidebar/sidebar.component';
 import {FooterComponent} from './components/footer/footer.component';
 import {ReservationSimpleComponent} from './components/reservation/reservation-simple/reservation-simple.component';
 import {LoginComponent} from './components/login/login.component';
-import {MessageComponent} from './components/message/message.component';
 import {
   ReservationOverviewComponent
 } from './components/reservation/reservation-overview/reservation-overview.component';
@@ -37,6 +36,9 @@ import {ConfirmDialogComponent} from "./components/confirm-dialog/confirm-dialog
 import {EmployeeViewComponent} from "./components/employee-view/employee-view.component";
 import {EditLayoutComponent} from "./components/layout/edit-layout/edit-layout.component";
 import {LayoutOverviewComponent} from "./components/layout/layout-overview/layout-overview.component";
+import {
+  PermanentReservationDetailsComponent
+} from "./components/reservation/permanent-reservation-details/permanent-reservation-details.component";
 
 @NgModule({
 
@@ -46,7 +48,6 @@ import {LayoutOverviewComponent} from "./components/layout/layout-overview/layou
     FooterComponent,
     ReservationSimpleComponent,
     LoginComponent,
-    MessageComponent,
     ReservationEditComponent,
     ReservationOverviewComponent,
     ConfirmationDialogDeleteComponent,
@@ -60,7 +61,8 @@ import {LayoutOverviewComponent} from "./components/layout/layout-overview/layou
     CreateLayoutComponent,
     EmployeeViewComponent,
     EditLayoutComponent,
-    LayoutOverviewComponent
+    LayoutOverviewComponent,
+    PermanentReservationDetailsComponent
   ],
   imports: [
     BrowserModule,

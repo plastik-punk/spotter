@@ -52,6 +52,86 @@
           <button type="button" class=" btn btn-success" [routerLink]="['/event-create']"><i class="bi bi-plus"></i> Create Event</button>
         </div>
       </form>
+      <div class="d-flex flex-row justify-content-around">
+        <form class="d-flex flex-row w-auto mb-3" (submit)="loadEvents()">
+          <!-- this button is here, just so that simple submitting of this form
+               to reload the reservations, is possible -->
+          <button type="submit" hidden="hidden">submit</button>
+          <div class="ms-1">
+            <label for="searchName" class="col-form-label">
+              Name
+            </label>
+            <input type="text" id="searchName" name="searchName"
+                   placeholder="Name"
+                   class="form-control"
+                   [(ngModel)]="searchName"
+                   (ngModelChange)="searchChanged()"
+            >
+          </div>
+          <div class="ms-1">
+            <label for="searchEarliestEvent" class="col-form-label">
+              Earliest Date
+            </label>
+            <!-- pattern and placeholder are fallbacks for browser, that use a simple text input for type="date"
+                 The date format of the plain HTML date input, in browser that support it is, sadly, not changeable in a cross-browser way
+              -->
+            <input type="date" id="searchEarliestEvent" name="searchEarliestEvent"
+                   pattern="\d{4}-\d{2}-\d{2}"
+                   placeholder="yyyy-mm-dd"
+                   class="form-control"
+                   [(ngModel)]="searchEarliestDate"
+                   (ngModelChange)="searchChanged()"
+            >
+          </div>
+          <div class="ms-1">
+            <label for="searchLatestEvent" class="col-form-label">
+              Latest Date
+            </label>
+            <!-- pattern and placeholder are fallbacks for browser, that use a simple text input for type="date"
+                 The date format of the plain HTML date input, in browser that support it is, sadly, not changeable in a cross-browser way
+              -->
+            <input type="date" id="searchLatestEvent" name="searchLatestEvent"
+                   pattern="\d{4}-\d{2}-\d{2}"
+                   placeholder="yyyy-mm-dd"
+                   class="form-control"
+                   [(ngModel)]="searchLatestDate"
+                   (ngModelChange)="searchChanged()"
+            >
+          </div>
+          <div class="ms-1">
+            <label for="searchEarliestStartTime" class="col-form-label">
+              Earliest Start Time
+            </label>
+            <!-- pattern and placeholder are fallbacks for browser, that use a simple text input for type="date"
+                 The date format of the plain HTML date input, in browser that support it is, sadly, not changeable in a cross-browser way
+              -->
+            <input type="time" id="searchEarliestStartTime" name="searchEarliestStartTime"
+                   pattern="\d{2}:\d{2}"
+                   placeholder="HH:mm"
+                   class="form-control"
+                   [(ngModel)]="searchEarliestStartTime"
+                   (ngModelChange)="searchChanged()">
+          </div>
+          <div class="ms-1">
+            <label for="searchLatestEndTime" class="col-form-label">
+              Latest End Time
+            </label>
+            <!-- pattern and placeholder are fallbacks for browser, that use a simple text input for type="date"
+                 The date format of the plain HTML date input, in browser that support it is, sadly, not changeable in a cross-browser way
+              -->
+            <input type="time" id="searchLatestEndTime" name="searchLatestEndTime"
+                   pattern="\d{2}:\d{2}"
+                   placeholder="HH:mm"
+                   class="form-control"
+                   [(ngModel)]="searchLatestEndTime"
+                   (ngModelChange)="searchChanged()">
+          </div>
+
+        </form>
+        <div class="align-content-center">
+          <button class="btn btn-primary" [routerLink]="['/event-create']">Create Event</button>
+        </div>
+      </div>
 
       <table class="table table-hover">
         <thead>
@@ -64,12 +144,16 @@
         </thead>
         <tbody>
         <tr *ngFor="let event of displayedEvents">
-          <td>{{ event.startTime.toString().replace("T"," ") }}</td>
-          <td>{{ event.endTime.toString().replace("T"," ") }}</td>
-          <td class="name">{{ event.name }}</td>
+          <td>{{ event.startTime ? formatDotDate(event.startTime) : '' }}
+          - {{ event.startTime ? formatIsoTime(event.startTime) : '' }}</td>
+          <td>{{ event.endTime ? formatDotDate(event.endTime) : '' }}
+            - {{ event.endTime ? formatIsoTime(event.endTime) : '' }}</td>
+          <td>{{ event.name }}</td>
           <td>
             <div class="btn-group">
-              <a class="btn btn-sm btn-info" aria-label="Show event details" [routerLink]="['/event-detail',event.hashId]">
+              <a class="btn btn-sm btn-info"
+                 aria-label="Show event details"
+                 (click)="showEventDetails(event.hashId)">
                 <i class="bi bi-info-lg"></i>
               </a>
               <a class="btn btn-sm btn-warning" aria-label="Edit event" [routerLink]="['/event-edit',event.hashId]">
@@ -81,6 +165,12 @@
             </div>
           </td>
         </tr>
+        <tr>
+          <td colspan="7">
+            <button (click)="showMore()" *ngIf="displayedEvents.length < events.length">Show More</button>
+          </td>
+        </tr>
+
         </tbody>
       </table>
         <form (ngSubmit)="onUpload()" #uploadForm="ngForm" class="my-3">
@@ -95,7 +185,50 @@
   </div>
 </div>
 
-<app-confirmation-dialog-delete [dialogTitle]="'Delete this Event?'" [dialogText]="'Do you really want to delete this event?'" (confirm)="onDelete()"></app-confirmation-dialog-delete>
+
+<!-- Modal for event details -->
+<div class="modal fade" id="event-detail" tabindex="-1" aria-labelledby="event-detail-modal" aria-hidden="true">
+  <div class="modal-dialog custom-event-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="event-detail-title">{{ event.name }}</h3>
+      </div>
+      <div class="modal-body">
+        <dl class="row">
+          <div class="dt-dd-align">
+            <dt class="col-sm-2">From:</dt>
+            <dd class="col-sm-10">{{ event.startTime ? formatDay(event.startTime) : '' }}
+              - {{ event.startTime ? formatDotDate(event.startTime) : '' }}
+              - {{ event.startTime ? formatIsoTime(event.startTime) : '' }}
+            </dd>
+          </div>
+
+          <div class="dt-dd-align">
+            <dt class="col-sm-2">Until:</dt>
+            <dd class="col-sm-10">{{ event.endTime ? formatDay(event.endTime) : '' }}
+              - {{ event.endTime ? formatDotDate(event.endTime) : '' }}
+              - {{ event.endTime ? formatIsoTime(event.endTime) : '' }}
+            </dd>
+          </div>
+
+          <div class="dt-dd-align">
+            <dt class="col-sm-2">Info:</dt>
+            <dd class="col-sm-10">{{ event.description }}</dd>
+          </div>
+        </dl>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 </body>
-</html>
+
+<app-confirmation-dialog-delete
+  [dialogTitle]="'Delete this Event?'"
+  [dialogText]="'Do you really want to delete this reservation?'"
+  (confirm)="onDelete()"
+></app-confirmation-dialog-delete>

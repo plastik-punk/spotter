@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Lexend+Giga:wght@500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Lexend+Giga:wght@500&display=swap"
+        rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Leckerli+One&display=swap" rel="stylesheet">
@@ -63,12 +64,6 @@
 
         <hr class="my-4">
 
-        <!-- Start row with advanced view -->
-        <div class="row" style="justify-content: center; padding: 2vh">
-          <button class="btn av-btn" routerLink="">Advanced View -></button>
-        </div>
-        <!-- End row with advanced view -->
-
         <!-- Start row with pax -->
         <div class="row">
           <div class="column pax-container">
@@ -92,7 +87,7 @@
         <!-- Start row with (firstName, lastName, Mail, Phone), Notes -->
         <div class="row">
           <div class="column" *ngIf="!authService.isLoggedIn()">
-            <div >
+            <div>
               <!-- start guest fields -->
               <input
                 type="text"
@@ -152,6 +147,74 @@
           </div>
         </div>
         <!-- End row with (firstName, lastName, Mail, Phone), Notes -->
+
+        <!-- Start special offers -->
+        <div class="row">
+          <div class="row">
+            <div class="column p-0">
+              <h1 class="font-heading">Special Offers</h1>
+            </div>
+          </div>
+          <div class="row" *ngIf="showSpecialOffers">
+            <div class="custom-order-card m-2 p-2 column" *ngFor="let offer of allSpecialOffers">
+              <div class="row">
+                {{ offer.name }}
+              </div>
+              <div class="row">
+                <a class="custom-order-button" (click)="selectOffer(offer.id)">
+                  Add
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <table>
+              <thead *ngIf="reservationEditDto.specialOffers.length > 0">
+              <th>
+                Amount
+              </th>
+              <th>
+                Special Offer
+              </th>
+              <th>
+                Price
+              </th>
+              <th>
+                Actions
+              </th>
+              </thead>
+              <tbody>
+              <tr *ngFor="let specialOffer of reservationEditDto.specialOffers; let i = index">
+                <td>
+                  {{ specialOffer.amount }}x
+                </td>
+                <td>
+                  {{ specialOffer.specialOffer.name }}
+                </td>
+                <td>
+                  {{ specialOffer.specialOffer.pricePerPax }}€
+                </td>
+                <td>
+                  <button type="button" class="btn btn-sm btn-secondary me-1" (click)="removeSpecialOffer(i)">
+                    <i class="bi bi-dash-lg text-white"></i>
+                  </button>
+                  <button type="button" class="btn btn-sm btn-primary ms-1" (click)="addSpecialOffer(i)">
+                    <i class="bi bi-plus-lg text-white"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="!showSpecialOffers">
+                <td>
+                  <button type="button" class="btn btn-primary" (click)="showSpecialOffers = true">
+                    Add Special Offer
+                  </button>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
 
         <div class="row">
           <div class="column">
