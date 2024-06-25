@@ -68,7 +68,7 @@
               {{ isPermanentView ? 'Show Normal Reservations' : 'Show Permanent Reservations' }}
             </button>
           </div>
-          <button type="button" class="btn btn-success" (click)="createNewReservationGuest()">
+          <button type="button" class="btn btn-success" [routerLink]="['/employee-view']">
             <i class="bi bi-plus"></i> Create New Reservation
           </button>
         </div>
