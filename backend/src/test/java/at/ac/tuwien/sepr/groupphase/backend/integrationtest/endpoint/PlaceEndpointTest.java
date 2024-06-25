@@ -44,7 +44,7 @@ public class PlaceEndpointTest implements TestData {
     @Test
     @Transactional
     public void givenNothing_whenBlock_thenOk() throws Exception {
-        List<Long> ids = Arrays.asList(1L, 2L, 3L); // replace with your test ids
+        List<Long> ids = Arrays.asList(-1L, -2L, -3L); // replace with your test ids
         String body = objectMapper.writeValueAsString(ids);
 
         MvcResult mvcResult = mockMvc.perform(put(PLACE_URI + "/block")

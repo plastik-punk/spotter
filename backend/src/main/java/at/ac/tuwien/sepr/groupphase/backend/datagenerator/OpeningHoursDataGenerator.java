@@ -54,7 +54,6 @@ public class OpeningHoursDataGenerator {
         } else {
             LOGGER.debug("Generating opening hours");
 
-            // TODO
             OpeningHours openingHours1 = OpeningHours.OpeningHourBuilder.anOpeningHour()
                 .withDayOfWeek(DayOfWeek.MONDAY)
                 .withRestaurant(restaurant)
