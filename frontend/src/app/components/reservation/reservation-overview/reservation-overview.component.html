@@ -1,13 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Lexend+Giga:wght@500&display=swap"
+        rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Leckerli+One&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
 <body>
 <div class="top-left-logo">
-  <a href="/login">
+  <a>
     <img src="../../../../assets/images/logo.png" alt="Logo">
   </a>
 </div>
-<div class="container-fluid align-items-center justify-content-center">
-  <div class="col-12 col-lg-10 mx-auto h-90 py-3">
+<div class="container-fluid">
+  <div class="col-12 col-lg-10 mx-auto">
     <div class="card custom-card">
+      <div class="top-banner">
+        <div class="row">
+          <div class="column">
+            <h1 class="font-heading">Reservations</h1>
+          </div>
+        </div>
+        <hr class="my-4" style="padding-left: 2vh; padding-right: 2vh">
+      </div>
 
+      <div class="card-padding">
       <form class="d-flex flex-row w-auto mb-3" (submit)="loadReservations()">
         <button type="submit" hidden="hidden">submit</button>
         <div class="ms-1">
@@ -61,29 +80,32 @@
             class="bi bi-arrow-clockwise"></i></button>
         </div>
 
-        <div class="ms-auto" *ngIf="isAdminOrEmployee()">
+        <div class="ms-auto align-self-end" *ngIf="isAdminOrEmployee()">
           <button type="button" class="btn btn-success" (click)="createNewReservationGuest()">
             <i class="bi bi-plus"></i> Create New Reservation
           </button>
         </div>
-        <div class="ms-auto" *ngIf="!isAdminOrEmployee()">
+        <div class="ms-auto align-self-end" *ngIf="!isAdminOrEmployee()">
           <button type="button" class="btn btn-success" (click)="createNewReservation()">
             <i class="bi bi-plus"></i> Create New Reservation
           </button>
         </div>
       </form>
+        <hr class="my-4">
+
 
       <!-- Admin and Employee Views -->
       <div *ngIf="isEmployee() || isAdmin()">
-        <div class="text-center mb-5" *ngIf=" !(todaysReservations.length===0 && upcomingReservations.length!==0)">
+        <div class="text-center " *ngIf=" !(todaysReservations.length===0 && upcomingReservations.length!==0)">
           <h3>Todays Reservations</h3>
+          <hr class="my-4">
           <table *ngIf="todaysReservations.length!==0" class="table table-hover">
             <thead>
             <tr>
               <th>Status</th>
               <th>Start Time</th>
               <th>End Time</th>
-              <th>Name</th>
+              <th class="name">Name</th>
               <th>Seats</th>
               <th>Table Number</th>
               <th>Actions</th>
@@ -104,39 +126,39 @@
               </td>
               <td>{{ reservation.startTime }}</td>
               <td>{{ reservation.endTime }}</td>
-              <td>{{ reservation.userFirstName }} {{ reservation.userLastName }}</td>
+              <td class="name">{{ reservation.userFirstName }} {{ reservation.userLastName }}</td>
               <td>{{ reservation.pax }}</td>
               <td>{{ reservation.placeIds?.join(' • ') }}</td>
               <td>
                 <div class="btn-group">
                   <a *ngIf="!reservation.confirmed && !reservationIsInTheFuture(reservation)"
-                     class="btn btn-sm responsive-success-button"
+                     class="btn btn-sm btn-success"
                      aria-label="Confirm reservation has arrived"
                      (click)="confirmReservation(reservation.hashId)">
                     <i class="bi bi-check-circle"></i>
                   </a>
                   <a *ngIf="reservation.confirmed && !reservationIsInTheFuture(reservation)"
-                     class="btn btn-sm responsive-danger-button"
+                     class="btn btn-sm btn-danger"
                      aria-label="Mark reservation as not arrived"
                      (click)="unconfirmReservation(reservation.hashId)">
                     <i class="bi bi-x-circle"></i>
                   </a>
                   <a *ngIf="reservationIsInTheFuture(reservation)"
-                     class="btn btn-sm responsive-tree-button"
+                     class="btn btn-sm"
                      aria-label="Reservation is in the future and cannot be confirmed"
                      [class.disabled]="true">
                   <i class="bi bi-clock"></i>
                   </a>
-                  <a class="btn btn-sm responsive-info-button"
+                  <a class="btn btn-sm btn-info"
                      aria-label="Show reservation details"
                      (click)="showReservationDetails(reservation.hashId)">
                     <i class="bi bi-info-lg"></i>
                   </a>
-                  <a class="btn btn-sm responsive-warning-button"
+                  <a class="btn btn-sm btn-warning"
                      aria-label="Edit reservation" [routerLink]="['/reservation-edit',reservation.hashId]">
                     <i class="bi bi-pencil"></i>
                   </a>
-                  <a class="btn btn-sm responsive-danger-button"
+                  <a class="btn btn-sm btn-danger"
                      aria-label="Delete reservation"
                      data-bs-toggle="modal"
                      data-bs-target="#confirmation-dialog-delete"
@@ -148,13 +170,15 @@
             </tr>
             </tbody>
           </table>
-          <h4 *ngIf="todaysReservations.length===0">No open reservations for today!</h4>
+          <h4 class="text-center" *ngIf="todaysReservations.length===0">No open reservations for today!</h4>
         </div>
 
         <div>
-          <h3 class="text-center mb-5">Upcoming Reservations</h3>
+          <hr class="my-4">
+          <h3 class="text-center ">Upcoming Reservations</h3>
+          <hr class="my-4">
           <div *ngFor="let day of displayedUpcomingReservations | groupByDate">
-            <h4>{{ day.key }}</h4>
+            <h4 class="text-center">{{ day.key }}</h4>
             <table class="table table-hover">
               <thead>
               <tr>
@@ -170,20 +194,20 @@
               <tr *ngFor="let reservation of day.value">
                 <td>{{ reservation.startTime }}</td>
                 <td>{{ reservation.endTime }}</td>
-                <td>{{ reservation.userFirstName }} {{ reservation.userLastName }}</td>
+                <td style="text-align: left !important">{{ reservation.userFirstName }} {{ reservation.userLastName }}</td>
                 <td>{{ reservation.pax }}</td>
                 <td>{{ reservation.placeIds?.join(' • ') }}</td>
                 <td>
                   <div class="btn-group">
-                    <a class="btn btn-sm responsive-info-button"
-                       aria-label="Show reservation details" [routerLink]="['/reservation-detail',reservation.hashId]">
+                    <a class="btn btn-sm btn-info"
+                       aria-label="Show reservation details" (click)="showReservationDetails(reservation.hashId)">
                       <i class="bi bi-info-lg"></i>
                     </a>
-                    <a class="btn btn-sm responsive-warning-button"
+                    <a class="btn btn-sm btn-warning"
                        aria-label="Edit reservation" [routerLink]="['/reservation-edit',reservation.hashId]">
                       <i class="bi bi-pencil"></i>
                     </a>
-                    <a class="btn btn-sm responsive-danger-button"
+                    <a class="btn btn-sm btn-danger"
                        aria-label="Delete reservation"
                        data-bs-toggle="modal"
                        data-bs-target="#confirmation-dialog-delete"
@@ -235,21 +259,21 @@
               <td>{{ formatDay(reservation.date) }}</td>
               <td>{{ formatTime(reservation.startTime) }}</td>
               <td>{{ formatTime(reservation.endTime) }}</td>
-              <td>{{ reservation.userFirstName }} {{ reservation.userLastName }}</td>
+              <td class="name">{{ reservation.userFirstName }} {{ reservation.userLastName }}</td>
               <td>{{ reservation.pax }}</td>
               <td>{{ reservation.placeIds?.join(' • ') }}</td>
               <td>
                 <div class="btn-group">
-                  <a class="btn btn-sm responsive-info-button"
+                  <a class="btn btn-sm btn-info"
                      aria-label="Show reservation details"
                      (click)="showReservationDetails(reservation.hashId)">
                     <i class="bi bi-info-lg"></i>
                   </a>
-                  <a class="btn btn-sm responsive-warning-button"
+                  <a class="btn btn-sm btn-warning"
                      aria-label="Edit reservation" [routerLink]="['/reservation-edit',reservation.hashId]">
                     <i class="bi bi-pencil"></i>
                   </a>
-                  <a class="btn btn-sm responsive-danger-button"
+                  <a class="btn btn-sm btn-danger"
                      aria-label="Delete reservation"
                      data-bs-toggle="modal"
                      data-bs-target="#confirmation-dialog-delete"
@@ -273,7 +297,7 @@
               <dl class="row">
                 <div class="dt-dd-align">
                   <dt class="col-sm-3">For:</dt>
-                  <dd class="col-sm-10">{{ reservationModalDetailDto.firstName }} {{ reservationModalDetailDto.lastName }}</dd>
+                  <dd class="col-sm-10 ">{{ reservationModalDetailDto.firstName }} {{ reservationModalDetailDto.lastName }}</dd>
                 </div>
 
                 <div class="dt-dd-align">
@@ -297,7 +321,7 @@
           </div>
         </div>
       </div>
-
+      </div>
     </div>
   </div>
 </div>
@@ -317,3 +341,4 @@
 ></app-confirmation-dialog-delete>
 
 </body>
+</html>

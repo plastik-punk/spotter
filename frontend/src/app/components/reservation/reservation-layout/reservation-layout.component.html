@@ -11,7 +11,7 @@
 </head>
 <body>
 <div class="top-left-logo">
-  <a href="/login">
+  <a>
     <img src="../../../../assets/images/logo.png" alt="Logo">
   </a>
 </div>
@@ -55,10 +55,30 @@
           <hr class="my-4">
         </div>
 
-        <div class="row" style="margin-right: 0">
-          <div class="column">
+        <div class="row" style="margin-right: 0; position: relative">
+          <!-- Legend Section -->
+          <div class="legend-section">
+            <div class="legend-item">
+              <div class="legend-card legend-grey"></div>
+              <span class="legend-text">Unavailable</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-card legend-green"></div>
+              <span class="legend-text">Available</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-card legend-red"></div>
+              <span class="legend-text">Booked</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-card legend-blue"></div>
+              <span class="legend-text">Selected</span>
+            </div>
+          </div>
+          <!-- End Legend Section -->
 
-            <!-- D3 JS CANVAS HERE -->
+          <!-- D3 JS CANVAS HERE -->
+          <div class="column">
             <div class="justify-content-center">
               <div #d3Container style="height: auto; width: 75%"></div>
             </div>
@@ -106,7 +126,9 @@
           <div class="row">
             <div class="column justify-content-start" >
               <div class="row" style="margin:0">
-                <div class="column" style="flex: 0.5"></div>
+                <div class="column" style="flex: 0.2; padding: 0">
+                  <div class="rectangle-card mb-4">Selected</div>
+                </div>
                 <div class="column" style="padding: 0">
                   <div class="form-floating mb-3">
                     <input type="number" id="reservationPax" name="reservationPax" placeholder="pax"
@@ -177,10 +199,11 @@
 
 <!-- Modal for event details -->
 <div class="modal fade" id="event-detail" tabindex="-1" aria-labelledby="event-detail-modal" aria-hidden="true">
-  <div class="modal-dialog custom-event-modal">
+  <div class="modal-dialog" id="event-detail-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title" id="event-detail-title">{{ event.name }}</h3>
+        <h5 class="modal-title" id="event-detail-title">{{ event.name }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <dl class="row">
@@ -212,6 +235,7 @@
     </div>
   </div>
 </div>
+
 
 </body>
 </html>

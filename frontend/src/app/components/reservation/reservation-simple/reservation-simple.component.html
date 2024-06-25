@@ -10,7 +10,7 @@
 </head>
 <body>
 <div class="top-left-logo">
-  <a href="/login">
+  <a >
     <img src="../../../../assets/images/logo.png" alt="Logo">
   </a>
 </div>
@@ -183,10 +183,11 @@
 
 <!-- Modal for event details -->
 <div class="modal fade" id="event-detail" tabindex="-1" aria-labelledby="event-detail-modal" aria-hidden="true">
-  <div class="modal-dialog custom-event-modal">
+  <div class="modal-dialog" id="event-detail-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title" id="event-detail-title">{{ event.name }}</h3>
+        <h5 class="modal-title" id="event-detail-title">{{ event.name }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <dl class="row">
@@ -218,6 +219,7 @@
     </div>
   </div>
 </div>
+
 
 </body>
 </html>

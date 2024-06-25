@@ -30,7 +30,7 @@ body {
   overflow-y: auto; /* Enable vertical scrolling */
 }
 
-.card-padding{
+.card-padding {
   padding: 0 2vh 0 2vh;
 }
 
@@ -40,7 +40,7 @@ body {
   left: 0;
   right: 0;
   background: white;
-  z-index: 1000;
+  z-index: 100;
   border-radius: 20px 20px 0 0;
   padding-top: 2vh;
   margin: -2vh 0 2vh 0;

@@ -26,26 +26,33 @@ body {
   margin-top: 2vh;
   height: 96vh; /* Adjust height to fill screen */
   width: 100%;
-  padding: 2vh;
   overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.card-padding{
+  padding: 0 2vh 0 2vh;
 }
 
 .top-banner {
   position: sticky;
-  top: 0;
+  top: -2vh;
   left: 0;
   right: 0;
   background: white;
   z-index: 100;
   border-radius: 20px 20px 0 0;
-  border: 2vh;
+  padding-top: 2vh;
   margin: -2vh 0 2vh 0;
+  height: min-content;
 }
 
 .font-heading {
-  font-family: 'Lexend Giga', sans-serif;
-  font-size: 2vw;
+  font-family: "Leckerli One", cursive;
+  font-size: 3vw;
+  margin: 0;
+  text-align: center;
 }
+
 
 .top-left-logo {
   position: absolute;
@@ -91,9 +98,9 @@ body {
 
 .row {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  margin: 2vh 0;
+  margin: 2vh;
 }
 
 .column {
@@ -104,7 +111,7 @@ body {
 
 .btn-group {
   display: flex;
-  gap: 0.5rem;
+  gap: 0;
 }
 
 .table th, .table td {
@@ -123,9 +130,13 @@ body {
 }
 
 .h3 {
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  margin-bottom: 1.5rem;
 }
-
+.h4 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
 .dt-dd-align {
   display: flex;
   align-items: center;
@@ -134,4 +145,8 @@ body {
 .dt-dd-align dt, .dt-dd-align dd {
   margin: 5px;
   padding: 0;
+}
+.name{
+  text-align: left !important;
+  padding-left: 3vw !important;
 }

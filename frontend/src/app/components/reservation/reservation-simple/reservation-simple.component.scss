@@ -40,7 +40,7 @@ body {
   left: 0;
   right: 0;
   background: white;
-  z-index: 1000;
+  z-index: 100;
   border-radius: 20px 20px 0 0;
   padding-top: 2vh;
   margin: -2vh 0 2vh 0;
@@ -49,6 +49,8 @@ body {
 .font-heading {
   font-family: "Leckerli One", cursive;
   font-size: 3vw;
+  margin: 0;
+  text-align: center;
 }
 
 .top-left-logo {
@@ -120,10 +122,6 @@ body {
   box-sizing: border-box;
 }
 
-.font-heading {
-  margin: 0;
-  text-align: center;
-}
 
 .form-control {
   width: 100%;
@@ -276,25 +274,6 @@ body {
   color: white;
 }
 
-
-.event-row-content-wrapper {
-  display: flex;
-  width: 100%;
-}
-
-.event-row-content-wrapper .event-column-left {
-  width: 70%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.event-row-content-wrapper .event-column-right {
-  width: 30%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
 
 .custom-seperator {
   height: 2.5rem;
