@@ -14,7 +14,11 @@ body {
   background: white;
   width: 30%; // or another appropriate width value
 }
-
+@media (max-width: 1250px) {
+  .custom-card {
+    width: 90%;
+  }
+}
 .font-heading {
   font-family: 'Lexend Giga', sans-serif;
   font-size: 2vw;

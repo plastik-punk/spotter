@@ -92,7 +92,7 @@ export class ReservationSimpleComponent implements OnInit {
   ngOnInit() {
     this.startTimer()
 
-
+    this.fetchOffers();
 
     this.eventService.getUpcomingEvents().subscribe({
       next: (data) => {
@@ -499,6 +499,11 @@ export class ReservationSimpleComponent implements OnInit {
       total += this.selectedOffers[i].specialOffer.pricePerPax * this.selectedOffers[i].amount;
     }
     this.totalPrice = total;
+  }
+
+  showExplanation() {
+    const infoModal = new bootstrap.Modal(document.getElementById('RecurringInfoModal'));
+    infoModal.show();
   }
 
   protected readonly formatTime = formatTime;

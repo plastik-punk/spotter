@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class LayoutServiceImpl implements LayoutService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private final ReservationRepository reservationRepository;
@@ -221,6 +222,7 @@ public class LayoutServiceImpl implements LayoutService {
     private void savePlace(Area area, LayoutCreateDto.AreaCreateDto.PlaceVisualDto placeDto) {
         // Create and save Place entity using mapper
         Place place = layoutMapper.placeVisualDtoToPlace(placeDto);
+        place.setId(null); // Ensure the ID is not set
         placeRepository.save(place);
 
         // Iterate over each Coordinate in the Place and save the Segment

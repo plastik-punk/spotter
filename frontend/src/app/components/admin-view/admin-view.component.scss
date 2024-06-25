@@ -26,20 +26,24 @@ body {
   margin-top: 2vh;
   height: 96vh; /* Adjust height to fill screen */
   width: 100%;
-  padding: 2vh;
   overflow-y: auto; /* Enable vertical scrolling */
 }
 
+.card-padding{
+  padding: 0 2vh 0 2vh;
+}
+
+
 .top-banner {
   position: sticky;
-  top: 0;
+  top: -2vh;
   left: 0;
   right: 0;
   background: white;
   z-index: 100;
   border-radius: 20px 20px 0 0;
-  border: 2vh;
-  margin: -2vh 0 2vh 0; /* Adjust margins to cover the top of the card */
+  padding-top: 2vh;
+  margin: -2vh 0 2vh 0;
 }
 
 .font-heading {

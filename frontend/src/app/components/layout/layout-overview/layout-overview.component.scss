@@ -27,8 +27,11 @@ body {
   margin-top: 2vh;
   height: 96vh; /* Adjust height to fill screen */
   width: 100%;
-  padding: 2vh;
   overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.card-padding{
+  padding: 0 2vh 0 2vh;
 }
 
 .top-banner {
@@ -135,9 +138,7 @@ body {
   margin: 0 0 2vh 0;
 }
 
-.btn-danger {
-  width: 100%;
-}
+
 
 .h-100 {
   height: 100%;
@@ -196,12 +197,9 @@ body {
   width: 20vw;
 }
 
-.btn-group .btn {
-  align-items: center;
-  justify-content: center;
-  height: 100%; /* Ensure the button height matches the container height */
-  padding: 0; /* Remove padding to align with the input fields */
-  border-radius: 0.375rem; /* Match the border radius of the input fields */
+.btn-group {
+  display: flex;
+  gap: 0;
 }
 
 .form-floating-btn {
@@ -224,10 +222,7 @@ body {
   }
 }
 
-.btn-group {
-  display: flex;
-  gap: 0.5rem;
-}
+
 
 .responsive-info-button,
 .responsive-warning-button,
