@@ -2,7 +2,13 @@ import {Component, OnInit} from '@angular/core';
 import * as bootstrap from 'bootstrap';
 import {AuthService} from '../../../services/auth.service';
 import {NgForm} from '@angular/forms';
-import {ReservationCheckAvailabilityDto, ReservationCreateDto} from '../../../dtos/reservation';
+import {
+  PermanentReservationDto,
+  RepetitionEnum,
+  ReservationCreateDto,
+  ReservationCheckAvailabilityDto,
+  ReservationModalDetailDto
+} from '../../../dtos/reservation';
 import {UserOverviewDto} from '../../../dtos/app-user';
 import {ReservationService} from '../../../services/reservation.service';
 import {NotificationService} from '../../../services/notification.service';
@@ -13,6 +19,8 @@ import {formatDay, formatDotDate, formatDotDateShort, formatIsoTime, formatTime}
 import {ActivatedRoute} from "@angular/router";
 import {SpecialOfferAmountDto, SpecialOfferDetailDto, SpecialOfferListDto} from "../../../dtos/special-offer";
 import {SpecialOfferService} from "../../../services/special-offer.service";
+import {RestaurantDto, RestaurantOpeningHoursDto} from "../../../dtos/restaurant";
+import {RestaurantService} from "../../../services/restaurant.service";
 
 @Component({
   selector: 'app-reservation-simple',
@@ -43,8 +51,29 @@ export class ReservationSimpleComponent implements OnInit {
   currentEventPage: number = 1;
   itemsPerPage: number = 3;
   upcomingEventsExist: boolean = false;
+  isRecurring: boolean = false;
+  repeatEvery: number; // Initialize appropriately based on your default or user's last input
+  repetitionType: RepetitionEnum = RepetitionEnum.DAYS; // Default to 'days', can also be 'weeks'
+  permanentReservation: PermanentReservationDto;
+  endDate: string;
 
-  specialOffers: SpecialOfferListDto[] = [];
+  specialOffers: SpecialOfferDetailDto[] = [];
+
+  openingHours: RestaurantOpeningHoursDto = {
+    monday: undefined,
+    tuesday: undefined,
+    wednesday: undefined,
+    thursday: undefined,
+    friday: undefined,
+    saturday: undefined,
+    sunday: undefined
+  };
+
+  restaurantInfo: RestaurantDto = {
+    name: undefined,
+    address: undefined
+  }
+
   selectedOffers: SpecialOfferAmountDto[] = [];
   totalPrice: number = 0;
 
@@ -54,6 +83,7 @@ export class ReservationSimpleComponent implements OnInit {
     private offerService: SpecialOfferService,
     private eventService: EventService,
     private notificationService: NotificationService,
+    private restaurantService: RestaurantService
   ) {
     this.initializeSharedProperties();
     this.initializeDtos();
@@ -75,10 +105,35 @@ export class ReservationSimpleComponent implements OnInit {
         this.notificationService.showError('Failed to get events. Please try again later.');
       },
     });
+
+    this.restaurantService.getOpeningHours().subscribe( {
+      next: (data: RestaurantOpeningHoursDto) => {
+        this.openingHours.monday = data.monday;
+        this.openingHours.tuesday = data.tuesday;
+        this.openingHours.wednesday = data.wednesday;
+        this.openingHours.thursday = data.thursday;
+        this.openingHours.friday = data.friday;
+        this.openingHours.saturday = data.saturday;
+        this.openingHours.sunday = data.sunday;
+      },
+      error: error => {
+        this.notificationService.showError('Failed to load opening hours. Please try again later.');
+      }
+    });
+
+    this.restaurantService.getRestaurantInfo().subscribe( {
+      next: (data: RestaurantDto) => {
+        this.restaurantInfo.name = data.name;
+        this.restaurantInfo.address = data.address;
+      },
+      error: error => {
+        this.notificationService.showError('Failed to load restaurant info. Please try again later.');
+      }
+    });
   }
 
   showEventDetails(hashId: string): void {
-    this.eventService.getByHashId(hashId).subscribe( {
+    this.eventService.getByHashId(hashId).subscribe({
       next: (data: EventDetailDto) => {
         this.event.name = data.name;
         this.event.startTime = data.startTime;
@@ -283,20 +338,47 @@ export class ReservationSimpleComponent implements OnInit {
         this.isBookButtonTimeout = false;
         this.isTimeManuallyChanged = false;
       }, 2000);
-      this.service.createReservation(this.reservationCreateDto).subscribe({
-        next: (data) => {
-          if (data == null) {
-            this.notificationService.showError('The table was booked in the meantime. Please try again.');
-          } else {
-            this.notificationService.showSuccess('Reservation created successfully.');
-            this.initializeSharedProperties();
-            this.initializeDtos();
+
+      if (this.isRecurring) {
+        this.permanentReservation = {
+          user: this.reservationCreateDto.user,
+          startDate: this.reservationCreateDto.date,
+          startTime: this.reservationCreateDto.startTime,
+          endTime: this.reservationCreateDto.endTime,
+          repetition: this.repetitionType,
+          period: this.repeatEvery,
+          confirmed: false, // Assuming it's automatically confirmed for simplicity
+          endDate: this.endDate ? new Date(this.endDate) : null, // Set endDate to null if not provided
+          pax: this.reservationCreateDto.pax,
+          hashedId: null
+        };
+        console.log(this.permanentReservation);
+        this.service.createPermanentReservation(this.permanentReservation).subscribe({
+          next: response => {
+            this.notificationService.showSuccess('Permanent reservation saved successfully. You will get an email once it gets confirmed by the restaurant');
+            this.resetForm(form);
+          },
+          error: error => {
+            this.notificationService.showError('Failed to save permanent reservation.');
           }
-        },
-        error: (error) => {
-          this.notificationService.handleError(error);
-        },
-      });
+        });
+      } else {
+
+        this.service.createReservation(this.reservationCreateDto).subscribe({
+          next: (data) => {
+            if (data == null) {
+              this.notificationService.showError('The table was booked in the meantime. Please try again.');
+            } else {
+              this.notificationService.showSuccess('Reservation created successfully.');
+              this.initializeSharedProperties();
+              this.initializeDtos();
+            }
+          },
+          error: (error) => {
+            this.notificationService.handleError(error);
+          },
+        });
+      }
     } else {
       this.showFormErrors();
     }
@@ -346,15 +428,8 @@ export class ReservationSimpleComponent implements OnInit {
     this.onFieldChange();
   }
 
-  protected readonly formatTime = formatTime;
-  protected readonly formatDotDate = formatDotDate;
-  protected readonly formatDay = formatDay;
-  protected readonly formatDotDateShort = formatDotDateShort;
-  protected readonly formatIsoTime = formatIsoTime;
-  protected readonly Math = Math;
-
   fetchOffers() {
-    this.offerService.getSpecialOffers().subscribe({
+    this.offerService.getAllSpecialOffersWithDetail().subscribe({
       next: (data) => {
         this.specialOffers = data;
       },
@@ -362,6 +437,10 @@ export class ReservationSimpleComponent implements OnInit {
         this.notificationService.showError('Failed to get special offers. Please try again later.');
       },
     });
+  }
+
+  getImageUrl(image: Uint8Array): string {
+    return `data:image/jpeg;base64,${image}`
   }
 
   selectOffer(offer: SpecialOfferListDto) {
@@ -424,5 +503,12 @@ export class ReservationSimpleComponent implements OnInit {
     this.totalPrice = total;
   }
 
-
+  protected readonly formatTime = formatTime;
+  protected readonly formatDotDate = formatDotDate;
+  protected readonly formatDay = formatDay;
+  protected readonly formatDotDateShort = formatDotDateShort;
+  protected readonly formatIsoTime = formatIsoTime;
+  protected readonly Math = Math;
+  protected readonly RepetitionEnum = RepetitionEnum;
+  protected readonly AuthService = AuthService;
 }

@@ -112,16 +112,6 @@ public class ReservationServiceImplTest implements TestData {
 
     @Test
     @Transactional
-    public void givenValidData_whenGetAvailability_thenReturnClosed() throws ValidationException {
-        ReservationCheckAvailabilityDto dto = TEST_RESERVATION_AVAILABILITY.copy();
-        dto.setDate(LocalDate.of(2025, 1, 1));
-        ReservationResponseEnum response = service.getAvailability(dto);
-
-        assertEquals(ReservationResponseEnum.CLOSED, response);
-    }
-
-    @Test
-    @Transactional
     public void givenValidData_whenGetAvailability_thenReturnOutsideOpeningHours() throws ValidationException {
         ReservationCheckAvailabilityDto dto = TEST_RESERVATION_AVAILABILITY.copy();
         dto.setStartTime(LocalDateTime.of(2024, 7, 1, 23, 0, 0, 0).toLocalTime());

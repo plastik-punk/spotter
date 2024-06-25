@@ -1,5 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
+import at.ac.tuwien.sepr.groupphase.backend.entity.PermanentReservation;
 import at.ac.tuwien.sepr.groupphase.backend.service.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -9,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @Service("EmailService")
@@ -52,9 +55,11 @@ public class EmailServiceImpl implements EmailService {
         sendHtmlMessage(to, subject, htmlBody);
     }
 
+
     private void sendHtmlMessage(String to, String subject, String htmlBody) throws MessagingException {
         if (to.endsWith("@example.com")) {
-            to = "spottersepm@gmail.com";
+            //to = "spottersepm@gmail.com";
+            to = "f3lix.weilharter@gmail.com";
         }
         MimeMessage message = emailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -64,4 +69,27 @@ public class EmailServiceImpl implements EmailService {
         helper.setText(htmlBody, true);
         emailSender.send(message);
     }
+
+    @Override
+    public void sendPermanentDeletionMessageUsingThymeleafTemplate(PermanentReservation permanentReservation,
+                                                                   List<LocalDate> deletedReservationDates, Map<String, Object> templateModel) throws MessagingException {
+        Context thymeleafContext = new Context();
+        thymeleafContext.setVariables(templateModel);
+
+        String htmlBody = thymeleafTemplateEngine.process("permanent-deletion-template.html", thymeleafContext);
+
+        sendHtmlMessage(permanentReservation.getApplicationUser().getEmail(), "Cancellation confirmation for permanent reservation", htmlBody);
+    }
+
+    @Override
+    public void sendPermanentConfirmationMessageUsingThymeleafTemplate(PermanentReservation permanentReservation,
+                                                                       List<LocalDate> conflictedDates, Map<String, Object> templateModel) throws MessagingException {
+        Context thymeleafContext = new Context();
+        thymeleafContext.setVariables(templateModel);
+
+        String htmlBody = thymeleafTemplateEngine.process("permanent-confirmation-template.html", thymeleafContext);
+
+        sendHtmlMessage(permanentReservation.getApplicationUser().getEmail(), "Confirmation for permanent reservation", htmlBody);
+    }
+
 }

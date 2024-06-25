@@ -21,8 +21,20 @@
         <!-- Start row with Title, startTime and Date -->
         <div class="top-banner">
           <div class="row">
-            <div class="column">
-              <h1 class="font-heading">Reserve</h1>
+            <div class="row">
+              <!-- New div for restaurant info -->
+              <div class="restaurant-info">
+                <h1 class="font-heading pink">{{ restaurantInfo?.name }}</h1>
+                <p class="green">{{ restaurantInfo?.address }}</p>
+                <h1 class="font-heading pink">Opening Hours</h1>
+                <dl>
+                  <dt class="brown">Sunday - Thursday:</dt>
+                  <dd class="green">{{ formatTime(openingHours?.monday?.[0]) }} - {{ formatTime(openingHours?.monday?.[1]) }} & {{ formatTime(openingHours?.monday?.[2]) }} - {{ formatTime(openingHours?.monday?.[3]) }}</dd>
+
+                  <dt class="brown">Friday - Saturday:</dt>
+                  <dd class="green">{{ formatTime(openingHours?.friday?.[0]) }} - {{ formatTime(openingHours?.friday?.[1]) }} & {{ formatTime(openingHours?.friday?.[2]) }} - {{ formatTime(openingHours?.friday?.[3]) }}</dd>
+                </dl>
+              </div>
             </div>
             <div class="column">
               <input
@@ -51,9 +63,49 @@
                 (ngModelChange)="onFieldChange()"
                 required
               />
+
+            </div>
+            <!-- Start row for recurring reservation option -->
+            <div class ="column" *ngIf="authService.isLoggedIn()">
+            <div class="row">
+              <div class="column">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="isRecurring" [(ngModel)]="isRecurring" name="isRecurring">
+                  <label class="form-check-label" for="isRecurring">
+                    Make this a recurring reservation
+                  </label>
+                </div>
+              </div>
+            </div>
+            </div>
+
+            <!-- Conditional row for setting recurring reservation details -->
+            <div class="row" *ngIf="isRecurring">
+              <div class="column">
+                <label for="repeatEvery">Repeat every:</label>
+                <input type="number" id="repeatEvery" name="repeatEvery" class="form-control" [(ngModel)]="repeatEvery" min="1" required>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" id="days" name="repetitionType" [(ngModel)]="repetitionType" [value]="RepetitionEnum.DAYS">
+                  <label class="form-check-label" for="days">Days</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" id="weeks" name="repetitionType" [(ngModel)]="repetitionType" [value]="RepetitionEnum.WEEKS">
+                  <label class="form-check-label" for="weeks">Weeks</label>
+                </div>
+                <div class="col-auto">
+                  <label for="recurUntil">Make Reservation recurring until:</label>
+                  <input type="date" id="recurUntil" name="recurUntil" class="form-control" [(ngModel)]="endDate">
+                </div>
+              </div>
+
+              <!-- Note on Default Duration -->
+              <div class="col-12 text-center mt-2">
+                <small class="form-text text-muted">
+                  Note: Default runtime for recurring reservations is 1 year. Choose a date if you want to end it at a different time.
+                </small>
+              </div>
             </div>
           </div>
-
           <hr class="my-4">
         </div>
 
@@ -168,6 +220,7 @@
           </div>
           <!-- End event-column-left -->
 
+
           <!-- Start event-column-right -->
           <div class="event-column-right" [ngStyle]="{'display': upcomingEventsExist ? 'flex' : 'none'}">
             <div class="custom-event-card">
@@ -232,6 +285,9 @@
           </div>
           <div class="row">
             <div class="custom-order-card m-2 p-2 column" *ngFor="let offer of specialOffers">
+              <div class="row">
+                <img [src]="getImageUrl(offer.image)" alt="Special Offer" class="custom-order-image">
+              </div>
               <div class="row">
                 {{ offer.name }}
               </div>
@@ -303,6 +359,7 @@
           </div>
         </div>
       </form>
+
     </div>
   </div>
 </div>
@@ -365,6 +422,4 @@
 </div>
 
 </body>
-
-
 </html>

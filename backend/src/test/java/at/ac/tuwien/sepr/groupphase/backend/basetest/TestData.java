@@ -12,36 +12,27 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailab
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferAmountDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferCreateDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationWalkInDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferAmountDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferListDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Area;
 import at.ac.tuwien.sepr.groupphase.backend.entity.AreaPlaceSegment;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ClosedDay;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Event;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Message;
 import at.ac.tuwien.sepr.groupphase.backend.entity.OpeningHours;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ReservationOffer;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ReservationPlace;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Restaurant;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Segment;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SpecialOffer;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -309,10 +300,10 @@ public interface TestData {
     // SPECIAL OFFER TEST DATA
     // ---------------------------------------------
 
-    String TEST_SPECIAL_OFFER_NAME_1 = "Margaritas";
-    String TEST_SPECIAL_OFFER_NAME_2 = "Mojitos";
-    Float TEST_SPECIAL_OFFER_PRICE_PER_PAX_1 = 10.0f;
-    Float TEST_SPECIAL_OFFER_PRICE_PER_PAX_2 = 20.0f;
+    String TEST_SPECIAL_OFFER_NAME_1 = "Margarita";
+    String TEST_SPECIAL_OFFER_NAME_2 = "Mojito";
+    Float TEST_SPECIAL_OFFER_PRICE_PER_PAX_1 = 8.50f;
+    Float TEST_SPECIAL_OFFER_PRICE_PER_PAX_2 = 7.90f;
 
     SpecialOfferCreateDto TEST_SPECIAL_OFFER_CREATE_DTO_1 = SpecialOfferCreateDto.SpecialOfferCreateBuilder.aSpecialOfferCreateDto()
         .withName(TEST_SPECIAL_OFFER_NAME_1)
@@ -715,27 +706,6 @@ public interface TestData {
     String TEST_RESTAURANT_EXPECTED_STRING = "Restaurant{id=1"
         + ", name='" + TEST_RESTAURANT_NAME
         + "', address='" + TEST_RESTAURANT_ADDRESS + "'}";
-
-    // ---------------------------------------------
-    // CLOSED DAY TEST DATA
-    // ---------------------------------------------
-
-    LocalDate TEST_CLOSED_DAY_DATE = LocalDate.of(2024, 6, 12);
-
-    ClosedDay TEST_CLOSED_DAY_1 = ClosedDay.ClosedDayBuilder.aClosedDay()
-        .withId(1L)
-        .withRestaurant(TEST_RESTAURANT_1)
-        .withDate(TEST_CLOSED_DAY_DATE)
-        .build();
-    ClosedDay TEST_CLOSED_DAY_2 = ClosedDay.ClosedDayBuilder.aClosedDay()
-        .withId(1L)
-        .withRestaurant(TEST_RESTAURANT_1)
-        .withDate(TEST_CLOSED_DAY_DATE)
-        .build();
-
-    String TEST_CLOSED_DAY_EXPECTED_STRING = "ClosedDay{id=1"
-        + ", restaurant=" + TEST_RESTAURANT_1.toString()
-        + ", date=" + TEST_CLOSED_DAY_DATE + "}";
 
     // ---------------------------------------------
     // OPENING HOURS TEST DATA
