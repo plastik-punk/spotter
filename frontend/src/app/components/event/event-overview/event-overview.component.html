@@ -106,13 +106,16 @@
         </thead>
         <tbody>
         <tr *ngFor="let event of displayedEvents">
-          <td>{{ formatDateTime(event.startTime.toString()) }}</td>
-          <td>{{ formatDateTime(event.endTime.toString()) }}</td>
+          <td>{{ event.startTime ? formatDotDate(event.startTime) : '' }}
+          - {{ event.startTime ? formatIsoTime(event.startTime) : '' }}</td>
+          <td>{{ event.endTime ? formatDotDate(event.endTime) : '' }}
+            - {{ event.endTime ? formatIsoTime(event.endTime) : '' }}</td>
           <td>{{ event.name }}</td>
           <td>
             <div class="btn-group">
               <a class="btn btn-sm responsive-info-button"
-                 aria-label="Show event details" [routerLink]="['/event-detail',event.hashId]">
+                 aria-label="Show event details"
+                 (click)="showEventDetails(event.hashId)">
                 <i class="bi bi-info-lg"></i>
               </a>
               <a class="btn btn-sm responsive-warning-button"
@@ -144,6 +147,47 @@
     </div>
   </div>
 </div>
+
+
+<!-- Modal for event details -->
+<div class="modal fade" id="event-detail" tabindex="-1" aria-labelledby="event-detail-modal" aria-hidden="true">
+  <div class="modal-dialog custom-event-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="event-detail-title">{{ event.name }}</h3>
+      </div>
+      <div class="modal-body">
+        <dl class="row">
+          <div class="dt-dd-align">
+            <dt class="col-sm-2">From:</dt>
+            <dd class="col-sm-10">{{ event.startTime ? formatDay(event.startTime) : '' }}
+              - {{ event.startTime ? formatDotDate(event.startTime) : '' }}
+              - {{ event.startTime ? formatIsoTime(event.startTime) : '' }}
+            </dd>
+          </div>
+
+          <div class="dt-dd-align">
+            <dt class="col-sm-2">Until:</dt>
+            <dd class="col-sm-10">{{ event.endTime ? formatDay(event.endTime) : '' }}
+              - {{ event.endTime ? formatDotDate(event.endTime) : '' }}
+              - {{ event.endTime ? formatIsoTime(event.endTime) : '' }}
+            </dd>
+          </div>
+
+          <div class="dt-dd-align">
+            <dt class="col-sm-2">Info:</dt>
+            <dd class="col-sm-10">{{ event.description }}</dd>
+          </div>
+        </dl>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 </body>
 
 <app-confirmation-dialog-delete

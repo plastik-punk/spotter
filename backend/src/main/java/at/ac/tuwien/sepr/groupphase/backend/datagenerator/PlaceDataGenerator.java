@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
 
-@Profile({"test"})
+@Profile({"generateData", "test"})
 @Component
 @Order(1)
 public class PlaceDataGenerator {

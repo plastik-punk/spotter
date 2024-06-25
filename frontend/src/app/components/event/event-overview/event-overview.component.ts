@@ -7,8 +7,10 @@ import {AuthService} from "../../../services/auth.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {NotificationService} from "../../../services/notification.service";
 import {Router, RouterLink} from "@angular/router";
-import {EventListDto, EventSearchDto} from "../../../dtos/event";
+import {EventDetailDto, EventListDto, EventSearchDto} from "../../../dtos/event";
 import {EventService} from "../../../services/event.service";
+import {formatDay, formatDotDate, formatIsoTime} from "../../../util/date-helper";
+import * as bootstrap from 'bootstrap';
 
 @Component({
   selector: 'app-event-overview',
@@ -28,6 +30,14 @@ export class EventOverviewComponent implements OnInit {
   searchChangedObservable = new Subject<void>();
   deleteWhat: string = null;
   selectedFile: File | null = null;
+
+  event: EventDetailDto = {
+    hashId: undefined,
+    name: undefined,
+    startTime: undefined,
+    endTime: undefined,
+    description: undefined
+  };
 
   constructor(
     private authService: AuthService,
@@ -54,6 +64,23 @@ export class EventOverviewComponent implements OnInit {
 
   isAdmin(): boolean {
     return this.authService.getUserRole() === 'ADMIN';
+  }
+
+  showEventDetails(hashId: string): void {
+    this.eventService.getByHashId(hashId).subscribe({
+      next: (data: EventDetailDto) => {
+        this.event.name = data.name;
+        this.event.startTime = data.startTime;
+        this.event.endTime = data.endTime;
+        this.event.description = data.description;
+
+        const modalDetail = new bootstrap.Modal(document.getElementById('event-detail'));
+        modalDetail.show();
+      },
+      error: error => {
+        this.notificationService.showError('Failed to load event details. Please try again later.');
+      }
+    });
   }
 
   loadEvents() {
@@ -165,4 +192,8 @@ export class EventOverviewComponent implements OnInit {
 
     return `${formattedDate} ${hours}:${minutes}`;
   }
+
+    protected readonly formatIsoTime = formatIsoTime;
+    protected readonly formatDotDate = formatDotDate;
+    protected readonly formatDay = formatDay;
 }
