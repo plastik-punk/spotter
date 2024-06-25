@@ -1,20 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import * as bootstrap from 'bootstrap';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   PermanentReservationDetailDto,
-  PermanentReservationListDto,
-  RepetitionEnum, ReservationEditDto,
+  RepetitionEnum,
+  ReservationEditDto,
   ReservationModalDetailDto
 } from "../../../dtos/reservation";
 import { ReservationService } from "../../../services/reservation.service";
-import { CommonModule, DatePipe } from "@angular/common";
 import moment from "moment";
 import { NavigationStateService } from "../../../services/navigation-state.service";
 import { NotificationService } from "../../../services/notification.service";
 import { Observable } from "rxjs";
 import { HttpResponse } from "@angular/common/http";
-import {AppModule} from "../../../app.module";
 
 @Component({
   selector: 'app-permanent-reservation-details',
