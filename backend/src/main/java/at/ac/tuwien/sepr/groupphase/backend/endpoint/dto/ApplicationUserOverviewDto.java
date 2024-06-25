@@ -3,6 +3,7 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.Objects;
@@ -19,7 +20,7 @@ public class ApplicationUserOverviewDto {
     private String lastName;
 
     @NotBlank(message = "Email must not be empty")
-    @Email(message = "Email should be valid")
+    @Email(message = "Email must be valid (e.g.: otter@spotter.com)")
     private String email;
 
     private String mobileNumber;  // Optional, no @NotNull or @NotBlank
@@ -108,5 +109,62 @@ public class ApplicationUserOverviewDto {
             + ", mobileNumber='" + mobileNumber + '\''
             + ", role=" + role
             + '}';
+    }
+
+    public static final class ApplicationUserOverviewDtoBuilder {
+        private Long id;
+        private String firstName;
+        private String lastName;
+        private String email;
+        private String mobileNumber;
+        private RoleEnum role;
+
+        private ApplicationUserOverviewDtoBuilder() {
+        }
+
+        public static ApplicationUserOverviewDtoBuilder anApplicationUserOverviewDto() {
+            return new ApplicationUserOverviewDtoBuilder();
+        }
+
+        public ApplicationUserOverviewDtoBuilder withId(Long id) {
+            this.id = id;
+            return this;
+        }
+
+        public ApplicationUserOverviewDtoBuilder withFirstName(String firstName) {
+            this.firstName = firstName;
+            return this;
+        }
+
+        public ApplicationUserOverviewDtoBuilder withLastName(String lastName) {
+            this.lastName = lastName;
+            return this;
+        }
+
+        public ApplicationUserOverviewDtoBuilder withEmail(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public ApplicationUserOverviewDtoBuilder withMobileNumber(String mobileNumber) {
+            this.mobileNumber = mobileNumber;
+            return this;
+        }
+
+        public ApplicationUserOverviewDtoBuilder withRole(RoleEnum role) {
+            this.role = role;
+            return this;
+        }
+
+        public ApplicationUserOverviewDto build() {
+            ApplicationUserOverviewDto applicationUserOverviewDto = new ApplicationUserOverviewDto();
+            applicationUserOverviewDto.setId(id);
+            applicationUserOverviewDto.setFirstName(firstName);
+            applicationUserOverviewDto.setLastName(lastName);
+            applicationUserOverviewDto.setEmail(email);
+            applicationUserOverviewDto.setMobileNumber(mobileNumber);
+            applicationUserOverviewDto.setRole(role);
+            return applicationUserOverviewDto;
+        }
     }
 }

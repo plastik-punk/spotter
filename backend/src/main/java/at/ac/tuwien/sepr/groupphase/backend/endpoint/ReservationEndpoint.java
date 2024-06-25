@@ -148,6 +148,7 @@ public class ReservationEndpoint {
     @Operation(summary = "Delete a reservation")
     public ResponseEntity<Void> delete(@RequestBody String hashedId) {
         LOGGER.info("DELETE /api/v1/reservations body: {}", hashedId);
+        LOGGER.debug("hasedID: {}", hashedId);
         service.cancel(hashedId);
         return ResponseEntity.noContent().build();
     }

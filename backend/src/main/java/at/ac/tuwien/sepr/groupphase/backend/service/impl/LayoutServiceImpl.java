@@ -1,6 +1,5 @@
 package at.ac.tuwien.sepr.groupphase.backend.service.impl;
 
-
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaDetailListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaLayoutDto;
@@ -30,7 +29,6 @@ import at.ac.tuwien.sepr.groupphase.backend.service.LayoutService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.LayoutMapper;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ReservationMapper;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,9 +58,6 @@ public class LayoutServiceImpl implements LayoutService {
     private final AreaRepository areaRepository;
     private final SegmentRepository segmentRepository;
     private final AreaPlaceSegmentRepository areaPlaceSegmentRepository;
-
-    @Autowired
-    private Validator validator;
 
     @Autowired
     public LayoutServiceImpl(ReservationRepository reservationRepository, ApplicationUserRepository applicationUserRepository, PlaceRepository placeRepository, ReservationMapper reservationMapper, LayoutMapper layoutMapper,
@@ -278,7 +273,7 @@ public class LayoutServiceImpl implements LayoutService {
             List<ReservationPlace> reservationPlaces = reservationPlaceRepository.findByPlaceId(placeId);
 
             if (!reservationPlaces.isEmpty()) {
-                conflictExceptions.add("There are reservations for the table with id " + placeId);
+                conflictExceptions.add("There are reservations for the table #" + placeId);
             }
         }
 
@@ -454,7 +449,7 @@ public class LayoutServiceImpl implements LayoutService {
                 if (newPlace == null) {
                     List<ReservationPlace> reservationPlaces = reservationPlaceRepository.findByPlaceId(place.getId());
                     if (!reservationPlaces.isEmpty()) {
-                        throw new ConflictException("Cannot delete place", List.of("There are reservations for the table with id " + place.getId()));
+                        throw new ConflictException("Cannot delete place", List.of("There are reservations for table #" + place.getId()));
                     }
                     areaPlaceSegmentRepository.deleteAreaPlaceSegmentByAreaIdAndPlaceId(area.getId(), place.getId());
                     List<Segment> segments = areaPlaceSegments.stream()

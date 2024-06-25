@@ -7,9 +7,11 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationModalDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferListDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.PermanentReservation;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
+import at.ac.tuwien.sepr.groupphase.backend.entity.SpecialOffer;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -118,4 +120,6 @@ public interface ReservationMapper {
     @Mapping(target = "hashedId", source = "hashedId")
     @Mapping(target = "singleReservationList", ignore = true)
     PermanentReservationDetailDto permanentReservationToDetailDto(PermanentReservation permanentReservation);
+
+    SpecialOfferListDto specialOfferToSpecialOfferListDto(SpecialOffer offer);
 }

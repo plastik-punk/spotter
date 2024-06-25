@@ -159,6 +159,7 @@ export class AdminViewComponent implements OnInit {
   onFieldChange() {
     this.adminViewDto.date = this.currDate;
     this.adminViewDto.startTime = this.currTime;
+    this.chartPredictionOptions = null;
     let observable: Observable<ReservationForeCastDto>;
     observable = this.adminViewService.getForeCast(this.adminViewDto);
     observable.subscribe({
@@ -198,6 +199,9 @@ export class AdminViewComponent implements OnInit {
       this.specialOfferService.createSpecialOffer(this.specialOfferCreateDto).subscribe({
         next: (data) => {
           this.notificationService.showSuccess('Special Offer created successfully.');
+          this.specialOfferCreateDto.name = undefined;
+          this.specialOfferCreateDto.pricePerPax = undefined;
+          this.specialOfferCreateDto.image = undefined;
           this.loadSpecialOffers();
         },
         error: (error) => {

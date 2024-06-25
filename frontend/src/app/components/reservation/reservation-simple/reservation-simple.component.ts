@@ -5,8 +5,9 @@ import {NgForm} from '@angular/forms';
 import {
   PermanentReservationDto,
   RepetitionEnum,
+  ReservationCreateDto,
   ReservationCheckAvailabilityDto,
-  ReservationCreateDto
+  ReservationModalDetailDto
 } from '../../../dtos/reservation';
 import {UserOverviewDto} from '../../../dtos/app-user';
 import {ReservationService} from '../../../services/reservation.service';
@@ -16,6 +17,10 @@ import {EventDetailDto, EventListDto} from "../../../dtos/event";
 import {EventService} from "../../../services/event.service";
 import {formatDay, formatDotDate, formatDotDateShort, formatIsoTime, formatTime} from "../../../util/date-helper";
 import {ActivatedRoute} from "@angular/router";
+import {SpecialOfferAmountDto, SpecialOfferDetailDto, SpecialOfferListDto} from "../../../dtos/special-offer";
+import {SpecialOfferService} from "../../../services/special-offer.service";
+import {RestaurantDto, RestaurantOpeningHoursDto} from "../../../dtos/restaurant";
+import {RestaurantService} from "../../../services/restaurant.service";
 
 @Component({
   selector: 'app-reservation-simple',
@@ -52,11 +57,33 @@ export class ReservationSimpleComponent implements OnInit {
   permanentReservation: PermanentReservationDto;
   endDate: string;
 
+  specialOffers: SpecialOfferDetailDto[] = [];
+
+  openingHours: RestaurantOpeningHoursDto = {
+    monday: undefined,
+    tuesday: undefined,
+    wednesday: undefined,
+    thursday: undefined,
+    friday: undefined,
+    saturday: undefined,
+    sunday: undefined
+  };
+
+  restaurantInfo: RestaurantDto = {
+    name: undefined,
+    address: undefined
+  }
+
+  selectedOffers: SpecialOfferAmountDto[] = [];
+  totalPrice: number = 0;
+
   constructor(
     public authService: AuthService,
     private service: ReservationService,
+    private offerService: SpecialOfferService,
     private eventService: EventService,
     private notificationService: NotificationService,
+    private restaurantService: RestaurantService
   ) {
     this.initializeSharedProperties();
     this.initializeDtos();
@@ -64,6 +91,8 @@ export class ReservationSimpleComponent implements OnInit {
 
   ngOnInit() {
     this.startTimer()
+
+    this.fetchOffers();
 
     this.eventService.getUpcomingEvents().subscribe({
       next: (data) => {
@@ -75,6 +104,31 @@ export class ReservationSimpleComponent implements OnInit {
       error: () => {
         this.notificationService.showError('Failed to get events. Please try again later.');
       },
+    });
+
+    this.restaurantService.getOpeningHours().subscribe( {
+      next: (data: RestaurantOpeningHoursDto) => {
+        this.openingHours.monday = data.monday;
+        this.openingHours.tuesday = data.tuesday;
+        this.openingHours.wednesday = data.wednesday;
+        this.openingHours.thursday = data.thursday;
+        this.openingHours.friday = data.friday;
+        this.openingHours.saturday = data.saturday;
+        this.openingHours.sunday = data.sunday;
+      },
+      error: error => {
+        this.notificationService.showError('Failed to load opening hours. Please try again later.');
+      }
+    });
+
+    this.restaurantService.getRestaurantInfo().subscribe( {
+      next: (data: RestaurantDto) => {
+        this.restaurantInfo.name = data.name;
+        this.restaurantInfo.address = data.address;
+      },
+      error: error => {
+        this.notificationService.showError('Failed to load restaurant info. Please try again later.');
+      }
     });
   }
 
@@ -276,6 +330,9 @@ export class ReservationSimpleComponent implements OnInit {
     }
 
     if (form.valid) {
+      this.reservationCreateDto.specialOffers = this.selectedOffers;
+      console.log(this.reservationCreateDto.specialOffers)
+      this.selectedOffers = [];
       this.isBookButtonTimeout = true;
       setTimeout(() => {
         this.isBookButtonTimeout = false;
@@ -317,8 +374,8 @@ export class ReservationSimpleComponent implements OnInit {
               this.initializeDtos();
             }
           },
-          error: () => {
-            this.notificationService.showError('Location Closed');
+          error: (error) => {
+            this.notificationService.handleError(error);
           },
         });
       }
@@ -369,6 +426,81 @@ export class ReservationSimpleComponent implements OnInit {
     clearInterval(this.timer);
     this.sharedStartTime = (event.target as HTMLInputElement).value;
     this.onFieldChange();
+  }
+
+  fetchOffers() {
+    this.offerService.getAllSpecialOffersWithDetail().subscribe({
+      next: (data) => {
+        this.specialOffers = data;
+      },
+      error: () => {
+        this.notificationService.showError('Failed to get special offers. Please try again later.');
+      },
+    });
+  }
+
+  getImageUrl(image: Uint8Array): string {
+    return `data:image/jpeg;base64,${image}`
+  }
+
+  selectOffer(offer: SpecialOfferListDto) {
+    //check if the selected offer is already in the selected offer list. if it is, increase the amount by one. if it is not, add the offer to the list
+    let found = false;
+    for (let i = 0; i < this.selectedOffers.length; i++) {
+      if (this.selectedOffers[i].specialOffer.id === offer.id) {
+        this.selectedOffers[i].amount++;
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      let specialOfferAmountDto: SpecialOfferAmountDto = {
+        specialOffer: offer,
+        amount: 1
+      }
+      this.selectedOffers.push(specialOfferAmountDto);
+    }
+
+    this.calcTotal();
+  }
+
+  removeOffer(offer: SpecialOfferAmountDto) {
+    //decrease the amount in the selected offer list by one. if the amount gets to 0, remove the offer from the list
+    for (let i = 0; i < this.selectedOffers.length; i++) {
+      if (this.selectedOffers[i].specialOffer.id === offer.specialOffer.id) {
+        if (this.selectedOffers[i].amount > 1) {
+          this.selectedOffers[i].amount--;
+        } else {
+          this.selectedOffers.splice(i, 1);
+        }
+        break;
+      }
+    }
+    this.calcTotal();
+  }
+
+  addOffer(offer: SpecialOfferAmountDto) {
+    //increase the amount in the selected offer list by one
+    for (let i = 0; i < this.selectedOffers.length; i++) {
+      if (this.selectedOffers[i].specialOffer.id === offer.specialOffer.id) {
+        this.selectedOffers[i].amount++;
+        break;
+      }
+    }
+    this.calcTotal();
+  }
+
+  showOfferInfo():void {
+    const infoModal = new bootstrap.Modal(document.getElementById('infoModal'))
+    infoModal.show();
+  }
+
+  calcTotal() {
+    let total = 0;
+    for (let i = 0; i < this.selectedOffers.length; i++) {
+      total += this.selectedOffers[i].specialOffer.pricePerPax * this.selectedOffers[i].amount;
+    }
+    this.totalPrice = total;
   }
 
   protected readonly formatTime = formatTime;

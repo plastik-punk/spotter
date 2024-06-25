@@ -33,8 +33,7 @@ public class DataGeneratorBean {
     public void generateData() throws SQLException {
         LOGGER.info("Generating data…");
         try (var connection = dataSource.getConnection()) {
-            ScriptUtils.executeSqlScript(connection, new ClassPathResource("sql/insertData.sql"));
-            //ScriptUtils.executeSqlScript(connection, new ClassPathResource("sql/insert_reservations_and_mapping.sql"));
+            ScriptUtils.executeSqlScript(connection, new ClassPathResource("sql/insert_user_data.sql"));
             ScriptUtils.executeSqlScript(connection, new ClassPathResource("sql/insert_data_script.sql"));
             LOGGER.info("Finished generating data without error.");
         }

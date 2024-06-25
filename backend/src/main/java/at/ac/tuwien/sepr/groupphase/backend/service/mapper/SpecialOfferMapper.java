@@ -16,8 +16,13 @@ import java.util.List;
 @Mapper
 public interface SpecialOfferMapper {
 
+    @Named("specialOfferToSpecialOfferDetailDto")
     SpecialOfferDetailDto specialOfferToSpecialOfferDetailDto(SpecialOffer specialOffer);
 
+    @IterableMapping(qualifiedByName = "specialOfferToSpecialOfferDetailDto")
+    List<SpecialOfferDetailDto> specialOffersToSpecialOfferDetailDtos(List<SpecialOffer> specialOffers);
+
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "image", source = "image", qualifiedByName = "multipartFileToByteArray")
     SpecialOffer specialOfferCreateDtoToSpecialOffer(SpecialOfferCreateDto specialOfferCreateDto);
 

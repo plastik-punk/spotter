@@ -11,6 +11,8 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationModalDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationWalkInDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferAmountDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferListDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ClosedDay;
 import at.ac.tuwien.sepr.groupphase.backend.entity.OpeningHours;
@@ -18,23 +20,25 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.PermanentReservation;
 import at.ac.tuwien.sepr.groupphase.backend.entity.PermanentReservationMapper;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
+import at.ac.tuwien.sepr.groupphase.backend.entity.ReservationOffer;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ReservationPlace;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RepetitionEnum;
+import at.ac.tuwien.sepr.groupphase.backend.entity.SpecialOffer;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
-import at.ac.tuwien.sepr.groupphase.backend.repository.AreaPlaceSegmentRepository;
-import at.ac.tuwien.sepr.groupphase.backend.repository.AreaRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ClosedDayRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.OpeningHoursRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PermanentReservationMapperRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PermanentReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationOfferRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationPlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.SpecialOfferRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.EmailService;
 import at.ac.tuwien.sepr.groupphase.backend.service.HashService;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
@@ -80,25 +84,29 @@ public class ReservationServiceImpl implements ReservationService {
     private final EmailService emailService;
     private final HashService hashService;
     private final ApplicationUserServiceImpl applicationUserService;
-    private final AreaRepository areaRepository;
-    private final AreaPlaceSegmentRepository areaPlaceSegmentRepository;
     private final PermanentReservationRepository permanentReservationRepository;
     private final PermanentReservationMapperRepository permanentReservationMapperRepository;
+    private final SpecialOfferRepository specialOfferRepository;
+    private final ReservationOfferRepository reservationOfferRepository;
 
     @Autowired
     private Validator validator;
 
     @Autowired
-    public ReservationServiceImpl(ReservationMapper mapper, ReservationRepository reservationRepository,
+    public ReservationServiceImpl(ReservationMapper mapper,
+                                  ReservationRepository reservationRepository,
                                   ApplicationUserRepository applicationUserRepository,
-                                  PlaceRepository placeRepository, EmailService emailService,
+                                  PlaceRepository placeRepository,
+                                  EmailService emailService,
                                   OpeningHoursRepository openingHoursRepository,
                                   ReservationPlaceRepository reservationPlaceRepository,
-                                  ClosedDayRepository closedDayRepository, HashService hashService,
-                                  ApplicationUserServiceImpl applicationUserService, AreaRepository areaRepository,
-                                  AreaPlaceSegmentRepository areaPlaceSegmentRepository,
                                   PermanentReservationRepository permanentReservationRepository,
-                                  PermanentReservationMapperRepository permanentReservationMapperRepository) {
+                                  PermanentReservationMapperRepository permanentReservationMapperRepository,
+                                  ClosedDayRepository closedDayRepository,
+                                  HashService hashService,
+                                  ApplicationUserServiceImpl applicationUserService,
+                                  SpecialOfferRepository specialOfferRepository,
+                                  ReservationOfferRepository reservationOfferRepository) {
         this.mapper = mapper;
         this.reservationRepository = reservationRepository;
         this.applicationUserRepository = applicationUserRepository;
@@ -106,13 +114,13 @@ public class ReservationServiceImpl implements ReservationService {
         this.emailService = emailService;
         this.openingHoursRepository = openingHoursRepository;
         this.reservationPlaceRepository = reservationPlaceRepository;
+        this.permanentReservationRepository = permanentReservationRepository;
+        this.permanentReservationMapperRepository = permanentReservationMapperRepository;
         this.closedDayRepository = closedDayRepository;
         this.hashService = hashService;
         this.applicationUserService = applicationUserService;
-        this.areaRepository = areaRepository;
-        this.areaPlaceSegmentRepository = areaPlaceSegmentRepository;
-        this.permanentReservationRepository = permanentReservationRepository;
-        this.permanentReservationMapperRepository = permanentReservationMapperRepository;
+        this.specialOfferRepository = specialOfferRepository;
+        this.reservationOfferRepository = reservationOfferRepository;
     }
 
     @Override
@@ -205,6 +213,23 @@ public class ReservationServiceImpl implements ReservationService {
         // 6. Save Reservation in database and return it mapped to a DTO
         Reservation savedReservation = reservationRepository.save(reservation);
 
+        // Add special offers if there are any
+        if (reservationCreateDto.getSpecialOffers() != null && !reservationCreateDto.getSpecialOffers().isEmpty()) {
+            // Map special offers to ReservationOffers
+            for (SpecialOfferAmountDto specialOfferAmountDto : reservationCreateDto.getSpecialOffers()) {
+                Optional<SpecialOffer> specialOffer = specialOfferRepository.findById(specialOfferAmountDto.getSpecialOffer().getId());
+                if (specialOffer.isPresent()) {
+                    ReservationOffer reservationOffer = ReservationOffer.ReservationOfferBuilder.aReservationOffer()
+                        .withReservation(savedReservation)
+                        .withOffer(specialOffer.get())
+                        .withAmount(specialOfferAmountDto.getAmount())
+                        .build();
+                    reservationOfferRepository.save(reservationOffer);
+                } else {
+                    throw new NotFoundException("The chosen Special offer was not found");
+                }
+            }
+        }
         // Validate after changes being made as an additional layer of defense
         Set<ConstraintViolation<Reservation>> reservationViolations = validator.validate(savedReservation);
         if (!reservationViolations.isEmpty()) {
@@ -233,7 +258,6 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public ReservationResponseEnum getAvailability(ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) {
         LOGGER.trace("getAvailability ({})", reservationCheckAvailabilityDto.toString());
-        // reservationValidator.validateReservationCheckAvailabilityDto(reservationCheckAvailabilityDto);
         LocalDate date = reservationCheckAvailabilityDto.getDate();
         LocalTime startTime = reservationCheckAvailabilityDto.getStartTime();
         LocalTime endTime = reservationCheckAvailabilityDto.getEndTime();
@@ -403,11 +427,27 @@ public class ReservationServiceImpl implements ReservationService {
             }
         }
 
-        // fetch places for reservation
         ReservationEditDto reservationEditDto = mapper.reservationToReservationEditDto(reservation);
+
+        // fetch ReservationOffers
+        List<ReservationOffer> reservationOffers = reservationOfferRepository.findByReservationId(reservation.getId());
+        List<SpecialOfferAmountDto> specialOffers = new ArrayList<>();
+        for (ReservationOffer reservationOffer : reservationOffers) {
+            SpecialOfferListDto specialOfferListDto = mapper.specialOfferToSpecialOfferListDto(reservationOffer.getOffer());
+            SpecialOfferAmountDto specialOfferAmountDto =
+                SpecialOfferAmountDto.SpecialOfferAmountDtoBuilder.aSpecialOfferAmountDto()
+                    .withSpecialOffer(specialOfferListDto)
+                    .withAmount(reservationOffer.getAmount())
+                    .build();
+            specialOffers.add(specialOfferAmountDto);
+        }
+        reservationEditDto.setSpecialOffers(specialOffers);
+
+        // fetch places for reservation
         List<Long> reservationIds = Collections.singletonList(reservation.getId());
         List<Long> reservationPlaces = reservationPlaceRepository.findPlaceIdsByReservationIds(reservationIds);
         reservationEditDto.setPlaceIds(reservationPlaces);
+
         return reservationEditDto;
     }
 
@@ -424,6 +464,21 @@ public class ReservationServiceImpl implements ReservationService {
         Reservation reservation = reservations.getFirst();
         List<Long> placeIds = reservationPlaceRepository.findPlaceIdsByReservationIds(Collections.singletonList(reservation.getId()));
         ReservationModalDetailDto reservationModalDetailDto = mapper.reservationToReservationModalDetailDto(reservation, placeIds);
+
+        //go through the Reservation Offers and add the special offers to the list
+        List<ReservationOffer> reservationOffers = reservationOfferRepository.findByReservationId(reservation.getId());
+        List<SpecialOfferAmountDto> specialOffers = new ArrayList<>();
+        for (ReservationOffer reservationOffer : reservationOffers) {
+            SpecialOfferListDto specialOfferListDto = mapper.specialOfferToSpecialOfferListDto(reservationOffer.getOffer());
+            SpecialOfferAmountDto specialOfferAmountDto =
+                SpecialOfferAmountDto.SpecialOfferAmountDtoBuilder.aSpecialOfferAmountDto()
+                    .withSpecialOffer(specialOfferListDto)
+                    .withAmount(reservationOffer.getAmount())
+                    .build();
+            specialOffers.add(specialOfferAmountDto);
+        }
+
+        reservationModalDetailDto.setSpecialOffers(specialOffers);
 
         LOGGER.debug("Found reservation: {}", reservationModalDetailDto.toString());
 
@@ -482,6 +537,29 @@ public class ReservationServiceImpl implements ReservationService {
                 reservationPlaceRepository.save(newReservationPlace);
             } else {
                 // TODO: Handle the case where no place with the given ID exists.
+            }
+        }
+
+        // update special offers
+        List<ReservationOffer> reservationOffers = reservationOfferRepository.findByReservationId(updatedReservation.getId());
+        reservationOfferRepository.deleteAll(reservationOffers);
+        if (reservationEditDto.getSpecialOffers() != null && !reservationEditDto.getSpecialOffers().isEmpty()) {
+            Map<Long, Integer> specialOfferAmounts = new HashMap<>();
+            for (SpecialOfferAmountDto specialOffer : reservationEditDto.getSpecialOffers()) {
+                specialOfferAmounts.put(specialOffer.getSpecialOffer().getId(), specialOffer.getAmount());
+            }
+            for (Map.Entry<Long, Integer> entry : specialOfferAmounts.entrySet()) {
+                Optional<SpecialOffer> specialOffer = specialOfferRepository.findById(entry.getKey());
+                if (specialOffer.isPresent()) {
+                    ReservationOffer reservationOffer = ReservationOffer.ReservationOfferBuilder.aReservationOffer()
+                        .withReservation(updatedReservation)
+                        .withOffer(specialOffer.get())
+                        .withAmount(entry.getValue())
+                        .build();
+                    reservationOfferRepository.save(reservationOffer);
+                } else {
+                    throw new NotFoundException("Special offer not found");
+                }
             }
         }
 
@@ -609,7 +687,7 @@ public class ReservationServiceImpl implements ReservationService {
                 selectedPlaces.add(optionalPlace.get());
             } else {
                 List<String> errors = new ArrayList<>();
-                errors.add("Place with Id" + placeId + " not found");
+                errors.add("Place #" + placeId + " not found");
                 throw new ConflictException("Place not found", errors);
             }
         }

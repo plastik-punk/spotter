@@ -47,6 +47,18 @@ body {
   font-size: 3vw;
 }
 
+.pink {
+  color: pink;
+}
+
+.green {
+  color: green;
+}
+
+.brown {
+  color: saddlebrown;
+}
+
 .top-left-logo {
   position: absolute;
   margin-top: 3vh;
@@ -244,6 +256,40 @@ body {
 .dt-dd-align dt, .dt-dd-align dd {
   margin: 5px;
   padding: 0;
+}
+
+.custom-order-card {
+  width: 100%;
+  background: white;
+  border: 2px solid #377eb8;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: black;
+  text-align: center;
+}
+
+.custom-order-button {
+  background-color: darkorange;
+  border: 2px solid darkorange;
+  border-radius: 10px;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  width: 100%;
+  margin: 2px;
+}
+
+.custom-order-button:hover {
+  background-color: white;
+  color: orange;
+}
+
+.custom-order-button:disabled {
+  background-color: lightgray;
+  color: white;
 }
 
 .custom-event-card {

@@ -190,7 +190,7 @@
                 <td>
                   <div class="btn-group">
                     <a class="btn btn-sm responsive-info-button"
-                       aria-label="Show reservation details" [routerLink]="['/reservation-detail',reservation.hashId]">
+                       aria-label="Show reservation details" (click)="showReservationDetails(reservation.hashId)">
                       <i class="bi bi-info-lg"></i>
                     </a>
                     <a class="btn btn-sm responsive-warning-button"
@@ -302,6 +302,16 @@
                 <div class="dt-dd-align">
                   <dt class="col-sm-3">Note:</dt>
                   <dd class="col-sm-10">{{ reservationModalDetailDto.notes }}</dd>
+                </div>
+
+                <div class="dt-dd-align align-items-start">
+                  <dt class="col-sm-3">Special Offers:</dt>
+                  <dd class="col-sm-10">
+                    <dl class="col-sm-10" *ngFor="let offer of reservationModalDetailDto.specialOffers">
+                      <dt class="mt-0 ms-0">{{offer.amount}}x {{offer.specialOffer.name}}:</dt>
+                      <dd>{{offer.amount * offer.specialOffer.pricePerPax}}€</dd>
+                    </dl>
+                  </dd>
                 </div>
               </dl>
             </div>
