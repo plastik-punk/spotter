@@ -61,7 +61,4 @@ public class MessageMappingTest implements TestData {
             () -> assertEquals(TEST_NEWS_PUBLISHED_AT, messageSimpleDto.getPublishedAt())
         );
     }
-
-    // TODO: test remaining methods
-
 }

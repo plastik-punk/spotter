@@ -168,12 +168,10 @@ export class EventOverviewComponent implements OnInit {
     if (this.selectedFile) {
       this.eventService.uploadIcsFile(this.selectedFile).subscribe(
         response => {
-          console.log('File uploaded successfully');
           this.loadEvents();
           this.notificationService.showSuccess('File uploaded successfully');
         },
         error => {
-          console.error('Error uploading file', error);
           this.loadEvents();
           this.notificationService.showError('Error uploading file');
         }

@@ -17,7 +17,7 @@ export class NotificationService {
   }
 
   handleError(error: any) {
-    this.showError(error.message || 'An error occurred');
+    this.showError(error.error.message || 'An error occurred');
   }
 
   handleSuccess(message: string) {

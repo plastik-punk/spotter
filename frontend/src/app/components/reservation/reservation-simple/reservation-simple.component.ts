@@ -331,7 +331,6 @@ export class ReservationSimpleComponent implements OnInit {
 
     if (form.valid) {
       this.reservationCreateDto.specialOffers = this.selectedOffers;
-      console.log(this.reservationCreateDto.specialOffers)
       this.selectedOffers = [];
       this.isBookButtonTimeout = true;
       setTimeout(() => {
@@ -352,7 +351,6 @@ export class ReservationSimpleComponent implements OnInit {
           pax: this.reservationCreateDto.pax,
           hashedId: null
         };
-        console.log(this.permanentReservation);
         this.service.createPermanentReservation(this.permanentReservation).subscribe({
           next: response => {
             this.notificationService.showSuccess('Permanent reservation saved successfully. You will get an email once it gets confirmed by the restaurant');

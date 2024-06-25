@@ -112,7 +112,7 @@ public class AdminViewServiceImpl implements AdminViewService {
 
         //5. Calculate the maximum Pax per Hour
         Map<Integer, Long> amountOfCustomersPerHourMap = getIntegerLongMap(reservationsListSameDay);
-        //Map<Integer, Long> amountOfWalkInCustomersPerHourMap = getIntegerLongMap(walkInsByDateMap.get(dateToCalculate)); //TODO fix with Test data
+        //Map<Integer, Long> amountOfWalkInCustomersPerHourMap = getIntegerLongMap(walkInsByDateMap.get(dateToCalculate)); //TODO
 
         //6. Calculate the Pax of the Restaurant
         List<Place> totalPlaces = placeRepository.findAll();

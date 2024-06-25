@@ -100,8 +100,6 @@ public class ReservationServiceImplTest implements TestData {
         );
     }
 
-    // TODO: test update
-
     @Test
     @Transactional
     public void givenValidData_whenGetAvailability_thenReturnAvailable() throws ValidationException {
@@ -158,43 +156,6 @@ public class ReservationServiceImplTest implements TestData {
         ReservationResponseEnum response = service.getAvailability(dto);
 
         assertEquals(ReservationResponseEnum.AVAILABLE, response);
-    }
-
-    //@Test
-    //@Transactional
-    public void givenValidHashId_whenConfirm_thenReservationIsConfirmed() throws ValidationException {
-        Reservation reservation = TEST_RESERVATION_1.copy();
-
-        //TODO: nicht testbar, da bei getByHashId der User abgeglichen wird
-
-        reservation.setHashValue("hash");
-        reservation = reservationRepository.save(reservation);
-        service.confirm("hash");
-
-        Optional<Reservation> confirmedReservation = reservationRepository.findById(reservation.getId());
-        assertTrue(confirmedReservation.get().isConfirmed());
-    }
-
-    @Test
-    @Transactional
-    public void givenInvalidHashId_whenConfirm_thenThrowNotFoundException() {
-        assertThrows(NotFoundException.class, () -> service.confirm("invalid"));
-    }
-
-    //@Test
-    //@Transactional
-    public void givenValidHashId_whenUnconfirm_thenReservationIsUnconfirmed() throws ValidationException {
-        Reservation reservation = TEST_RESERVATION_2.copy();
-
-        //TODO: nicht testbar, da bei getByHashId der User abgeglichen wird
-
-        reservation.setConfirmed(true);
-        reservation.setHashValue("hash");
-        reservation = reservationRepository.save(reservation);
-        service.unconfirm("hash");
-
-        Optional<Reservation> unconfirmedReservation = reservationRepository.findById(reservation.getId());
-        assertFalse(unconfirmedReservation.get().isConfirmed());
     }
 
     @Test

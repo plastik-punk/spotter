@@ -247,7 +247,7 @@
               <td>{{ formatTime(reservation.startTime) }}</td>
               <td>{{ reservation.userFirstName }} {{ reservation.userLastName }}</td>
               <td>{{ reservation.pax }}</td>
-              <td>{{ reservation.placeIds?.join(' • ') }}</td>
+              <td>{{ getPositivePlaceIds(reservation.placeIds).join(' • ') }}</td>
               <td>
                 <div class="btn-group">
                   <a class="btn btn-sm responsive-info-button"

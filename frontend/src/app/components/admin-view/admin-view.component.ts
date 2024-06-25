@@ -237,7 +237,6 @@ export class AdminViewComponent implements OnInit {
         if (this.specialOfferDetail.image) {
           this.imageUrl = `data:image/jpeg;base64,${this.specialOfferDetail.image}`;
         }
-        console.log(this.specialOfferDetail)
         const modalDetail = new bootstrap.Modal(document.getElementById('specialOfferDetailModal'));
         modalDetail.show();
       },

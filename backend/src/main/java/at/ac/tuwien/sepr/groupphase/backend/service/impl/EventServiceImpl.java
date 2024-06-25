@@ -208,8 +208,6 @@ public class EventServiceImpl implements EventService {
         LOGGER.trace("delete({})", hashId);
         Event event = eventRepository.findByHashId(hashId);
 
-        //TODO Validator
-
         Optional<Event> optionalEvent = eventRepository.findById(event.getId());
         if (optionalEvent.isEmpty()) {
             throw new NotFoundException("Event not found");
