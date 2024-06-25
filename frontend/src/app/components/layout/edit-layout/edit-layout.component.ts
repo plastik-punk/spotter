@@ -436,11 +436,6 @@ export class EditLayoutComponent implements OnInit {
   }
 
   onSubmit(): void {
-    //check, if there is exactly one main area, if not, show error
-    if (this.layoutCreateDto.areas.filter(area => area.isMainArea).length !== 1) {
-      this.notificationService.showError('There has to be exactly one Main Area.');
-      return;
-    }
     if (this.layoutForm.valid) {
       // Show the confirm save layout modal
       const confirmSaveLayoutModal = new bootstrap.Modal(document.getElementById('confirmSaveLayoutModal'));

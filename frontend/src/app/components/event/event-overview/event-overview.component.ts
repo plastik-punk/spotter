@@ -1,12 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {FormsModule} from "@angular/forms";
-import {NgForOf, NgIf, Time} from "@angular/common";
 import {debounceTime, Observable, Subject} from "rxjs";
 import {HttpResponse} from "@angular/common/http";
 import {AuthService} from "../../../services/auth.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {NotificationService} from "../../../services/notification.service";
-import {Router, RouterLink} from "@angular/router";
+import {Router} from "@angular/router";
 import {EventDetailDto, EventListDto, EventSearchDto} from "../../../dtos/event";
 import {EventService} from "../../../services/event.service";
 import {formatDay, formatDotDate, formatIsoTime} from "../../../util/date-helper";
@@ -48,10 +46,11 @@ export class EventOverviewComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.searchEarliestDate = new Date().toISOString().split('T')[0]
     this.loadEvents();
     this.searchChangedObservable
       .pipe(debounceTime(300))
-      .subscribe({ next: () => this.loadEvents() });
+      .subscribe({next: () => this.loadEvents()});
   }
 
   showMore() {
@@ -157,6 +156,7 @@ export class EventOverviewComponent implements OnInit {
       }
     });
   }
+
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
@@ -191,7 +191,7 @@ export class EventOverviewComponent implements OnInit {
     return `${formattedDate} ${hours}:${minutes}`;
   }
 
-    protected readonly formatIsoTime = formatIsoTime;
-    protected readonly formatDotDate = formatDotDate;
-    protected readonly formatDay = formatDay;
+  protected readonly formatIsoTime = formatIsoTime;
+  protected readonly formatDotDate = formatDotDate;
+  protected readonly formatDay = formatDay;
 }

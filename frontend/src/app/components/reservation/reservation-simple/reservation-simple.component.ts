@@ -92,7 +92,7 @@ export class ReservationSimpleComponent implements OnInit {
   ngOnInit() {
     this.startTimer()
 
-    this.fetchOffers();
+
 
     this.eventService.getUpcomingEvents().subscribe({
       next: (data) => {
