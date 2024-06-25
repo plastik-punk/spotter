@@ -31,7 +31,6 @@ public class Event {
     @Column(nullable = false)
     private String name;
 
-    @NotNull(message = "Description is required")
     @Column(length = 100000)
     private String description;
 

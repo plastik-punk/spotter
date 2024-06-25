@@ -46,7 +46,7 @@
                  [(ngModel)]="searchEarliestStartTime"
                  (ngModelChange)="searchChanged()">
         </div>
-        <div class="ms-1">
+        <div class="ms-1" *ngIf="isAdminOrEmployee()">
           <label for="searchLatestEndTime" class="col-form-label">
             Latest End Time
           </label>
@@ -61,8 +61,6 @@
           <button type="button" class="btn btn-primary" (click)="resetSearchParams()"><i
             class="bi bi-arrow-clockwise"></i></button>
         </div>
-
-
 
         <div class="ms-auto" *ngIf="isAdminOrEmployee()">
           <div class="mb-3 text-center">
@@ -236,7 +234,6 @@
               <th>Date</th>
               <th>Day</th>
               <th>Start Time</th>
-              <th>End Time</th>
               <th>Name</th>
               <th>Seats</th>
               <th>Table Number</th>
@@ -248,7 +245,6 @@
               <td>{{ formatDotDate(reservation.date) }}</td>
               <td>{{ formatDay(reservation.date) }}</td>
               <td>{{ formatTime(reservation.startTime) }}</td>
-              <td>{{ formatTime(reservation.endTime) }}</td>
               <td>{{ reservation.userFirstName }} {{ reservation.userLastName }}</td>
               <td>{{ reservation.pax }}</td>
               <td>{{ reservation.placeIds?.join(' • ') }}</td>
@@ -304,7 +300,7 @@
                   <dd class="col-sm-10">{{ reservationModalDetailDto.notes }}</dd>
                 </div>
 
-                <div class="dt-dd-align align-items-start">
+                <div class="dt-dd-align align-items-start" *ngIf="hasSpecialOffer()">
                   <dt class="col-sm-3">Special Offers:</dt>
                   <dd class="col-sm-10">
                     <dl class="col-sm-10" *ngFor="let offer of reservationModalDetailDto.specialOffers">

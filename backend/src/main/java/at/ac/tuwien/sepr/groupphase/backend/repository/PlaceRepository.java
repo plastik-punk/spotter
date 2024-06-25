@@ -14,7 +14,6 @@ import java.util.Optional;
 
 @Repository
 public interface PlaceRepository extends JpaRepository<Place, Long> {
-    Optional<Place> findFirstByPaxAndStatusOrderByPaxDesc(Long pax, StatusEnum status);
 
     @Query(value = "SELECT TOP (1) p.* FROM place p "
         + "WHERE NOT EXISTS ("
@@ -35,9 +34,6 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
         @Param("pax") Long pax,
         @Param("statusEnum") StatusEnum statusEnum);
 
-    Collection<Place> findAllByStatus(StatusEnum statusEnum);
-
     @Query("SELECT p.status FROM Place p WHERE p.id = :placeId")
     StatusEnum findStatusById(@Param("placeId") Long placeId);
-
 }

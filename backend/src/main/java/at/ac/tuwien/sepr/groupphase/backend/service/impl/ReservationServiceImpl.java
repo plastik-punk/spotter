@@ -14,7 +14,6 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationWalkInDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferAmountDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferListDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ClosedDay;
 import at.ac.tuwien.sepr.groupphase.backend.entity.OpeningHours;
 import at.ac.tuwien.sepr.groupphase.backend.entity.PermanentReservation;
 import at.ac.tuwien.sepr.groupphase.backend.entity.PermanentReservationMapper;
@@ -30,7 +29,6 @@ import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
-import at.ac.tuwien.sepr.groupphase.backend.repository.ClosedDayRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.OpeningHoursRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PermanentReservationMapperRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PermanentReservationRepository;
@@ -79,7 +77,6 @@ public class ReservationServiceImpl implements ReservationService {
     private final PlaceRepository placeRepository;
     private final ReservationMapper mapper;
     private final OpeningHoursRepository openingHoursRepository;
-    private final ClosedDayRepository closedDayRepository;
     private final ReservationPlaceRepository reservationPlaceRepository;
     private final EmailService emailService;
     private final HashService hashService;
@@ -102,7 +99,6 @@ public class ReservationServiceImpl implements ReservationService {
                                   ReservationPlaceRepository reservationPlaceRepository,
                                   PermanentReservationRepository permanentReservationRepository,
                                   PermanentReservationMapperRepository permanentReservationMapperRepository,
-                                  ClosedDayRepository closedDayRepository,
                                   HashService hashService,
                                   ApplicationUserServiceImpl applicationUserService,
                                   SpecialOfferRepository specialOfferRepository,
@@ -116,7 +112,6 @@ public class ReservationServiceImpl implements ReservationService {
         this.reservationPlaceRepository = reservationPlaceRepository;
         this.permanentReservationRepository = permanentReservationRepository;
         this.permanentReservationMapperRepository = permanentReservationMapperRepository;
-        this.closedDayRepository = closedDayRepository;
         this.hashService = hashService;
         this.applicationUserService = applicationUserService;
         this.specialOfferRepository = specialOfferRepository;
@@ -278,12 +273,6 @@ public class ReservationServiceImpl implements ReservationService {
             return ReservationResponseEnum.DATE_IN_PAST;
         }
 
-        // 3. check if restaurant is open at specified date
-        Optional<ClosedDay> optionalClosedDay = closedDayRepository.findByDate(date);
-        if (optionalClosedDay.isPresent()) {
-            return ReservationResponseEnum.CLOSED;
-        }
-
         // 4. check if reservation is on regular closed day of the week
         boolean isOpen = false;
         DayOfWeek dayOfWeek = date.getDayOfWeek();
@@ -411,9 +400,7 @@ public class ReservationServiceImpl implements ReservationService {
     public ReservationEditDto getByHashedId(String hashValue) throws NotFoundException {
         LOGGER.trace("getDetail ({})", hashValue);
 
-        // TODO: this should not be a list, but a single reservation
         List<Reservation> reservationList = reservationRepository.findByHashValue(hashValue);
-
         if (reservationList.size() != 1) {
             throw new NotFoundException("Reservation with not found");
         }
@@ -1021,5 +1008,4 @@ public class ReservationServiceImpl implements ReservationService {
             return;
         }
     }
-
 }

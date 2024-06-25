@@ -3,7 +3,8 @@ import * as bootstrap from 'bootstrap';
 import {AuthService} from '../../../services/auth.service';
 import {
   PermanentReservationDetailDto,
-  PermanentReservationDto, PermanentReservationListDto, permanentReservationSearch,
+  PermanentReservationListDto,
+  permanentReservationSearch,
   RepetitionEnum,
   ReservationEditDto,
   ReservationListDto,
@@ -105,6 +106,10 @@ export class ReservationOverviewComponent implements OnInit {
   isAdminOrEmployee(): boolean {
     const role = this.authService.getUserRole();
     return role === 'ADMIN' || role === 'EMPLOYEE';
+  }
+
+  hasSpecialOffer(): boolean {
+    return this.reservationModalDetailDto.specialOffers != null && this.reservationModalDetailDto.specialOffers.length > 0;
   }
 
   toggleView(): void {
