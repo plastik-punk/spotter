@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Lexend+Giga:wght@500&display=swap" rel="stylesheet">
-<head>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Lexend+Giga:wght@500&display=swap"
         rel="stylesheet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,24 +28,44 @@
               <h1 class="font-heading">Admin View</h1>
             </div>
             <div class="column">
-              <div class="form-floating mb-3">
-                <input type="time" id="adminViewStartTime" name="adminViewStartTime" [defaultValue]="currTime" placeholder="hh:mm" class="form-control" [(ngModel)]="currTime" #adminViewStartTimeModel="ngModel" (ngModelChange)="onFieldChange()">
-                <label for="adminViewStartTime">Start Time</label>
-              </div>
+              <input
+                type="time"
+                id="adminViewStartTime"
+                name="adminViewStartTime"
+                [defaultValue]="currTime"
+                placeholder="hh:mm"
+                class="form-control"
+                [(ngModel)]="currTime"
+                #adminViewStartTimeModel="ngModel"
+                (ngModelChange)="onFieldChange()"
+              />
             </div>
             <div class="column">
-              <div class="form-floating mb-3">
-                <input type="date" id="adminViewDate" name="adminViewDate" pattern="\d{4}-\d{2}-\d{2}" [defaultValue]="currDate" placeholder="dd-mm-yyyy" class="form-control" [(ngModel)]="currDate" #adminViewDateModel="ngModel" (ngModelChange)="onFieldChange()" required>
-                <label for="adminViewDate">Date</label>
-              </div>
+              <input
+                type="date"
+                id="adminViewDate"
+                name="adminViewDate"
+                pattern="\d{4}-\d{2}-\d{2}"
+                [defaultValue]="currDate"
+                placeholder="dd-mm-yyyy"
+                class="form-control"
+                [(ngModel)]="currDate"
+                #adminViewDateModel="ngModel"
+                (ngModelChange)="onFieldChange()"
+                required
+              />
             </div>
             <div *ngIf="false" class="column">
-              <div class="form-floating mb-3">
-                <select id="reservationArea" name="reservationArea" class="form-control" [(ngModel)]="selectedAreaId" (change)="onAreaChange($event)" required>
-                  <option *ngFor="let area of areas" [value]="area.id">{{ area.name }}</option>
-                </select>
-                <label for="reservationArea">Area</label>
-              </div>
+              <select
+                id="reservationArea"
+                name="reservationArea"
+                class="form-control"
+                [(ngModel)]="selectedAreaId"
+                (change)="onAreaChange($event)"
+                required
+              >
+                <option *ngFor="let area of areas" [value]="area.id">{{ area.name }}</option>
+              </select>
             </div>
             <hr class="my-4">
           </div>
@@ -56,7 +74,8 @@
             <div class="col-6">
               <div class="row">
                 <h4 class="column">Weekly Prediction</h4>
-                <button *ngIf="isUnusual" type="button" class="col-2 btn btn-warning me-2" placement="right" [ngbTooltip]="tipContent">
+                <button *ngIf="isUnusual" type="button" class="col-2 btn btn-warning me-2" placement="right"
+                        [ngbTooltip]="tipContent">
                   <i class="bi bi-exclamation-circle-fill"></i>
                 </button>
 
@@ -145,9 +164,9 @@
             </div>
           </div>
         </div>
-    </form>
+      </form>
+    </div>
   </div>
-</div>
 </div>
 
 <!-- Modal for creating a new special offer -->
