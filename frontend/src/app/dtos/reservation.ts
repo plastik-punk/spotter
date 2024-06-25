@@ -87,7 +87,6 @@ export interface ReservationEditDto {
   specialOffers: SpecialOfferAmountDto[];
 }
 
-
 export interface ReservationWalkInDto{
   startTime: string;
   date: string;

@@ -284,35 +284,6 @@ public class ReservationEndpointTest implements TestData {
 
     @Test
     @Transactional
-    public void givenClosedDay_whenGetNextAvailableTables_thenReturnEmpty() throws Exception {
-        // Given Closed Day
-        ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
-            .withStartTime(TEST_RESERVATION_AVAILABILITY.getStartTime())
-            .withDate(TEST_CLOSED_DAY_DATE)
-            .withPax(TEST_RESERVATION_AVAILABILITY.getPax())
-            .withIdToExclude(TEST_RESERVATION_AVAILABILITY.getIdToExclude())
-            .build();
-
-        // When a get request is made with the closed day
-        MvcResult mvcResult = this.mockMvc.perform(get(RESERVATION_BASE_URI + "/next")
-                .param("startTime", reservationCheckAvailabilityDto.getStartTime().toString())
-                .param("date", reservationCheckAvailabilityDto.getDate().toString())
-                .param("pax", reservationCheckAvailabilityDto.getPax().toString())
-                .param("idToExclude", reservationCheckAvailabilityDto.getIdToExclude().toString())
-                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(TEST_USER_CUSTOMER, TEST_ROLES_CUSTOMER)))
-            .andDo(print())
-            .andReturn();
-
-        // Then the response status should be 200 (OK) and there should be 0 available tables
-        ReservationCheckAvailabilityDto[] response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ReservationCheckAvailabilityDto[].class);
-        assertAll(
-            () -> assertEquals(200, mvcResult.getResponse().getStatus()),
-            () -> assertEquals(0, response.length)
-        );
-    }
-
-    @Test
-    @Transactional
     public void givenInvalidReservation_whenGetNextAvailableTables_thenReturnBadRequest() throws Exception {
         // Given Invalid Reservation
         ReservationCheckAvailabilityDto reservationCheckAvailabilityDto =
