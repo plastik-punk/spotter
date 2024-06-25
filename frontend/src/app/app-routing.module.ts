@@ -21,6 +21,9 @@ import {CreateLayoutComponent} from "./components/layout/create-layout/create-la
 import {EmployeeViewComponent} from "./components/employee-view/employee-view.component";
 import {EditLayoutComponent} from "./components/layout/edit-layout/edit-layout.component";
 import {LayoutOverviewComponent} from "./components/layout/layout-overview/layout-overview.component";
+import {
+  PermanentReservationDetailsComponent
+} from "./components/reservation/permanent-reservation-details/permanent-reservation-details.component";
 
 const routes: Routes = [
   {path: '', redirectTo: 'login', pathMatch: 'full'},
@@ -42,7 +45,9 @@ const routes: Routes = [
   {path: 'edit-layout/:id', canActivate: mapToCanActivate([AuthGuard]), component: EditLayoutComponent},
   {path: 'layout-overview', canActivate: mapToCanActivate([AuthGuard]), component: LayoutOverviewComponent},
 
-  {path: 'employee-view', component: EmployeeViewComponent}
+  {path: 'employee-view', component: EmployeeViewComponent},
+
+  { path: 'permanent-reservation-details/:hashedId', component: PermanentReservationDetailsComponent },
 ];
 
 @NgModule({

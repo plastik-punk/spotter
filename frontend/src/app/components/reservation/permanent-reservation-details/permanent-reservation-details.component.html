@@ -1,0 +1,152 @@
+<body>
+<div class="top-left-logo">
+  <a href="/login">
+    <img src="../../../../assets/images/logo.png" alt="Logo">
+  </a>
+</div>
+
+<div class="container-fluid align-items-center justify-content-center">
+  <div class="col-12 col-lg-10 mx-auto h-90 py-3">
+    <div class="card custom-card" *ngIf="permanentReservationDetails">
+<h1 class="text-center">Details for Permanent Reservation</h1>
+      <div class="row mb-3 align-items-center">
+        <div class="col-md-4">
+          <strong>Name</strong>
+          <p>{{ permanentReservationDetails.userFirstName }} {{ permanentReservationDetails.userLastName }}</p>
+        </div>
+        <div class="col-md-4">
+          <strong>Pax</strong>
+          <p>{{ permanentReservationDetails.pax }}</p>
+        </div>
+        <div class="col-md-4">
+          <button class="btn btn-primary" (click)="goBack()">Back</button>
+        </div>
+      </div>
+
+      <div class="row mb-3 bg-light align-items-center">
+        <div class="col-md-4">
+          <strong>Start Date</strong>
+          <p>{{ permanentReservationDetails.startDate }}</p>
+        </div>
+        <div class="col-md-4">
+          <strong>End Date</strong>
+          <p>{{ permanentReservationDetails.endDate }}</p>
+        </div>
+        <div class="col-md-4">
+          <strong>Frequency</strong>
+          <p>Repeat every: {{ getFrequency(permanentReservationDetails) }}</p>
+        </div>
+      </div>
+
+      <div class="row mb-3 align-items-center">
+        <div class="col-md-4">
+          <strong>Start Time</strong>
+          <p>{{ permanentReservationDetails.startTime }}</p>
+        </div>
+        <div class="col-md-4">
+          <strong>End Time</strong>
+          <p>{{ permanentReservationDetails.endTime }}</p>
+        </div>
+        <div class="col-md-4">
+          <strong>Duration</strong>
+          <p>{{ calculateDuration(permanentReservationDetails.startTime, permanentReservationDetails.endTime) }}</p>
+        </div>
+      </div>
+
+      <!-- Table of linked reservations -->
+      <h3 class="text-center" >Single Reservations</h3>
+      <table *ngIf="permanentReservationDetails.confirmed else noReservations" class="table">
+        <thead>
+        <tr>
+          <th>Date</th>
+          <th>Start Time</th>
+          <th>End Time</th>
+          <th>Persons</th>
+          <th>Actions</th>
+
+          <!-- More columns as needed -->
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let reservation of permanentReservationDetails.singleReservationList">
+          <td>{{ reservation.date }}</td>
+          <td>{{ reservation.startTime }}</td>
+          <td>{{ reservation.endTime }}</td>
+          <td>{{ reservation.pax }}</td>
+          <td>
+            <div class="btn-group">
+
+
+              <a class="btn btn-sm responsive-info-button"
+                 aria-label="Show reservation details"
+                 (click)="showReservationDetails(reservation.hashId)">
+                <i class="bi bi-info-lg"></i>
+              </a>
+              <a class="btn btn-sm responsive-warning-button"
+              (click)="navigateToEdit(reservation.hashId,permanentReservationDetails.hashedId)"Edit>
+                <i class="bi bi-pencil"></i>
+              </a>
+              <a class="btn btn-sm responsive-danger-button"
+                 aria-label="Delete reservation"
+                 data-bs-toggle="modal"
+                 data-bs-target="#confirmation-dialog-delete"
+                 (click)="openConfirmationDialog(reservation.hashId)">
+                <i class="bi bi-trash"></i>
+              </a>
+            </div>
+          </td>
+
+          <!-- More data as needed -->
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for details -->
+<div class="modal fade" id="confirmation-dialog-reservation-detail" tabindex="-1" aria-labelledby="confirmation-dialog-reservation-detail-modal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <dl class="row">
+          <div class="dt-dd-align">
+            <dt class="col-sm-3">For:</dt>
+            <dd class="col-sm-10">{{ reservationModalDetailDto.firstName }} {{ reservationModalDetailDto.lastName }}</dd>
+          </div>
+          <div class="dt-dd-align">
+            <dt class="col-sm-3">Time:</dt>
+            <dd class="col-sm-10">{{ reservationModalDetailDto.startTime }} - {{ reservationModalDetailDto.endTime }}</dd>
+          </div>
+          <div class="dt-dd-align">
+            <dt class="col-sm-3">Table Number:</dt>
+            <dd class="col-sm-10">{{ reservationModalDetailDto.placeIds?.join(' • ') }}</dd>
+          </div>
+          <div class="dt-dd-align">
+            <dt class="col-sm-3">Note:</dt>
+            <dd class="col-sm-10">{{ reservationModalDetailDto.notes }}</dd>
+          </div>
+        </dl>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+
+<ng-template #noReservations>
+  <div class="alert alert-info" role="alert">
+    <h4 class="alert-heading">Your permanent reservation is currently still waiting for approval from the restaurant.</h4>
+    <p>Come back later to see details of the individual reservations or to edit and delete them individually</p>
+  </div>
+</ng-template>
+
+<app-confirmation-dialog-delete
+  [dialogTitle]="'Delete this Reservation?'"
+  [dialogText]="'Do you really want to delete this reservation?'"
+  (confirm)="onDelete()"
+></app-confirmation-dialog-delete>
+

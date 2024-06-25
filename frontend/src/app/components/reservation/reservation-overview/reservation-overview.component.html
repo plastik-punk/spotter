@@ -4,6 +4,7 @@
     <img src="../../../../assets/images/logo.png" alt="Logo">
   </a>
 </div>
+
 <div class="container-fluid align-items-center justify-content-center">
   <div class="col-12 col-lg-10 mx-auto h-90 py-3">
     <div class="card custom-card">
@@ -61,18 +62,31 @@
             class="bi bi-arrow-clockwise"></i></button>
         </div>
 
+
+
         <div class="ms-auto" *ngIf="isAdminOrEmployee()">
+          <div class="mb-3 text-center">
+            <button class="btn btn-toggle btn btn-primary" (click)="toggleView()">
+              {{ isPermanentView ? 'Show Normal Reservations' : 'Show Permanent Reservations' }}
+            </button>
+          </div>
           <button type="button" class="btn btn-success" (click)="createNewReservationGuest()">
             <i class="bi bi-plus"></i> Create New Reservation
           </button>
         </div>
         <div class="ms-auto" *ngIf="!isAdminOrEmployee()">
+          <div class="mb-3 text-center">
+            <button class="btn btn-toggle btn btn-primary" (click)="toggleView()">
+              {{ isPermanentView ? 'Show Normal Reservations' : 'Show Permanent Reservations' }}
+            </button>
+          </div>
           <button type="button" class="btn btn-success" (click)="createNewReservation()">
             <i class="bi bi-plus"></i> Create New Reservation
           </button>
         </div>
       </form>
 
+      <div *ngIf="!isPermanentView">
       <!-- Admin and Employee Views -->
       <div *ngIf="isEmployee() || isAdmin()">
         <div class="text-center mb-5" *ngIf=" !(todaysReservations.length===0 && upcomingReservations.length!==0)">
@@ -309,7 +323,74 @@
       </div>
 
     </div>
+
+      <div *ngIf="isPermanentView">
+        <h3 class="text-center mb-5">Permanent Reservations</h3>
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <!-- Column headers -->
+            <th *ngIf="isAdminOrEmployee()">First Name</th>
+            <th *ngIf="isAdminOrEmployee()">Last Name</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>Repetition</th>
+            <th >Confirmed</th>
+            <th> Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          <div *ngIf="permanentReservations.length===0">No permanent reservations </div>
+          <tr  *ngFor="let reservation of permanentReservations">
+            <!-- Data rows -->
+            <td *ngIf="isAdminOrEmployee()">{{ reservation.userFirstName }}</td>
+            <td *ngIf="isAdminOrEmployee()">{{ reservation.userLastName }}</td>
+            <td>{{ reservation.startDate | date }}</td>
+            <td>{{ reservation.endDate | date }}</td>
+            <td>{{ reservation.startTime }}</td>
+            <td>{{ reservation.endTime }}</td>
+            <td>{{ getFrequency(reservation) }}</td>
+            <td >
+
+              <i *ngIf="!reservation?.confirmed" style="color:red;" class="bi bi-x-octagon-fill"></i>
+              <i *ngIf="reservation?.confirmed" style="color:green;" class="bi bi-check-circle-fill"></i>
+
+            </td>
+            <td >
+              <a class="btn btn-sm responsive-info-button"
+                 aria-label="Show reservation details"
+                 [routerLink]="['/permanent-reservation-details',reservation.hashedId]">
+                <i class="bi bi-info-lg"></i>
+              </a>
+              <!-- Action buttons -->
+              <a class="btn btn-sm responsive-warning-button"
+                 aria-label="Edit reservation" [routerLink]="['/reservation-edit',reservation.hashedId]">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <a class="btn btn-sm responsive-danger-button"
+                 aria-label="Delete reservation"
+                 data-bs-toggle="modal"
+                 data-bs-target="#confirmation-dialog-delete"
+                 (click)="openConfirmationDialog(reservation.hashedId)">
+                <i class="bi bi-trash"></i>
+              </a>
+              <a *ngIf="isAdminOrEmployee() && !reservation.confirmed"
+                class="btn btn-sm responsive-success-button"
+                aria-label="Confirm permanent reservation"
+                 (click)="confirmPermanentReservation(reservation.id)">
+
+                <i class="bi bi-check-circle"></i>
+              </a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
   </div>
+</div>
 </div>
 
 <ng-template #noReservations>
