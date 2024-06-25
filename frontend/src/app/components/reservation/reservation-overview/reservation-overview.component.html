@@ -27,403 +27,404 @@
       </div>
 
       <div class="card-padding">
-      <form class="d-flex flex-row w-auto mb-3" (submit)="loadReservations()">
-        <button type="submit" hidden="hidden">submit</button>
-        <div class="ms-1">
-          <label for="searchEarliestReservation" class="col-form-label">
-            Earliest Date
-          </label>
-          <input type="date" id="searchEarliestReservation" name="searchEarliestReservation"
-                 pattern="\d{4}-\d{2}-\d{2}"
-                 placeholder="yyyy-mm-dd"
-                 class="form-control"
-                 [(ngModel)]="searchEarliestDate"
-                 (ngModelChange)="searchChanged()"
-          >
-        </div>
-        <div class="ms-1">
-          <label for="searchLatestReservation" class="col-form-label">
-            Latest Date
-          </label>
-          <input type="date" id="searchLatestReservation" name="searchLatestReservation"
-                 pattern="\d{4}-\d{2}-\d{2}"
-                 placeholder="yyyy-mm-dd"
-                 class="form-control"
-                 [(ngModel)]="searchLatestDate"
-                 (ngModelChange)="searchChanged()"
-          >
-        </div>
-        <div class="ms-1">
-          <label for="searchEarliestStartTime" class="col-form-label">
-            Earliest Start Time
-          </label>
-          <input type="time" id="searchEarliestStartTime" name="searchEarliestStartTime"
-                 pattern="\d{2}:\d{2}"
-                 placeholder="HH:mm"
-                 class="form-control"
-                 [(ngModel)]="searchEarliestStartTime"
-                 (ngModelChange)="searchChanged()">
-        </div>
-        <div class="ms-1" *ngIf="isAdminOrEmployee()">
-          <label for="searchLatestEndTime" class="col-form-label">
-            Latest End Time
-          </label>
-          <input type="time" id="searchLatestEndTime" name="searchLatestEndTime"
-                 pattern="\d{2}:\d{2}"
-                 placeholder="HH:mm"
-                 class="form-control"
-                 [(ngModel)]="searchLatestEndTime"
-                 (ngModelChange)="searchChanged()">
-        </div>
-        <div class="ms-1 align-self-end">
-          <button type="button" class="btn btn-primary" (click)="resetSearchParams()"><i
-            class="bi bi-arrow-clockwise"></i></button>
-        </div>
-
-        <div class="ms-auto align-self-end" *ngIf="isAdminOrEmployee()">
-          <button type="button" class="btn btn-success" (click)="createNewReservationGuest()">
-            <i class="bi bi-plus"></i> Create New Guest Reservation
-          </button>
-
-          <div class="ms-auto" *ngIf="isAdminOrEmployee()">
-          <div class="mb-3 text-center">
-            <button class="btn btn-toggle btn btn-primary" (click)="toggleView()">
+        <form class="d-flex flex-row w-auto mb-3" (submit)="loadReservations()">
+          <button type="submit" hidden="hidden">submit</button>
+          <div class="ms-1">
+            <label for="searchEarliestReservation" class="col-form-label">
+              Earliest Date
+            </label>
+            <input type="date" id="searchEarliestReservation" name="searchEarliestReservation"
+                   pattern="\d{4}-\d{2}-\d{2}"
+                   placeholder="yyyy-mm-dd"
+                   class="form-control"
+                   [(ngModel)]="searchEarliestDate"
+                   (ngModelChange)="searchChanged()"
+            >
+          </div>
+          <div class="ms-1">
+            <label for="searchLatestReservation" class="col-form-label">
+              Latest Date
+            </label>
+            <input type="date" id="searchLatestReservation" name="searchLatestReservation"
+                   pattern="\d{4}-\d{2}-\d{2}"
+                   placeholder="yyyy-mm-dd"
+                   class="form-control"
+                   [(ngModel)]="searchLatestDate"
+                   (ngModelChange)="searchChanged()"
+            >
+          </div>
+          <div class="ms-1">
+            <label for="searchEarliestStartTime" class="col-form-label">
+              Earliest Start Time
+            </label>
+            <input type="time" id="searchEarliestStartTime" name="searchEarliestStartTime"
+                   pattern="\d{2}:\d{2}"
+                   placeholder="HH:mm"
+                   class="form-control"
+                   [(ngModel)]="searchEarliestStartTime"
+                   (ngModelChange)="searchChanged()">
+          </div>
+          <div class="ms-1">
+            <label for="searchLatestEndTime" class="col-form-label">
+              Latest End Time
+            </label>
+            <input type="time" id="searchLatestEndTime" name="searchLatestEndTime"
+                   pattern="\d{2}:\d{2}"
+                   placeholder="HH:mm"
+                   class="form-control"
+                   [(ngModel)]="searchLatestEndTime"
+                   (ngModelChange)="searchChanged()">
+          </div>
+          <div class="ms-1 align-self-end">
+            <button type="button" class="btn btn-primary" (click)="resetSearchParams()"><i
+              class="bi bi-arrow-clockwise"></i></button>
+          </div>
+          <div class="ms-1 align-self-end" *ngIf="isAdminOrEmployee()">
+            <button class="btn btn-toggle btn-dark" (click)="toggleView()">
               {{ isPermanentView ? 'Show Normal Reservations' : 'Show Permanent Reservations' }}
             </button>
           </div>
-          <button type="button" class="btn btn-success" [routerLink]="['/employee-view']">
-            <i class="bi bi-plus"></i> Create New Reservation
-          </button>
-        </div>
-        <div class="ms-auto align-self-end" *ngIf="!isAdminOrEmployee()">
-        <div class="ms-auto" *ngIf="!isAdminOrEmployee()">
-          <div class="mb-3 text-center">
-            <button class="btn btn-toggle btn btn-primary" (click)="toggleView()">
-              {{ isPermanentView ? 'Show Normal Reservations' : 'Show Permanent Reservations' }}
+
+          <div class="ms-auto align-self-end" *ngIf="isAdminOrEmployee()">
+            <button type="button" class="btn btn-success" (click)="createNewReservationGuest()">
+              <i class="bi bi-plus"></i> Create New Reservation
             </button>
           </div>
-          <button type="button" class="btn btn-success" (click)="createNewReservation()">
-            <i class="bi bi-plus"></i> Create New Reservation
-          </button>
-        </div>
-        </div>
-        </div>
+          <div class="ms-auto align-self-end" *ngIf="!isAdminOrEmployee()">
+            <button type="button" class="btn btn-success" (click)="createNewReservation()">
+              <i class="bi bi-plus"></i> Create New Reservation
+            </button>
+          </div>
+        </form>
 
-      </form>
         <hr class="my-4">
 
 
-      <div *ngIf="!isPermanentView">
-      <!-- Admin and Employee Views -->
-      <div *ngIf="isEmployee() || isAdmin()">
-        <div class="text-center mb-5" *ngIf=" !(todaysReservations.length===0 && upcomingReservations.length!==0)">
-          <h3>Todays Reservations</h3>
-          <hr class="my-4">
-          <table *ngIf="todaysReservations.length!==0" class="table table-hover">
+        <div *ngIf="!isPermanentView">
+          <!-- Admin and Employee Views -->
+          <div *ngIf="isEmployee() || isAdmin()">
+            <div class="text-center mb-5" *ngIf=" !(todaysReservations.length===0 && upcomingReservations.length!==0)">
+              <h3>Todays Reservations</h3>
+              <hr class="my-4">
+              <table *ngIf="todaysReservations.length!==0" class="table table-hover">
+                <thead>
+                <tr>
+                  <th>Status</th>
+                  <th>Start Time</th>
+                  <th>End Time</th>
+                  <th>Name</th>
+                  <th>Seats</th>
+                  <th>Table Number</th>
+                  <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let reservation of todaysReservations">
+                  <td>
+                    <div *ngIf="reservation.confirmed && !reservationIsInTheFuture(reservation)">
+                      <i class="bi bi-check-circle-fill text-success"></i>
+                    </div>
+                    <div *ngIf="!reservation.confirmed && !reservationIsInTheFuture(reservation)">
+                      <i class="bi bi-x-circle-fill text-danger"></i>
+                    </div>
+                    <div *ngIf="reservationIsInTheFuture(reservation)">
+                      <i class="bi bi-clock text-primary"></i>
+                    </div>
+                  </td>
+                  <td>{{ formatTime(reservation.startTime) }}</td>
+                  <td>{{ formatTime(reservation.endTime) }}</td>
+                  <td class="name">{{ reservation.userFirstName }} {{ reservation.userLastName }}</td>
+                  <td>{{ reservation.pax }}</td>
+                  <td>{{ getPositivePlaceIds(reservation.placeIds).join(' • ') }}</td>
+                  <td>
+                    <div class="btn-group">
+                      <a *ngIf="!reservation.confirmed && !reservationIsInTheFuture(reservation)"
+                         class="btn btn-sm btn-success"
+                         aria-label="Confirm reservation has arrived"
+                         (click)="confirmReservation(reservation.hashId)">
+                        <i class="bi bi-check-circle"></i>
+                      </a>
+                      <a *ngIf="reservation.confirmed && !reservationIsInTheFuture(reservation)"
+                         class="btn btn-sm btn-danger"
+                         aria-label="Mark reservation as not arrived"
+                         (click)="unconfirmReservation(reservation.hashId)">
+                        <i class="bi bi-x-circle"></i>
+                      </a>
+                      <a *ngIf="reservationIsInTheFuture(reservation)"
+                         class="btn btn-sm"
+                         aria-label="Reservation is in the future and cannot be confirmed"
+                         [class.disabled]="true">
+                        <i class="bi bi-clock"></i>
+                      </a>
+                      <a class="btn btn-sm btn-info"
+                         aria-label="Show reservation details"
+                         (click)="showReservationDetails(reservation.hashId)">
+                        <i class="bi bi-info-lg"></i>
+                      </a>
+                      <a class="btn btn-sm btn-warning"
+                         aria-label="Edit reservation" [routerLink]="['/reservation-edit',reservation.hashId]">
+                        <i class="bi bi-pencil"></i>
+                      </a>
+                      <a class="btn btn-sm btn-danger"
+                         aria-label="Delete reservation"
+                         data-bs-toggle="modal"
+                         data-bs-target="#confirmation-dialog-delete"
+                         (click)="openConfirmationDialog(reservation.hashId)">
+                        <i class="bi bi-trash"></i>
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+              <h4 class="text-center" *ngIf="todaysReservations.length===0">No open reservations for today!</h4>
+            </div>
+
+            <div>
+              <hr class="my-4">
+              <h3 class="text-center ">Upcoming Reservations</h3>
+              <hr class="my-4">
+              <div *ngFor="let day of displayedUpcomingReservations | groupByDate">
+                <h4 class="text-center">{{ day.key }}</h4>
+                <table class="table table-hover">
+                  <thead>
+                  <tr>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Name</th>
+                    <th>Seats</th>
+                    <th>Table Number</th>
+                    <th>Actions</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr *ngFor="let reservation of day.value">
+                    <td>{{ formatTime(reservation.startTime) }}</td>
+                    <td>{{ formatTime(reservation.endTime) }}</td>
+                    <td
+                      style="text-align: left !important">{{ reservation.userFirstName }} {{ reservation.userLastName }}
+                    </td>
+                    <td>{{ reservation.pax }}</td>
+                    <td>{{ getPositivePlaceIds(reservation.placeIds).join(' • ') }}</td>
+                    <td>
+                      <div class="btn-group">
+                        <a class="btn btn-sm btn-info"
+                           aria-label="Show reservation details" (click)="showReservationDetails(reservation.hashId)">
+                          <i class="bi bi-info-lg"></i>
+                        </a>
+                        <a class="btn btn-sm btn-warning"
+                           aria-label="Edit reservation" [routerLink]="['/reservation-edit',reservation.hashId]">
+                          <i class="bi bi-pencil"></i>
+                        </a>
+                        <a class="btn btn-sm btn-danger"
+                           aria-label="Delete reservation"
+                           data-bs-toggle="modal"
+                           data-bs-target="#confirmation-dialog-delete"
+                           (click)="openConfirmationDialog(reservation.hashId)">
+                          <i class="bi bi-trash"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Pagination Controls -->
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <button class="btn btn-primary" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
+                Previous
+              </button>
+              <span>Page {{ currentPage }} of {{ Math.ceil(totalUpcomingReservations / pageSize) }}</span>
+              <button class="btn btn-primary" (click)="changePage(currentPage + 1)"
+                      [disabled]="currentPage >= Math.ceil(totalUpcomingReservations / pageSize)">
+                Next
+              </button>
+            </div>
+          </div>
+
+          <!-- Customer View -->
+          <div *ngIf="!isAdmin() && !isEmployee()">
+            <div>
+              <h3>Your Reservations</h3>
+              <div *ngIf="reservations.length > 0; else noReservations">
+                <table class="table table-hover">
+                  <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Day</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Name</th>
+                    <th>Seats</th>
+                    <th>Table Number</th>
+                    <th>Actions</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr *ngFor="let reservation of reservations">
+                    <td>{{ formatDotDate(reservation.date) }}</td>
+                    <td>{{ formatDay(reservation.date) }}</td>
+                    <td>{{ formatTime(reservation.startTime) }}</td>
+                    <td>{{ formatTime(reservation.endTime) }}</td>
+                    <td class="name">{{ reservation.userFirstName }} {{ reservation.userLastName }}</td>
+                    <td>{{ reservation.pax }}</td>
+                    <td>{{ getPositivePlaceIds(reservation.placeIds).join(' • ') }}</td>
+                    <td>
+                      <div class="btn-group">
+                        <a class="btn btn-sm btn-info"
+                           aria-label="Show reservation details"
+                           (click)="showReservationDetails(reservation.hashId)">
+                          <i class="bi bi-info-lg"></i>
+                        </a>
+                        <a class="btn btn-sm btn-warning"
+                           aria-label="Edit reservation" [routerLink]="['/reservation-edit',reservation.hashId]">
+                          <i class="bi bi-pencil"></i>
+                        </a>
+                        <a class="btn btn-sm btn-danger"
+                           aria-label="Delete reservation"
+                           data-bs-toggle="modal"
+                           data-bs-target="#confirmation-dialog-delete"
+                           (click)="openConfirmationDialog(reservation.hashId)">
+                          <i class="bi bi-trash"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal for details -->
+          <div class="modal fade" id="confirmation-dialog-reservation-detail" tabindex="-1"
+               aria-labelledby="confirmation-dialog-reservation-detail-modal" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-body">
+                  <dl class="row">
+                    <div class="dt-dd-align">
+                      <dt class="col-sm-3">For:</dt>
+                      <dd
+                        class="col-sm-10 ">{{ reservationModalDetailDto.firstName }} {{ reservationModalDetailDto.lastName }}
+                      </dd>
+                    </div>
+
+                    <div class="dt-dd-align">
+                      <dt class="col-sm-3">Time:</dt>
+                      <dd class="col-sm-10">{{ formatTime(reservationModalDetailDto.startTime) }}
+                        - {{ formatTime(reservationModalDetailDto.endTime) }}
+                      </dd>
+                    </div>
+                    <div class="dt-dd-align">
+                      <dt class="col-sm-3">Table Number:</dt>
+                      <dd class="col-sm-10">{{ getPositivePlaceIds(reservationModalDetailDto.placeIds).join(' • ') }}
+                      </dd>
+                    </div>
+
+                    <div class="dt-dd-align">
+                      <dt class="col-sm-3">Note:</dt>
+                      <dd class="col-sm-10">{{ reservationModalDetailDto.notes }}</dd>
+                    </div>
+
+                    <div class="dt-dd-align align-items-start" *ngIf="hasSpecialOffer()">
+                      <dt class="col-sm-3">Special Offers:</dt>
+                      <dd class="col-sm-10">
+                        <dl class="col-sm-10" *ngFor="let offer of reservationModalDetailDto.specialOffers">
+                          <dt class="mt-0 ms-0">{{ offer.amount }}x {{ offer.specialOffer.name }}:</dt>
+                          <dd>{{ offer.amount * offer.specialOffer.pricePerPax }}€</dd>
+                        </dl>
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div *ngIf="isPermanentView">
+          <h3>Permanent Reservations</h3>
+          <table class="table table-hover">
             <thead>
             <tr>
-              <th>Status</th>
+              <!-- Column headers -->
+              <th *ngIf="isAdminOrEmployee()" class="name">First Name</th>
+              <th *ngIf="isAdminOrEmployee()" class="name">Last Name</th>
+              <th>Date</th>
+              <th>Day</th>
               <th>Start Time</th>
               <th>End Time</th>
-              <th class="name">Name</th>
-              <th>Seats</th>
-              <th>Table Number</th>
+              <th>Repetition</th>
+              <th>Confirmed</th>
               <th>Actions</th>
             </tr>
             </thead>
             <tbody>
-            <tr *ngFor="let reservation of todaysReservations">
-              <td>
-                <div *ngIf="reservation.confirmed && !reservationIsInTheFuture(reservation)">
-                  <i class="bi bi-check-circle-fill text-success"></i>
-                </div>
-                <div *ngIf="!reservation.confirmed && !reservationIsInTheFuture(reservation)">
-                  <i class="bi bi-x-circle-fill text-danger"></i>
-                </div>
-                <div *ngIf="reservationIsInTheFuture(reservation)">
-                  <i class="bi bi-clock text-primary"></i>
-                </div>
-              </td>
-              <td>{{ formatTime(reservation.startTime) }}</td>
-              <td>{{ formatTime(reservation.endTime) }}</td>
-              <td class="name">{{ reservation.userFirstName }} {{ reservation.userLastName }}</td>
-              <td>{{ reservation.pax }}</td>
-              <td>{{ getPositivePlaceIds(reservation.placeIds).join(' • ') }}</td>
-              <td>
-                <div class="btn-group">
-                  <a *ngIf="!reservation.confirmed && !reservationIsInTheFuture(reservation)"
-                     class="btn btn-sm btn-success"
-                     aria-label="Confirm reservation has arrived"
-                     (click)="confirmReservation(reservation.hashId)">
-                    <i class="bi bi-check-circle"></i>
-                  </a>
-                  <a *ngIf="reservation.confirmed && !reservationIsInTheFuture(reservation)"
-                     class="btn btn-sm btn-danger"
-                     aria-label="Mark reservation as not arrived"
-                     (click)="unconfirmReservation(reservation.hashId)">
-                    <i class="bi bi-x-circle"></i>
-                  </a>
-                  <a *ngIf="reservationIsInTheFuture(reservation)"
-                     class="btn btn-sm"
-                     aria-label="Reservation is in the future and cannot be confirmed"
-                     [class.disabled]="true">
-                  <i class="bi bi-clock"></i>
-                  </a>
-                  <a class="btn btn-sm btn-info"
-                     aria-label="Show reservation details"
-                     (click)="showReservationDetails(reservation.hashId)">
-                    <i class="bi bi-info-lg"></i>
-                  </a>
-                  <a class="btn btn-sm btn-warning"
-                     aria-label="Edit reservation" [routerLink]="['/reservation-edit',reservation.hashId]">
-                    <i class="bi bi-pencil"></i>
-                  </a>
-                  <a class="btn btn-sm btn-danger"
-                     aria-label="Delete reservation"
-                     data-bs-toggle="modal"
-                     data-bs-target="#confirmation-dialog-delete"
-                     (click)="openConfirmationDialog(reservation.hashId)">
-                    <i class="bi bi-trash"></i>
-                  </a>
-                </div>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-          <h4 class="text-center" *ngIf="todaysReservations.length===0">No open reservations for today!</h4>
-        </div>
-
-        <div>
-          <hr class="my-4">
-          <h3 class="text-center ">Upcoming Reservations</h3>
-          <hr class="my-4">
-          <div *ngFor="let day of displayedUpcomingReservations | groupByDate">
-            <h4 class="text-center">{{ day.key }}</h4>
-            <table class="table table-hover">
-              <thead>
+            <ng-container *ngIf="permanentReservations.length === 0; else hasReservations">
               <tr>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Name</th>
-                <th>Seats</th>
-                <th>Table Number</th>
-                <th>Actions</th>
+                <td colspan="9">No permanent reservations</td>
               </tr>
-              </thead>
-              <tbody>
-              <tr *ngFor="let reservation of day.value">
-                <td>{{ formatTime(reservation.startTime) }}</td>
-                <td>{{ formatTime(reservation.endTime) }}</td>
-                <td style="text-align: left !important">{{ reservation.userFirstName }} {{ reservation.userLastName }}</td>
-                <td>{{ reservation.pax }}</td>
-                <td>{{ getPositivePlaceIds(reservation.placeIds).join(' • ') }}</td>
+            </ng-container>
+            <ng-template #hasReservations>
+              <tr *ngFor="let reservation of permanentReservations">
+                <!-- Data rows -->
+                <td *ngIf="isAdminOrEmployee()" class="name">{{ reservation.userFirstName }}</td>
+                <td *ngIf="isAdminOrEmployee()" class="name">{{ reservation.userLastName }}</td>
+                <td>{{ reservation.startDate | date }}</td>
+                <td>{{ formatDay(reservation.startDate) }}</td>
+                <td>{{ reservation.startTime }}</td>
+                <td>{{ reservation.endTime }}</td>
+                <td>{{ getFrequency(reservation) }}</td>
+                <td>
+                  <i *ngIf="!reservation?.confirmed" style="color:red;" class="bi bi-x-octagon-fill"></i>
+                  <i *ngIf="reservation?.confirmed" style="color:green;" class="bi bi-check-circle-fill"></i>
+                </td>
                 <td>
                   <div class="btn-group">
-                    <a class="btn btn-sm btn-info"
-                       aria-label="Show reservation details" (click)="showReservationDetails(reservation.hashId)">
+                    <a *ngIf="isAdminOrEmployee() && !reservation.confirmed"
+                       class="btn btn-sm btn-success responsive-success-button"
+                       aria-label="Confirm permanent reservation"
+                       (click)="confirmPermanentReservation(reservation.id)">
+                      <i class="bi bi-check-circle"></i>
+                    </a>
+                    <a class="btn btn-sm btn-info responsive-info-button"
+                       aria-label="Show reservation details"
+                       [routerLink]="['/permanent-reservation-details', reservation.hashedId]">
                       <i class="bi bi-info-lg"></i>
                     </a>
-                    <a class="btn btn-sm btn-warning"
-                       aria-label="Edit reservation" [routerLink]="['/reservation-edit',reservation.hashId]">
-                      <i class="bi bi-pencil"></i>
-                    </a>
-                    <a class="btn btn-sm btn-danger"
+                    <a class="btn btn-sm btn-danger responsive-danger-button"
                        aria-label="Delete reservation"
                        data-bs-toggle="modal"
                        data-bs-target="#confirmation-dialog-delete"
-                       (click)="openConfirmationDialog(reservation.hashId)">
+                       (click)="openConfirmationDialog(reservation.hashedId)">
                       <i class="bi bi-trash"></i>
                     </a>
                   </div>
                 </td>
               </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- Pagination Controls -->
-        <div class="d-flex justify-content-between align-items-center mt-3">
-          <button class="btn btn-primary" (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
-            Previous
-          </button>
-          <span>Page {{ currentPage }} of {{ Math.ceil(totalUpcomingReservations / pageSize) }}</span>
-          <button class="btn btn-primary" (click)="changePage(currentPage + 1)"
-                  [disabled]="currentPage >= Math.ceil(totalUpcomingReservations / pageSize)">
-            Next
-          </button>
-        </div>
-      </div>
-
-      <!-- Customer View -->
-      <div *ngIf="!isAdmin() && !isEmployee()">
-        <div>
-          <h3>Your Reservations</h3>
-          <div *ngIf="reservations.length > 0; else noReservations">
-          <table class="table table-hover">
-            <thead>
-            <tr>
-              <th>Date</th>
-              <th>Day</th>
-              <th>Start Time</th>
-              <th>End Time</th>
-              <th>Name</th>
-              <th>Seats</th>
-              <th>Table Number</th>
-              <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr *ngFor="let reservation of reservations">
-              <td>{{ formatDotDate(reservation.date) }}</td>
-              <td>{{ formatDay(reservation.date) }}</td>
-              <td>{{ formatTime(reservation.startTime) }}</td>
-              <td>{{ formatTime(reservation.endTime) }}</td>
-              <td class="name">{{ reservation.userFirstName }} {{ reservation.userLastName }}</td>
-              <td>{{ reservation.pax }}</td>
-              <td>{{ getPositivePlaceIds(reservation.placeIds).join(' • ') }}</td>
-              <td>
-                <div class="btn-group">
-                  <a class="btn btn-sm btn-info"
-                     aria-label="Show reservation details"
-                     (click)="showReservationDetails(reservation.hashId)">
-                    <i class="bi bi-info-lg"></i>
-                  </a>
-                  <a class="btn btn-sm btn-warning"
-                     aria-label="Edit reservation" [routerLink]="['/reservation-edit',reservation.hashId]">
-                    <i class="bi bi-pencil"></i>
-                  </a>
-                  <a class="btn btn-sm btn-danger"
-                     aria-label="Delete reservation"
-                     data-bs-toggle="modal"
-                     data-bs-target="#confirmation-dialog-delete"
-                     (click)="openConfirmationDialog(reservation.hashId)">
-                    <i class="bi bi-trash"></i>
-                  </a>
-                </div>
-              </td>
-            </tr>
+            </ng-template>
             </tbody>
           </table>
         </div>
-        </div>
+
+
       </div>
-
-      <!-- Modal for details -->
-      <div class="modal fade" id="confirmation-dialog-reservation-detail" tabindex="-1" aria-labelledby="confirmation-dialog-reservation-detail-modal" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-body">
-              <dl class="row">
-                <div class="dt-dd-align">
-                  <dt class="col-sm-3">For:</dt>
-                  <dd class="col-sm-10 ">{{ reservationModalDetailDto.firstName }} {{ reservationModalDetailDto.lastName }}</dd>
-                </div>
-
-                <div class="dt-dd-align">
-                  <dt class="col-sm-3">Time:</dt>
-                  <dd class="col-sm-10">{{ formatTime(reservationModalDetailDto.startTime) }} - {{ formatTime(reservationModalDetailDto.endTime) }}</dd>
-                </div>
-                <div class="dt-dd-align">
-                  <dt class="col-sm-3">Table Number:</dt>
-                  <dd class="col-sm-10">{{ getPositivePlaceIds(reservationModalDetailDto.placeIds).join(' • ') }}</dd>
-                </div>
-
-                <div class="dt-dd-align">
-                  <dt class="col-sm-3">Note:</dt>
-                  <dd class="col-sm-10">{{ reservationModalDetailDto.notes }}</dd>
-                </div>
-
-                <div class="dt-dd-align align-items-start" *ngIf="hasSpecialOffer()">
-                  <dt class="col-sm-3">Special Offers:</dt>
-                  <dd class="col-sm-10">
-                    <dl class="col-sm-10" *ngFor="let offer of reservationModalDetailDto.specialOffers">
-                      <dt class="mt-0 ms-0">{{offer.amount}}x {{offer.specialOffer.name}}:</dt>
-                      <dd>{{offer.amount * offer.specialOffer.pricePerPax}}€</dd>
-                    </dl>
-                  </dd>
-                </div>
-              </dl>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
     </div>
-
-      <div *ngIf="isPermanentView">
-        <h3 class="text-center mb-5">Permanent Reservations</h3>
-        <table class="table table-hover">
-          <thead>
-          <tr>
-            <!-- Column headers -->
-            <th *ngIf="isAdminOrEmployee()">First Name</th>
-            <th *ngIf="isAdminOrEmployee()">Last Name</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-            <th>Start Time</th>
-            <th>End Time</th>
-            <th>Repetition</th>
-            <th >Confirmed</th>
-            <th> Actions</th>
-          </tr>
-          </thead>
-          <tbody>
-          <div *ngIf="permanentReservations.length===0">No permanent reservations </div>
-          <tr  *ngFor="let reservation of permanentReservations">
-            <!-- Data rows -->
-            <td *ngIf="isAdminOrEmployee()">{{ reservation.userFirstName }}</td>
-            <td *ngIf="isAdminOrEmployee()">{{ reservation.userLastName }}</td>
-            <td>{{ reservation.startDate | date }}</td>
-            <td>{{ reservation.endDate | date }}</td>
-            <td>{{ reservation.startTime }}</td>
-            <td>{{ reservation.endTime }}</td>
-            <td>{{ getFrequency(reservation) }}</td>
-            <td >
-
-              <i *ngIf="!reservation?.confirmed" style="color:red;" class="bi bi-x-octagon-fill"></i>
-              <i *ngIf="reservation?.confirmed" style="color:green;" class="bi bi-check-circle-fill"></i>
-
-            </td>
-            <td >
-              <a class="btn btn-sm responsive-info-button"
-                 aria-label="Show reservation details"
-                 [routerLink]="['/permanent-reservation-details',reservation.hashedId]">
-                <i class="bi bi-info-lg"></i>
-              </a>
-              <!-- Action buttons -->
-              <a class="btn btn-sm responsive-danger-button"
-                 aria-label="Delete reservation"
-                 data-bs-toggle="modal"
-                 data-bs-target="#confirmation-dialog-delete"
-                 (click)="openConfirmationDialog(reservation.hashedId)">
-                <i class="bi bi-trash"></i>
-              </a>
-              <a *ngIf="isAdminOrEmployee() && !reservation.confirmed"
-                class="btn btn-sm responsive-success-button"
-                aria-label="Confirm permanent reservation"
-                 (click)="confirmPermanentReservation(reservation.id)">
-
-                <i class="bi bi-check-circle"></i>
-              </a>
-            </td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
-
   </div>
-</div>
-</div>
 </div>
 
 <ng-template #noReservations>
   <div class="alert alert-info" role="alert">
     <h4 class="alert-heading">You currently have no upcoming Reservations.</h4>
-    <p>Change the filter parameters to search for your past reservations or <a routerLink="/reservation-simple" class="alert-link">make a new one.</a></p>
+    <p>Change the filter parameters to search for your past reservations or <a routerLink="/reservation-simple"
+                                                                               class="alert-link">make a new one.</a>
+    </p>
   </div>
 </ng-template>
 
