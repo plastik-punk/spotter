@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -56,21 +57,52 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventListDto> search(EventSearchDto searchParameters) {
         LOGGER.trace("search({})", searchParameters);
-        LocalDateTime startTime;
-        if (searchParameters.getEarliestDate() == null || searchParameters.getEarliestStartTime() == null) {
+
+        LocalDate startDate;
+        if (searchParameters.getEarliestDate() == null) {
+            startDate = null;
+        } else {
+            startDate = searchParameters.getEarliestDate();
+        }
+
+        LocalDate endDate;
+        if (searchParameters.getLatestDate() == null) {
+            endDate = null;
+        } else {
+            endDate = searchParameters.getLatestDate();
+        }
+
+        LocalTime startTime;
+        if (searchParameters.getEarliestStartTime() == null) {
             startTime = null;
         } else {
-            startTime = LocalDateTime.of(searchParameters.getEarliestDate(), searchParameters.getEarliestStartTime());
+            startTime = searchParameters.getEarliestStartTime();
         }
 
-        LocalDateTime endTime;
-        if (searchParameters.getLatestDate() == null || searchParameters.getLatestEndTime() == null) {
+        LocalTime endTime;
+        if (searchParameters.getLatestEndTime() == null) {
             endTime = null;
         } else {
-            endTime = LocalDateTime.of(searchParameters.getLatestDate(), searchParameters.getLatestEndTime());
+            endTime = searchParameters.getLatestEndTime();
         }
 
-        List<Event> events = eventRepository.findEventsByDate(startTime, endTime);
+        String name;
+        if (searchParameters.getName() == null) {
+            name = null;
+        } else {
+            name = searchParameters.getName();
+        }
+
+        System.out.println(name);
+
+        List<Event> events = eventRepository.findEventsByDate(startDate, endDate, startTime, endTime, name);
+        return mapper.eventToEventListDto(events);
+    }
+
+    @Override
+    public List<EventListDto> getUpcomingEvents() {
+        LOGGER.trace("getUpcomingEvents()");
+        List<Event> events = eventRepository.findUpcomingEvents();
         return mapper.eventToEventListDto(events);
     }
 

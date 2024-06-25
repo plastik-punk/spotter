@@ -1,17 +1,21 @@
-.alert {
+.notification-container {
   position: fixed;
   top: 1rem;
   right: 1rem;
   z-index: 1050;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column-reverse; /* Newer notifications on top */
+  align-items: flex-end;
+}
+
+.alert {
+  margin-bottom: 0.5rem; /* Add margin to space notifications */
   min-width: 250px;
-  max-width: 500px;  /* You can adjust this width as necessary */
+  max-width: 500px;
   padding: 1rem;
   opacity: 0;
   transition: opacity 0.5s ease-in-out;
-  white-space: pre-wrap;  /* Ensures text will wrap to the next line if it's too long */
+  white-space: pre-wrap;
 }
 
 .alert.show {

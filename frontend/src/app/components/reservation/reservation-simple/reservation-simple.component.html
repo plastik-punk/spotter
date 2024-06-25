@@ -21,8 +21,20 @@
         <!-- Start row with Title, startTime and Date -->
         <div class="top-banner">
           <div class="row">
-            <div class="column">
-              <h1 class="font-heading">Reserve</h1>
+            <div class="row">
+              <!-- New div for restaurant info -->
+              <div class="restaurant-info">
+                <h1 class="font-heading pink">{{ restaurantInfo?.name }}</h1>
+                <p class="green">{{ restaurantInfo?.address }}</p>
+                <h1 class="font-heading pink">Opening Hours</h1>
+                <dl>
+                  <dt class="brown">Sunday - Thursday:</dt>
+                  <dd class="green">{{ formatTime(openingHours?.monday?.[0]) }} - {{ formatTime(openingHours?.monday?.[1]) }} & {{ formatTime(openingHours?.monday?.[2]) }} - {{ formatTime(openingHours?.monday?.[3]) }}</dd>
+
+                  <dt class="brown">Friday - Saturday:</dt>
+                  <dd class="green">{{ formatTime(openingHours?.friday?.[0]) }} - {{ formatTime(openingHours?.friday?.[1]) }} & {{ formatTime(openingHours?.friday?.[2]) }} - {{ formatTime(openingHours?.friday?.[3]) }}</dd>
+                </dl>
+              </div>
             </div>
             <div class="column">
               <input
@@ -51,9 +63,49 @@
                 (ngModelChange)="onFieldChange()"
                 required
               />
+
+            </div>
+            <!-- Start row for recurring reservation option -->
+            <div class ="column" *ngIf="authService.isLoggedIn()">
+            <div class="row">
+              <div class="column">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="isRecurring" [(ngModel)]="isRecurring" name="isRecurring">
+                  <label class="form-check-label" for="isRecurring">
+                    Make this a recurring reservation
+                  </label>
+                </div>
+              </div>
+            </div>
+            </div>
+
+            <!-- Conditional row for setting recurring reservation details -->
+            <div class="row" *ngIf="isRecurring">
+              <div class="column">
+                <label for="repeatEvery">Repeat every:</label>
+                <input type="number" id="repeatEvery" name="repeatEvery" class="form-control" [(ngModel)]="repeatEvery" min="1" required>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" id="days" name="repetitionType" [(ngModel)]="repetitionType" [value]="RepetitionEnum.DAYS">
+                  <label class="form-check-label" for="days">Days</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" id="weeks" name="repetitionType" [(ngModel)]="repetitionType" [value]="RepetitionEnum.WEEKS">
+                  <label class="form-check-label" for="weeks">Weeks</label>
+                </div>
+                <div class="col-auto">
+                  <label for="recurUntil">Make Reservation recurring until:</label>
+                  <input type="date" id="recurUntil" name="recurUntil" class="form-control" [(ngModel)]="endDate">
+                </div>
+              </div>
+
+              <!-- Note on Default Duration -->
+              <div class="col-12 text-center mt-2">
+                <small class="form-text text-muted">
+                  Note: Default runtime for recurring reservations is 1 year. Choose a date if you want to end it at a different time.
+                </small>
+              </div>
             </div>
           </div>
-
           <hr class="my-4">
         </div>
 
@@ -72,7 +124,8 @@
           <div class="column">
             <div class="col-lg-12 justify-content-center">
               <div class="d-flex flex-row justify-content-between w-100">
-                <button type="button" class="btn available-btn" *ngFor="let table of nextAvailableTables" (click)="selectAvailable(table)">
+                <button type="button" class="btn available-btn" *ngFor="let table of nextAvailableTables"
+                        (click)="selectAvailable(table)">
                   {{ table.startTime }}, {{ table.date }}
                 </button>
               </div>
@@ -89,102 +142,284 @@
         </div>
         <!-- End row with advanced view -->
 
-        <!-- Start row with pax -->
-        <div class="row">
-          <div class="column pax-container">
-            <label for="reservationPax" style="margin-right: 10px;">Table for:</label>
-            <input
-              type="number"
-              id="reservationPax"
-              name="reservationPax"
-              placeholder="pax"
-              class="form-control pax-input"
-              [(ngModel)]="reservationCreateDto.pax"
-              #reservationPax="ngModel"
-              (ngModelChange)="onFieldChange()"
-              min="1"
-              required
-            />
-          </div>
-        </div>
-        <!-- End row with pax -->
+        <!-- Start event-row-content-wrapper with event card and some form-fields -->
+        <div [class.event-row-content-wrapper]="upcomingEventsExist">
+          <div [class.event-column-left]="upcomingEventsExist">
 
-        <!-- Start row with (firstName, lastName, Mail, Phone), Notes -->
-        <div class="row">
-          <div class="column" *ngIf="!authService.isLoggedIn()">
-            <div>
-              <!-- start guest fields -->
-              <input
-                type="text"
-                id="reservationFirstName"
-                name="reservationFirstName"
-                placeholder="First Name"
-                class="form-control"
-                [(ngModel)]="reservationCreateDto.firstName"
-                #reservationFirstName="ngModel"
-                required
-              />
+            <!-- Start row with pax -->
+            <div class="row">
+              <div class="column pax-container">
+                <label for="reservationPax" style="margin-right: 10px;">Table for:</label>
+                <input
+                  type="number"
+                  id="reservationPax"
+                  name="reservationPax"
+                  placeholder="pax"
+                  class="form-control pax-input"
+                  [(ngModel)]="reservationCreateDto.pax"
+                  #reservationPax="ngModel"
+                  (ngModelChange)="onFieldChange()"
+                  min="1"
+                  required
+                />
 
-              <input
-                type="text"
-                id="reservationLastName"
-                name="reservationLastName"
-                placeholder="Last Name"
-                class="form-control"
-                [(ngModel)]="reservationCreateDto.lastName"
-                #reservationLastName="ngModel"
-                required
-              />
+                <div class="custom-seperator" *ngIf="!authService.isLoggedIn()"></div>
 
-              <input
-                type="email"
-                id="reservationEmail"
-                name="reservationEmail"
-                placeholder="Email"
-                class="form-control"
-                [(ngModel)]="reservationCreateDto.email"
-                #reservationEmail="ngModel"
-                required
-              />
+                <div *ngIf="!authService.isLoggedIn()">
+                  <input
+                    type="text"
+                    id="reservationFirstName"
+                    name="reservationFirstName"
+                    placeholder="First Name"
+                    class="form-control"
+                    [(ngModel)]="reservationCreateDto.firstName"
+                    #reservationFirstName="ngModel"
+                    required/>
+                  <input
+                    type="text"
+                    id="reservationLastName"
+                    name="reservationLastName"
+                    placeholder="Last Name"
+                    class="form-control"
+                    [(ngModel)]="reservationCreateDto.lastName"
+                    #reservationLastName="ngModel"
+                    required/>
+                  <input
+                    type="email"
+                    id="reservationEmail"
+                    name="reservationEmail"
+                    placeholder="Email"
+                    class="form-control"
+                    [(ngModel)]="reservationCreateDto.email"
+                    #reservationEmail="ngModel"
+                    required/>
+                  <input
+                    type="tel"
+                    id="reservationMobileNumber"
+                    name="reservationMobileNumber"
+                    placeholder="Phone (optional)"
+                    class="form-control"
+                    [(ngModel)]="reservationCreateDto.mobileNumber"
+                    #reservationMobileNumber="ngModel"/>
+                </div>
 
-              <input
-                type="tel"
-                id="reservationMobileNumber"
-                name="reservationMobileNumber"
-                placeholder="Phone (optional)"
-                class="form-control"
-                [(ngModel)]="reservationCreateDto.mobileNumber"
-                #reservationMobileNumber="ngModel"
-              />
+                <div class="custom-seperator"></div>
+
+                <div>
+                  <textarea
+                    id="reservationNotes"
+                    name="reservationNotes"
+                    placeholder="Notes (optional)"
+                    class="form-control notes-textarea"
+                    [(ngModel)]="reservationCreateDto.notes"
+                    #reservationNotes="ngModel">
+                </textarea>
+                </div>
+              </div>
             </div>
           </div>
-          <!-- End guest fields -->
+          <!-- End event-column-left -->
 
-          <div class="column">
-              <textarea
-                id="reservationNotes"
-                name="reservationNotes"
-                placeholder="Notes (optional)"
-                class="form-control notes-textarea"
-                [(ngModel)]="reservationCreateDto.notes"
-                #reservationNotes="ngModel"
-              ></textarea>
+
+          <!-- Start event-column-right -->
+          <div class="event-column-right" [ngStyle]="{'display': upcomingEventsExist ? 'flex' : 'none'}">
+            <div class="custom-event-card">
+              <h1 class="font-heading">Events</h1>
+              <table class="table table-hover">
+                <tbody>
+                <tr
+                  *ngFor="let event of events | slice:(currentEventPage-1)*itemsPerPage : currentEventPage*itemsPerPage">
+                  <td>
+                    <div class="event-row">
+                      <span class="event-name">{{ event.name }}</span>
+                    </div>
+                    <div class="event-row">
+                      <a class="btn event-info-btn btn-sm"
+                         aria-label="Show event details"
+                         (click)="showEventDetails(event.hashId)">
+                        <i class="bi bi-info-lg"></i>
+                      </a>
+                      <div class="event-time">{{ event.startTime ? formatDay(event.startTime) : '' }}
+                        - {{ event.startTime ? formatDotDate(event.startTime) : '' }}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+              <div class="btn-group">
+                <a class="btn btn-event-skip btn-sm"
+                   aria-label="Previous events"
+                   [class.disabled]="currentEventPage === 1"
+                   (click)="previousPage()">
+                  <i class="bi bi-arrow-left"></i>
+                </a>
+                <a class="btn btn-event-skip btn-sm"
+                   [class.disabled]="currentEventPage === Math.ceil(events?.length / itemsPerPage)"
+                   aria-label="Next events"
+                   (click)="nextPage()">
+                  <i class="bi bi-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+          </div>
+          <!-- End event-column-right -->
+        </div>
+        <!-- End event-row-content-wrapper -->
+
+        <!-- Start special offers -->
+        <div class="row" *ngIf="specialOffers.length > 0">
+          <div class="row">
+            <div class="column p-0 align-items-end">
+              <a class="btn event-info-btn btn-sm text-black"
+                 aria-label="Show Special Offer Information"
+                 (click)="showOfferInfo()">
+                <i class="bi bi-info-circle"></i>
+              </a>
+            </div>
+            <div class="column p-0">
+              <h1 class="font-heading">Special Offers</h1>
+            </div>
+            <div class="column p-0">
+            </div>
+          </div>
+          <div class="row">
+            <div class="custom-order-card m-2 p-2 column" *ngFor="let offer of specialOffers">
+              <div class="row">
+                <img [src]="getImageUrl(offer.image)" alt="Special Offer" class="custom-order-image">
+              </div>
+              <div class="row">
+                {{ offer.name }}
+              </div>
+              <div class="row">
+                <a class="custom-order-button" (click)="selectOffer(offer)">
+                  Add
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="row" *ngIf="selectedOffers.length > 0">
+            <table>
+              <thead>
+              <th>
+                Amount
+              </th>
+              <th>
+                Special Offer
+              </th>
+              <th>
+                Price
+              </th>
+              <th>
+                Actions
+              </th>
+              </thead>
+              <tbody>
+              <tr *ngFor="let offer of selectedOffers">
+                <td>
+                  {{ offer.amount }}x
+                </td>
+                <td>
+                  {{ offer.specialOffer.name }}
+                </td>
+                <td>
+                  {{ offer.specialOffer.pricePerPax }}€
+                </td>
+                <td>
+                  <button type="button" class="btn btn-sm btn-secondary me-1" (click)="removeOffer(offer)">
+                    <i class="bi bi-dash-lg text-white"></i>
+                  </button>
+                  <button type="button" class="btn btn-sm btn-primary ms-1" (click)="addOffer(offer)">
+                    <i class="bi bi-plus-lg text-white"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td></td>
+                <td>
+                  Total: {{ totalPrice }}€
+                </td>
+
+              </tr>
+              </tbody>
+            </table>
           </div>
         </div>
-        <!-- End row with (firstName, lastName, Mail, Phone), Notes -->
+        <!-- End special offers -->
 
         <div class="row">
           <div class="column">
-            <div class="btn-group">
-              <button type="submit" class="btn btn-danger btn-sm" [disabled]="!form.valid || isBookButtonTimeout || unavailable">
+            <div>
+              <button type="submit" class="btn btn-danger btn-sm"
+                      [disabled]="!form.valid || isBookButtonTimeout || unavailable">
                 Book
               </button>
             </div>
           </div>
         </div>
       </form>
+
     </div>
   </div>
 </div>
+
+<!-- Modal for event details -->
+<div class="modal fade" id="event-detail" tabindex="-1" aria-labelledby="event-detail-modal" aria-hidden="true">
+  <div class="modal-dialog custom-event-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="event-detail-title">{{ event.name }}</h3>
+      </div>
+      <div class="modal-body">
+        <dl class="row">
+          <div class="dt-dd-align">
+            <dt class="col-sm-2">From:</dt>
+            <dd class="col-sm-10">{{ event.startTime ? formatDay(event.startTime) : '' }}
+              - {{ event.startTime ? formatDotDate(event.startTime) : '' }}
+              - {{ event.startTime ? formatIsoTime(event.startTime) : '' }}h
+            </dd>
+          </div>
+
+          <div class="dt-dd-align">
+            <dt class="col-sm-2">Until:</dt>
+            <dd class="col-sm-10">{{ event.endTime ? formatDay(event.endTime) : '' }}
+              - {{ event.endTime ? formatDotDate(event.endTime) : '' }}
+              - {{ event.endTime ? formatIsoTime(event.endTime) : '' }}h
+            </dd>
+          </div>
+
+          <div class="dt-dd-align">
+            <dt class="col-sm-2">Info:</dt>
+            <dd class="col-sm-10">{{ event.description }}</dd>
+          </div>
+        </dl>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Info Modal -->
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="infoModalLabel">Special Offer Information</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Add special offers to your table reservation at a reduced price.</p>
+        <p>Your selected items will be ready for you when you arrive.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Got it!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

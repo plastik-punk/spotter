@@ -38,6 +38,7 @@ public class PlaceDataGenerator {
                 Place place = Place.PlaceBuilder.aPlace()
                     .withPax((long) (2 + i % 4))  // Assuming a variety of pax values
                     .withStatus(StatusEnum.AVAILABLE)
+                    .withNumber(i + 1)
                     .build();
                 placeRepository.save(place);
             }

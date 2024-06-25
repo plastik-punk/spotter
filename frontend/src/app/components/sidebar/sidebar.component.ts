@@ -1,6 +1,8 @@
 import { Component, Input, OnInit, HostListener } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { Router, NavigationEnd } from '@angular/router';
+import { LayoutService } from '../../services/layout.service';
+import { AreaListDto } from '../../dtos/layout';
 
 @Component({
   selector: 'app-sidebar',
@@ -10,8 +12,13 @@ import { Router, NavigationEnd } from '@angular/router';
 export class SidebarComponent implements OnInit {
   isSidebarVisible: boolean = false;
   @Input() showToggleButton: boolean = true;
+  hasNoAreas: boolean = false;
 
-  constructor(public authService: AuthService, private router: Router) {
+  constructor(
+    public authService: AuthService,
+    private router: Router,
+    private layoutService: LayoutService
+  ) {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
         this.isSidebarVisible = false;
@@ -20,6 +27,14 @@ export class SidebarComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.checkAreas();
+  }
+
+  // Method to check if there are no areas
+  checkAreas(): void {
+    this.layoutService.getAllAreas().subscribe((data: AreaListDto) => {
+      this.hasNoAreas = data.areas.length === 0;
+    });
   }
 
   // Method to toggle the sidebar's visibility

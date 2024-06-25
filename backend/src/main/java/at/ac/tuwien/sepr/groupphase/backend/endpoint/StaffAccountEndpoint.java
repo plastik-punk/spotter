@@ -49,7 +49,7 @@ public class StaffAccountEndpoint {
     @Secured("ROLE_ADMIN")
     public ResponseEntity<Void> update(@PathVariable("id") long id, @RequestBody ApplicationUserOverviewDto toUpdate)
         throws NotFoundException {
-        LOGGER.info("PUT /api/v1/employees " + "/{}", toUpdate);
+        LOGGER.info("PUT /api/v1/employees/{} body: {}", id, toUpdate);
         applicationUserService.update(toUpdate);
         return ResponseEntity.noContent().build();
     }

@@ -26,6 +26,17 @@ export function formatDotDate(date: Date): string {
   return formatDate(date, 'dd.MM.yyyy', 'en-DK');
 }
 
+export function formatIsoTime(isoDateTime: Date): string {
+  let date = new Date(isoDateTime);
+  let hours = date.getUTCHours();
+  let minutes = date.getUTCMinutes();
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+}
+
+export function formatDotDateShort(date: Date): string {
+  return formatDate(date, 'dd.MM.', 'en-DK');
+}
+
 export function formatDay(date: Date): string {
   return formatDate(date, 'EEE', 'en-DK');
 }

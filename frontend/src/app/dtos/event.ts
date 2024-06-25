@@ -27,8 +27,8 @@ export interface EventSearchDto {
   name?: string;
   earliestStartDate?: Date;
   latestEndDate?: Date;
-  earliestStartTime?: Date;
-  latestEndTime?: Date;
+  earliestStartTime?: string;
+  latestEndTime?: string;
 }
 
 export interface EventDetailDto {

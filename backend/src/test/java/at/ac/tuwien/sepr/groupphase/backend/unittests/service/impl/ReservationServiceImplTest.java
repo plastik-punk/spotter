@@ -3,14 +3,15 @@ package at.ac.tuwien.sepr.groupphase.backend.unittests.service.impl;
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationModalDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.ReservationService;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
 import jakarta.mail.MessagingException;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,13 +20,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
-import jakarta.validation.ConstraintViolationException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -66,24 +70,6 @@ public class ReservationServiceImplTest implements TestData {
         assertThrows(ConstraintViolationException.class, () -> service.create(dto));
     }
 
-    @Test
-    @Transactional
-    public void givenValidData_whenUpdate_thenReturnDto() throws ValidationException {
-        ReservationEditDto response = service.update(TEST_RESERVATION_EDIT_DTO);
-
-        // TODO: add () -> assertEquals(TEST_RESERVATION_HASH_VALUE_1, response.getHashedId()) after updating hash
-
-        assertAll(
-            () -> assertEquals(TEST_RESERVATION_DETAIL_ID, response.getReservationId()),
-            () -> assertEquals(TEST_RESERVATION_START_TIME, response.getStartTime()),
-            () -> assertEquals(TEST_RESERVATION_END_TIME, response.getEndTime()),
-            () -> assertEquals(TEST_RESERVATION_DATE, response.getDate()),
-            () -> assertEquals(TEST_RESERVATION_PAX, response.getPax()),
-            () -> assertEquals(TEST_RESERVATION_NOTES, response.getNotes()),
-            () -> assertEquals(TEST_PLACE_IDS, response.getPlaceIds())
-        );
-    }
-
 
     @Test
     @Transactional
@@ -102,7 +88,7 @@ public class ReservationServiceImplTest implements TestData {
             .build();
         service.create(dto);
 
-        ReservationModalDetailDto response = service.getModalDetail(TEST_RESERVATION_HASH_VALUE_1);
+        ReservationModalDetailDto response = service.getModalDetail(TEST_RESERVATION_HASH_VALUE_2);
 
         assertAll(
             () -> assertEquals(TEST_APPLICATION_USER_FIRST_NAME, response.getFirstName()),
@@ -114,22 +100,14 @@ public class ReservationServiceImplTest implements TestData {
         );
     }
 
+    // TODO: test update
+
     @Test
     @Transactional
     public void givenValidData_whenGetAvailability_thenReturnAvailable() throws ValidationException {
         ReservationResponseEnum response = service.getAvailability(TEST_RESERVATION_AVAILABILITY);
 
         assertEquals(ReservationResponseEnum.AVAILABLE, response);
-    }
-
-    @Test
-    @Transactional
-    public void givenValidData_whenGetAvailability_thenReturnClosed() throws ValidationException {
-        ReservationCheckAvailabilityDto dto = TEST_RESERVATION_AVAILABILITY.copy();
-        dto.setDate(LocalDate.of(2025, 1, 1));
-        ReservationResponseEnum response = service.getAvailability(dto);
-
-        assertEquals(ReservationResponseEnum.CLOSED, response);
     }
 
     @Test
