@@ -68,7 +68,7 @@ export class CreateLayoutComponent implements OnInit {
   ngOnInit(): void {
     this.layoutForm = this.fb.group({
       name: ['', [Validators.required, Validators.maxLength(20)]],
-      isMainArea: [true],
+      isMainArea: [false],
       closingTime: [],
       openingTime: [],
       isOpen: [true],
