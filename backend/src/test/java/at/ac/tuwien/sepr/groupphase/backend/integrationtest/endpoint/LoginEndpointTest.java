@@ -89,29 +89,4 @@ public class LoginEndpointTest implements TestData {
             () -> assertEquals(200, statusCode)
         );
     }
-
-    // TODO: Fix this test
-    // @Test
-    @Transactional
-    public void givenNothing_whenGetCurrentUserDetails_thenReturnUserDetails() throws Exception {
-        // Create user in database
-        ApplicationUser user = TEST_APPLICATION_USER_CUSTOMER_1;
-        user.setPassword("$2a$10$o4DxqCDqMIZD/2qjI7MamON3JmZDOrIz3f/DkdH80Z3JK2j59bRRm");
-        userRepository.save(user);
-
-        // log user in
-        this.mockMvc.perform(post(LOGIN_URI)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(TEST_LOGIN_DTO_1)))
-            .andDo(print())
-            .andReturn();
-
-        ApplicationUserOverviewDto fetchedUser = applicationUserMapper.applicationUserToUserOverviewDto(applicationUserService.getCurrentApplicationUser());
-
-        assertAll(
-            () -> assertEquals(TEST_APPLICATION_USER_CUSTOMER_1.getFirstName(), fetchedUser.getFirstName()),
-            () -> assertEquals(TEST_APPLICATION_USER_CUSTOMER_1.getLastName(), fetchedUser.getLastName()),
-            () -> assertEquals(TEST_APPLICATION_USER_CUSTOMER_1.getEmail(), fetchedUser.getEmail())
-        );
-    }
 }

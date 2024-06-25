@@ -95,40 +95,6 @@ public class EventEndpointTest implements TestData {
         );
     }
 
-    // TODO: fix frontend for search (endpoint can't process request data)
-    // @Test
-    @Transactional
-    public void givenValidData_whenSearchEvents_thenReturnEvents() throws Exception {
-        repository.deleteAll();
-        Event event1 = repository.save(TEST_EVENT_1);
-        Event event2 = repository.save(TEST_EVENT_2);
-        Event event3 = repository.save(TEST_EVENT_4);
-        EventListDto dto1 = mapper.eventToEventListDto(event1);
-        EventListDto dto2 = mapper.eventToEventListDto(event2);
-        EventListDto dto3 = mapper.eventToEventListDto(event3);
-
-        EventSearchDto searchParameters = TEST_EVENT_SEARCH_DTO;
-
-        MvcResult mvcResult = this.mockMvc.perform(get(EVENT_BASE_URI + "/search")
-                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(TEST_USER_CUSTOMER, TEST_ROLES_CUSTOMER))
-                .content(objectMapper.writeValueAsString(searchParameters))
-                .contentType(MediaType.APPLICATION_JSON))
-            .andDo(print())
-            .andReturn();
-
-        int statusCode = mvcResult.getResponse().getStatus();
-        List<EventListDto> response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<List<EventListDto>>(){});
-
-        assertNotNull(response);
-        assertAll(
-            () -> assertEquals(200, statusCode),
-            () -> assertTrue(response.contains(dto1)),
-            () -> assertTrue(response.contains(dto2)),
-            () -> assertFalse(response.contains(dto3)),
-            () -> assertEquals(2, response.size())
-        );
-    }
-
     @Test
     @Transactional
     public void givenEventCreateDto_whenCreate_thenReturnEventCreateDto() throws Exception {
@@ -152,35 +118,6 @@ public class EventEndpointTest implements TestData {
             () -> assertEquals(TEST_EVENT_CREATE.getStartTime(), response.getStartTime()),
             () -> assertEquals(TEST_EVENT_CREATE.getEndDate(), response.getEndDate()),
             () -> assertEquals(TEST_EVENT_CREATE.getEndTime(), response.getEndTime())
-        );
-    }
-
-    // TODO finish when update actually works
-    // @Test
-    @Transactional
-    public void givenEventEditDto_whenUpdate_thenEventIsUpdated() throws Exception {
-        Event savedEvent = eventRepository.save(TEST_EVENT_1);
-        TEST_EVENT_EDIT.setHashId(savedEvent.getHashId());
-
-        String body = objectMapper.writeValueAsString(TEST_EVENT_EDIT);
-        MvcResult mvcResult = this.mockMvc.perform(put(EVENT_BASE_URI)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(body)
-                .header(securityProperties.getAuthHeader(), jwtTokenizer.getAuthToken(TEST_USER_ADMIN, TEST_ROLES_ADMIN)))
-            .andDo(print())
-            .andReturn();
-
-        int statusCode = mvcResult.getResponse().getStatus();
-        EventEditDto response = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), EventEditDto.class);
-        assertNotNull(response);
-
-        assertAll(
-            () -> assertEquals(200, statusCode),
-            () -> assertEquals(savedEvent.getHashId(), response.getHashId()),
-            () -> assertEquals(savedEvent.getStartTime(), response.getStartTime()),
-            () -> assertEquals(savedEvent.getEndTime(), response.getEndTime()),
-            () -> assertEquals(savedEvent.getName(), response.getName()),
-            () -> assertEquals(savedEvent.getDescription(), response.getDescription())
         );
     }
 

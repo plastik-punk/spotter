@@ -96,7 +96,6 @@ export class EditLayoutComponent implements OnInit {
         next: (data) => {
           if (data != null) {
             this.areaEditDto = data;
-            console.log(this.areaEditDto)
             this.patchFormValues();
           }
         },

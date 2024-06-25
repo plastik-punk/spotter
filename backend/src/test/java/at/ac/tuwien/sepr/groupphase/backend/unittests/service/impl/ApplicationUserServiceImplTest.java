@@ -36,6 +36,4 @@ public class ApplicationUserServiceImplTest implements TestData {
 
         assertThrows(ConflictException.class, () -> service.register(dto2));
     }
-
-    // TODO: test exceptions for delete, update and loadUserByUserName
 }

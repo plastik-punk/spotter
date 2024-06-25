@@ -749,9 +749,4 @@ public interface TestData {
         .withPlace(TEST_PLACE_AVAILABLE_1)
         .withSegment(TEST_SEGMENT_1)
         .build();
-
-    // ---------------------------------------------
-    // ... TEST DATA
-    // ---------------------------------------------
-
 }

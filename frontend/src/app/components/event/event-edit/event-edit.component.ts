@@ -104,7 +104,6 @@ export class EventEditComponent {
   }
 
   private formatDateTime() {
-    console.log(this.eventEditDto.startTime);
     const startDate = new Date(this.eventEditDto.startTime);
     this.startDateString = startDate.toISOString().slice(0, 16);
 

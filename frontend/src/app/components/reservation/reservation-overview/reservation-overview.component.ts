@@ -79,7 +79,6 @@ export class ReservationOverviewComponent implements OnInit {
 
     // Set up the interval to reload reservations every 2 minutes
     this.fetchIntervalSubscription = interval(240000).subscribe(() => {
-      console.log('Fetching new reservations automatically...');
       if (this.isPermanentView) {
         this.loadPermanentReservations();
       } else {
@@ -88,7 +87,6 @@ export class ReservationOverviewComponent implements OnInit {
     });
   }
 
-  // TODO: remove?
   ngOnDestroy(): void {
     if (this.fetchIntervalSubscription) {
       this.fetchIntervalSubscription.unsubscribe();
@@ -155,7 +153,6 @@ export class ReservationOverviewComponent implements OnInit {
     } else {
       this.permanentSearchParams.latestEndTime = this.searchLatestEndTime;
     }
-    console.log("get perma " + this.permanentSearchParams);
     this.reservationService.getPermanentReservations(this.permanentSearchParams)
       .subscribe({
         next: (reservations: PermanentReservationListDto[]) => {

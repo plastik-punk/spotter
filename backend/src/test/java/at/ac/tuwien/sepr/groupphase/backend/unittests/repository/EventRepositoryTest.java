@@ -27,18 +27,6 @@ public class EventRepositoryTest implements TestData {
 
     @Test
     @Transactional
-    public void givenValidData_whenFindEventsByDate_thenReturnEvents() {
-        // TODO
-    }
-
-    @Test
-    @Transactional
-    public void givenValidData_whenFindByHashId_thenReturnEvent() {
-        // TODO
-    }
-
-    @Test
-    @Transactional
     public void givenValidData_whenFindUpcomingEvents_thenReturnEvents() {
         repository.deleteAll();
         Event event1 = repository.save(TEST_EVENT_1);

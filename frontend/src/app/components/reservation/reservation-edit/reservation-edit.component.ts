@@ -160,8 +160,7 @@ export class ReservationEditComponent implements OnInit {
         }
       },
       error: (error) => {
-        // TODO: error and notification handling
-        console.error("Error Processing Reservation", error);
+        this.notificationService.showError('Failed to check availability. Please try again later.');
       },
     });
   } // onFieldChange

@@ -131,7 +131,6 @@ export class ReservationService {
    */
   delete(hash: string): Observable<HttpResponse<void>> {
     // TODO: remove
-    console.log("hash: ", hash);
     return this.httpClient.delete<void>(this.reservationBaseUri, { observe: 'response' , body: hash});
   }
 
