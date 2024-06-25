@@ -21,7 +21,6 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.SpecialOfferListDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Area;
 import at.ac.tuwien.sepr.groupphase.backend.entity.AreaPlaceSegment;
-import at.ac.tuwien.sepr.groupphase.backend.entity.ClosedDay;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Event;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Message;
 import at.ac.tuwien.sepr.groupphase.backend.entity.OpeningHours;
@@ -707,27 +706,6 @@ public interface TestData {
     String TEST_RESTAURANT_EXPECTED_STRING = "Restaurant{id=1"
         + ", name='" + TEST_RESTAURANT_NAME
         + "', address='" + TEST_RESTAURANT_ADDRESS + "'}";
-
-    // ---------------------------------------------
-    // CLOSED DAY TEST DATA
-    // ---------------------------------------------
-
-    LocalDate TEST_CLOSED_DAY_DATE = LocalDate.of(2024, 6, 12);
-
-    ClosedDay TEST_CLOSED_DAY_1 = ClosedDay.ClosedDayBuilder.aClosedDay()
-        .withId(1L)
-        .withRestaurant(TEST_RESTAURANT_1)
-        .withDate(TEST_CLOSED_DAY_DATE)
-        .build();
-    ClosedDay TEST_CLOSED_DAY_2 = ClosedDay.ClosedDayBuilder.aClosedDay()
-        .withId(1L)
-        .withRestaurant(TEST_RESTAURANT_1)
-        .withDate(TEST_CLOSED_DAY_DATE)
-        .build();
-
-    String TEST_CLOSED_DAY_EXPECTED_STRING = "ClosedDay{id=1"
-        + ", restaurant=" + TEST_RESTAURANT_1.toString()
-        + ", date=" + TEST_CLOSED_DAY_DATE + "}";
 
     // ---------------------------------------------
     // OPENING HOURS TEST DATA
