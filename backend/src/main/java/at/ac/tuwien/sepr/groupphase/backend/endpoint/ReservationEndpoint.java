@@ -183,7 +183,7 @@ public class ReservationEndpoint {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_USER"})
+    @PermitAll
     @GetMapping({"/permanent/detail/{hashedId}"})
     @Operation(summary = "Get detail information for a permanent reservation")
     public PermanentReservationDetailDto getPermanentReservationDetailsByHashedId(@PathVariable("hashedId") String hashedId) {

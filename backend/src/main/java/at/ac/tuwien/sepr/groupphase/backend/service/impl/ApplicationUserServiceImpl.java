@@ -110,8 +110,6 @@ public class ApplicationUserServiceImpl implements ApplicationUserService {
     public ApplicationUser findApplicationUserByEmail(String email) {
         LOGGER.debug("Find application user by email");
         ApplicationUser applicationUser = applicationUserRepository.findByEmailAndRoleNot(email, RoleEnum.GUEST);
-        System.out.println(email);
-        System.out.println(applicationUser);
         if (applicationUser != null) {
             return applicationUser;
         }

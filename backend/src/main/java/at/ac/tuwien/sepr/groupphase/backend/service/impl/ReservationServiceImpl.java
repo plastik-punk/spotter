@@ -666,7 +666,7 @@ public class ReservationServiceImpl implements ReservationService {
             errors.add("Walk-in user not found");
             throw new ConflictException("Walk-in user not found", errors);
         }
-        System.out.println("walkInUser = " + walkInUser);
+
 
         ReservationCreateDto reservationCreateDto = ReservationCreateDto.ReservationCreateDtoBuilder.aReservationCreateDto()
             .withDate(reservationWalkInDto.getDate())
@@ -960,8 +960,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public void deletePermanentReservation(String permanentReservationHashId) throws MessagingException {
         LOGGER.trace("deletePermanentReservation ({})", permanentReservationHashId);
-
-        System.out.println(permanentReservationHashId);
+        
         PermanentReservation permanentReservation = permanentReservationRepository.findByHashedId(permanentReservationHashId);
 
         if (permanentReservation == null) {
