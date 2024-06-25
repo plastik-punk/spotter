@@ -4,7 +4,7 @@ import {Globals} from '../global/globals';
 import {HttpClient, HttpParams, HttpResponse, HttpHeaders} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {EventCreateDto, EventDetailDto, EventEditDto, EventListDto, EventSearchDto} from "../dtos/event";
-import {formatIsoDate, formatIsoTime} from "../util/date-helper";
+import {formatIsoDate} from "../util/date-helper";
 
 @Injectable({
   providedIn: 'root'
@@ -21,8 +21,6 @@ export class EventService {
    * @param searchParams the search parameters
    */
   search(searchParams: EventSearchDto): Observable<EventListDto[]> {
-    // TODO: name of searchEventDto is never used? if so, remove it both in back- and frontend
-
     let params = new HttpParams();
     if (searchParams.earliestStartDate) {
       params = params.append('earliestDate', formatIsoDate(searchParams.earliestStartDate));
@@ -31,26 +29,12 @@ export class EventService {
       params = params.append('latestDate', formatIsoDate(searchParams.latestEndDate));
     }
     if (searchParams.earliestStartTime) {
-      params = params.append('earliestStartTime', searchParams.earliestStartTime)
+      params = params.append('earliestStartTime', formatIsoDate(searchParams.earliestStartTime))
     }
     if (searchParams.latestEndTime) {
-      params = params.append('latestEndTime', searchParams.latestEndTime)
+      params = params.append('latestEndTime', formatIsoDate(searchParams.latestEndTime))
     }
-    if (searchParams.name) {
-      params = params.append('name', searchParams.name);
-    }
-
-    // TODO: remove
-    console.log(params.toString());
-
     return this.httpClient.get<EventListDto[]>(this.eventBaseUri + "/search", { params });
-  }
-
-  /**
-   * Get next upcoming events (5 at most)
-   */
-  getUpcomingEvents(): Observable<EventListDto[]> {
-    return this.httpClient.get<EventListDto[]>(this.eventBaseUri + "/upcoming");
   }
 
   /**
@@ -94,10 +78,14 @@ export class EventService {
     return this.httpClient.put<EventEditDto>(this.eventBaseUri, eventEditDto);
   }
 
-  uploadIcsFile(file: File): Observable<String> {
+  uploadIcsFile(file: File): Observable<any> {
     const formData: FormData = new FormData();
     formData.append('file', file, file.name);
 
-    return this.httpClient.post(`${this.eventBaseUri}/import-ics`, formData, {responseType: 'text'});
+    return this.httpClient.post(`${this.eventBaseUri}/import-ics`, formData, {
+      headers: new HttpHeaders({
+        'Accept': 'application/json'
+      })
+    });
   }
 }

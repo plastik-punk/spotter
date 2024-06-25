@@ -20,17 +20,6 @@
                to reload the reservations, is possible -->
           <button type="submit" hidden="hidden">submit</button>
           <div class="ms-1">
-            <label for="searchName" class="col-form-label">
-              Name
-            </label>
-            <input type="text" id="searchName" name="searchName"
-                   placeholder="Name"
-                   class="form-control"
-                   [(ngModel)]="searchName"
-                   (ngModelChange)="searchChanged()"
-            >
-          </div>
-          <div class="ms-1">
             <label for="searchEarliestEvent" class="col-form-label">
               Earliest Date
             </label>
@@ -41,7 +30,7 @@
                    pattern="\d{4}-\d{2}-\d{2}"
                    placeholder="yyyy-mm-dd"
                    class="form-control"
-                   [(ngModel)]="searchEarliestDate"
+                   [(ngModel)]="searchEarliestStartTime"
                    (ngModelChange)="searchChanged()"
             >
           </div>
@@ -56,7 +45,7 @@
                    pattern="\d{4}-\d{2}-\d{2}"
                    placeholder="yyyy-mm-dd"
                    class="form-control"
-                   [(ngModel)]="searchLatestDate"
+                   [(ngModel)]="searchLatestEndTime"
                    (ngModelChange)="searchChanged()"
             >
           </div>
@@ -106,8 +95,8 @@
         </thead>
         <tbody>
         <tr *ngFor="let event of displayedEvents">
-          <td>{{ formatDateTime(event.startTime.toString()) }}</td>
-          <td>{{ formatDateTime(event.endTime.toString()) }}</td>
+          <td>{{ event.startTime }}</td>
+          <td>{{ event.endTime }}</td>
           <td>{{ event.name }}</td>
           <td>
             <div class="btn-group">
@@ -147,7 +136,7 @@
 </body>
 
 <app-confirmation-dialog-delete
-  [dialogTitle]="'Delete this Event?'"
+  [dialogTitle]="'Delete this Reservation?'"
   [dialogText]="'Do you really want to delete this reservation?'"
   (confirm)="onDelete()"
 ></app-confirmation-dialog-delete>

@@ -34,9 +34,9 @@ public class ApplicationUserRepositoryTest implements TestData {
 
     @Test
     @Transactional
-    public void givenValidData_whenFindByEmailAndRoleNot_thenReturnUser() {
+    public void givenValidData_whenFindByEmail_thenReturnUser() {
         ApplicationUser user = applicationUserRepository.save(TEST_APPLICATION_USER_CUSTOMER_1);
-        ApplicationUser found = applicationUserRepository.findByEmailAndRoleNot(TEST_APPLICATION_USER_CUSTOMER_1.getEmail(), RoleEnum.GUEST);
+        ApplicationUser found = applicationUserRepository.findByEmail(TEST_APPLICATION_USER_CUSTOMER_1.getEmail());
 
         assertEquals(found, user);
     }

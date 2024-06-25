@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.PlaceService;
+import jakarta.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class PlaceServiceImpl implements PlaceService {
     private final PlaceRepository placeRepository;
 
     @Autowired
+    private Validator validator;
+
+    @Autowired
     public PlaceServiceImpl(PlaceRepository placeRepository) {
         this.placeRepository = placeRepository;
     }
@@ -32,7 +36,7 @@ public class PlaceServiceImpl implements PlaceService {
             Optional<Place> optionalPlace = placeRepository.findById(id);
             if (optionalPlace.isEmpty()) {
                 LOGGER.error("Error while blocking / unblocking place with id {}, Table not found", id);
-                throw new NotFoundException("Table not found");
+                throw new NotFoundException("Table with Number " + id + " not found.");
             }
 
             Place place = optionalPlace.get();

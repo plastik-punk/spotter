@@ -145,18 +145,6 @@ public class ApplicationUser {
             + '}';
     }
 
-    public ApplicationUser copy() {
-        return ApplicationUserBuilder.anApplicationUser()
-            .withId(id)
-            .withFirstName(firstName)
-            .withLastName(lastName)
-            .withEmail(email)
-            .withMobileNumber(mobileNumber)
-            .withPassword(password)
-            .withRole(role)
-            .build();
-    }
-
     public static final class ApplicationUserBuilder {
         private Long id;
         private String firstName;

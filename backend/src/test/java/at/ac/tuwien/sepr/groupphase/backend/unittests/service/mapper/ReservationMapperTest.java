@@ -41,7 +41,13 @@ public class ReservationMapperTest implements TestData {
 
     @Test
     public void givenValidReservation_whenMapEntityToReservationModalDetailDto_thenDtoHasAllProperties() {
-        ReservationModalDetailDto dto = reservationMapper.reservationToReservationModalDetailDto(TEST_RESERVATION_1, null);
+        // Arrange
+        Reservation reservation = TEST_RESERVATION_1;
+
+        // Act
+        ReservationModalDetailDto dto = reservationMapper.reservationToReservationModalDetailDto(reservation);
+
+        // Assert
         assertAll(
             () -> assertEquals(TEST_APPLICATION_USER_FIRST_NAME, dto.getFirstName()),
             () -> assertEquals(TEST_APPLICATION_USER_LAST_NAME, dto.getLastName()),
@@ -72,14 +78,15 @@ public class ReservationMapperTest implements TestData {
 
     @Test
     public void givenValidReservation_whenMapEntityToReservationListDto_thenDtoHasAllProperties() {
-        ReservationListDto dto = reservationMapper.reservationToReservationListDto(TEST_RESERVATION_1, null);
+        ReservationListDto dto = reservationMapper.reservationToReservationListDto(TEST_RESERVATION_1);
 
         assertAll(
             () -> assertEquals(TEST_APPLICATION_USER_FIRST_NAME, dto.getUserFirstName()),
             () -> assertEquals(TEST_APPLICATION_USER_LAST_NAME, dto.getUserLastName()),
             () -> assertEquals(TEST_RESERVATION_START_TIME, dto.getStartTime()),
             () -> assertEquals(TEST_RESERVATION_END_TIME, dto.getEndTime()),
-            () -> assertEquals(TEST_RESERVATION_DATE, dto.getDate())
+            () -> assertEquals(TEST_RESERVATION_DATE, dto.getDate()),
+            () -> assertNull(dto.getPlaceId())
         );
     }
 }

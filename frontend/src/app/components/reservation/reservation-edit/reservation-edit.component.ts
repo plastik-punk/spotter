@@ -9,9 +9,6 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {ToastrService} from "ngx-toastr";
 import {NotificationService} from "../../../services/notification.service";
 import {NgIf} from "@angular/common";
-import {NavigationStateService} from "../../../services/navigation-state.service";
-import {SpecialOfferAmountDto, SpecialOfferListDto} from "../../../dtos/special-offer";
-import {SpecialOfferService} from "../../../services/special-offer.service";
 
 @Component({
   selector: 'app-reservation-edit',
@@ -21,8 +18,6 @@ import {SpecialOfferService} from "../../../services/special-offer.service";
 
 export class ReservationEditComponent implements OnInit {
   hashId: string;
-  showSpecialOffers: boolean = false;
-  allSpecialOffers: SpecialOfferListDto[]
 
   reservationEditDto: ReservationEditDto = {
     date: undefined,
@@ -43,7 +38,6 @@ export class ReservationEditComponent implements OnInit {
       password: undefined,
       role: undefined
     },
-    specialOffers: []
   };
   reservationCheckAvailabilityDto: ReservationCheckAvailabilityDto = {
     startTime: undefined,
@@ -53,33 +47,21 @@ export class ReservationEditComponent implements OnInit {
     idToExclude: undefined
   }
 
-  returnHashId: string;
-  fromPermanentDetail: boolean = false;
-  returnUrl: string = '/reservation-overview';
-
   enumReservationTableStatus = SimpleViewReservationStatusEnum;
   reservationStatusText: string = 'Provide Time, Date and Pax';
   reservationStatusClass: string = 'reservation-table-incomplete';
 
-
   constructor(
     public authService: AuthService,
     private service: ReservationService,
-    private specialOfferService: SpecialOfferService,
     private route: ActivatedRoute,
     private notification: ToastrService,
     private notificationService: NotificationService,
-    private router: Router,
-    private navigationStateService: NavigationStateService
+    private router: Router
   ) {
   } // constructor
 
   ngOnInit() {
-    const state = this.navigationStateService.getNavigationState();
-    this.fromPermanentDetail = state.fromPermanentDetail || false;
-    this.returnUrl = state.returnUrl || '/reservation-overview';
-    this.fetchAllOffers();
-
     // 1. get reservation id from service
     this.hashId = this.route.snapshot.paramMap.get('id');
     if (this.hashId) {
@@ -94,7 +76,7 @@ export class ReservationEditComponent implements OnInit {
         },
         error: (error) => {
           this.notificationService.handleError(error);
-          this.router.navigate(['/reservation-overview']);
+          this.router.navigate(['/reservation-simple']);
         },
       });
     }
@@ -108,7 +90,7 @@ export class ReservationEditComponent implements OnInit {
         next: (data) => {
           this.notification.success("Reservation updated successfully");
           if (this.authService.isLoggedIn()) {
-            this.router.navigate([this.returnUrl]);
+            this.router.navigate(['/reservation-overview']);
           }
         },
         error: (error) => {
@@ -165,49 +147,4 @@ export class ReservationEditComponent implements OnInit {
       },
     });
   } // onFieldChange
-
-  removeSpecialOffer(index: number) {
-    let SpecialOfferAmountDto = this.reservationEditDto.specialOffers[index];
-    if (SpecialOfferAmountDto.amount > 1) {
-      SpecialOfferAmountDto.amount--;
-    } else {
-      this.reservationEditDto.specialOffers.splice(index, 1);
-    }
-  }
-
-  addSpecialOffer(index: number) {
-    let SpecialOfferAmountDto = this.reservationEditDto.specialOffers[index];
-    SpecialOfferAmountDto.amount++;
-  }
-
-  selectOffer(offerId: number) {
-    //if the offer is already in the list, increase the amount
-    let found = false;
-    for (let i = 0; i < this.reservationEditDto.specialOffers.length; i++) {
-      if (this.reservationEditDto.specialOffers[i].specialOffer.id === offerId) {
-        this.reservationEditDto.specialOffers[i].amount++;
-        found = true;
-        break;
-      }
-    }
-    //if the offer is not in the list, add it
-    if (!found) {
-      let specialOfferAmountDto: SpecialOfferAmountDto = {
-        specialOffer: this.allSpecialOffers.find(offer => offer.id === offerId),
-        amount: 1
-      }
-      this.reservationEditDto.specialOffers.push(specialOfferAmountDto);
-    }
-  }
-
-  private fetchAllOffers() {
-    this.specialOfferService.getSpecialOffers().subscribe({
-      next: (data) => {
-        this.allSpecialOffers = data;
-      },
-      error: (error) => {
-        this.notificationService.handleError(error);
-      },
-    });
-  }
 }

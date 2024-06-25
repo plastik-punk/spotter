@@ -11,7 +11,6 @@ public class EventSearchDto {
     private LocalDate latestDate;
     private LocalTime earliestStartTime;
     private LocalTime latestEndTime;
-    private String name;
 
     public LocalDate getEarliestDate() {
         return earliestDate;
@@ -45,14 +44,6 @@ public class EventSearchDto {
         this.latestEndTime = latestEndTime;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -64,13 +55,12 @@ public class EventSearchDto {
         return Objects.equals(earliestDate, that.earliestDate)
             && Objects.equals(latestDate, that.latestDate)
             && Objects.equals(earliestStartTime, that.earliestStartTime)
-            && Objects.equals(latestEndTime, that.latestEndTime)
-            && Objects.equals(name, that.name);
+            && Objects.equals(latestEndTime, that.latestEndTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(earliestDate, latestDate, earliestStartTime, latestEndTime, name);
+        return Objects.hash(earliestDate, latestDate, earliestStartTime, latestEndTime);
     }
 
     @Override
@@ -80,7 +70,6 @@ public class EventSearchDto {
             + ", latestDate=" + latestDate
             + ", earliestStartTime=" + earliestStartTime
             + ", latestEndTime=" + latestEndTime
-            + ", name=" + name
             + '}';
     }
 
@@ -89,7 +78,6 @@ public class EventSearchDto {
         private LocalDate latestDate;
         private LocalTime earliestStartTime;
         private LocalTime latestEndTime;
-        private String name;
 
         private EventSearchDtoBuilder() {
         }
@@ -118,18 +106,12 @@ public class EventSearchDto {
             return this;
         }
 
-        public EventSearchDtoBuilder withName(String name) {
-            this.name = name;
-            return this;
-        }
-
         public EventSearchDto build() {
             EventSearchDto eventSearchDto = new EventSearchDto();
             eventSearchDto.setEarliestDate(earliestDate);
             eventSearchDto.setLatestDate(latestDate);
             eventSearchDto.setEarliestStartTime(earliestStartTime);
             eventSearchDto.setLatestEndTime(latestEndTime);
-            eventSearchDto.setName(name);
             return eventSearchDto;
         }
     }

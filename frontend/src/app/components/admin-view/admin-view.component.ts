@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {NgForm} from "@angular/forms";
 import {AuthService} from "../../services/auth.service";
-import {AdminViewDto, PredictionDto, ReservationForeCastDto} from "../../dtos/admin-view";
+import {AdminViewDto, ReservationForeCastDto} from "../../dtos/admin-view";
 import {Router} from "@angular/router";
-
+import {now} from "lodash";
 import {AdminViewService} from "../../services/adminView.service";
 import {
   ApexAxisChartSeries,
@@ -11,9 +11,7 @@ import {
   ApexDataLabels,
   ApexFill,
   ApexLegend,
-  ApexNonAxisChartSeries,
   ApexPlotOptions,
-  ApexResponsive,
   ApexStroke,
   ApexTooltip,
   ApexXAxis,
@@ -21,19 +19,10 @@ import {
 } from "ng-apexcharts";
 import {Observable} from "rxjs";
 import {NotificationService} from "../../services/notification.service";
-import {AreaDto, AreaListDto} from "../../dtos/layout";
-import {ReservationService} from "../../services/reservation.service";
-import {LayoutService} from "../../services/layout.service";
-import {formatIsoDate} from "../../util/date-helper";
-import {SpecialOfferCreateDto, SpecialOfferDetailDto, SpecialOfferListDto} from "../../dtos/special-offer";
-import {SpecialOfferService} from "../../services/special-offer.service";
-import * as bootstrap from 'bootstrap';
 
-
-export type ChartBarOptions = {
+export type ChartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
-
   dataLabels: ApexDataLabels;
   plotOptions: ApexPlotOptions;
   yaxis: ApexYAxis;
@@ -42,13 +31,6 @@ export type ChartBarOptions = {
   tooltip: ApexTooltip;
   stroke: ApexStroke;
   legend: ApexLegend;
-  colors: string[];
-};
-export type ChartDonutOptions = {
-  series: ApexNonAxisChartSeries;
-  chart: ApexChart;
-  responsive: ApexResponsive[];
-  labels: any
 };
 
 @Component({
@@ -58,57 +40,20 @@ export type ChartDonutOptions = {
 })
 export class AdminViewComponent implements OnInit {
   adminViewDto: AdminViewDto = {
-    areaId: undefined,
+    area: undefined,
     startTime: undefined,
     date: undefined
   }
 
-  predictionDto: PredictionDto = {
-    predictionText: "",
-    areaNames: undefined,
-    predictions: undefined
-  };
-
   forecast: ReservationForeCastDto;
-  specialOfferList: SpecialOfferListDto[];
-  specialOfferCreateDto: SpecialOfferCreateDto = {
-    name: undefined,
-    pricePerPax: undefined,
-    image: undefined
-  }
-  specialOfferToDelete: SpecialOfferListDto;
-  specialOfferDetail: SpecialOfferDetailDto = {
-    id: undefined,
-    name: undefined,
-    pricePerPax: undefined,
-    image: undefined
-  };
-  imageUrl: string | null = null;
 
-
-  public chartReservedTableOptions: Partial<ChartBarOptions>;
-  public chartPredictionOptions: Partial<ChartDonutOptions>;
-
-
-  currDate: any;
-  currTime: any;
-
-  isUnusual: any;
-  tooltip: string = "Forecast is being calculated";
-  barColors: string[] = ["#33b2df", "#33b2df", "#33b2df", "#33b2df", "#33b2df", "#33b2df", "#33b2df"];
-
-  predictionTitle: string = "Prediction for Amount Of Employees needed";
-
-  areas: AreaDto[] = [];
-  selectedAreaId: number = 1;
+  public chartOptions: Partial<ChartOptions>;
+  currDate: any = new Date(now()).toISOString().split('T')[0];
+  currTime: any = new Date(now()).toISOString().split('T')[1].substring(0, 5);
 
   constructor(
     public authService: AuthService,
     private service: AdminViewService,
-    private reservationService: ReservationService,
-    private layoutService: LayoutService,
-    private adminViewService: AdminViewService,
-    private specialOfferService: SpecialOfferService,
     private notificationService: NotificationService,
     private router: Router
   ) {
@@ -116,12 +61,11 @@ export class AdminViewComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.adminViewDto.areaId = this.selectedAreaId;
+    this.adminViewDto.area = "Inside";
 
-    this.initializeDateAndTime();
-    this.fetchAllAreas();
-
-    this.chartReservedTableOptions = {
+    this.adminViewDto.date = this.currDate;
+    this.adminViewDto.startTime = this.currTime;
+    this.chartOptions = {
       series: [
         {
           name: "# of reserved tables",
@@ -133,156 +77,52 @@ export class AdminViewComponent implements OnInit {
         type: "bar"
       },
     };
-    this.loadSpecialOffers();
 
-    this.chartPredictionOptions = {
-      series: [0],
-      chart: {
-        type: "donut"
-      },
-      labels: [""]
-    };
-
-    this.onFieldChange();
-
-
-  }
-
-  private initializeDateAndTime() {
-    const now = new Date();
-    this.currTime = now.toTimeString().slice(0, 5);
-    this.currDate = formatIsoDate(now);
-    this.adminViewDto.date = this.currDate;
-    this.adminViewDto.startTime = this.currTime;
-  }
-
-  onFieldChange() {
-    this.adminViewDto.date = this.currDate;
-    this.adminViewDto.startTime = this.currTime;
-    this.chartPredictionOptions = null;
     let observable: Observable<ReservationForeCastDto>;
-    observable = this.adminViewService.getForeCast(this.adminViewDto);
+    observable = this.service.getForeCast(this.adminViewDto);
     observable.subscribe({
       next: (value) => {
         this.forecast = value;
+        this.generateChart();
       },
       error: (error) => {
         this.notificationService.handleError(error);
       }
     });
-    this.getUnusualReservationsNotification();
+
+
   }
 
-  loadSpecialOffers() {
-    let observable: Observable<SpecialOfferListDto[]>;
-    observable = this.specialOfferService.getSpecialOffers();
+  onSubmit(form: NgForm) {
+
+  }
+
+  onFieldChange() {
+    console.log(this.adminViewDto)
+    let observable: Observable<ReservationForeCastDto>;
+    observable = this.service.getForeCast(this.adminViewDto);
     observable.subscribe({
       next: (value) => {
-        this.specialOfferList = value;
+        this.forecast = value;
+        this.generateChart();
       },
       error: (error) => {
-        this.notificationService.showError("Failed to load special offers");
+        this.notificationService.handleError(error);
       }
     });
   }
 
-
-  onFileChangeSpecialOffer(event) {
-    const file = event.target.files[0];
-    if (file) {
-      this.specialOfferCreateDto.image = file;
-    }
-  }
-
-  createSpecialOffer(specialOfferForm: NgForm) {
-    if (specialOfferForm.valid) {
-      this.specialOfferService.createSpecialOffer(this.specialOfferCreateDto).subscribe({
-        next: (data) => {
-          this.notificationService.showSuccess('Special Offer created successfully.');
-          this.specialOfferCreateDto.name = undefined;
-          this.specialOfferCreateDto.pricePerPax = undefined;
-          this.specialOfferCreateDto.image = undefined;
-          this.loadSpecialOffers();
-        },
-        error: (error) => {
-          this.notificationService.showError("Couldn't create Special Offer" + error);
-        }
-      });
-    }
-  }
-
-  deleteSpecialOffer() {
-    if (!this.specialOfferToDelete) {
-      this.notificationService.showError('No special offer selected for deletion.');
-      return;
-    }
-    this.specialOfferService.delete(this.specialOfferToDelete.id).subscribe({
-      next: (data) => {
-        this.notificationService.showSuccess('Special Offer deleted successfully.');
-        this.loadSpecialOffers();
-      },
-      error: (error) => {
-        this.notificationService.showError("Couldn't delete Special Offer" + error);
-      }
-    });
-  }
-
-  showSpecialOfferDetail(id: number) {
-    this.specialOfferService.getSpecialOffer(id).subscribe({
-      next: (specialOfferDetail) => {
-        this.specialOfferDetail.id = specialOfferDetail.id;
-        this.specialOfferDetail.name = specialOfferDetail.name;
-        this.specialOfferDetail.pricePerPax = specialOfferDetail.pricePerPax;
-        this.specialOfferDetail.image = specialOfferDetail.image;
-        if (this.specialOfferDetail.image) {
-          this.imageUrl = `data:image/jpeg;base64,${this.specialOfferDetail.image}`;
-        }
-        console.log(this.specialOfferDetail)
-        const modalDetail = new bootstrap.Modal(document.getElementById('specialOfferDetailModal'));
-        modalDetail.show();
-      },
-      error: (error) => {
-        this.notificationService.showError("Failed to load special offer details");
-      }
-    });
-  }
 
   onClickDetailView() {
     this.router.navigate(['/admin-view/prediction'])
   }
 
-  onClickGetPrediction() {
-
-    let observable: Observable<PredictionDto>;
-    observable = this.service.getPrediction(this.adminViewDto);
-    observable.subscribe({
-      next: (data) => {
-        this.notificationService.handleSuccess("Prediction made successfully!");
-        this.predictionDto.predictionText = data.predictionText;
-        this.predictionDto.areaNames = data.areaNames;
-        this.predictionDto.predictions = data.predictions;
-        this.chartPredictionOptions = null;
-        this.chartPredictionOptions = {
-          series: data.predictions,
-          chart: {
-            type: "donut"
-          },
-          labels: data.areaNames
-        };
-        this.predictionTitle = data.predictionText;
-      },
-      error: (error) => {
-        this.notificationService.handleError(error);
-      },
-    });
-  }
-
-  generateChart() {
-    this.chartReservedTableOptions = null;
-    this.chartReservedTableOptions = {
+  generateChart(){
+    this.chartOptions=null;
+    this.chartOptions = {
       series: [{
         name: "# of reserved tables",
-        data: this.forecast.forecast,
+        data: this.forecast.forecast
       }],
 
       chart: {
@@ -291,13 +131,11 @@ export class AdminViewComponent implements OnInit {
       },
       plotOptions: {
         bar: {
-          distributed: true,
           dataLabels: {
             position: "top" // top, center, bottom
-          },
+          }
         }
       },
-      colors: this.barColors,
 
       dataLabels: {
         enabled: true,
@@ -347,48 +185,5 @@ export class AdminViewComponent implements OnInit {
     };
   }
 
-  onAreaChange(event: Event) {
-    const selectElement = event.target as HTMLSelectElement;
-    this.selectedAreaId = Number(selectElement.value);
-  }
 
-  private fetchAllAreas() {
-    this.layoutService.getAllAreas().subscribe({
-      next: (data: AreaListDto) => {
-        this.areas = data.areas;
-        if (this.areas.length > 0) {
-          this.selectedAreaId = this.selectedAreaId || this.areas[0].id;
-        }
-      },
-      error: () => {
-        this.notificationService.showError('Failed to fetch areas. Please try again later.');
-      },
-    });
-  }
-
-  private getUnusualReservationsNotification() {
-    this.isUnusual = false;
-    for (let i = 0; i < 7; i++) {
-      this.barColors[i] = "#33b2df";
-    }
-
-    this.service.getUnusualReservations(this.adminViewDto).subscribe({
-      next: (data) => {
-        if (data) {
-          this.tooltip = '';
-          this.isUnusual = data.unusual;
-          for (let i = 0; i < data.days.length; i++) {
-            if (data.days[i] && data.messages[i]) {
-              this.tooltip += '' + data.days[i] + ': ' + data.messages[i] + '\r\r';
-              this.barColors[i] = "#ffc107";
-            }
-          }
-        }
-        this.generateChart();
-      },
-      error: () => {
-        this.notificationService.showError('Failed to fetch unusual reservations. Please try again later.');
-      },
-    });
-  }
 }

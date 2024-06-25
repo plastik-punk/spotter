@@ -75,16 +75,17 @@ public class ReservationDataGenerator {
                 createReservation(date, places.get(i % places.size()), applicationUsers.get(i % applicationUsers.size()), i);
             }
             //10 Reservations in the past
-            //            for (int i = 0; i < 10; i++) {
-            //                LocalDate date = today.minusWeeks(3).minusDays(random.nextInt(7) + 1);
-            //                createReservation(date, places.get(i % places.size()), applicationUsers.get(i % applicationUsers.size()), i);
-            //            }
+            for (int i = 0; i < 10; i++) {
+                LocalDate date = today.minusWeeks(3).minusDays(random.nextInt(7) + 1);
+                createReservation(date, places.get(i % places.size()), applicationUsers.get(i % applicationUsers.size()), i);
+            }
             //100 filler reservations in the future to test search limiting
             for (int i = 0; i < 100; i++) {
                 LocalDate date = today.plusMonths(1 + random.nextInt(11)).plusDays(random.nextInt(7) + 1);
                 createReservation(date, places.get(i % places.size()), applicationUsers.get(i % applicationUsers.size()), i);
             }
         }
+
     }
 
     private void createReservation(LocalDate date, Place place, ApplicationUser applicationUser, int index) {
@@ -108,7 +109,7 @@ public class ReservationDataGenerator {
             .withConfirmed(false)
             .build();
 
-        reservation = reservationRepository.save(reservation);
         LOGGER.debug("Saving reservation {}", reservation);
+        reservationRepository.save(reservation);
     }
 }

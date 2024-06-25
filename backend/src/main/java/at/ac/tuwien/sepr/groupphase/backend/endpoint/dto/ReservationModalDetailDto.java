@@ -14,7 +14,6 @@ public class ReservationModalDetailDto {
     private LocalDate date;
     private String notes;
     private List<Long> placeIds;
-    private List<SpecialOfferAmountDto> specialOffers;
 
     public String getFirstName() {
         return firstName;
@@ -79,15 +78,6 @@ public class ReservationModalDetailDto {
         return this;
     }
 
-    public List<SpecialOfferAmountDto> getSpecialOffers() {
-        return specialOffers;
-    }
-
-    public ReservationModalDetailDto setSpecialOffers(List<SpecialOfferAmountDto> specialOffers) {
-        this.specialOffers = specialOffers;
-        return this;
-    }
-
     @Override
     public boolean equals(Object object) {
         if (this == object) {
@@ -103,8 +93,7 @@ public class ReservationModalDetailDto {
             && Objects.equals(endTime, that.endTime)
             && Objects.equals(date, that.date)
             && Objects.equals(notes, that.notes)
-            && Objects.equals(placeIds, that.placeIds)
-            && Objects.equals(specialOffers, that.specialOffers);
+            && Objects.equals(placeIds, that.placeIds);
     }
 
     @Override
@@ -122,7 +111,6 @@ public class ReservationModalDetailDto {
             + ", date=" + date
             + ", notes='" + notes + '\''
             + ", placeIds=" + placeIds
-            + ", specialOffers=" + specialOffers
             + '}';
     }
 
@@ -134,8 +122,7 @@ public class ReservationModalDetailDto {
             .setEndTime(endTime)
             .setDate(date)
             .setNotes(notes)
-            .setPlaceIds(placeIds)
-            .setSpecialOffers(specialOffers);
+            .setPlaceIds(placeIds);
     }
 
     public static final class ReservationModalDetailDtoBuilder {
@@ -146,7 +133,6 @@ public class ReservationModalDetailDto {
         private LocalDate date;
         private String notes;
         private List<Long> placeIds;
-        private List<SpecialOfferAmountDto> specialOffers;
 
         private ReservationModalDetailDtoBuilder() {
         }
@@ -190,11 +176,6 @@ public class ReservationModalDetailDto {
             return this;
         }
 
-        public ReservationModalDetailDtoBuilder withSpecialOffers(List<SpecialOfferAmountDto> specialOffers) {
-            this.specialOffers = specialOffers;
-            return this;
-        }
-
         public ReservationModalDetailDto build() {
             ReservationModalDetailDto reservationModalDetailDto = new ReservationModalDetailDto();
             reservationModalDetailDto.setFirstName(firstName);
@@ -204,7 +185,6 @@ public class ReservationModalDetailDto {
             reservationModalDetailDto.setDate(date);
             reservationModalDetailDto.setNotes(notes);
             reservationModalDetailDto.setPlaceIds(placeIds);
-            reservationModalDetailDto.setSpecialOffers(specialOffers);
             return reservationModalDetailDto;
         }
     }

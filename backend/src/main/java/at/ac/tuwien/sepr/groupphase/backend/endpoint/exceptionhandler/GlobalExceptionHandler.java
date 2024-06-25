@@ -1,10 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.exceptionhandler;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.resterrors.ConflictErrorRestDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.resterrors.IllegalArgumentErrorRestDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.resterrors.InternalServerErrorRestDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.resterrors.NotFoundErrorRestDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.resterrors.ValidationErrorRestDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ConflictErrorRestDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ValidationErrorRestDto;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import jakarta.validation.ConstraintViolationException;
@@ -14,159 +11,86 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.lang.invoke.MethodHandles;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Global exception handler for the application.
+ * Register all your Java exceptions here to map them into meaningful HTTP exceptions
+ * If you have special cases which are only important for specific endpoints, use ResponseStatusExceptions
+ * https://www.baeldung.com/exception-handling-for-rest-with-spring#responsestatusexception
  */
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    /**
-     * Handles exceptions thrown when manually validating parameters (not via Valid annotation).
-     * Sends a customized HTTP response for a validation exception as thrown by jakarta validation.
-     *
-     * @param e the exception
-     * @return the error response
-     */
     @ExceptionHandler
-    public ResponseEntity<Object> handleValidationException(ConstraintViolationException e) {
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ResponseBody
+    public ValidationErrorRestDto handleValidationException(ConstraintViolationException e) {
         LOGGER.warn("Terminating request processing with status 422 due to {}: {}", e.getClass().getSimpleName(), e.getMessage());
-
         List<String> errors = e.getConstraintViolations().stream()
             .map(violation -> violation.getPropertyPath() + ": " + violation.getMessage())
             .collect(Collectors.toList());
-        String defaultMessage = "Your request failed validation.";
-        ValidationErrorRestDto errorResponse = new ValidationErrorRestDto(defaultMessage, errors);
 
-        return new ResponseEntity<>(errorResponse, new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY);
+        return new ValidationErrorRestDto(e.getMessage(), errors);
     }
 
     /**
-     * Handles exceptions thrown by annotation-style validation (not via Validators).
-     * Sends a customized HTTP response for a validation exception as thrown by jakarta annotations.
-     *
-     * @param e the exception
-     * @param headers the headers
-     * @param status the status
-     * @param request the request
-     * @return the error response
+     * Use the @ExceptionHandler annotation to write handler for custom exceptions.
+     */
+    @ExceptionHandler(value = {NotFoundException.class})
+    protected ResponseEntity<Object> handleNotFound(RuntimeException ex, WebRequest request) {
+        LOGGER.warn(ex.getMessage());
+        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    }
+
+    /**
+     * Use the @ExceptionHandler annotation to write handler for custom exceptions.
+     */
+    @ExceptionHandler(value = {IllegalArgumentException.class})
+    protected ResponseEntity<Object> handleIllegalArgument(RuntimeException ex, WebRequest request) {
+        LOGGER.warn(ex.getMessage());
+        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+    }
+
+    /**
+     * Override methods from ResponseEntityExceptionHandler to send a customized HTTP response for a know exception
+     * from e.g. Spring
      */
     @Override
-    public ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException e,
-                                                               HttpHeaders headers,
-                                                               HttpStatusCode status,
-                                                               WebRequest request) {
-        LOGGER.warn("Terminating request processing with status 422 due to {}: {}", e.getClass().getSimpleName(), e.getMessage());
-
-        List<String> errors = e.getBindingResult()
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+                                                                  HttpHeaders headers,
+                                                                  HttpStatusCode status, WebRequest request) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        //Get all errors
+        List<String> errors = ex.getBindingResult()
             .getFieldErrors()
             .stream()
-            .map(err -> err.getField() + ": " + err.getDefaultMessage())
+            .map(err -> err.getField() + " " + err.getDefaultMessage())
             .collect(Collectors.toList());
-        String defaultMessage = "Your request failed validation.";
-        ValidationErrorRestDto errorResponse = new ValidationErrorRestDto(defaultMessage, errors);
+        body.put("Validation errors", errors);
 
-        return new ResponseEntity<>(errorResponse, headers, HttpStatus.UNPROCESSABLE_ENTITY);
+        return new ResponseEntity<>(body.toString(), headers, status);
     }
 
-    /**
-     * Handles exceptions thrown when a resource is not found.
-     * Sends a customized HTTP response for a not found exception.
-     *
-     * @param ex the exception
-     * @return the error response
-     */
     @ExceptionHandler
-    protected ResponseEntity<Object> handleNotFound(NotFoundException ex) {
-        LOGGER.warn("Terminating request processing with status 404 due to {}: {}", ex.getClass().getSimpleName(), ex.getMessage());
-
-        String defaultMessage = "The requested content was not found.";
-        List<String> errors = List.of(ex.getMessage());
-        NotFoundErrorRestDto errorResponse = new NotFoundErrorRestDto(defaultMessage, errors);
-
-        return new ResponseEntity<>(errorResponse, new HttpHeaders(), HttpStatus.NOT_FOUND);
-    }
-
-    /**
-     * Handles exceptions thrown when an unexpected error occurs.
-     * Sends a customized HTTP response for an internal server error.
-     *
-     * @param ex the exception
-     * @return the error response
-     */
-    @ExceptionHandler
-    protected ResponseEntity<Object> handleRuntimeException(RuntimeException ex) {
-        LOGGER.warn("Terminating request processing with status 500 due to {}: {}", ex.getClass().getSimpleName(), ex.getMessage());
-
-        String defaultMessage = "An unexpected error occurred. Please try again later.";
-        InternalServerErrorRestDto errorResponse = new InternalServerErrorRestDto(defaultMessage);
-
-        return new ResponseEntity<>(errorResponse, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    /**
-     * Handles exceptions thrown when a resource is not found.
-     * Sends a customized HTTP response for a not found exception.
-     *
-     * @param e the exception
-     * @return the error response
-     */
-    @ExceptionHandler
-    protected ResponseEntity<Object> handleIllegalArgument(IllegalArgumentException e) {
-        LOGGER.warn("Terminating request processing with status 400 due to {}: {}", e.getClass().getSimpleName(), e.getMessage());
-
-        String defaultMessage = "A provided argument was illegal.";
-        List<String> errors = List.of(e.getMessage());
-        IllegalArgumentErrorRestDto errorResponse = new IllegalArgumentErrorRestDto(defaultMessage, errors);
-
-        return new ResponseEntity<>(errorResponse, new HttpHeaders(), HttpStatus.BAD_REQUEST);
-    }
-
-    /**
-     * Handles exceptions thrown when a resource is not found.
-     * Sends a customized HTTP response for a not found exception.
-     *
-     * @param e the exception
-     * @return the error response
-     */
-    @ExceptionHandler
-    public ResponseEntity<Object> handleConflictException(ConflictException e) {
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseBody
+    public ConflictErrorRestDto handleConflictException(ConflictException e) {
         LOGGER.warn("Terminating request processing with status 409 due to {}: {}", e.getClass().getSimpleName(), e.getMessage());
-
-        String defaultMessage = "Your request caused a conflict.";
-        List<String> errors = List.of(e.getMessage());
-        ConflictErrorRestDto errorResponse = new ConflictErrorRestDto(defaultMessage, errors);
-
-        return new ResponseEntity<>(errorResponse, new HttpHeaders(), HttpStatus.CONFLICT);
+        return new ConflictErrorRestDto(e.summary(), e.errors());
     }
 
-    /**
-     * Handles exceptions thrown when a resource is not found.
-     * Sends a customized HTTP response for a not found exception.
-     *
-     * @param e the exception
-     * @return the error response
-     */
-    @ExceptionHandler
-    public ResponseEntity<Object> handleBadCredentialException(BadCredentialsException e) {
-        LOGGER.warn("Terminating request processing with status 401 due to {}: {}", e.getClass().getSimpleName(), e.getMessage());
-
-        String defaultMessage = "Username or password not correct.";
-        List<String> errors = List.of(e.getMessage());
-        ConflictErrorRestDto errorResponse = new ConflictErrorRestDto(defaultMessage, errors);
-
-        return new ResponseEntity<>(errorResponse, new HttpHeaders(), HttpStatus.UNAUTHORIZED);
-    }
 }

@@ -42,21 +42,13 @@ public class EventEndpoint {
         this.service = service;
     }
 
-    // TODO: validation
     @PermitAll
     @Operation(summary = "Get list of events that match the given parameters", security = @SecurityRequirement(name = "apiKey"))
     @GetMapping({"/search"})
     public List<EventListDto> searchEvents(EventSearchDto searchParameters) {
-        LOGGER.info("GET /api/v1/events body: {}", searchParameters.toString());
+        LOGGER.info("GET /api/v1/events");
+        LOGGER.debug("request parameters: {}", searchParameters.toString());
         return service.search(searchParameters);
-    }
-
-    @PermitAll
-    @Operation(summary = "Get the next upcoming events", security = @SecurityRequirement(name = "apiKey"))
-    @GetMapping({"/upcoming"})
-    public List<EventListDto> getUpcomingEvents() {
-        LOGGER.info("GET /api/v1/events/upcoming");
-        return service.getUpcomingEvents();
     }
 
     @PermitAll

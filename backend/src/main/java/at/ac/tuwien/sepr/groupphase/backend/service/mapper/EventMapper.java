@@ -27,8 +27,6 @@ import java.util.List;
 
 @Mapper
 public interface EventMapper {
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "hashId", ignore = true)
     @Mapping(target = "startTime", expression = "java(combineDateTime(eventCreateDto.getStartDate(), eventCreateDto.getStartTime()))")
     @Mapping(target = "endTime", expression = "java(combineDateTime(eventCreateDto.getEndDate(), eventCreateDto.getEndTime()))")
     Event eventCreateDtoToEvent(EventCreateDto eventCreateDto);
@@ -99,8 +97,10 @@ public interface EventMapper {
             }
             throw new Exception("unknown type of startDate Class: " + temporal.getClass());
         } catch (Exception e) {
-            throw new IllegalArgumentException("Error mapping start time: " + e.getMessage() + "\n");
+            System.out.println("Error mapping start time: " + e.getMessage() + "\n");
+            return null;
         }
+        //TODO: throw IllegalArgumentException
     }
 
     @Named("mapEndTime")
@@ -121,12 +121,8 @@ public interface EventMapper {
             }
             throw new Exception("unknown type of endDate Class: " + temporal.getClass());
         } catch (Exception e) {
-            try {
-                LocalDateTime startTime = mapStartTime(vevent);
-                return startTime.plusDays(1);
-            } catch (Exception e2) {
-                throw new IllegalArgumentException("Error mapping end time: " + e.getMessage());
-            }
+            System.out.println("Error mapping end time: " + e.getMessage() + "\n");
+            throw new IllegalArgumentException("Error mapping end time: " + e.getMessage());
         }
     }
 

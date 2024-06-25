@@ -1,14 +1,12 @@
 import {Component, OnInit, OnDestroy, ElementRef, ViewChild, HostListener} from '@angular/core';
 import {NgForm} from "@angular/forms";
 import {
-  ReservationCreateDto,
-  ReservationWalkInDto
-} from "../../dtos/reservation";
-import {
   ReservationLayoutCheckAvailabilityDto,
+  ReservationCreateDto,
   AreaLayoutDto,
-  AreaDto,
-  AreaListDto} from "../../dtos/layout";
+  AreaListDto,
+  AreaDto, ReservationWalkInDto
+} from "../../dtos/reservation";
 import {UserOverviewDto} from "../../dtos/app-user";
 import {AuthService} from "../../services/auth.service";
 import {ReservationService} from "../../services/reservation.service";
@@ -17,9 +15,6 @@ import {D3DrawService} from "../../services/d3-draw.service";
 import {formatIsoDate} from "../../util/date-helper";
 import {SimpleViewReservationStatusEnum} from "../../dtos/status-enum";
 import {PlaceService} from "../../services/place.service";
-import {LayoutService} from "../../services/layout.service";
-
-
 
 @Component({
   selector: 'app-employee-view',
@@ -36,7 +31,7 @@ export class EmployeeViewComponent {
   areaLayout: AreaLayoutDto;
   selectedPlaces: { placeId: number, numberOfSeats: number }[] = [];
   areas: AreaDto[] = [];
-  selectedAreaId: number;
+  selectedAreaId: number = 1;
 
   isPaxValid: boolean = true;
   timer: any;
@@ -50,16 +45,15 @@ export class EmployeeViewComponent {
     private reservationService: ReservationService,
     private notificationService: NotificationService,
     private d3DrawService: D3DrawService,
-    private placeService: PlaceService,
-    private layoutService: LayoutService
+    private placeService: PlaceService
   ) {
     this.initializeSharedProperties();
     this.reservationCreateDto = this.initializeReservationCreateDto();
     this.reservationLayoutCheckAvailabilityDto = this.initializeReservationLayoutCheckAvailabilityDto();
   }
 
-  async ngOnInit() {
-    await this.fetchAllAreas();
+  ngOnInit() {
+    this.fetchAllAreas();
     this.fetchLayoutAvailability();
     this.d3DrawService.createSeatingPlan(this.d3Container);
     this.onResize();
@@ -100,7 +94,7 @@ export class EmployeeViewComponent {
     return {
       startTime: this.sharedStartTime,
       date: this.sharedDate,
-      areaId: this.selectedAreaId,
+      areaId: 1,
       idToExclude: -1
     };
   }
@@ -129,17 +123,20 @@ export class EmployeeViewComponent {
   }
 
 
-  private async fetchAllAreas() {
-    try {
-      const data: AreaListDto = await this.layoutService.getAllAreas().toPromise();
-      this.areas = data.areas;
-      if (this.areas.length > 0) {
-        this.selectedAreaId = this.areas[0].id;
-        this.reservationLayoutCheckAvailabilityDto.areaId = this.selectedAreaId;
-      }
-    } catch (error) {
-      this.notificationService.showError('Failed to fetch areas. Please try again later.');
-    }
+  private fetchAllAreas() {
+    this.reservationService.getAllAreas().subscribe({
+      next: (data: AreaListDto) => {
+        this.areas = data.areas;
+        if (this.areas.length > 0) {
+          this.selectedAreaId = this.selectedAreaId || this.areas[0].id;
+          this.reservationLayoutCheckAvailabilityDto.areaId = this.selectedAreaId;
+          this.fetchLayoutAvailability();
+        }
+      },
+      error: () => {
+        this.notificationService.showError('Failed to fetch areas. Please try again later.');
+      },
+    });
   }
 
   onAreaChange(event: Event) {
@@ -155,7 +152,7 @@ export class EmployeeViewComponent {
   }
 
   private fetchLayoutAvailability() {
-    this.layoutService.getLayoutAvailability(this.reservationLayoutCheckAvailabilityDto).subscribe({
+    this.reservationService.getLayoutAvailability(this.reservationLayoutCheckAvailabilityDto).subscribe({
       next: (data: AreaLayoutDto) => {
         this.areaLayout = data;
         this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this), true);

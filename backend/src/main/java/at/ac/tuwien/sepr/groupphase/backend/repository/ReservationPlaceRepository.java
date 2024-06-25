@@ -20,6 +20,4 @@ public interface ReservationPlaceRepository extends JpaRepository<ReservationPla
     void deleteByReservationId(Long reservationId);
 
     List<ReservationPlace> findByReservationId(Long reservationId);
-
-    List<ReservationPlace> findByPlaceId(Long placeId);
 }

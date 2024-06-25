@@ -169,7 +169,7 @@ public class SecurityTest implements TestData {
             .andReturn();
         MockHttpServletResponse response = mvcResult.getResponse();
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatus());
+        assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatus());
     }
 
     @Test
@@ -203,7 +203,7 @@ public class SecurityTest implements TestData {
             .andReturn();
         MockHttpServletResponse response = mvcResult.getResponse();
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatus());
+        assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatus());
     }
 
     @Test
@@ -221,6 +221,6 @@ public class SecurityTest implements TestData {
             .andReturn();
         MockHttpServletResponse response = mvcResult.getResponse();
 
-        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getStatus());
+        assertEquals(HttpStatus.FORBIDDEN.value(), response.getStatus());
     }
 }

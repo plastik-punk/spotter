@@ -27,10 +27,6 @@ public class DefaultDataGenerator {
     @PostConstruct
     private void generateDefaultData() {
         LOGGER.trace("generateDefaultData");
-        generateWalkInUser();
-    }
-
-    private void generateWalkInUser() {
         if (applicationUserRepository.existsById(0L)) {
             LOGGER.debug("Walk-in User already generated");
         } else {

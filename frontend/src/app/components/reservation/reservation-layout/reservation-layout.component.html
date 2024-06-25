@@ -77,11 +77,6 @@
         </div>
         <hr class="my-4">
 
-
-        <!-- Start event-row-content-wrapper with event card and some form-fields -->
-        <div [class.event-row-content-wrapper]="upcomingEventsExist">
-          <div [class.event-column-left]="upcomingEventsExist">
-
         <!-- Start row with pax -->
         <div class="row">
           <div class="column pax-container">
@@ -98,60 +93,62 @@
               min="1"
               required
             />
+          </div>
+        </div>
+        <!-- End row with pax -->
 
-            <div class="custom-seperator" *ngIf="!authService.isLoggedIn()"></div>
-
-            <div class="column" *ngIf="!authService.isLoggedIn()">
-              <div>
-                <!-- start guest fields -->
-                <input
-                  type="text"
-                  id="reservationFirstName"
-                  name="reservationFirstName"
-                  placeholder="First Name"
-                  class="form-control"
-                  [(ngModel)]="reservationCreateDto.firstName"
-                  #reservationFirstName="ngModel"
-                  required
-                />
-
-                <input
-                  type="text"
-                  id="reservationLastName"
-                  name="reservationLastName"
-                  placeholder="Last Name"
-                  class="form-control"
-                  [(ngModel)]="reservationCreateDto.lastName"
-                  #reservationLastName="ngModel"
-                  required
-                />
-
-                <input
-                  type="email"
-                  id="reservationEmail"
-                  name="reservationEmail"
-                  placeholder="Email"
-                  class="form-control"
-                  [(ngModel)]="reservationCreateDto.email"
-                  #reservationEmail="ngModel"
-                  required
-                />
-
-                <input
-                  type="tel"
-                  id="reservationMobileNumber"
-                  name="reservationMobileNumber"
-                  placeholder="Phone (optional)"
-                  class="form-control"
-                  [(ngModel)]="reservationCreateDto.mobileNumber"
-                  #reservationMobileNumber="ngModel"
-                />
-              </div>
-            </div>
-
-            <div class="custom-seperator"></div>
-
+        <!-- Start row with (firstName, lastName, Mail, Phone), Notes -->
+        <div class="row">
+          <div class="column" *ngIf="!authService.isLoggedIn()">
             <div>
+              <!-- start guest fields -->
+              <input
+                type="text"
+                id="reservationFirstName"
+                name="reservationFirstName"
+                placeholder="First Name"
+                class="form-control"
+                [(ngModel)]="reservationCreateDto.firstName"
+                #reservationFirstName="ngModel"
+                required
+              />
+
+              <input
+                type="text"
+                id="reservationLastName"
+                name="reservationLastName"
+                placeholder="Last Name"
+                class="form-control"
+                [(ngModel)]="reservationCreateDto.lastName"
+                #reservationLastName="ngModel"
+                required
+              />
+
+              <input
+                type="email"
+                id="reservationEmail"
+                name="reservationEmail"
+                placeholder="Email"
+                class="form-control"
+                [(ngModel)]="reservationCreateDto.email"
+                #reservationEmail="ngModel"
+                required
+              />
+
+              <input
+                type="tel"
+                id="reservationMobileNumber"
+                name="reservationMobileNumber"
+                placeholder="Phone (optional)"
+                class="form-control"
+                [(ngModel)]="reservationCreateDto.mobileNumber"
+                #reservationMobileNumber="ngModel"
+              />
+            </div>
+          </div>
+          <!-- End guest fields -->
+
+          <div class="column">
               <textarea
                 id="reservationNotes"
                 name="reservationNotes"
@@ -160,54 +157,9 @@
                 [(ngModel)]="reservationCreateDto.notes"
                 #reservationNotes="ngModel"
               ></textarea>
-            </div>
           </div>
         </div>
-          </div>
-        <!-- End event-column-left -->
-          <!-- Start event-column-right -->
-          <div class="event-column-right" [ngStyle]="{'display': upcomingEventsExist ? 'flex' : 'none'}">
-            <div class="custom-event-card">
-              <h1 class="font-heading">Events</h1>
-              <table class="table table-hover">
-                <tbody>
-                <tr *ngFor="let event of events | slice:(currentEventPage-1)*itemsPerPage : currentEventPage*itemsPerPage">
-                  <td>
-                    <div class="event-row">
-                      <span class="event-name">{{ event.name }}</span>
-                    </div>
-                    <div class="event-row">
-                      <a class="btn event-info-btn btn-sm"
-                         aria-label="Show event details"
-                         (click)="showEventDetails(event.hashId)">
-                        <i class="bi bi-info-lg"></i>
-                      </a>
-                      <div class="event-time">{{ event.startTime ? formatDay(event.startTime) : ''}} - {{ event.startTime ? formatDotDate(event.startTime) : ''}}</div>
-                    </div>
-                  </td>
-                </tr>
-                </tbody>
-              </table>
-              <div class="btn-group">
-                <a class="btn btn-event-skip btn-sm"
-                   aria-label="Previous events"
-                   [class.disabled]="currentEventPage === 1"
-                   (click)="previousPage()">
-                  <i class="bi bi-arrow-left"></i>
-                </a>
-                <a class="btn btn-event-skip btn-sm"
-                   [class.disabled]="currentEventPage === Math.ceil(events?.length / itemsPerPage)"
-                   aria-label="Next events"
-                   (click)="nextPage()">
-                  <i class="bi bi-arrow-right"></i>
-                </a>
-              </div>
-            </div>
-          </div>
-          <!-- End event-column-right -->
-        </div>
-        <!-- End event-row-content-wrapper -->
-
+        <!-- End row with (firstName, lastName, Mail, Phone), Notes -->
 
         <div class="row">
           <div class="column">
@@ -222,39 +174,5 @@
     </div>
   </div>
 </div>
-
-
-<!-- Modal for event details -->
-<div class="modal fade" id="event-detail" tabindex="-1" aria-labelledby="event-detail-modal" aria-hidden="true">
-  <div class="modal-dialog custom-event-modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 class="modal-title" id="event-detail-title">{{event.name}}</h3>
-      </div>
-      <div class="modal-body">
-        <dl class="row">
-          <div class="dt-dd-align">
-            <dt class="col-sm-2">From:</dt>
-            <dd class="col-sm-10">{{ event.startTime ? formatDay(event.startTime) : ''}} - {{event.startTime? formatDotDate(event.startTime) : ''}} - {{ event.startTime ? formatIsoTime(event.startTime) : ''}}h</dd>
-          </div>
-
-          <div class="dt-dd-align">
-            <dt class="col-sm-2">Until:</dt>
-            <dd class="col-sm-10">{{ event.endTime ? formatDay(event.endTime) : ''}} - {{ event.endTime ? formatDotDate(event.endTime) : ''}} - {{ event.endTime ? formatIsoTime(event.endTime) : '' }}h</dd>
-          </div>
-
-          <div class="dt-dd-align">
-            <dt class="col-sm-2">Info:</dt>
-            <dd class="col-sm-10">{{ event.description }}</dd>
-          </div>
-        </dl>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
-
 </body>
 </html>

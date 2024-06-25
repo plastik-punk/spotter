@@ -13,9 +13,6 @@ import {NgForm} from "@angular/forms";
 })
 export class EventEditComponent {
 
-  startDateString: string;
-  endDateString: string;
-
   eventEditDto: EventEditDto = {
     hashId: undefined,
     startTime: undefined,
@@ -45,7 +42,6 @@ export class EventEditComponent {
             this.eventEditDto.endTime = data.endTime;
             this.eventEditDto.name = data.name;
             this.eventEditDto.description = data.description;
-            this.formatDateTime();
           }
         },
         error: (error) => {
@@ -101,25 +97,6 @@ export class EventEditComponent {
     if (!this.eventEditDto.name) {
       this.notificationService.showError('Name is required.');
     }
-  }
-
-  private formatDateTime() {
-    console.log(this.eventEditDto.startTime);
-    const startDate = new Date(this.eventEditDto.startTime);
-    this.startDateString = startDate.toISOString().slice(0, 16);
-
-    const endDate = new Date(this.eventEditDto.endTime);
-    this.endDateString = endDate.toISOString().slice(0, 16);
-  }
-
-  startTimeChange(event: any) {
-    this.eventEditDto.startTime = event;
-    this.formatDateTime();
-  }
-
-  endTimeChange(event: any) {
-    this.eventEditDto.endTime = event;
-    this.formatDateTime();
   }
 
 }

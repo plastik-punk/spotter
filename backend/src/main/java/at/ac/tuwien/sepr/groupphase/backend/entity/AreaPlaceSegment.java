@@ -50,18 +50,6 @@ public class AreaPlaceSegment {
         return segment;
     }
 
-    public void setArea(Area area) {
-        this.area = area;
-    }
-
-    public void setPlace(Place place) {
-        this.place = place;
-    }
-
-    public void setSegment(Segment segment) {
-        this.segment = segment;
-    }
-
     @Embeddable
     public static class AreaPlaceSegmentId implements Serializable {
 

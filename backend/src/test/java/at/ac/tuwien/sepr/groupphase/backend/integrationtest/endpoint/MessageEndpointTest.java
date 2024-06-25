@@ -192,7 +192,7 @@ public class MessageEndpointTest implements TestData {
 
     @Test
     @Transactional
-    public void givenNothing_whenPostInvalid_then422() throws Exception {
+    public void givenNothing_whenPostInvalid_then400() throws Exception {
         message.setTitle(null);
         message.setSummary(null);
         message.setText(null);
@@ -207,7 +207,16 @@ public class MessageEndpointTest implements TestData {
             .andReturn();
         MockHttpServletResponse response = mvcResult.getResponse();
 
-        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY.value(), response.getStatus());
+        assertAll(
+            () -> assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus()),
+            () -> {
+                //Reads the errors from the body
+                String content = response.getContentAsString();
+                content = content.substring(content.indexOf('[') + 1, content.indexOf(']'));
+                String[] errors = content.split(",");
+                assertEquals(3, errors.length);
+            }
+        );
     }
 
     private boolean isNow(LocalDateTime date) {

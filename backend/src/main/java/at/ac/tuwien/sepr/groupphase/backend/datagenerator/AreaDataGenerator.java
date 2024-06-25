@@ -43,7 +43,6 @@ public class AreaDataGenerator {
             .withWidth(15)
             .withHeight(8)
             .withOpen(true)
-            .withMain(true)
             .build();
 
         LOGGER.debug("Saving area {}", area1);
@@ -51,10 +50,9 @@ public class AreaDataGenerator {
 
         Area area2 = Area.AreaBuilder.anArea()
             .withName("Second Area")
-            .withWidth(10)
+            .withWidth(19)
             .withHeight(4)
             .withOpen(false)
-            .withMain(false)
             .build();
 
         LOGGER.debug("Saving area {}", area2);

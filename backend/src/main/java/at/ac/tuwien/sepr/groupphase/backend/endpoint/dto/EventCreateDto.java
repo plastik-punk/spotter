@@ -2,7 +2,6 @@ package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
 import at.ac.tuwien.sepr.groupphase.backend.validation.EndDateAndTimeAfterStartValidation;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -21,11 +20,9 @@ public class EventCreateDto {
     private LocalTime endTime;
 
     @NotNull(message = "Name is required")
-    @Size(min = 1, message = "Name should not be empty")
-    @Size(max = 255, message = "Name shouldn't be longer than 255 characters")
     private String name;
 
-    @Size(max = 100000, message = "Description shouldn't be longer than 100000 characters")
+    @NotNull(message = "Description is required")
     private String description;
 
     public LocalDate getStartDate() {

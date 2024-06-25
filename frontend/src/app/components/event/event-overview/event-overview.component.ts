@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormsModule} from "@angular/forms";
-import {NgForOf, NgIf, Time} from "@angular/common";
+import {NgForOf, NgIf} from "@angular/common";
 import {debounceTime, Observable, Subject} from "rxjs";
 import {HttpResponse} from "@angular/common/http";
 import {AuthService} from "../../../services/auth.service";
@@ -20,11 +20,10 @@ export class EventOverviewComponent implements OnInit {
   events: EventListDto[] = [];
   displayedEvents: EventListDto[] = [];
   searchParams: EventSearchDto = {};
-  searchEarliestDate: string | null = null;
-  searchLatestDate: string | null = null;
-  searchEarliestStartTime: string | null = null;
-  searchLatestEndTime: string | null = null;
-  searchName: string | null = null;
+  searchEarliestDate: Date | null = null;
+  searchLatestDate: Date | null = null;
+  searchEarliestStartTime: Date | null = null;
+  searchLatestEndTime: Date | null = null;
   searchChangedObservable = new Subject<void>();
   deleteWhat: string = null;
   selectedFile: File | null = null;
@@ -57,30 +56,25 @@ export class EventOverviewComponent implements OnInit {
   }
 
   loadEvents() {
-    if (this.searchEarliestDate == null || this.searchEarliestDate === '') {
+    if (this.searchEarliestDate == null) {
       delete this.searchParams.earliestStartDate;
     } else {
-      this.searchParams.earliestStartDate = new Date(this.searchEarliestDate);
+      this.searchParams.earliestStartDate = this.searchEarliestDate;
     }
-    if (this.searchLatestDate == null || this.searchLatestDate === '') {
+    if (this.searchLatestDate == null) {
       delete this.searchParams.latestEndDate;
     } else {
-      this.searchParams.latestEndDate = new Date(this.searchLatestDate);
+      this.searchParams.latestEndDate = this.searchLatestDate;
     }
-    if (this.searchEarliestStartTime == null || this.searchEarliestStartTime === '') {
+    if (this.searchEarliestStartTime == null) {
       delete this.searchParams.earliestStartTime;
     } else {
       this.searchParams.earliestStartTime = this.searchEarliestStartTime;
     }
-    if (this.searchLatestEndTime == null || this.searchLatestEndTime === '') {
+    if (this.searchLatestEndTime == null) {
       delete this.searchParams.latestEndTime;
     } else {
       this.searchParams.latestEndTime = this.searchLatestEndTime;
-    }
-    if (this.searchName == null || this.searchName === '') {
-      delete this.searchParams.name;
-    } else {
-      this.searchParams.name = this.searchName;
     }
 
     this.eventService.search(this.searchParams)
@@ -152,17 +146,5 @@ export class EventOverviewComponent implements OnInit {
         }
       );
     }
-  }
-
-  formatDateTime(dateTime: string): string {
-    if (!dateTime) {
-      return "";
-    }
-    const date = new Date(dateTime);
-    const formattedDate = date.toISOString().split('T')[0];
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-
-    return `${formattedDate} ${hours}:${minutes}`;
   }
 }

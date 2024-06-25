@@ -1,3 +1,4 @@
+
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
 import java.util.List;
@@ -68,7 +69,7 @@ public class AreaLayoutDto {
 
     public static class PlaceVisualDto {
 
-        private int placeNumber;
+        private Long placeId;
         private Boolean status;
         private Boolean reservation;
         private Long numberOfSeats;
@@ -76,12 +77,12 @@ public class AreaLayoutDto {
 
         // Getters and Setters
 
-        public int getPlaceNumber() {
-            return placeNumber;
+        public Long getPlaceId() {
+            return placeId;
         }
 
-        public void setPlaceNumber(int placeNumber) {
-            this.placeNumber = placeNumber;
+        public void setPlaceId(Long placeId) {
+            this.placeId = placeId;
         }
 
         public Boolean getStatus() {
@@ -125,7 +126,7 @@ public class AreaLayoutDto {
                 return false;
             }
             PlaceVisualDto that = (PlaceVisualDto) o;
-            return Objects.equals(placeNumber, that.placeNumber)
+            return Objects.equals(placeId, that.placeId)
                 && Objects.equals(status, that.status)
                 && Objects.equals(reservation, that.reservation)
                 && Objects.equals(numberOfSeats, that.numberOfSeats)
@@ -134,14 +135,14 @@ public class AreaLayoutDto {
 
         @Override
         public int hashCode() {
-            return Objects.hash(placeNumber, status, reservation, numberOfSeats, coordinates);
+            return Objects.hash(placeId, status, reservation, numberOfSeats, coordinates);
         }
 
         @Override
         public String toString() {
             return "PlaceVisualDto{"
                 + "placeId="
-                + placeNumber
+                + placeId
                 + ", status="
                 + status
                 + ", reservation="

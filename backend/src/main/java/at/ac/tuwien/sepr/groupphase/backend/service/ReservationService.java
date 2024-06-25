@@ -1,19 +1,18 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationCreateDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationDetailDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationListDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaLayoutDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationModalDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationWalkInDto;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
-import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import jakarta.mail.MessagingException;
 
 import java.util.List;
@@ -88,6 +87,23 @@ public interface ReservationService {
      */
     void cancel(String hashId);
 
+
+    /**
+     * Get layout of area for requested time and pax.
+     *
+     * @param reservationLayoutCheckAvailabilityDto the reservation data
+     * @return the layout of the area
+     */
+
+    AreaLayoutDto getAreaLayout(ReservationLayoutCheckAvailabilityDto reservationLayoutCheckAvailabilityDto);
+
+    /**
+     * Get list of all areas.
+     *
+     * @return the list of all areas
+     */
+    AreaListDto getAllAreas();
+
     /**
      * Confirm a reservation.
      *
@@ -111,46 +127,4 @@ public interface ReservationService {
      * @return the walk-in reservation as provided from the Repository layer after creation in the database
      */
     ReservationCreateDto createWalkIn(ReservationWalkInDto reservationWalkInDto) throws ConflictException, MessagingException;
-
-    /**
-     * Create a permanent reservation (still needs to be confirmed).
-     *
-     * @param permanentReservationCreateDto the necessary data for a permanent reservation
-     * @return the permanent reservation as provided from the persistence layer after creation in the data storage
-     */
-    PermanentReservationCreateDto createPermanent(PermanentReservationCreateDto permanentReservationCreateDto);
-
-
-    /**
-     * Confirm a Permanent Reservation and create single reservations for it.
-     *
-     * @param id ID to confirm
-     */
-    void confirmPermanentReservation(Long id) throws MessagingException;
-
-    /**
-     * Find all permanent reservations that match the search parameters ordered by startDate (desc).
-     *
-     * @param searchParams the search parameters to use in filtering.
-     * @return List of PermanentReservationCreateDto that match the search parameters
-     */
-    List<PermanentReservationListDto> searchPermanent(PermanentReservationSearchDto searchParams);
-
-
-    /**
-     * Get the details for a permanent reservation with the given hashedId.
-     *
-     * @param hashedId the unique hashedId for the permanent reservation
-     * @return a PermanentReservationDetailDto with the details of the permanent reservation
-     */
-    PermanentReservationDetailDto getPermanentDetails(String hashedId);
-
-    /**
-     * Delete a permanent reservation and all its single reservations.
-     *
-     * @param permanentReservationHashId hashed id of the permanent reservation to delete
-     */
-    void deletePermanentReservation(String permanentReservationHashId) throws MessagingException;
 }
-
-

@@ -49,10 +49,9 @@
                 type="datetime-local"
                 id="eventStartTime"
                 name="eventStartTime"
-                placeholder="Start Time"
+                placeholder="Start Time (optional)"
                 class="form-control"
-                [(ngModel)]="startDateString"
-                (ngModelChange)="startTimeChange($event)"
+                [(ngModel)]="eventEditDto.startTime"
               />
             </div>
 
@@ -64,8 +63,8 @@
                 name="eventEndTime"
                 placeholder="End Time"
                 class="form-control"
-                [(ngModel)]="endDateString"
-                (ngModelChange)="endTimeChange($event)"
+                [(ngModel)]="eventEditDto.endTime"
+                required
               />
             </div>
           </div>

@@ -7,7 +7,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-
 import java.time.LocalTime;
 import java.util.Objects;
 
@@ -22,10 +21,7 @@ public class Area {
     private String name;
 
     @Column(nullable = false)
-    private boolean isOpen;
-
-    @Column(nullable = false)
-    private boolean isMain;
+    private Boolean isOpen;
 
     @Column(nullable = true)
     private LocalTime openingTime;
@@ -35,12 +31,12 @@ public class Area {
 
     @Column(nullable = false)
     @Min(0)
-    @Max(15)
+    @Max(19)
     private int width;
 
     @Column(nullable = false)
     @Min(0)
-    @Max(8)
+    @Max(19)
     private int height;
 
     // Getters and Setters
@@ -64,16 +60,8 @@ public class Area {
         return isOpen;
     }
 
-    public void setIsOpen(boolean isOpen) {
-        this.isOpen = isOpen;
-    }
-
-    public boolean isMain() {
-        return isMain;
-    }
-
-    public void setIsMain(boolean isMain) {
-        this.isMain = isMain;
+    public void setOpen(boolean open) {
+        this.isOpen = open;
     }
 
     public LocalTime getOpeningTime() {
@@ -122,14 +110,13 @@ public class Area {
             && Objects.equals(id, area.id)
             && Objects.equals(name, area.name)
             && Objects.equals(isOpen, area.isOpen)
-            && Objects.equals(isMain, area.isMain)
             && Objects.equals(openingTime, area.openingTime)
             && Objects.equals(closingTime, area.closingTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, isOpen, isMain, openingTime, closingTime, width, height);
+        return Objects.hash(id, name, isOpen, openingTime, closingTime, width, height);
     }
 
     @Override
@@ -138,7 +125,6 @@ public class Area {
             + "id=" + id
             + ", name='" + name + '\''
             + ", isOpen=" + isOpen
-            + ", isMain=" + isMain
             + ", openingTime=" + openingTime
             + ", closingTime=" + closingTime
             + '}';
@@ -148,7 +134,6 @@ public class Area {
         private Long id;
         private String name;
         private boolean isOpen;
-        private boolean isMain;
         private LocalTime openingTime;
         private LocalTime closingTime;
         private int width;
@@ -176,11 +161,6 @@ public class Area {
             return this;
         }
 
-        public AreaBuilder withMain(boolean main) {
-            this.isMain = main;
-            return this;
-        }
-
         public AreaBuilder withOpeningTime(LocalTime openingTime) {
             this.openingTime = openingTime;
             return this;
@@ -205,8 +185,7 @@ public class Area {
             Area area = new Area();
             area.setId(id);
             area.setName(name);
-            area.setIsOpen(isOpen);
-            area.setIsMain(isMain);
+            area.setOpen(isOpen);
             area.setOpeningTime(openingTime);
             area.setClosingTime(closingTime);
             area.setWidth(width);

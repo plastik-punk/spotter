@@ -1,7 +1,6 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ApplicationUserRegistrationDto;
-import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.service.ApplicationUserService;
 import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
@@ -29,9 +28,10 @@ public class RegistrationEndpoint {
 
     @PostMapping
     @PermitAll
-    public ResponseEntity<Void> register(@Valid @RequestBody ApplicationUserRegistrationDto applicationUserRegistrationDto) throws ConflictException {
+    public ResponseEntity<Void> register(@Valid @RequestBody ApplicationUserRegistrationDto applicationUserRegistrationDto) {
         LOGGER.info("POST /api/v1/registration body: {}", applicationUserRegistrationDto.toString());
         applicationUserService.register(applicationUserRegistrationDto);
         return ResponseEntity.status(201).build();
     }
 }
+

@@ -11,6 +11,7 @@ import at.ac.tuwien.sepr.groupphase.backend.repository.SegmentRepository;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -26,22 +27,18 @@ public class AreaPlaceSegmentDataGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private final DataGeneratorBean dataGeneratorBean;
     private final AreaPlaceSegmentRepository areaPlaceSegmentRepository;
     private final AreaRepository areaRepository;
     private final PlaceRepository placeRepository;
     private final SegmentRepository segmentRepository;
 
-
-    public AreaPlaceSegmentDataGenerator(DataGeneratorBean dataGeneratorBean,
-                                         AreaPlaceSegmentRepository areaPlaceSegmentRepository,
+    public AreaPlaceSegmentDataGenerator(AreaPlaceSegmentRepository areaPlaceSegmentRepository,
                                          AreaRepository areaRepository,
                                          PlaceRepository placeRepository,
                                          SegmentRepository segmentRepository,
                                          AreaDataGenerator areaDataGenerator,
                                          PlaceDataGenerator placeDataGenerator,
                                          SegmentDataGenerator segmentDataGenerator) {
-        this.dataGeneratorBean = dataGeneratorBean;
         this.areaPlaceSegmentRepository = areaPlaceSegmentRepository;
         this.areaRepository = areaRepository;
         this.placeRepository = placeRepository;
