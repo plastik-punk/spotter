@@ -144,7 +144,7 @@ export class ReservationSimpleComponent implements OnInit {
         modalDetail.show();
       },
       error: error => {
-        this.notificationService.showError('Failed to load reservation details. Please try again later.');
+        this.notificationService.showError('Failed to load event details. Please try again later.');
       }
     });
   }
