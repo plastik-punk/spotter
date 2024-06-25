@@ -10,7 +10,7 @@
 </head>
 <body>
 <div class="top-left-logo">
-  <a >
+  <a>
     <img src="../../../../assets/images/logo.png" alt="Logo">
   </a>
 </div>
@@ -40,11 +40,12 @@
                 <label for="reservationDate">Date</label>
               </div>
             </div>
-            <div class ="column" *ngIf="authService.isLoggedIn()">
+            <div class="column" *ngIf="authService.isLoggedIn()">
               <div class="row">
                 <div class="column" style="flex: 0.5">
                   <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="isRecurring" [(ngModel)]="isRecurring" name="isRecurring">
+                    <input class="form-check-input" type="checkbox" id="isRecurring" [(ngModel)]="isRecurring"
+                           name="isRecurring">
                     <label class="form-check-label" for="isRecurring">
                       Recurring
                     </label>
@@ -52,9 +53,9 @@
                 </div>
                 <div class="column" style="flex: 0.5">
 
-                    <button type="button" class="btn btn-outline w-25" (click)="showExplanation()">
-                      <i class="bi bi-info-circle-fill"></i>
-                    </button>
+                  <button type="button" class="btn btn-outline w-25" (click)="showExplanation()">
+                    <i class="bi bi-info-circle-fill"></i>
+                  </button>
 
                 </div>
 
@@ -69,19 +70,22 @@
               </div>
               <div class="column">
                 <div class="form-floating">
-                <input type="number" id="repeatEvery" name="repeatEvery" class="form-control" [(ngModel)]="repeatEvery" min="1" required>
+                  <input type="number" id="repeatEvery" name="repeatEvery" class="form-control"
+                         [(ngModel)]="repeatEvery" min="1" required>
                   <label for="repeatEvery">Every</label>
                 </div>
-                </div>
+              </div>
 
               <div class="column" style="flex: 0.025">
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" id="days" name="repetitionType" [(ngModel)]="repetitionType" [value]="RepetitionEnum.DAYS">
+                  <input class="form-check-input" type="radio" id="days" name="repetitionType"
+                         [(ngModel)]="repetitionType" [value]="RepetitionEnum.DAYS">
                   <label class="form-check-label" for="days">Days</label>
                 </div>
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" id="weeks" name="repetitionType" [(ngModel)]="repetitionType" [value]="RepetitionEnum.WEEKS">
-                  <label  for="weeks">Weeks</label>
+                  <input class="form-check-input" type="radio" id="weeks" name="repetitionType"
+                         [(ngModel)]="repetitionType" [value]="RepetitionEnum.WEEKS">
+                  <label for="weeks">Weeks</label>
                 </div>
               </div>
               <div class="column" style="flex: 0.25">
@@ -101,50 +105,50 @@
         </div>
         <div class="card-padding">
 
-        <!-- Start row with notification -->
-        <div class="row">
-          <div class="column">
-            <div class="col-lg-12" [class]="reservationStatusClass">
-              {{ reservationStatusText }}
-            </div>
-          </div>
-        </div>
-        <!-- End row with notification -->
-
-        <!-- Start row with available tables -->
-        <div class="row" *ngIf="unavailable && nextAvailableTables.length > 0">
-          <div class="column">
-            <div class="col-lg-12 justify-content-center">
-              <div class="d-flex flex-row justify-content-between w-100">
-                <button type="button" class="btn available-btn" *ngFor="let table of nextAvailableTables"
-                        (click)="selectAvailable(table)">
-                  {{ table.startTime }}, {{ table.date }}
-                </button>
+          <!-- Start row with notification -->
+          <div class="row">
+            <div class="column">
+              <div class="col-lg-12" [class]="reservationStatusClass">
+                {{ reservationStatusText }}
               </div>
             </div>
           </div>
-        </div>
-        <!-- End row with available tables -->
+          <!-- End row with notification -->
 
-        <hr class="my-4">
-
-        <!-- Start row with advanced view -->
-        <div class="row" style="justify-content: center; padding: 2vh">
-          <button type="button" class="btn av-btn" routerLink="/reservation-layout">Advanced View -></button>
-        </div>
-        <!-- End row with advanced view -->
-        <!-- Start row with pax -->
-        <div class="row">
-          <div class="column justify-content-start">
-            <div class="form-floating mb-3">
-              <input type="number" id="reservationPax" name="reservationPax" placeholder="pax"
-                     class="form-control" [(ngModel)]="reservationCreateDto.pax" #reservationPax="ngModel"
-                     (ngModelChange)="onFieldChange()" min="1" required>
-              <label for="reservationPax">Table for</label>
+          <!-- Start row with available tables -->
+          <div class="row" *ngIf="unavailable && nextAvailableTables.length > 0">
+            <div class="column">
+              <div class="col-lg-12 justify-content-center">
+                <div class="d-flex flex-row justify-content-between w-100">
+                  <button type="button" class="btn available-btn" *ngFor="let table of nextAvailableTables"
+                          (click)="selectAvailable(table)">
+                    {{ table.startTime }}, {{ table.date }}
+                  </button>
+                </div>
+              </div>
             </div>
+          </div>
+          <!-- End row with available tables -->
+
+          <hr class="my-4">
+
+          <!-- Start row with advanced view -->
+          <div class="row" style="justify-content: center; padding: 2vh">
+            <button type="button" class="btn av-btn" routerLink="/reservation-layout">Advanced View -></button>
+          </div>
+          <!-- End row with advanced view -->
+          <!-- Start row with pax -->
+          <div class="row">
+            <div class="column justify-content-start">
+              <div class="form-floating mb-3">
+                <input type="number" id="reservationPax" name="reservationPax" placeholder="pax"
+                       class="form-control" [(ngModel)]="reservationCreateDto.pax" #reservationPax="ngModel"
+                       (ngModelChange)="onFieldChange()" min="1" required>
+                <label for="reservationPax">Table for</label>
+              </div>
 
 
-            <div class="form-floating mb-3">
+              <div class="form-floating mb-3">
               <textarea
                 id="reservationNotes"
                 name="reservationNotes"
@@ -153,166 +157,167 @@
                 [(ngModel)]="reservationCreateDto.notes"
                 #reservationNotes="ngModel">
                 </textarea>
-              <label for="reservationPax">Notes (optional)</label>
+                <label for="reservationPax">Notes (optional)</label>
+              </div>
             </div>
-          </div>
 
-          <div *ngIf="!authService.isLoggedIn()" class="column">
-            <div class="form-floating mb-3">
-              <input type="text" id="reservationFirstName" name="reservationFirstName" placeholder="First Name"
-                     class="form-control" [(ngModel)]="reservationCreateDto.firstName" #reservationFirstName="ngModel"
-                     required>
-              <label for="reservationFirstName">First Name</label>
+            <div *ngIf="!authService.isLoggedIn()" class="column">
+              <div class="form-floating mb-3">
+                <input type="text" id="reservationFirstName" name="reservationFirstName" placeholder="First Name"
+                       class="form-control" [(ngModel)]="reservationCreateDto.firstName" #reservationFirstName="ngModel"
+                       required>
+                <label for="reservationFirstName">First Name</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="text" id="reservationLastName" name="reservationLastName" placeholder="Last Name"
+                       class="form-control" [(ngModel)]="reservationCreateDto.lastName" #reservationLastName="ngModel"
+                       required>
+                <label for="reservationLastName">Last Name</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="email" id="reservationEmail" name="reservationEmail" placeholder="Email"
+                       class="form-control"
+                       [(ngModel)]="reservationCreateDto.email" #reservationEmail="ngModel" required>
+                <label for="reservationEmail">Email</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="tel" id="reservationMobileNumber" name="reservationMobileNumber"
+                       placeholder="Phone (optional)" class="form-control"
+                       [(ngModel)]="reservationCreateDto.mobileNumber"
+                       #reservationMobileNumber="ngModel">
+                <label for="reservationMobileNumber">Phone (optional)</label>
+              </div>
             </div>
-            <div class="form-floating mb-3">
-              <input type="text" id="reservationLastName" name="reservationLastName" placeholder="Last Name"
-                     class="form-control" [(ngModel)]="reservationCreateDto.lastName" #reservationLastName="ngModel"
-                     required>
-              <label for="reservationLastName">Last Name</label>
-            </div>
-            <div class="form-floating mb-3">
-              <input type="email" id="reservationEmail" name="reservationEmail" placeholder="Email" class="form-control"
-                     [(ngModel)]="reservationCreateDto.email" #reservationEmail="ngModel" required>
-              <label for="reservationEmail">Email</label>
-            </div>
-            <div class="form-floating mb-3">
-              <input type="tel" id="reservationMobileNumber" name="reservationMobileNumber"
-                     placeholder="Phone (optional)" class="form-control" [(ngModel)]="reservationCreateDto.mobileNumber"
-                     #reservationMobileNumber="ngModel">
-              <label for="reservationMobileNumber">Phone (optional)</label>
-            </div>
-          </div>
-          <div class="column" *ngIf="upcomingEventsExist"></div>
-          <div class="custom-event-card" *ngIf="upcomingEventsExist">
-            <h1 class="font-heading">Events</h1>
-            <table class="table table-hover">
-              <tbody>
-              <tr
-                *ngFor="let event of events | slice:(currentEventPage-1)*itemsPerPage : currentEventPage*itemsPerPage">
-                <td>
-                  <div class="event-row">
-                    <span class="event-name">{{ event.name }}</span>
-                  </div>
-                  <div class="event-row">
-                    <a class="btn event-info-btn btn-sm" aria-label="Show event details"
-                       (click)="showEventDetails(event.hashId)">
-                      <i class="bi bi-info-lg"></i>
-                    </a>
-                    <div class="event-time">{{ event.startTime ? formatDay(event.startTime) : '' }}
-                      - {{ event.startTime ? formatDotDate(event.startTime) : '' }}
+            <div class="column" *ngIf="upcomingEventsExist"></div>
+            <div class="custom-event-card" *ngIf="upcomingEventsExist">
+              <h1 class="font-heading">Events</h1>
+              <table class="table table-hover">
+                <tbody>
+                <tr
+                  *ngFor="let event of events | slice:(currentEventPage-1)*itemsPerPage : currentEventPage*itemsPerPage">
+                  <td>
+                    <div class="event-row">
+                      <span class="event-name">{{ event.name }}</span>
                     </div>
-                  </div>
-                </td>
-              </tr>
-              </tbody>
-            </table>
-            <div class="btn-group" style="margin-bottom: 1vh">
-              <a class="btn btn-event-skip btn-sm" aria-label="Previous events"
-                 [class.disabled]="currentEventPage === 1" (click)="previousPage()">
-                <i class="bi bi-arrow-left"></i>
-              </a>
-              <a class="btn btn-event-skip btn-sm"
-                 [class.disabled]="currentEventPage === Math.ceil(events?.length / itemsPerPage)"
-                 aria-label="Next events" (click)="nextPage()">
-                <i class="bi bi-arrow-right"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-
-
-        <!-- Start special offers -->
-        <div class="row" *ngIf="specialOffers.length > 0">
-          <div class="row">
-            <div class="column p-0 align-items-end">
-              <a class="btn event-info-btn btn-sm text-black"
-                 aria-label="Show Special Offer Information"
-                 (click)="showOfferInfo()">
-                <i class="bi bi-info-circle-fill"></i>
-              </a>
-            </div>
-            <div class="column p-0">
-              <h1 class="font-heading">Special Offers</h1>
-            </div>
-            <div class="column p-0">
-            </div>
-          </div>
-          <div class="row">
-            <div class="custom-order-card m-2 p-2 column" *ngFor="let offer of specialOffers">
-              <div class="row">
-                <img [src]="getImageUrl(offer.image)" alt="Special Offer" class="custom-order-image">
-              </div>
-              <div class="row">
-                {{ offer.name }}
-              </div>
-              <div class="row">
-                <a class="custom-order-button" (click)="selectOffer(offer)">
-                  Add
+                    <div class="event-row">
+                      <a class="btn event-info-btn btn-sm" aria-label="Show event details"
+                         (click)="showEventDetails(event.hashId)">
+                        <i class="bi bi-info-lg"></i>
+                      </a>
+                      <div class="event-time">{{ event.startTime ? formatDay(event.startTime) : '' }}
+                        - {{ event.startTime ? formatDotDate(event.startTime) : '' }}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+              <div class="btn-group" style="margin-bottom: 1vh">
+                <a class="btn btn-event-skip btn-sm" aria-label="Previous events"
+                   [class.disabled]="currentEventPage === 1" (click)="previousPage()">
+                  <i class="bi bi-arrow-left"></i>
+                </a>
+                <a class="btn btn-event-skip btn-sm"
+                   [class.disabled]="currentEventPage === Math.ceil(events?.length / itemsPerPage)"
+                   aria-label="Next events" (click)="nextPage()">
+                  <i class="bi bi-arrow-right"></i>
                 </a>
               </div>
             </div>
           </div>
-          <div class="row" *ngIf="selectedOffers.length > 0">
-            <table>
-              <thead>
-              <th>
-                Amount
-              </th>
-              <th>
-                Special Offer
-              </th>
-              <th>
-                Price
-              </th>
-              <th>
-                Actions
-              </th>
-              </thead>
-              <tbody>
-              <tr *ngFor="let offer of selectedOffers">
-                <td>
-                  {{ offer.amount }}x
-                </td>
-                <td>
-                  {{ offer.specialOffer.name }}
-                </td>
-                <td>
-                  {{ offer.specialOffer.pricePerPax }}€
-                </td>
-                <td>
-                  <button type="button" class="btn btn-sm btn-secondary me-1" (click)="removeOffer(offer)">
-                    <i class="bi bi-dash-lg text-white"></i>
-                  </button>
-                  <button type="button" class="btn btn-sm btn-primary ms-1" (click)="addOffer(offer)">
-                    <i class="bi bi-plus-lg text-white"></i>
-                  </button>
-                </td>
-              </tr>
-              <tr>
-                <td></td>
-                <td></td>
-                <td>
-                  Total: {{ totalPrice }}€
-                </td>
 
-              </tr>
-              </tbody>
-            </table>
+
+          <!-- Start special offers -->
+          <div class="row" *ngIf="specialOffers.length > 0">
+            <div class="row">
+              <div class="column p-0 align-items-end">
+                <a class="btn event-info-btn btn-sm text-black"
+                   aria-label="Show Special Offer Information"
+                   (click)="showOfferInfo()">
+                  <i class="bi bi-info-circle-fill"></i>
+                </a>
+              </div>
+              <div class="column p-0">
+                <h1 class="font-heading">Special Offers</h1>
+              </div>
+              <div class="column p-0">
+              </div>
+            </div>
+            <div class="row">
+              <div class="custom-order-card m-2 p-2 column" *ngFor="let offer of specialOffers">
+                <div class="row">
+                  <img [src]="getImageUrl(offer.image)" alt="Special Offer" class="custom-order-image">
+                </div>
+                <div class="row">
+                  {{ offer.name }}
+                </div>
+                <div class="row">
+                  <a class="custom-order-button" (click)="selectOffer(offer)">
+                    Add
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="row" *ngIf="selectedOffers.length > 0">
+              <table>
+                <thead>
+                <th>
+                  Amount
+                </th>
+                <th>
+                  Special Offer
+                </th>
+                <th>
+                  Price
+                </th>
+                <th>
+                  Actions
+                </th>
+                </thead>
+                <tbody>
+                <tr *ngFor="let offer of selectedOffers">
+                  <td>
+                    {{ offer.amount }}x
+                  </td>
+                  <td>
+                    {{ offer.specialOffer.name }}
+                  </td>
+                  <td>
+                    {{ offer.specialOffer.pricePerPax }}€
+                  </td>
+                  <td>
+                    <button type="button" class="btn btn-sm btn-secondary me-1" (click)="removeOffer(offer)">
+                      <i class="bi bi-dash-lg text-white"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-primary ms-1" (click)="addOffer(offer)">
+                      <i class="bi bi-plus-lg text-white"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td>
+                    Total: {{ totalPrice }}€
+                  </td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-        <!-- End special offers -->
+          <!-- End special offers -->
 
-        <div class="row">
-          <div class="column">
-            <div>
-              <button type="submit" class="btn btn-danger btn-sm"
-                      [disabled]="!form.valid || isBookButtonTimeout || unavailable">
-                Book
-              </button>
+          <div class="row">
+            <div class="column">
+              <div>
+                <button type="submit" class="btn btn-danger btn-sm"
+                        [disabled]="!form.valid || isBookButtonTimeout || unavailable">
+                  Book
+                </button>
+              </div>
             </div>
           </div>
         </div>
-</div>
       </form>
     </div>
   </div>
