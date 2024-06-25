@@ -208,6 +208,86 @@
         </div>
         <!-- End event-row-content-wrapper -->
 
+        <!-- Start special offers -->
+        <div class="row" *ngIf="specialOffers.length > 0">
+          <div class="row">
+            <div class="column p-0 align-items-end">
+              <a class="btn event-info-btn btn-sm text-black"
+                 aria-label="Show Special Offer Information"
+                 (click)="showOfferInfo()">
+                <i class="bi bi-info-circle"></i>
+              </a>
+            </div>
+            <div class="column p-0">
+              <h1 class="font-heading">Special Offers</h1>
+            </div>
+            <div class="column p-0">
+            </div>
+          </div>
+          <div class="row">
+            <div class="custom-order-card m-2 p-2 column" *ngFor="let offer of specialOffers">
+              <div class="row">
+                <img [src]="getImageUrl(offer.image)" alt="Special Offer" class="custom-order-image">
+              </div>
+              <div class="row">
+                {{ offer.name }}
+              </div>
+              <div class="row">
+                <a class="custom-order-button" (click)="selectOffer(offer)">
+                  Add
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="row" *ngIf="selectedOffers.length > 0">
+            <table>
+              <thead>
+              <th>
+                Amount
+              </th>
+              <th>
+                Special Offer
+              </th>
+              <th>
+                Price
+              </th>
+              <th>
+                Actions
+              </th>
+              </thead>
+              <tbody>
+              <tr *ngFor="let offer of selectedOffers">
+                <td>
+                  {{ offer.amount }}x
+                </td>
+                <td>
+                  {{ offer.specialOffer.name }}
+                </td>
+                <td>
+                  {{ offer.specialOffer.pricePerPax }}€
+                </td>
+                <td>
+                  <button type="button" class="btn btn-sm btn-secondary me-1" (click)="removeOffer(offer)">
+                    <i class="bi bi-dash-lg text-white"></i>
+                  </button>
+                  <button type="button" class="btn btn-sm btn-primary ms-1" (click)="addOffer(offer)">
+                    <i class="bi bi-plus-lg text-white"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td></td>
+                <td>
+                  Total: {{ totalPrice }}€
+                </td>
+
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <!-- End special offers -->
 
         <div class="row">
           <div class="column">
