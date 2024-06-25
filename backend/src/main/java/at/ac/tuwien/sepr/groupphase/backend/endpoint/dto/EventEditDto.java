@@ -1,12 +1,15 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
+import at.ac.tuwien.sepr.groupphase.backend.validation.EndDateAndTimeAfterStartValidation;
 import at.ac.tuwien.sepr.groupphase.backend.validation.EndTimeAfterStartTimeValidation;
+import at.ac.tuwien.sepr.groupphase.backend.validation.EventEditEndAfterStartValidation;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-@EndTimeAfterStartTimeValidation
+@EventEditEndAfterStartValidation
 public class EventEditDto {
     private String hashId;
 
@@ -17,9 +20,11 @@ public class EventEditDto {
     private LocalDateTime endTime;
 
     @NotNull(message = "Name is required")
+    @Size(min = 1, message = "Name should not be empty")
+    @Size(max = 255, message = "Name shouldn't be longer than 255 characters")
     private String name;
 
-    @NotNull(message = "Description is required")
+    @Size(max = 100000, message = "Description shouldn't be longer than 100000 characters")
     private String description;
 
     public String getHashId() {
