@@ -67,11 +67,8 @@ public class AdminViewServiceImpl implements AdminViewService {
         }
 
         long amountOfEmployees = predictedList.stream().mapToLong(Long::longValue).sum();
-        return PredictionDto.PredictionBuilder.aPredictionDto()
-            .withPredictionText("The Amount of Employees needed for " + dateForPrediction + " is: " + amountOfEmployees)
-            .withAreaNames(areasNames)
-            .withPredictions(predictedList.toArray(new Long[0]))
-            .build();
+        return PredictionDto.PredictionBuilder.aPredictionDto().withPredictionText("The Amount of Employees needed for "
+            + dateForPrediction + " is: " + amountOfEmployees).withAreaNames(areasNames).withPredictions(predictedList.toArray(new Long[0])).build();
     }
 
     private float calculatePrediction(List<Long> predictedList, Long areaId, LocalDate dateToCalculate) {
@@ -123,11 +120,11 @@ public class AdminViewServiceImpl implements AdminViewService {
 
 
         //7. Take Events in consideration
-        List<Event> events = eventRepository.findAllByStartTimeBetween(dateToCalculate.atStartOfDay(),
-            dateToCalculate.atStartOfDay().toLocalDate().atTime(23, 59));
+        List<Event> events = eventRepository.findAllByStartTimeBetween(dateToCalculate.atStartOfDay(), dateToCalculate.atStartOfDay().toLocalDate().atTime(23, 59));
         float eventInfluence = 1.0f;
         if (!events.isEmpty()) {
-            eventInfluence = calculateEventInfluence(events, dateToCalculate);
+            List<Event> eventsInThePast = eventRepository.findAllByStartTimeBeforeAndStartTimeAfter(dateToCalculate.atStartOfDay(), dateToCalculate.minusYears(1).atStartOfDay());
+            eventInfluence = calculateEventInfluence(eventsInThePast, dateToCalculate);
         }
 
 
@@ -148,12 +145,8 @@ public class AdminViewServiceImpl implements AdminViewService {
         //9. Calculate the amount of the Employees
         List<ApplicationUser> employeeList = applicationUserRepository.findAllByRole(RoleEnum.EMPLOYEE);
         long maxPaxAtSameTimeExpected = Collections.max(amountOfCustomersPerHourMap.values()); //+ Collections.max(amountOfWalkInCustomersPerHourMap.values());
-        float totalEmployeeCount = ((float) employeeList.size() * ((float) maxPaxAtSameTimeExpected / maxPaxAtSameTimeInThePast));
-
 
         long averagePaxInThePast = amountOfCustomersPerDayMapInThePast.values().stream().mapToLong(Long::longValue).sum() / amountOfCustomersPerDayMapInThePast.size();
-
-        float offsetFromAverage = (float) maxPaxAtSameTimeCurrDay / (float) averagePaxInThePast;
 
 
         float offsetFromWalkIn = (float) maxPaxAtSameTimeCurrDay / (float) maxPaxAtSameTimeWalkIn;
@@ -165,11 +158,11 @@ public class AdminViewServiceImpl implements AdminViewService {
         if (maxPaxAtSameTimeInThePast == 0) {
             percentageOfPax = 1.0f;
         }
+        float totalEmployeeCount = ((float) employeeList.size() * (clamp((float) (maxPaxAtSameTimeExpected / maxPaxAtSameTimeInThePast), 0.5f, 1.5f)));
 
-
-        long employeePrediction = (long) (totalEmployeeCount * clamp(percentageOfPax, 0.8f, 1.2f)
-            * clamp(offsetFromAverage, 0.8f, 1.2f) * clamp(offsetFromWalkIn, 0.8f, 1.2f)
-            * clamp(eventInfluence, 0.8f, 1.25f));
+        float offsetFromAverage = (float) maxPaxAtSameTimeCurrDay / (float) averagePaxInThePast;
+        percentageOfPax = clamp(percentageOfPax, 0.8f, 1.2f);
+        long employeePrediction = (long) (totalEmployeeCount * percentageOfPax * clamp(offsetFromAverage, 0.8f, 1.2f) * clamp(offsetFromWalkIn, 0.8f, 1.2f) * clamp(eventInfluence, 0.8f, 1.25f));
 
         predictedList.add(employeePrediction);
         return employeePrediction;
@@ -225,16 +218,20 @@ public class AdminViewServiceImpl implements AdminViewService {
         List<Area> areas = areaRepository.findAll();
 
         for (Event event : events) {
-            if (!event.getStartTime().toLocalDate().equals(dateToCalculate)) {
-                long actualPax = reservationRepository.findPaxByDate(dateToCalculate).stream().mapToLong(Long::longValue).sum();
-                float predictedPax = 0.0f;
-                for (Area area : areas) {
-                    predictedPax += calculatePrediction(new ArrayList<>(), area.getId(), dateToCalculate);
-                }
-                if (predictedPax != 0.0f) {
-                    result = (actualPax / predictedPax);
-                }
+            LocalDate start = event.getStartTime().toLocalDate();
+            List<Reservation> paxList = reservationRepository.findAllByDate(start);
+            long actualPax = 0;
+            for (Reservation r : paxList) {
+                actualPax += r.getPax();
             }
+            float predictedPax = 0.0f;
+            for (Area area : areas) {
+                predictedPax += calculatePrediction(new ArrayList<>(), area.getId(), start);
+            }
+            if (predictedPax != 0.0f) {
+                result = (actualPax / predictedPax);
+            }
+
         }
         return result;
     }

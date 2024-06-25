@@ -41,4 +41,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     Event findByHashId(String hashId);
 
     List<Event> findAllByStartTimeBetween(LocalDateTime startTime, LocalDateTime endTime);
+
+    List<Event> findAllByStartTimeBeforeAndStartTimeAfter(LocalDateTime startTime, LocalDateTime endTime);
+
 }
