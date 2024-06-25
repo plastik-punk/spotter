@@ -17,7 +17,7 @@ import {HttpResponse} from "@angular/common/http";
 import {NotificationService} from "../../../services/notification.service";
 import moment from 'moment';
 import {Router} from "@angular/router";
-import {formatDay, formatDotDate, formatTime} from "../../../util/date-helper";
+import {formatDay, formatDotDate, formatIsoTime, formatTime} from "../../../util/date-helper";
 import {NavigationStateService} from "../../../services/navigation-state.service";
 
 @Component({
@@ -93,6 +93,10 @@ export class ReservationOverviewComponent implements OnInit {
     if (this.fetchIntervalSubscription) {
       this.fetchIntervalSubscription.unsubscribe();
     }
+  }
+
+  getPositivePlaceIds(placeIds: number[]): number[] {
+    return placeIds?.map(id => Math.abs(id)) || [];
   }
 
   isAdmin(): boolean {
@@ -417,4 +421,5 @@ export class ReservationOverviewComponent implements OnInit {
   protected readonly formatDotDate = formatDotDate;
   protected readonly formatDay = formatDay;
   protected readonly Math = Math;
+  protected readonly formatIsoTime = formatIsoTime;
 }

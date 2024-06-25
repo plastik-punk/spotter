@@ -114,11 +114,11 @@
                   <i class="bi bi-clock text-primary"></i>
                 </div>
               </td>
-              <td>{{ reservation.startTime }}</td>
-              <td>{{ reservation.endTime }}</td>
+              <td>{{ formatTime(reservation.startTime) }}</td>
+              <td>{{ formatTime(reservation.endTime) }}</td>
               <td>{{ reservation.userFirstName }} {{ reservation.userLastName }}</td>
               <td>{{ reservation.pax }}</td>
-              <td>{{ reservation.placeIds?.join(' • ') }}</td>
+              <td>{{ getPositivePlaceIds(reservation.placeIds).join(' • ') }}</td>
               <td>
                 <div class="btn-group">
                   <a *ngIf="!reservation.confirmed && !reservationIsInTheFuture(reservation)"
@@ -180,11 +180,11 @@
               </thead>
               <tbody>
               <tr *ngFor="let reservation of day.value">
-                <td>{{ reservation.startTime }}</td>
-                <td>{{ reservation.endTime }}</td>
+                <td>{{ formatTime(reservation.startTime) }}</td>
+                <td>{{ formatTime(reservation.endTime) }}</td>
                 <td>{{ reservation.userFirstName }} {{ reservation.userLastName }}</td>
                 <td>{{ reservation.pax }}</td>
-                <td>{{ reservation.placeIds?.join(' • ') }}</td>
+                <td>{{ getPositivePlaceIds(reservation.placeIds).join(' • ') }}</td>
                 <td>
                   <div class="btn-group">
                     <a class="btn btn-sm responsive-info-button"
@@ -292,7 +292,7 @@
                 </div>
                 <div class="dt-dd-align">
                   <dt class="col-sm-3">Table Number:</dt>
-                  <dd class="col-sm-10">{{ reservationModalDetailDto.placeIds?.join(' • ') }}</dd>
+                  <dd class="col-sm-10">{{ getPositivePlaceIds(reservationModalDetailDto.placeIds).join(' • ') }}</dd>
                 </div>
 
                 <div class="dt-dd-align">
