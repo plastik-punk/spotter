@@ -9,7 +9,6 @@ import {SidebarComponent} from './components/sidebar/sidebar.component';
 import {FooterComponent} from './components/footer/footer.component';
 import {ReservationSimpleComponent} from './components/reservation/reservation-simple/reservation-simple.component';
 import {LoginComponent} from './components/login/login.component';
-import {MessageComponent} from './components/message/message.component';
 import {
   ReservationOverviewComponent
 } from './components/reservation/reservation-overview/reservation-overview.component';
@@ -49,7 +48,6 @@ import {
     FooterComponent,
     ReservationSimpleComponent,
     LoginComponent,
-    MessageComponent,
     ReservationEditComponent,
     ReservationOverviewComponent,
     ConfirmationDialogDeleteComponent,

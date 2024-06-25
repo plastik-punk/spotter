@@ -22,7 +22,6 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Area;
 import at.ac.tuwien.sepr.groupphase.backend.entity.AreaPlaceSegment;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Event;
-import at.ac.tuwien.sepr.groupphase.backend.entity.Message;
 import at.ac.tuwien.sepr.groupphase.backend.entity.OpeningHours;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
@@ -113,31 +112,6 @@ public interface TestData {
         LocalDateTime.of(2019, 11, 13, 12, 15, 0, 0);
     LocalDateTime TEST_NEWS_PUBLISHED_AT_2 =
         LocalDateTime.of(2020, 1, 1, 1, 0, 0, 0);
-
-
-    Message TEST_MESSAGE_1 = Message.MessageBuilder.aMessage()
-        .withId(TEST_MESSAGE_ID)
-        .withTitle(TEST_NEWS_TITLE)
-        .withSummary(TEST_NEWS_SUMMARY)
-        .withText(TEST_NEWS_TEXT)
-        .withPublishedAt(TEST_NEWS_PUBLISHED_AT)
-        .build();
-
-    Message TEST_MESSAGE_2 = Message.MessageBuilder.aMessage()
-        .withId(TEST_MESSAGE_ID)
-        .withTitle(TEST_NEWS_TITLE)
-        .withSummary(TEST_NEWS_SUMMARY)
-        .withText(TEST_NEWS_TEXT)
-        .withPublishedAt(TEST_NEWS_PUBLISHED_AT)
-        .build();
-
-    Message TEST_MESSAGE_3 = Message.MessageBuilder.aMessage()
-        .withId(2L)
-        .withTitle(TEST_NEWS_TITLE)
-        .withSummary(TEST_NEWS_SUMMARY)
-        .withText(TEST_NEWS_TEXT)
-        .withPublishedAt(TEST_NEWS_PUBLISHED_AT_2)
-        .build();
 
     // ---------------------------------------------
     // PLACE TEST DATA
@@ -780,5 +754,4 @@ public interface TestData {
     // ... TEST DATA
     // ---------------------------------------------
 
-    // TODO
 }
