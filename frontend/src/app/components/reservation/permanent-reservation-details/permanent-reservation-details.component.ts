@@ -31,7 +31,8 @@ export class PermanentReservationDetailsComponent implements OnInit {
     startTime: undefined,
     endTime: undefined,
     notes: undefined,
-    placeIds: undefined
+    placeIds: undefined,
+    specialOffers: undefined
   };
 
   constructor(

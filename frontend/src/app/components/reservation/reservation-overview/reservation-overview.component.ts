@@ -87,6 +87,7 @@ export class ReservationOverviewComponent implements OnInit {
     });
   }
 
+  // TODO: remove?
   ngOnDestroy(): void {
     if (this.fetchIntervalSubscription) {
       this.fetchIntervalSubscription.unsubscribe();
@@ -105,7 +106,6 @@ export class ReservationOverviewComponent implements OnInit {
     const role = this.authService.getUserRole();
     return role === 'ADMIN' || role === 'EMPLOYEE';
   }
-
 
   toggleView(): void {
     this.isPermanentView = !this.isPermanentView;
@@ -157,7 +157,6 @@ export class ReservationOverviewComponent implements OnInit {
           this.notificationService.showError('Failed to load permanent reservations. Please try again later.');
         }
       });
-
   }
 
   getFrequency(permanentReservationListDto: PermanentReservationListDto): String {
@@ -227,16 +226,12 @@ export class ReservationOverviewComponent implements OnInit {
   }
 
   filterReservations() {
-
     const today = moment().startOf('day');
     this.todaysReservations = this.reservations.filter(reservation =>
       moment(reservation.date).isSame(today, 'day')
     );
-
     const todayHashSet = new Set(this.todaysReservations.map(reservation => reservation.id));
-
     this.upcomingReservations = this.reservations.filter(reservation => !todayHashSet.has(reservation.id));
-
     this.totalUpcomingReservations = this.upcomingReservations.length;
     this.displayReservations();
   }
@@ -287,31 +282,7 @@ export class ReservationOverviewComponent implements OnInit {
           this.reservationModalDetailDto.notes = data.notes;
         }
         this.reservationModalDetailDto.placeIds = data.placeIds;
-
-        const modalDetail = new bootstrap.Modal(document.getElementById('confirmation-dialog-reservation-detail'));
-        modalDetail.show();
-      },
-      error: error => {
-        this.notificationService.showError('Failed to load reservation details. Please try again later.');
-      }
-    });
-  }
-
-  showReservationDetails(hashId: string): void {
-      this.reservationService.getModalDetail(hashId).subscribe( {
-        next: (data: ReservationModalDetailDto) => {
-            this.reservationModalDetailDto.firstName = data.firstName;
-            this.reservationModalDetailDto.lastName = data.lastName;
-            this.reservationModalDetailDto.startTime = data.startTime;
-            this.reservationModalDetailDto.endTime = data.endTime;
-            if (data.notes === null) {
-              this.reservationModalDetailDto.notes = 'No notes';
-            } else {
-              this.reservationModalDetailDto.notes = data.notes;
-            }
-            this.reservationModalDetailDto.placeIds = data.placeIds;
-            this.reservationModalDetailDto.specialOffers = data.specialOffers;
-
+        this.reservationModalDetailDto.specialOffers = data.specialOffers;
 
         const modalDetail = new bootstrap.Modal(document.getElementById('confirmation-dialog-reservation-detail'));
         modalDetail.show();
@@ -367,8 +338,6 @@ export class ReservationOverviewComponent implements OnInit {
     this.displayReservations();
   }
 
-  protected readonly Math = Math;
-
   resetSearchParams(): void {
     this.currentPage = 1;
     this.searchEarliestDate = null;
@@ -389,7 +358,6 @@ export class ReservationOverviewComponent implements OnInit {
   }
 
   reservationIsInTheFuture(reservation: ReservationListDto): boolean {
-
     const reservationDateTime = moment(`${reservation.date} ${reservation.startTime}`, 'YYYY-MM-DD HH:mm:ss')
     return moment(reservationDateTime).isAfter(moment());
   }
@@ -418,10 +386,6 @@ export class ReservationOverviewComponent implements OnInit {
     });
   }
 
-  protected readonly formatTime = formatTime;
-  protected readonly formatDotDate = formatDotDate;
-  protected readonly formatDay = formatDay;
-
   createNewReservationGuest() {
     // Navigate to the target page with a query parameter
     this.router.navigate(['reservation-simple'], {queryParams: {guestView: 'true'}});
@@ -443,4 +407,9 @@ export class ReservationOverviewComponent implements OnInit {
       }
     });
   }
+
+  protected readonly formatTime = formatTime;
+  protected readonly formatDotDate = formatDotDate;
+  protected readonly formatDay = formatDay;
+  protected readonly Math = Math;
 }
