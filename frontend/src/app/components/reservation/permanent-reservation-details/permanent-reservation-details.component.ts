@@ -8,11 +8,13 @@ import {
   ReservationModalDetailDto
 } from "../../../dtos/reservation";
 import { ReservationService } from "../../../services/reservation.service";
+import { CommonModule, DatePipe } from "@angular/common";
 import moment from "moment";
 import { NavigationStateService } from "../../../services/navigation-state.service";
 import { NotificationService } from "../../../services/notification.service";
 import { Observable } from "rxjs";
 import { HttpResponse } from "@angular/common/http";
+import {AppModule} from "../../../app.module";
 
 @Component({
   selector: 'app-permanent-reservation-details',
@@ -21,8 +23,9 @@ import { HttpResponse } from "@angular/common/http";
 })
 export class PermanentReservationDetailsComponent implements OnInit {
   permanentReservationDetails: PermanentReservationDetailDto;
-  deleteWhat: ReservationEditDto | null = null;
+  deleteWhat: ReservationEditDto | PermanentReservationDetailDto | null = null;
   hashId: string;
+  permanentToDelete = false;
   reservationModalDetailDto: ReservationModalDetailDto = {
     firstName: undefined,
     lastName: undefined,
@@ -39,7 +42,8 @@ export class PermanentReservationDetailsComponent implements OnInit {
     private router: Router,
     private navigationStateService: NavigationStateService,
     private notificationService: NotificationService
-  ) { }
+  ) {
+  }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -127,6 +131,11 @@ export class PermanentReservationDetailsComponent implements OnInit {
     });
   }
 
+  openPermanentDeleteConfirmDialog(detailDto: PermanentReservationDetailDto): void {
+    this.permanentToDelete = true;
+    this.deleteWhat = detailDto;
+  }
+
   onDelete(): void {
     if (!this.deleteWhat) {
       this.notificationService.showError('No reservation selected for deletion.');
@@ -134,17 +143,37 @@ export class PermanentReservationDetailsComponent implements OnInit {
     }
 
     let observable: Observable<HttpResponse<void>>;
-    observable = this.reservationService.delete(this.deleteWhat.hashedId);
-    observable.subscribe({
-      next: (response) => {
-        if (response.status === 204) {
-          this.notificationService.showSuccess('Reservation cancelled successfully');
-          this.loadPermanentReservationDetails(this.hashId);
+    if (this.permanentToDelete) { //If permanentReservationDetailDto
+      this.permanentToDelete = false;
+      let observable: Observable<HttpResponse<void>>;
+      observable = this.reservationService.deletePermanent(this.deleteWhat.hashedId);
+      observable.subscribe({
+        next: (response) => {
+          if (response.status === 204) {
+            this.notificationService.showSuccess('Permanent reservation deleted successfully');
+            this.navigationStateService.setNavigationState({
+              showPermanentReservations: true
+            });
+            this.router.navigate(['/reservation-overview']);
+          }
+        },
+        error: (error) => {
+          this.notificationService.showError('Failed to delete permanent reservation. Please try again later.');
         }
-      },
-      error: (error) => {
-        this.notificationService.showError('Failed to cancel reservation. Please try again later.');
-      }
-    });
+      });
+    } else {
+      observable = this.reservationService.delete(this.deleteWhat.hashedId);
+      observable.subscribe({
+        next: (response) => {
+          if (response.status === 204) {
+            this.notificationService.showSuccess('Reservation cancelled successfully');
+            this.loadPermanentReservationDetails(this.hashId);
+          }
+        },
+        error: (error) => {
+          this.notificationService.showError('Failed to cancel reservation. Please try again later.');
+        }
+      });
+    }
   }
 }
