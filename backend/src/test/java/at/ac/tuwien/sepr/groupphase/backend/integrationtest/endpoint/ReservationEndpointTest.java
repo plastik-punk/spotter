@@ -10,6 +10,7 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
+import at.ac.tuwien.sepr.groupphase.backend.repository.PlaceRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ReservationRepository;
 import at.ac.tuwien.sepr.groupphase.backend.repository.SpecialOfferRepository;
 import at.ac.tuwien.sepr.groupphase.backend.security.JwtTokenizer;
@@ -67,6 +68,9 @@ public class ReservationEndpointTest implements TestData {
     @Autowired
     private SpecialOfferService offerService;
 
+    @Autowired
+    private PlaceRepository placeRepository;
+
     @Test
     @Transactional
     public void givenReservationCreateDto_whenCreateForGuest_thenReservationAndGuestIsCreated() throws Exception {
@@ -98,6 +102,8 @@ public class ReservationEndpointTest implements TestData {
     @Test
     @Transactional
     public void givenReservationEditDto_whenUpdate_thenReservationIsUpdated() throws Exception {
+        placeRepository.save(TEST_PLACE_AVAILABLE_1);
+        placeRepository.save(TEST_PLACE_AVAILABLE_2);
         Reservation savedReservationId = reservationRepository.save(TEST_RESERVATION_1);
         TEST_RESERVATION_EDIT_DTO.setReservationId(savedReservationId.getId());
         TEST_RESERVATION_EDIT_DTO.setHashedId(savedReservationId.getHashValue());
