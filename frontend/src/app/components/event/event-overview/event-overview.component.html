@@ -30,33 +30,22 @@
       </div>
       <div class="card-padding">
 
-      <form class="d-flex flex-row justify-content-around w-auto mb-3" (submit)="loadEvents()">
-        <button type="submit" hidden="hidden">submit</button>
-
-        <div class="ms-1">
-          <label for="searchEarliestEvent" class="col-form-label">Earliest Date</label>
-          <input type="date" id="searchEarliestEvent" name="searchEarliestEvent" pattern="\d{4}-\d{2}-\d{2}" placeholder="yyyy-mm-dd" class="form-control" [(ngModel)]="searchEarliestStartTime" (ngModelChange)="searchChanged()">
-        </div>
-        <div class="ms-1">
-          <label for="searchLatestEvent" class="col-form-label">Latest Date</label>
-          <input type="date" id="searchLatestEvent" name="searchLatestEvent" pattern="\d{4}-\d{2}-\d{2}" placeholder="yyyy-mm-dd" class="form-control" [(ngModel)]="searchLatestEndTime" (ngModelChange)="searchChanged()">
-        </div>
-        <div class="ms-1">
-          <label for="searchEarliestStartTime" class="col-form-label">Earliest Start Time</label>
-          <input type="time" id="searchEarliestStartTime" name="searchEarliestStartTime" pattern="\d{2}:\d{2}" placeholder="HH:mm" class="form-control" [(ngModel)]="searchEarliestStartTime" (ngModelChange)="searchChanged()">
-        </div>
-        <div class="ms-1">
-          <label for="searchLatestEndTime" class="col-form-label">Latest End Time</label>
-          <input type="time" id="searchLatestEndTime" name="searchLatestEndTime" pattern="\d{2}:\d{2}" placeholder="HH:mm" class="form-control" [(ngModel)]="searchLatestEndTime" (ngModelChange)="searchChanged()">
-        </div>
-        <div class="ms-auto align-self-end">
-          <button type="button" class=" btn btn-success" [routerLink]="['/event-create']"><i class="bi bi-plus"></i> Create Event</button>
-        </div>
-      </form>
       <div class="d-flex flex-row justify-content-around">
-        <form class="d-flex flex-row w-auto mb-3" (submit)="loadEvents()">
+        <form class="d-flex flex-row justify-content-around w-auto mb-3" (submit)="loadEvents()">
           <!-- this button is here, just so that simple submitting of this form
                to reload the reservations, is possible -->
+
+          <div class="ms-1">
+            <label for="searchName" class="col-form-label">
+              Name
+            </label>
+            <input type="text" id="searchName" name="searchName"
+                   placeholder="Name"
+                   class="form-control"
+                   [(ngModel)]="searchName"
+                   (ngModelChange)="searchChanged()"
+            >
+          </div>
 
           <div class="ms-1">
             <label for="searchEarliestEvent" class="col-form-label">
