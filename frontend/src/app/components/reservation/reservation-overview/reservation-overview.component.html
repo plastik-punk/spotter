@@ -82,7 +82,10 @@
 
         <div class="ms-auto align-self-end" *ngIf="isAdminOrEmployee()">
           <button type="button" class="btn btn-success" (click)="createNewReservationGuest()">
-        <div class="ms-auto" *ngIf="isAdminOrEmployee()">
+            <i class="bi bi-plus"></i> Create New Guest Reservation
+          </button>
+
+          <div class="ms-auto" *ngIf="isAdminOrEmployee()">
           <div class="mb-3 text-center">
             <button class="btn btn-toggle btn btn-primary" (click)="toggleView()">
               {{ isPermanentView ? 'Show Normal Reservations' : 'Show Permanent Reservations' }}
@@ -103,6 +106,9 @@
             <i class="bi bi-plus"></i> Create New Reservation
           </button>
         </div>
+        </div>
+        </div>
+
       </form>
         <hr class="my-4">
 
@@ -410,6 +416,7 @@
       </div>
 
   </div>
+</div>
 </div>
 </div>
 

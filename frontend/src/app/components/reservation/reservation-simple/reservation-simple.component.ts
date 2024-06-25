@@ -501,6 +501,11 @@ export class ReservationSimpleComponent implements OnInit {
     this.totalPrice = total;
   }
 
+  showExplanation() {
+    const infoModal = new bootstrap.Modal(document.getElementById('RecurringInfoModal'));
+    infoModal.show();
+  }
+
   protected readonly formatTime = formatTime;
   protected readonly formatDotDate = formatDotDate;
   protected readonly formatDay = formatDay;

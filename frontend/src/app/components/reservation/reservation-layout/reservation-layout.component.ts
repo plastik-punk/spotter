@@ -460,5 +460,5 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
   protected readonly formatDotDate = formatDotDate;
   protected readonly Math = Math;
   protected readonly formatIsoTime = formatIsoTime;
-    protected readonly Event = Event;
+  protected readonly Event = Event;
 }

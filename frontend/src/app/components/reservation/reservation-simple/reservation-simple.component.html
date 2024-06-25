@@ -21,23 +21,11 @@
         <!-- Start row with Title, startTime and Date -->
         <div class="top-banner">
           <div class="row">
-            <div class="row">
-              <!-- New div for restaurant info -->
-              <div class="restaurant-info">
-                <h1 class="font-heading pink">{{ restaurantInfo?.name }}</h1>
-                <p class="green">{{ restaurantInfo?.address }}</p>
-                <h1 class="font-heading pink">Opening Hours</h1>
-                <dl>
-                  <dt class="brown">Sunday - Thursday:</dt>
-                  <dd class="green">{{ formatTime(openingHours?.monday?.[0]) }} - {{ formatTime(openingHours?.monday?.[1]) }} & {{ formatTime(openingHours?.monday?.[2]) }} - {{ formatTime(openingHours?.monday?.[3]) }}</dd>
-
-                  <dt class="brown">Friday - Saturday:</dt>
-                  <dd class="green">{{ formatTime(openingHours?.friday?.[0]) }} - {{ formatTime(openingHours?.friday?.[1]) }} & {{ formatTime(openingHours?.friday?.[2]) }} - {{ formatTime(openingHours?.friday?.[3]) }}</dd>
-                </dl>
-              </div>
+            <div class="column">
+              <h1 class="font-heading ">Reserve</h1>
             </div>
             <div class="column">
-              <div class="form-floating mb-3">
+              <div class="form-floating ">
                 <input type="time" id="reservationStartTime" name="reservationStartTime" placeholder="hh:mm"
                        class="form-control" [(ngModel)]="sharedStartTime" #reservationStartTimeModel="ngModel"
                        (ngModelChange)="onFieldChange()" (change)="onTimeChange($event)" required>
@@ -45,58 +33,67 @@
               </div>
             </div>
             <div class="column">
-              <input
-                type="date"
-                id="reservationDate"
-                name="reservationDate"
-                pattern="\d{4}-\d{2}-\d{2}"
-                placeholder="dd-mm-yyyy"
-                class="form-control"
-                [(ngModel)]="sharedDate"
-                #reservationDateModel="ngModel"
-                (ngModelChange)="onFieldChange()"
-                required
-              />
-
-            </div>
-            <!-- Start row for recurring reservation option -->
-            <div class ="column" *ngIf="authService.isLoggedIn()">
-            <div class="row">
-              <div class="column">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="isRecurring" [(ngModel)]="isRecurring" name="isRecurring">
-                  <label class="form-check-label" for="isRecurring">
-                    Make this a recurring reservation
-                  </label>
-                </div>
+              <div class="form-floating ">
+                <input type="date" id="reservationDate" name="reservationDate" pattern="\d{4}-\d{2}-\d{2}"
+                       placeholder="dd-mm-yyyy" class="form-control" [(ngModel)]="sharedDate"
+                       #reservationDateModel="ngModel" (ngModelChange)="onFieldChange()" required>
+                <label for="reservationDate">Date</label>
               </div>
             </div>
-            </div>
+            <div class ="column" *ngIf="authService.isLoggedIn()">
+              <div class="row">
+                <div class="column" style="flex: 0.5">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="isRecurring" [(ngModel)]="isRecurring" name="isRecurring">
+                    <label class="form-check-label" for="isRecurring">
+                      Recurring
+                    </label>
+                  </div>
+                </div>
+                <div class="column" style="flex: 0.5">
 
+                    <button type="button" class="btn btn-outline w-25" (click)="showExplanation()">
+                      <i class="bi bi-info-circle-fill"></i>
+                    </button>
+
+                </div>
+
+              </div>
+            </div>
             <!-- Conditional row for setting recurring reservation details -->
-            <div class="row" *ngIf="isRecurring">
+            <hr class="my-4" *ngIf="isRecurring">
+
+            <div class="row" style="margin-top: 0; margin-bottom: 0" *ngIf="isRecurring">
+              <div class="column" style="flex: 0.25">
+                <label for="recurUntil" style="text-align: center">Until</label>
+              </div>
               <div class="column">
-                <label for="repeatEvery">Repeat every:</label>
+                <div class="form-floating">
                 <input type="number" id="repeatEvery" name="repeatEvery" class="form-control" [(ngModel)]="repeatEvery" min="1" required>
+                  <label for="repeatEvery">Every</label>
+                </div>
+                </div>
+
+              <div class="column" style="flex: 0.025">
                 <div class="form-check">
                   <input class="form-check-input" type="radio" id="days" name="repetitionType" [(ngModel)]="repetitionType" [value]="RepetitionEnum.DAYS">
                   <label class="form-check-label" for="days">Days</label>
                 </div>
                 <div class="form-check">
                   <input class="form-check-input" type="radio" id="weeks" name="repetitionType" [(ngModel)]="repetitionType" [value]="RepetitionEnum.WEEKS">
-                  <label class="form-check-label" for="weeks">Weeks</label>
-                </div>
-                <div class="col-auto">
-                  <label for="recurUntil">Make Reservation recurring until:</label>
-                  <input type="date" id="recurUntil" name="recurUntil" class="form-control" [(ngModel)]="endDate">
+                  <label  for="weeks">Weeks</label>
                 </div>
               </div>
+              <div class="column" style="flex: 0.25">
+                <label for="recurUntil" style="text-align: center">Until</label>
+              </div>
 
-              <!-- Note on Default Duration -->
-              <div class="col-12 text-center mt-2">
-                <small class="form-text text-muted">
-                  Note: Default runtime for recurring reservations is 1 year. Choose a date if you want to end it at a different time.
-                </small>
+              <div class="column">
+                <div class="form-floating">
+                  <input type="date" id="recurUntil" name="recurUntil" class="form-control" [(ngModel)]="endDate">
+                  <label class="form-check-label" for="weeks">Until</label>
+
+                </div>
               </div>
             </div>
           </div>
@@ -231,7 +228,7 @@
               <a class="btn event-info-btn btn-sm text-black"
                  aria-label="Show Special Offer Information"
                  (click)="showOfferInfo()">
-                <i class="bi bi-info-circle"></i>
+                <i class="bi bi-info-circle-fill"></i>
               </a>
             </div>
             <div class="column p-0">
@@ -315,6 +312,7 @@
             </div>
           </div>
         </div>
+</div>
       </form>
     </div>
   </div>
@@ -370,6 +368,25 @@
       <div class="modal-body">
         <p>Add special offers to your table reservation at a reduced price.</p>
         <p>Your selected items will be ready for you when you arrive.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Got it!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+!-- Info Modal -->
+<div class="modal fade" id="RecurringInfoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="recurringInfoModalLabel">Recurring</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Default runtime for recurring reservations is 1 year.</p>
+        <p>Choose a date if you want to end it at a different time</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Got it!</button>

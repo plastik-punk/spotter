@@ -254,6 +254,7 @@ body {
 
 .custom-order-card {
   width: 100%;
+  height: 100%;
   background: white;
   border: 2px solid #377eb8;
   border-radius: 10px;
@@ -264,9 +265,10 @@ body {
   text-align: center;
 }
 
+
 .custom-order-button {
-  background-color: darkorange;
-  border: 2px solid darkorange;
+  background-color: #377eb8;
+  border: 2px solid #377eb8;
   border-radius: 10px;
   color: white;
   text-align: center;
@@ -278,8 +280,14 @@ body {
 
 .custom-order-button:hover {
   background-color: white;
-  color: orange;
+  color: #377eb8;
 }
+
+.custom-order-button:disabled {
+  background-color: lightgray;
+  color: white;
+}
+
 
 .custom-order-button:disabled {
   background-color: lightgray;
