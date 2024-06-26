@@ -100,7 +100,7 @@ public class OpeningHoursDataGenerator {
                 .withDayOfWeek(DayOfWeek.THURSDAY)
                 .withRestaurant(restaurant)
                 .withOpeningTime(LocalTime.of(11, 30))
-                .withClosingTime(LocalTime.of(15, 0))
+                .withClosingTime(LocalTime.of(16, 30))
                 .build();
 
             OpeningHours openingHours8 = OpeningHours.OpeningHourBuilder.anOpeningHour()
