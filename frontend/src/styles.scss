@@ -121,3 +121,55 @@ h1, h2, h3, .font-heading {
   border-top: 2px solid lightgrey !important;
 }
 
+
+
+.rectangle-card {
+  line-height: 3.5;
+  background-color: #377eb8;
+  border-radius: 5px;
+  height: 100%;
+  width: 70%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.legend-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  height: 2rem;
+  width: 2rem;
+  margin-right: 0.5rem;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-right: 1rem;
+}
+.legend-text {
+  font-size: 1rem;
+}
+.legend-grey {
+  background-color: #767676FF;
+}
+.legend-green {
+  background-color: #4daf4a;
+}
+.legend-red {
+  background-color: #e41a1c;
+}
+.legend-blue {
+  background-color: #377eb8;
+}
+.legend-section {
+  position: absolute;
+  margin-left: 1vw;
+  left: 1rem; /* Adjust this value to move it to the right */
+  bottom: 2vh;
+  transform: translateY(0) rotate(-90deg);
+  transform-origin: left bottom;
+  display: flex;
+}

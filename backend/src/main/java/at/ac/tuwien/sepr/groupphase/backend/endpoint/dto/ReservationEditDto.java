@@ -17,6 +17,7 @@ public class ReservationEditDto {
     private String notes;
     private String hashedId;
     private List<Long> placeIds;
+    private List<SpecialOfferAmountDto> specialOffers;
 
     public ApplicationUser getUser() {
         return user;
@@ -90,6 +91,14 @@ public class ReservationEditDto {
         this.placeIds = placeIds;
     }
 
+    public List<SpecialOfferAmountDto> getSpecialOffers() {
+        return specialOffers;
+    }
+
+    public void setSpecialOffers(List<SpecialOfferAmountDto> specialOffers) {
+        this.specialOffers = specialOffers;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) {
@@ -107,12 +116,13 @@ public class ReservationEditDto {
             && Objects.equals(pax, that.pax)
             && Objects.equals(notes, that.notes)
             && Objects.equals(hashedId, that.hashedId)
-            && Objects.equals(placeIds, that.placeIds);
+            && Objects.equals(placeIds, that.placeIds)
+            && Objects.equals(specialOffers, that.specialOffers);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(user, reservationId, startTime, endTime, date, pax, notes, hashedId, placeIds);
+        return Objects.hash(user, reservationId, startTime, endTime, date, pax, notes, hashedId, placeIds, specialOffers);
     }
 
     @Override
@@ -127,6 +137,7 @@ public class ReservationEditDto {
             + ", notes='" + notes + '\''
             + ", hashedId='" + hashedId + '\''
             + ", placeIds=" + placeIds
+            + ", specialOffers=" + specialOffers
             + '}';
     }
 
@@ -141,6 +152,7 @@ public class ReservationEditDto {
             .withNotes(notes)
             .withHashedId(hashedId)
             .withPlaceIds(placeIds)
+            .withSpecialOffers(specialOffers)
             .build();
     }
 
@@ -154,6 +166,7 @@ public class ReservationEditDto {
         private String notes;
         private String hashedId;
         private List<Long> placeIds;
+        private List<SpecialOfferAmountDto> specialOffers;
 
         public ReservationEditDtoBuilder() {
         }
@@ -207,6 +220,11 @@ public class ReservationEditDto {
             return this;
         }
 
+        public ReservationEditDtoBuilder withSpecialOffers(List<SpecialOfferAmountDto> specialOffers) {
+            this.specialOffers = specialOffers;
+            return this;
+        }
+
         public ReservationEditDto build() {
             ReservationEditDto reservationEditDto = new ReservationEditDto();
             reservationEditDto.setUser(user);
@@ -218,6 +236,7 @@ public class ReservationEditDto {
             reservationEditDto.setNotes(notes);
             reservationEditDto.setHashedId(hashedId);
             reservationEditDto.setPlaceIds(placeIds);
+            reservationEditDto.setSpecialOffers(specialOffers);
             return reservationEditDto;
         }
     }

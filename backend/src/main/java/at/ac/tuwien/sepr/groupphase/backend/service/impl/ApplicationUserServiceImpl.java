@@ -67,7 +67,7 @@ public class ApplicationUserServiceImpl implements ApplicationUserService {
         if (currentAuthentication == null) {
             return null;
         } else {
-            ApplicationUser existingUser = applicationUserRepository.findByEmail(currentAuthentication.getName());
+            ApplicationUser existingUser = applicationUserRepository.findByEmailAndRoleNot(currentAuthentication.getName(), RoleEnum.GUEST);
             return existingUser;
         }
     }
@@ -109,13 +109,11 @@ public class ApplicationUserServiceImpl implements ApplicationUserService {
     @Override
     public ApplicationUser findApplicationUserByEmail(String email) {
         LOGGER.debug("Find application user by email");
-        ApplicationUser applicationUser = applicationUserRepository.findByEmail(email);
-        System.out.println(email);
-        System.out.println(applicationUser);
+        ApplicationUser applicationUser = applicationUserRepository.findByEmailAndRoleNot(email, RoleEnum.GUEST);
         if (applicationUser != null) {
             return applicationUser;
         }
-        throw new NotFoundException(String.format("Could not find the user with the email address %s", email));
+        throw new NotFoundException("Could not find the user with this email address");
     }
 
     @Override
@@ -138,8 +136,15 @@ public class ApplicationUserServiceImpl implements ApplicationUserService {
     }
 
     @Override
-    public void register(ApplicationUserRegistrationDto applicationUserRegistrationDto) {
+    public void register(ApplicationUserRegistrationDto applicationUserRegistrationDto) throws ConflictException {
         LOGGER.trace("register ({})", applicationUserRegistrationDto);
+
+        ApplicationUser existingUser = applicationUserRepository.findByEmailAndRoleNot(applicationUserRegistrationDto.getEmail(), RoleEnum.GUEST);
+        LOGGER.debug("Existing User: {}", existingUser);
+        if (existingUser != null) {
+            throw new ConflictException("Account already exists",
+                List.of("An account for this email address already exists"));
+        }
         ApplicationUser applicationUser = applicationUserMapper.userRegistrationDtoToApplicationUser(applicationUserRegistrationDto);
         applicationUser.setPassword(passwordEncoder.encode(applicationUserRegistrationDto.getPassword()));
         applicationUserRepository.save(applicationUser);
@@ -149,7 +154,7 @@ public class ApplicationUserServiceImpl implements ApplicationUserService {
     public void update(ApplicationUserOverviewDto toUpdate) throws NotFoundException {
         LOGGER.trace("update ({})", toUpdate);
         ApplicationUser existingUser = applicationUserRepository.findById(toUpdate.getId())
-            .orElseThrow(() -> new NotFoundException("User not found with id: " + toUpdate.getId()));
+            .orElseThrow(() -> new NotFoundException("No such user found in database"));
 
         existingUser.setFirstName(toUpdate.getFirstName());
         existingUser.setLastName(toUpdate.getLastName());
@@ -165,14 +170,12 @@ public class ApplicationUserServiceImpl implements ApplicationUserService {
         LOGGER.trace("delete ({})", id);
         if (reservationRepository.findByApplicationUserId(id).size() != 0) {
             throw new ConflictException("Error upon deleting user",
-                Arrays.asList("Couldn't delete user with id " + id + " because the user have open reservations."));
+                Arrays.asList("Couldn't delete this user because they have open reservations"));
         }
 
         if (!applicationUserRepository.existsById(id)) {
-            throw new NotFoundException("User not found with id: " + id);
+            throw new NotFoundException("No such user found in database");
         }
         applicationUserRepository.deleteById(id);
     }
 }
-
-

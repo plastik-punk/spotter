@@ -1,3 +1,8 @@
+@use "sass:map";
+@import "../../../../../node_modules/bootstrap/scss/functions";
+@import "../../../../../node_modules/bootstrap/scss/variables";
+@import "../../../../../node_modules/bootstrap/scss/mixins";
+
 body {
   margin: 0;
   padding: 0;
@@ -14,6 +19,7 @@ body {
   overflow: hidden;
 }
 
+
 .custom-card {
   position: relative;
   border-radius: 20px 20px 0 0;
@@ -21,8 +27,11 @@ body {
   margin-top: 2vh;
   height: 96vh; /* Adjust height to fill screen */
   width: 100%;
-  padding: 2vh;
   overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.card-padding{
+  padding: 0 2vh 0 2vh;
 }
 
 .top-banner {
@@ -40,6 +49,20 @@ body {
 .font-heading {
   font-family: "Leckerli One", cursive;
   font-size: 3vw;
+  margin: 0;
+  text-align: center;
+}
+
+.pink {
+  color: pink;
+}
+
+.green {
+  color: green;
+}
+
+.brown {
+  color: saddlebrown;
 }
 
 .top-left-logo {
@@ -111,10 +134,6 @@ body {
   box-sizing: border-box;
 }
 
-.font-heading {
-  margin: 0;
-  text-align: center;
-}
 
 .form-control {
   width: 100%;
@@ -135,7 +154,6 @@ body {
 
 .notes-textarea {
   height: calc(4 * 38px + 3 * 1vh); /* adjust height as needed */
-  resize: none;
 }
 
 .row .column {
@@ -144,8 +162,20 @@ body {
   justify-content: center;
 }
 
-.notes-textarea::placeholder {
-  vertical-align: top;
+.row .column .notes-textarea {
+  height: calc(4 * 45px + 3 * 1.5vh); /* Default height for larger screens */
+}
+
+@media (max-width: 768px) {
+  .notes-textarea {
+    height: calc(4 * 40px + 3 * 1.2vh); /* Adjust height for medium screens */
+  }
+}
+
+@media (max-width: 576px) {
+  .notes-textarea {
+    height: calc(4 * 35px + 3 * 1vh); /* Adjust height for smaller screens */
+  }
 }
 
 .custom-btn {
@@ -193,14 +223,6 @@ body {
   color: white;
 }
 
-.pax-container {
-  display: flex;
-}
-
-.pax-input {
-  width: 20vw;
-}
-
 @media (max-width: 768px) {
   .row {
     margin: 1vh;
@@ -213,4 +235,167 @@ body {
   .font-heading {
     font-size: 4vw;
   }
+}
+
+.event-info-btn {
+  background-color: transparent;
+  border: 2px solid white;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  border-radius: 0.5rem;
+}
+
+.event-info-btn:hover {
+  background-color: white;
+  color: white;
+}
+
+
+.dt-dd-align {
+  display: flex;
+  align-items: center;
+}
+
+.dt-dd-align dt, .dt-dd-align dd {
+  margin: 5px;
+  padding: 0;
+}
+
+.custom-order-card {
+  width: 100%;
+  background: white;
+  border: 2px solid #377eb8;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: black;
+  text-align: center;
+}
+
+
+.custom-order-button {
+  background-color: #377eb8;
+  border: 2px solid #377eb8;
+  border-radius: 10px;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  width: 100%;
+  margin: 2px;
+}
+
+.custom-order-button:hover {
+  background-color: white;
+  color: #377eb8;
+}
+
+.custom-order-button:disabled {
+  background-color: lightgray;
+  color: white;
+}
+
+
+.custom-order-button:disabled {
+  background-color: lightgray;
+  color: white;
+}
+
+.custom-event-card {
+  position: absolute;
+  right: 0;
+  width: 25%;
+  margin-top: -15vh;
+  border-radius: 20px 0 0 20px;
+  background: black;
+  padding: 1vh;
+  overflow-x: hidden;
+}
+
+.custom-event-card h1 {
+  color: white;
+}
+
+.custom-event-card,
+.custom-event-card h3,
+.custom-event-card table,
+.custom-event-card td,
+.custom-event-card th {
+  color: white;
+}
+
+
+.custom-seperator {
+  height: 2.5rem;
+}
+
+.event-row {
+  display: flex;
+  justify-content: start;
+  gap: 1rem;
+  width: 100%;
+  overflow: hidden;
+  margin-top: 0.5vh;
+  margin-bottom: 1vh;
+}
+
+.event-name {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-time {
+  margin-top: 0.5rem;
+  font-size: 0.9em;
+  color: lightgray;
+}
+
+.table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.table td, .table th {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-group {
+  display: flex;
+  gap: 3.0rem;
+  justify-content: center;
+}
+
+
+.btn-event-skip {
+  background-color: transparent;
+  border: 2px solid white;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  max-width: 3.0rem;
+  border-radius: 0.7rem;
+}
+
+.btn-event-skip:hover {
+  background-color: white;
+  color: white;
+}
+
+.modal-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: black;
+}
+
+.modal-content {
+
 }

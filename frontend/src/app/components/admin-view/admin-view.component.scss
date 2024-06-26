@@ -1,3 +1,8 @@
+@use "sass:map";
+@import "../../../../node_modules/bootstrap/scss/functions";
+@import "../../../../node_modules/bootstrap/scss/variables";
+@import "../../../../node_modules/bootstrap/scss/mixins";
+
 body {
   margin: 0;
   padding: 0;
@@ -21,20 +26,24 @@ body {
   margin-top: 2vh;
   height: 96vh; /* Adjust height to fill screen */
   width: 100%;
-  padding: 2vh;
   overflow-y: auto; /* Enable vertical scrolling */
 }
 
+.card-padding{
+  padding: 0 2vh 0 2vh;
+}
+
+
 .top-banner {
   position: sticky;
-  top: 0;
+  top: -2vh;
   left: 0;
   right: 0;
   background: white;
   z-index: 100;
   border-radius: 20px 20px 0 0;
-  border: 2vh;
-  margin: -2vh 0 2vh 0; /* Adjust margins to cover the top of the card */
+  padding-top: 2vh;
+  margin: -2vh 0 2vh 0;
 }
 
 .font-heading {
@@ -56,6 +65,22 @@ body {
 .top-left-logo img {
   height: 100%;
   width: auto;
+}
+
+.responsive-info-button,
+.responsive-warning-button,
+.responsive-danger-button,
+.responsive-dark-button,
+.responsive-tree-button,
+.responsive-success-button{
+  @include button-variant($light, $light);
+}
+
+@each $color in (info, warning, danger, success) {
+  $value: map.get($theme-colors, $color);
+  tr:hover .responsive-#{$color}-button {
+    @include button-variant($value, $value);
+  }
 }
 
 @media (max-width: 1000px) {
@@ -109,6 +134,16 @@ body {
   flex: 1;
   padding: 2vh;
   box-sizing: border-box;
+}
+
+.btn-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.table th, .table td {
+  vertical-align: middle;
+  text-align: center;
 }
 
 .font-heading {

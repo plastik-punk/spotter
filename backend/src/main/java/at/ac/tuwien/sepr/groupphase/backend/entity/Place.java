@@ -1,11 +1,12 @@
 package at.ac.tuwien.sepr.groupphase.backend.entity;
 
 import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+
 
 import java.util.Objects;
 
@@ -20,6 +21,9 @@ public class Place {
 
     @Column(nullable = false)
     private StatusEnum status;
+
+    @Column(nullable = false)
+    private Integer number;
 
     public Long getId() {
         return id;
@@ -45,6 +49,14 @@ public class Place {
         this.status = status;
     }
 
+    public Integer getNumber() {
+        return number;
+    }
+
+    public void setNumber(Integer number) {
+        this.number = number;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -55,7 +67,8 @@ public class Place {
         }
         return Objects.equals(id, place.id)
             && Objects.equals(pax, place.pax)
-            && status == place.status;
+            && status == place.status
+            && Objects.equals(number, place.number);
     }
 
     @Override
@@ -69,6 +82,7 @@ public class Place {
             + "id=" + id
             + ", pax=" + pax
             + ", status=" + status
+            + ", number=" + number
             + '}';
     }
 
@@ -76,6 +90,7 @@ public class Place {
         private Long id;
         private Long pax;
         private StatusEnum status;
+        private Integer number;
 
         private PlaceBuilder() {
         }
@@ -99,11 +114,17 @@ public class Place {
             return this;
         }
 
+        public PlaceBuilder withNumber(Integer number) {
+            this.number = number;
+            return this;
+        }
+
         public Place build() {
             Place place = new Place();
             place.setId(id);
             place.setPax(pax);
             place.setStatus(status);
+            place.setNumber(number);
             return place;
         }
     }

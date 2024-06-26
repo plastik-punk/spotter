@@ -20,25 +20,25 @@
         <p class="text-center mb-0 font-text" style="margin-top: 1vh">Already have an account? <a routerLink="/login" class="text-danger">Login</a></p>
       </div>
       <form [formGroup]="registrationForm" (ngSubmit)="register()" novalidate>
-        <div class="mb-3">
-          <label for="firstName" class="form-label">First Name</label>
+        <div class="form-floating mb-3">
           <input type="text" id="firstName" placeholder="Enter First Name" class="form-control" formControlName="firstName" required>
+          <label for="firstName">First Name</label>
         </div>
-        <div class="mb-3">
-          <label for="lastName" class="form-label">Last Name</label>
+        <div class="form-floating mb-3">
           <input type="text" id="lastName" placeholder="Enter Last name" class="form-control" formControlName="lastName" required>
+          <label for="lastName">Last Name</label>
         </div>
-        <div class="mb-3">
-          <label for="email" class="form-label">E-Mail</label>
+        <div class="form-floating mb-3">
           <input type="email" id="email" placeholder="Enter E-Mail" class="form-control" formControlName="email" required>
+          <label for="email">E-Mail</label>
         </div>
-        <div class="mb-3">
-          <label for="mobileNumber" class="form-label">Mobile Number</label>
+        <div class="form-floating mb-3">
           <input type="text" id="mobileNumber" placeholder="Enter Mobile Number" class="form-control" formControlName="mobileNumber">
+          <label for="mobileNumber">Mobile Number</label>
         </div>
-        <div class="mb-3">
-          <label for="password" class="form-label">Password</label>
+        <div class="form-floating mb-3">
           <input type="password" id="password" placeholder="Enter Password" class="form-control" formControlName="password" required>
+          <label for="password">Password</label>
         </div>
         <div class="mb-3">
           <div *ngIf="isAdmin">

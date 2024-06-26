@@ -9,13 +9,11 @@ import {SidebarComponent} from './components/sidebar/sidebar.component';
 import {FooterComponent} from './components/footer/footer.component';
 import {ReservationSimpleComponent} from './components/reservation/reservation-simple/reservation-simple.component';
 import {LoginComponent} from './components/login/login.component';
-import {MessageComponent} from './components/message/message.component';
 import {
   ReservationOverviewComponent
 } from './components/reservation/reservation-overview/reservation-overview.component';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {httpInterceptorProviders} from './interceptors';
-import {ReservationDetailComponent} from './components/reservation/reservation-detail/reservation-detail.component';
 import {
   ConfirmationDialogDeleteComponent
 } from './components/confirmation-dialog/confirmation-dialog-delete/confirmation-dialog-delete.component';
@@ -32,19 +30,24 @@ import {NgIf} from "@angular/common";
 import {RouterLink} from "@angular/router";
 import {AdminViewComponent} from "./components/admin-view/admin-view.component";
 import {ReservationEditComponent} from "./components/reservation/reservation-edit/reservation-edit.component";
-import {PredictionComponent} from "./components/admin-view/prediction/prediction.component";
 import {NgApexchartsModule} from "ng-apexcharts";
+import {CreateLayoutComponent} from "./components/layout/create-layout/create-layout.component";
+import {ConfirmDialogComponent} from "./components/confirm-dialog/confirm-dialog.component";
 import {EmployeeViewComponent} from "./components/employee-view/employee-view.component";
+import {EditLayoutComponent} from "./components/layout/edit-layout/edit-layout.component";
+import {LayoutOverviewComponent} from "./components/layout/layout-overview/layout-overview.component";
+import {
+  PermanentReservationDetailsComponent
+} from "./components/reservation/permanent-reservation-details/permanent-reservation-details.component";
 
 @NgModule({
+
   declarations: [
     AppComponent,
     SidebarComponent,
     FooterComponent,
     ReservationSimpleComponent,
     LoginComponent,
-    MessageComponent,
-    ReservationDetailComponent,
     ReservationEditComponent,
     ReservationOverviewComponent,
     ConfirmationDialogDeleteComponent,
@@ -55,8 +58,11 @@ import {EmployeeViewComponent} from "./components/employee-view/employee-view.co
     EventCreateComponent,
     ReservationLayoutComponent,
     AdminViewComponent,
-    PredictionComponent,
-    EmployeeViewComponent
+    CreateLayoutComponent,
+    EmployeeViewComponent,
+    EditLayoutComponent,
+    LayoutOverviewComponent,
+    PermanentReservationDetailsComponent
   ],
   imports: [
     BrowserModule,
@@ -74,7 +80,8 @@ import {EmployeeViewComponent} from "./components/employee-view/employee-view.co
     ReactiveFormsModule,
     RouterLink,
     NoopAnimationsModule,
-    NgApexchartsModule
+    NgApexchartsModule,
+    ConfirmDialogComponent
   ],
   providers: [httpInterceptorProviders],
   exports: [
@@ -82,5 +89,4 @@ import {EmployeeViewComponent} from "./components/employee-view/employee-view.co
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {
-}
+export class AppModule { }

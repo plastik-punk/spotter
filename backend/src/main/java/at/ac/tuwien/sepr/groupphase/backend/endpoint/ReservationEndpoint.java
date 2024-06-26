@@ -1,11 +1,12 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint;
 
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaLayoutDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.AreaListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationListDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.PermanentReservationSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationCreateDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationEditDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationLayoutCheckAvailabilityDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationModalDetailDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ReservationSearchDto;
@@ -26,6 +27,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,8 +37,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.invoke.MethodHandles;
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -69,50 +69,41 @@ public class ReservationEndpoint {
         return service.createWalkIn(reservationWalkInDto);
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping("/permanent")
+    @PermitAll
+    @Operation(summary = "Create a new permanent reservation")
+    public PermanentReservationCreateDto createPermanent(@Valid @RequestBody PermanentReservationCreateDto permanentReservationCreateDto) {
+        LOGGER.info("POST /api/v1/reservations/permanent body: {}", permanentReservationCreateDto.toString());
+        return service.createPermanent(permanentReservationCreateDto);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PutMapping("/permanent/confirmation/{id}")
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE"})
+    @Operation(summary = "Confirm a new permanent reservation")
+    public ResponseEntity<Void> confirmPermanentReservation(@PathVariable("id") Long id) throws MessagingException {
+        LOGGER.info("POST /api/v1/reservations/permanent/{}", id);
+        service.confirmPermanentReservation(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @ResponseStatus(HttpStatus.OK)
     @PermitAll
     @GetMapping
     @Operation(summary = "Check if any tables are available for requested time and pax")
     public ReservationResponseEnum getAvailability(@Valid ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) {
-        LOGGER.info("GET /api/v1/reservations body: {}", reservationCheckAvailabilityDto);
+        LOGGER.info("GET /api/v1/reservations body: {}", reservationCheckAvailabilityDto.toString());
         return service.getAvailability(reservationCheckAvailabilityDto);
     }
 
-    @ResponseStatus(HttpStatus.OK)
-    @PermitAll
-    @GetMapping("/layout")
-    @Operation(summary = "Get layout of area for requested time and pax")
-    public AreaLayoutDto getAvailabilityLayout(@RequestParam("startTime") String startTime,
-                                               @RequestParam("date") String date,
-                                               @RequestParam("idToExclude") Long idToExclude,
-                                               @RequestParam("areaId") Long areaId) {
-        ReservationLayoutCheckAvailabilityDto reservationLayoutCheckAvailabilityDto =
-            ReservationLayoutCheckAvailabilityDto.ReservationLayoutCheckAvailabilityDtoBuilder.aReservationLayoutCheckAvailabilityDto()
-                .withStartTime(LocalTime.parse(startTime))
-                .withEndTime(LocalTime.parse(startTime).plusHours(2))
-                .withDate(LocalDate.parse(date))
-                .withIdToExclude(idToExclude)
-                .withAreaId(areaId)
-                .build();
-        LOGGER.info("GET /api/v1/reservations/layout body: {}", reservationLayoutCheckAvailabilityDto);
-        return service.getAreaLayout(reservationLayoutCheckAvailabilityDto);
-    }
-
-    @ResponseStatus(HttpStatus.OK)
-    @PermitAll
-    @GetMapping("/areas")
-    @Operation(summary = "Get list of all areas")
-    public AreaListDto getAllAreas() {
-        LOGGER.info("GET /api/v1/reservations/areas");
-        return service.getAllAreas();
-    }
 
     @ResponseStatus(HttpStatus.OK)
     @PermitAll
     @GetMapping({"/next"})
     @Operation(summary = "Get the next three available reservations")
     public ReservationCheckAvailabilityDto[] getNextAvailableTables(@Valid ReservationCheckAvailabilityDto reservationCheckAvailabilityDto) {
-        LOGGER.info("GET /api/v1/reservations body: {}", reservationCheckAvailabilityDto);
+        LOGGER.info("GET /api/v1/reservations body: {}", reservationCheckAvailabilityDto.toString());
         return service.getNextAvailableTables(reservationCheckAvailabilityDto);
     }
 
@@ -147,9 +138,7 @@ public class ReservationEndpoint {
     @Operation(summary = "Get list of all reservations for admins and employees", security = @SecurityRequirement(name = "apiKey"))
     @GetMapping({"/search"})
     public List<ReservationListDto> searchAllReservationsForAdmin(@Valid ReservationSearchDto searchParameters) {
-        LOGGER.info("GET /api/v1/reservations/admin-search");
-        LOGGER.debug("request parameters: {}", searchParameters);
-
+        LOGGER.info("GET /api/v1/reservations/admin-search body: {}", searchParameters.toString());
         return service.search(searchParameters);
     }
 
@@ -159,6 +148,7 @@ public class ReservationEndpoint {
     @Operation(summary = "Delete a reservation")
     public ResponseEntity<Void> delete(@RequestBody String hashedId) {
         LOGGER.info("DELETE /api/v1/reservations body: {}", hashedId);
+        LOGGER.debug("hasedID: {}", hashedId);
         service.cancel(hashedId);
         return ResponseEntity.noContent().build();
     }
@@ -182,4 +172,33 @@ public class ReservationEndpoint {
         service.unconfirm(hashedId);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/permanent")
+    @Operation(summary = "Get all permanent reservations")
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_USER"})
+    public List<PermanentReservationListDto> getPermanentReservations(
+        PermanentReservationSearchDto searchParams) {
+        LOGGER.info("GET /api/v1/reservations/permanent with search params: {}", searchParams);
+        return service.searchPermanent(searchParams);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @PermitAll
+    @GetMapping({"/permanent/detail/{hashedId}"})
+    @Operation(summary = "Get detail information for a permanent reservation")
+    public PermanentReservationDetailDto getPermanentReservationDetailsByHashedId(@PathVariable("hashedId") String hashedId) {
+        LOGGER.info("GET /api/v1/reservations/permanent/detail/{}", hashedId);
+        return service.getPermanentDetails(hashedId);
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Secured({"ROLE_ADMIN", "ROLE_EMPLOYEE", "ROLE_USER"})
+    @DeleteMapping({"/permanent/delete/{hashedId}"})
+    @Operation(summary = "Delete a permanent reservation ")
+    public ResponseEntity<Void> deletePermanent(@PathVariable("hashedId") String hashedId) throws MessagingException {
+        LOGGER.info("DELETE /api/v1/reservations/permanent/delete/{} ", hashedId);
+        service.deletePermanentReservation(hashedId);
+        return ResponseEntity.noContent().build();
+    }
+
 }

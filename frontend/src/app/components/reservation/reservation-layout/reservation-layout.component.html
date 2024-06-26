@@ -11,7 +11,7 @@
 </head>
 <body>
 <div class="top-left-logo">
-  <a href="/login">
+  <a>
     <img src="../../../../assets/images/logo.png" alt="Logo">
   </a>
 </div>
@@ -26,147 +26,250 @@
               <h1 class="font-heading">Reserve</h1>
             </div>
             <div class="column">
-              <input
-                type="time"
-                id="reservationStartTime"
-                name="reservationStartTime"
-                placeholder="hh:mm"
-                class="form-control"
-                [(ngModel)]="sharedStartTime"
-                #reservationStartTimeModel="ngModel"
-                (ngModelChange)="onFieldChange()"
-                (change)="onTimeChange($event)"
-                required
-              />
-
+              <div class="form-floating mb-3">
+                <input type="time" id="reservationStartTime" name="reservationStartTime" placeholder="hh:mm"
+                       class="form-control" [(ngModel)]="sharedStartTime" #reservationStartTimeModel="ngModel"
+                       (ngModelChange)="onFieldChange()" (change)="onTimeChange($event)" required>
+                <label for="reservationStartTime">Start Time</label>
+              </div>
             </div>
             <div class="column">
-              <input
-                type="date"
-                id="reservationDate"
-                name="reservationDate"
-                pattern="\d{4}-\d{2}-\d{2}"
-                placeholder="dd-mm-yyyy"
-                class="form-control"
-                [(ngModel)]="sharedDate"
-                #reservationDateModel="ngModel"
-                (ngModelChange)="onFieldChange()"
-                required
-              />
+              <div class="form-floating mb-3">
+                <input type="date" id="reservationDate" name="reservationDate" pattern="\d{4}-\d{2}-\d{2}"
+                       placeholder="dd-mm-yyyy" class="form-control" [(ngModel)]="sharedDate"
+                       #reservationDateModel="ngModel" (ngModelChange)="onFieldChange()" required>
+                <label for="reservationDate">Date</label>
+              </div>
             </div>
             <div class="column">
-              <select
-                id="reservationArea"
-                name="reservationArea"
-                class="form-control"
-                [(ngModel)]="selectedAreaId"
-                (change)="onAreaChange($event)"
-                required
-              >
-                <option *ngFor="let area of areas" [value]="area.id">{{ area.name }}</option>
-              </select>
+              <div class="form-floating mb-3">
+                <select id="reservationArea" name="reservationArea" class="form-control" [(ngModel)]="selectedAreaId"
+                        (change)="onAreaChange($event)" required>
+                  <option *ngFor="let area of areas" [value]="area.id">{{ area.name }}</option>
+                </select>
+                <label for="reservationArea">Area</label>
+              </div>
             </div>
           </div>
 
           <hr class="my-4">
         </div>
 
-        <!-- D3 JS CANVAS HERE -->
-        <div class="row justify-content-center">
-          <div #d3Container style="width: 70%; height: auto;"></div>
-        </div>
-        <hr class="my-4">
-
-        <!-- Start row with pax -->
-        <div class="row">
-          <div class="column pax-container">
-            <label for="reservationPax" style="margin-right: 10px;">Table for:</label>
-            <input
-              type="number"
-              id="reservationPax"
-              name="reservationPax"
-              placeholder="pax"
-              class="form-control pax-input"
-              [(ngModel)]="reservationCreateDto.pax"
-              #reservationPax="ngModel"
-              (ngModelChange)="onFieldChange()"
-              min="1"
-              required
-            />
-          </div>
-        </div>
-        <!-- End row with pax -->
-
-        <!-- Start row with (firstName, lastName, Mail, Phone), Notes -->
-        <div class="row">
-          <div class="column" *ngIf="!authService.isLoggedIn()">
-            <div>
-              <!-- start guest fields -->
-              <input
-                type="text"
-                id="reservationFirstName"
-                name="reservationFirstName"
-                placeholder="First Name"
-                class="form-control"
-                [(ngModel)]="reservationCreateDto.firstName"
-                #reservationFirstName="ngModel"
-                required
-              />
-
-              <input
-                type="text"
-                id="reservationLastName"
-                name="reservationLastName"
-                placeholder="Last Name"
-                class="form-control"
-                [(ngModel)]="reservationCreateDto.lastName"
-                #reservationLastName="ngModel"
-                required
-              />
-
-              <input
-                type="email"
-                id="reservationEmail"
-                name="reservationEmail"
-                placeholder="Email"
-                class="form-control"
-                [(ngModel)]="reservationCreateDto.email"
-                #reservationEmail="ngModel"
-                required
-              />
-
-              <input
-                type="tel"
-                id="reservationMobileNumber"
-                name="reservationMobileNumber"
-                placeholder="Phone (optional)"
-                class="form-control"
-                [(ngModel)]="reservationCreateDto.mobileNumber"
-                #reservationMobileNumber="ngModel"
-              />
+        <div class="row" style="margin-right: 0; position: relative">
+          <!-- Legend Section -->
+          <div class="legend-section">
+            <div class="legend-item">
+              <div class="legend-card legend-grey"></div>
+              <span class="legend-text">Unavailable</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-card legend-green"></div>
+              <span class="legend-text">Available</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-card legend-red"></div>
+              <span class="legend-text">Booked</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-card legend-blue"></div>
+              <span class="legend-text">Selected</span>
             </div>
           </div>
-          <!-- End guest fields -->
+          <!-- End Legend Section -->
 
+          <!-- D3 JS CANVAS HERE -->
           <div class="column">
-              <textarea
-                id="reservationNotes"
-                name="reservationNotes"
-                placeholder="Notes (optional)"
-                class="form-control notes-textarea"
-                [(ngModel)]="reservationCreateDto.notes"
-                #reservationNotes="ngModel"
-              ></textarea>
+            <div class="justify-content-center">
+              <div #d3Container style="height: auto; width: 75%"></div>
+            </div>
+          </div>
+          <div class="custom-event-card" *ngIf="upcomingEventsExist">
+            <h1 class="font-heading">Events</h1>
+            <table class="table table-hover">
+              <tbody>
+              <tr
+                *ngFor="let event of events | slice:(currentEventPage-1)*itemsPerPage : currentEventPage*itemsPerPage">
+                <td>
+                  <div class="event-row">
+                    <span class="event-name">{{ event.name }}</span>
+                  </div>
+                  <div class="event-row">
+                    <a class="btn event-info-btn btn-sm" aria-label="Show event details"
+                       (click)="showEventDetails(event.hashId)">
+                      <i class="bi bi-info-lg"></i>
+                    </a>
+                    <div class="event-time">{{ event.startTime ? formatDay(event.startTime) : '' }}
+                      - {{ event.startTime ? formatDotDate(event.startTime) : '' }}
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+            <div class="btn-group" style="margin-bottom: 1vh">
+              <a class="btn btn-event-skip btn-sm" aria-label="Previous events"
+                 [class.disabled]="currentEventPage === 1" (click)="previousPage()">
+                <i class="bi bi-arrow-left"></i>
+              </a>
+              <a class="btn btn-event-skip btn-sm"
+                 [class.disabled]="currentEventPage === Math.ceil(events?.length / itemsPerPage)"
+                 aria-label="Next events" (click)="nextPage()">
+                <i class="bi bi-arrow-right"></i>
+              </a>
+            </div>
           </div>
         </div>
-        <!-- End row with (firstName, lastName, Mail, Phone), Notes -->
 
-        <div class="row">
-          <div class="column">
-            <div class="btn-group">
-              <button type="submit" id="submit-button" class="btn btn-danger btn-sm" [disabled]="!form.valid || !isPaxValid ">
-                Book
-              </button>
+        <div class="card-padding">
+          <hr class="my-4">
+          <!-- Start row with pax and notes -->
+          <div class="row">
+            <div class="column justify-content-start">
+              <div class="row" style="margin:0">
+                <div class="column" style="flex: 0.2; padding: 0">
+                  <div class="rectangle-card mb-4">Selected</div>
+                </div>
+                <div class="column" style="padding: 0">
+                  <div class="form-floating mb-3">
+                    <input type="number" id="reservationPax" name="reservationPax" placeholder="pax"
+                           class="form-control" [(ngModel)]="reservationCreateDto.pax" #reservationPax="ngModel"
+                           (ngModelChange)="onFieldChange()" min="1" required>
+                    <label for="reservationPax">Table for</label>
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="form-floating mb-3">
+                <textarea
+                  id="reservationNotes"
+                  name="reservationNotes"
+                  placeholder="Notes (optional)"
+                  class="form-control notes-textarea" [(ngModel)]="reservationCreateDto.notes"
+                  #reservationNotes="ngModel">
+                </textarea>
+                <label for="reservationNotes">Notes (optional)</label>
+              </div>
+            </div>
+
+            <div *ngIf="!authService.isLoggedIn()" class="column">
+              <div class="form-floating mb-3">
+                <input type="text" id="reservationFirstName" name="reservationFirstName" placeholder="First Name"
+                       class="form-control" [(ngModel)]="reservationCreateDto.firstName" #reservationFirstName="ngModel"
+                       required>
+                <label for="reservationFirstName">First Name</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="text" id="reservationLastName" name="reservationLastName" placeholder="Last Name"
+                       class="form-control" [(ngModel)]="reservationCreateDto.lastName" #reservationLastName="ngModel"
+                       required>
+                <label for="reservationLastName">Last Name</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="email" id="reservationEmail" name="reservationEmail" placeholder="Email"
+                       class="form-control"
+                       [(ngModel)]="reservationCreateDto.email" #reservationEmail="ngModel" required>
+                <label for="reservationEmail">Email</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="tel" id="reservationMobileNumber" name="reservationMobileNumber"
+                       placeholder="Phone (optional)"
+                       class="form-control" [(ngModel)]="reservationCreateDto.mobileNumber"
+                       #reservationMobileNumber="ngModel">
+                <label for="reservationMobileNumber">Phone (optional)</label>
+              </div>
+            </div>
+          </div>
+          <!-- End row with pax and notes -->
+          <!-- Start special offers -->
+          <div class="row" *ngIf="specialOffers.length > 0">
+            <div class="row">
+              <div class="column p-0 align-items-end">
+                <a class="btn event-info-btn btn-sm text-black"
+                   aria-label="Show Special Offer Information"
+                   (click)="showOfferInfo()">
+                  <i class="bi bi-info-circle-fill"></i>
+                </a>
+              </div>
+              <div class="column p-0">
+                <h1 class="font-heading">Special Offers</h1>
+              </div>
+              <div class="column p-0">
+              </div>
+            </div>
+            <div class="row">
+              <div class="custom-order-card m-2 p-2 column" *ngFor="let offer of specialOffers">
+                <div class="row">
+                  <img [src]="getImageUrl(offer.image)" alt="Special Offer" class="custom-order-image">
+                </div>
+                <div class="row">
+                  {{ offer.name }}
+                </div>
+                <div class="row">
+                  <a class="custom-order-button" (click)="selectOffer(offer)">
+                    Add
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="row" *ngIf="selectedOffers.length > 0">
+              <table>
+                <thead>
+                <th>
+                  Amount
+                </th>
+                <th>
+                  Special Offer
+                </th>
+                <th>
+                  Price
+                </th>
+                <th>
+                  Actions
+                </th>
+                </thead>
+                <tbody>
+                <tr *ngFor="let offer of selectedOffers">
+                  <td>
+                    {{ offer.amount }}x
+                  </td>
+                  <td>
+                    {{ offer.specialOffer.name }}
+                  </td>
+                  <td>
+                    {{ offer.specialOffer.pricePerPax }}€
+                  </td>
+                  <td>
+                    <button type="button" class="btn btn-sm btn-secondary me-1" (click)="removeOffer(offer)">
+                      <i class="bi bi-dash-lg text-white"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm btn-primary ms-1" (click)="addOffer(offer)">
+                      <i class="bi bi-plus-lg text-white"></i>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                  <td>
+                    Total: {{ totalPrice }}€
+                  </td>
+
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <!-- End special offers -->
+
+          <div class="row">
+            <div class="column">
+              <div class="btn-group">
+                <button type="submit" id="submit-button" class="btn btn-danger btn-sm"
+                        [disabled]="!form.valid || !isPaxValid">
+                  Book
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -174,5 +277,45 @@
     </div>
   </div>
 </div>
+
+
+<!-- Modal for event details -->
+<div class="modal fade" id="event-detail" tabindex="-1" aria-labelledby="event-detail-modal" aria-hidden="true">
+  <div class="modal-dialog custom-event-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="event-detail-title">{{ event.name }}</h3>
+      </div>
+      <div class="modal-body">
+        <dl class="row">
+          <div class="dt-dd-align">
+            <dt class="col-sm-2">From:</dt>
+            <dd class="col-sm-10">{{ event.startTime ? formatDay(event.startTime) : '' }}
+              - {{ event.startTime ? formatDotDate(event.startTime) : '' }}
+              - {{ event.startTime ? formatIsoTime(event.startTime) : '' }}h
+            </dd>
+          </div>
+
+          <div class="dt-dd-align">
+            <dt class="col-sm-2">Until:</dt>
+            <dd class="col-sm-10">{{ event.endTime ? formatDay(event.endTime) : '' }}
+              - {{ event.endTime ? formatDotDate(event.endTime) : '' }}
+              - {{ event.endTime ? formatIsoTime(event.endTime) : '' }}h
+            </dd>
+          </div>
+
+          <div class="dt-dd-align">
+            <dt class="col-sm-2">Info:</dt>
+            <dd class="col-sm-10">{{ event.description }}</dd>
+          </div>
+        </dl>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
