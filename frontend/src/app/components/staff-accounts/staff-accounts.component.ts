@@ -107,6 +107,7 @@ export class StaffAccountsComponent implements OnInit {
     this.userService.deleteUser(user.id).subscribe({
       next: (deletedUser) => {
         this.notificationService.showSuccess(`User ${user.firstName} ${user.lastName} deleted successfully.`);
+
         this.fetchUsers();
       },
       error: (error) => {
