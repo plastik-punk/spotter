@@ -1,7 +1,7 @@
 <div class="notification-container">
-  <div *ngFor="let notification of notifications" class="alert show" [ngClass]="{
+  <div *ngFor="let notification of notifications" class="alert" [class.show]="notification.show" [ngClass]="{
     'alert-success': notification.type === 'success',
-    'alert-danger': notification.type === 'error'
+    'alert-danger': notification.type === 'error' || notification.type === 'validation' || notification.type === 'conflict' || notification.type === 'notFound' || notification.type === 'illegalArgument' || notification.type === 'internalServer' || notification.type === 'unauthorized'
   }" role="alert">
     {{ notification.message }}
     <button type="button" class="btn-close" (click)="removeNotification(notification)" aria-label="Close"></button>

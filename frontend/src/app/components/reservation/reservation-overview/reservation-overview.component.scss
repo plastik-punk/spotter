@@ -20,15 +20,17 @@
   }
 
 
-  .custom-card {
-    position: relative;
-    border-radius: 20px 20px 0 0;
-    background: white;
-    margin-top: 2vh;
-    height: 96vh; /* Adjust height to fill screen */
-    width: 100%;
-    overflow-y: auto; /* Enable vertical scrolling */
-  }
+
+.custom-card {
+  position: relative;
+  border-radius: 20px 20px 0 0;
+  background: white;
+  margin-top: 2vh;
+  height: 96vh; /* Adjust height to fill screen */
+  width: 100%;
+  padding: 2vh;
+  overflow-y: auto; /* Enable vertical scrolling */
+}
 
   .card-padding{
     padding: 0 2vh 0 2vh;
