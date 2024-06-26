@@ -45,8 +45,8 @@ export class LoginComponent implements OnInit {
           this.router.navigate(['/reservation-simple']);
         },
         error: (error) => {
-          console.log(error);
-          this.notificationService.handleError(error);
+          let errorBody = JSON.parse(error.error);
+          this.notificationService.handleAuthenticationError(errorBody.message);
         }
       });
     } else {

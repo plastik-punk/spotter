@@ -58,9 +58,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      * Handles exceptions thrown by annotation-style validation (not via Validators).
      * Sends a customized HTTP response for a validation exception as thrown by jakarta annotations.
      *
-     * @param e the exception
+     * @param e       the exception
      * @param headers the headers
-     * @param status the status
+     * @param status  the status
      * @param request the request
      * @return the error response
      */
@@ -111,7 +111,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<Object> handleBadCredentialException(BadCredentialsException e) {
         LOGGER.warn("Terminating request processing with status 401 due to {}: {}", e.getClass().getSimpleName(), e.getMessage());
 
-        String defaultMessage = "Username or password not correct.";
+        String defaultMessage = "Password or Username incorrect.";
         // List<String> errors = List.of(e.getMessage());
         BadCredentialsErrorRestDto errorResponse = new BadCredentialsErrorRestDto(defaultMessage, null);
 

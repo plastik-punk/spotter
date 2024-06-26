@@ -20,6 +20,10 @@ export class NotificationService {
     this.showError(error.error.message || 'An error occurred');
   }
 
+  handleAuthenticationError(message: any) {
+    this.showError(message);
+  }
+
   handleSuccess(message: string) {
     this.showSuccess(message);
   }
