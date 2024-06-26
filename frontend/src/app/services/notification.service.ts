@@ -67,6 +67,10 @@ export class NotificationService {
     }
   }
 
+  handleAuthenticationError(message: any) {
+    this.showError(message);
+  }
+
   handleSuccess(message: string) {
     this.showSuccess(message);
   }

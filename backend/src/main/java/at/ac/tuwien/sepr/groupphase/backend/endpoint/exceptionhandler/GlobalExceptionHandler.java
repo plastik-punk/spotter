@@ -1,11 +1,14 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.exceptionhandler;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.resterrors.BadCredentialsErrorRestDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.resterrors.ConflictErrorRestDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.resterrors.IllegalArgumentErrorRestDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.resterrors.InternalServerErrorRestDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.resterrors.NotFoundErrorRestDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.resterrors.ValidationErrorRestDto;
+import at.ac.tuwien.sepr.groupphase.backend.exception.BadCredentialsException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
+import at.ac.tuwien.sepr.groupphase.backend.exception.IllegalArgumentException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
@@ -14,7 +17,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -57,9 +59,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
      * Handles exceptions thrown by annotation-style validation (not via Validators).
      * Sends a customized HTTP response for a validation exception as thrown by jakarta annotations.
      *
-     * @param e the exception
+     * @param e       the exception
      * @param headers the headers
-     * @param status the status
+     * @param status  the status
      * @param request the request
      * @return the error response
      */
@@ -97,6 +99,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         NotFoundErrorRestDto errorResponse = new NotFoundErrorRestDto(defaultMessage, errors);
 
         return new ResponseEntity<>(errorResponse, new HttpHeaders(), HttpStatus.NOT_FOUND);
+    }
+
+    /**
+     * Handles exceptions thrown when a resource is not found.
+     * Sends a customized HTTP response for a not found exception.
+     *
+     * @param e the exception
+     * @return the error response
+     */
+    @ExceptionHandler
+    public ResponseEntity<Object> handleBadCredentialException(BadCredentialsException e) {
+        LOGGER.warn("Terminating request processing with status 401 due to {}: {}", e.getClass().getSimpleName(), e.getMessage());
+
+        String defaultMessage = "Password or Username incorrect.";
+        // List<String> errors = List.of(e.getMessage());
+        BadCredentialsErrorRestDto errorResponse = new BadCredentialsErrorRestDto(defaultMessage, null);
+
+        return new ResponseEntity<>(errorResponse, new HttpHeaders(), HttpStatus.UNAUTHORIZED);
     }
 
     /**
@@ -150,23 +170,5 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ConflictErrorRestDto errorResponse = new ConflictErrorRestDto(defaultMessage, errors);
 
         return new ResponseEntity<>(errorResponse, new HttpHeaders(), HttpStatus.CONFLICT);
-    }
-
-    /**
-     * Handles exceptions thrown when a resource is not found.
-     * Sends a customized HTTP response for a not found exception.
-     *
-     * @param e the exception
-     * @return the error response
-     */
-    @ExceptionHandler
-    public ResponseEntity<Object> handleBadCredentialException(BadCredentialsException e) {
-        LOGGER.warn("Terminating request processing with status 401 due to {}: {}", e.getClass().getSimpleName(), e.getMessage());
-
-        String defaultMessage = "Username or password not correct.";
-        List<String> errors = List.of(e.getMessage());
-        ConflictErrorRestDto errorResponse = new ConflictErrorRestDto(defaultMessage, errors);
-
-        return new ResponseEntity<>(errorResponse, new HttpHeaders(), HttpStatus.UNAUTHORIZED);
     }
 }
