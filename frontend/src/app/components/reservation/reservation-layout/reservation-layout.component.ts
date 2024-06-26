@@ -1,19 +1,25 @@
 import {Component, OnInit, OnDestroy, ElementRef, ViewChild, HostListener} from '@angular/core';
+import * as bootstrap from 'bootstrap';
 import {NgForm} from "@angular/forms";
+import {ReservationCreateDto} from "../../../dtos/reservation";
 import {
   ReservationLayoutCheckAvailabilityDto,
-  ReservationCreateDto,
   AreaLayoutDto,
   AreaListDto,
   AreaDto
-} from "../../../dtos/reservation";
+} from "../../../dtos/layout";
 import {UserOverviewDto} from "../../../dtos/app-user";
 import {AuthService} from "../../../services/auth.service";
+import {LayoutService} from "../../../services/layout.service";
 import {ReservationService} from "../../../services/reservation.service";
 import {NotificationService} from "../../../services/notification.service";
 import {D3DrawService} from "../../../services/d3-draw.service";
-import {formatIsoDate} from "../../../util/date-helper";
+import {formatDay, formatDotDate, formatIsoDate, formatIsoTime} from "../../../util/date-helper";
 import {SimpleViewReservationStatusEnum} from "../../../dtos/status-enum";
+import {EventDetailDto, EventListDto} from "../../../dtos/event";
+import {EventService} from "../../../services/event.service";
+import {SpecialOfferAmountDto, SpecialOfferDetailDto, SpecialOfferListDto} from "../../../dtos/special-offer";
+import {SpecialOfferService} from "../../../services/special-offer.service";
 
 @Component({
   selector: 'app-component-reservation-layout',
@@ -31,7 +37,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
   areaLayout: AreaLayoutDto;
   selectedPlaces: { placeId: number, numberOfSeats: number }[] = [];
   areas: AreaDto[] = [];
-  selectedAreaId: number = 1;
+  selectedAreaId: number;
 
   isPaxValid: boolean = true;
   timer: any;
@@ -40,23 +46,83 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
   sharedStartTime: string;
   sharedDate: string;
 
+  events: EventListDto[] = undefined;
+  event: EventDetailDto = {
+    hashId: undefined,
+    name: undefined,
+    startTime: undefined,
+    endTime: undefined,
+    description: undefined
+  };
+  currentEventPage: number = 1;
+  itemsPerPage: number = 3;
+  upcomingEventsExist: boolean = false;
+  specialOffers: SpecialOfferDetailDto[] = [];
+  selectedOffers: SpecialOfferAmountDto[] = [];
+  totalPrice: number = 0;
+
   constructor(
     public authService: AuthService,
+    private layoutService: LayoutService,
     private reservationService: ReservationService,
     private notificationService: NotificationService,
-    private d3DrawService: D3DrawService
+    private d3DrawService: D3DrawService,
+    private eventService: EventService,
+    private offerService: SpecialOfferService
   ) {
     this.initializeSharedProperties();
     this.reservationCreateDto = this.initializeReservationCreateDto();
     this.reservationLayoutCheckAvailabilityDto = this.initializeReservationLayoutCheckAvailabilityDto();
   }
 
-  ngOnInit() {
-    this.fetchAllAreas();
+  async ngOnInit() {
+    await this.fetchAllAreas();
     this.fetchLayoutAvailability();
     this.d3DrawService.createSeatingPlan(this.d3Container);
     this.onResize();
     this.startTimer();
+    this.fetchOffers();
+    this.eventService.getUpcomingEvents().subscribe({
+      next: (data) => {
+        this.events = data;
+        if (this.events?.length > 0) {
+          this.upcomingEventsExist = true;
+        }
+      },
+      error: () => {
+        this.notificationService.showError('Failed to get events. Please try again later.');
+      },
+    });
+  }
+
+
+  showEventDetails(hashId: string): void {
+    this.eventService.getByHashId(hashId).subscribe( {
+      next: (data: EventDetailDto) => {
+        this.event.name = data.name;
+        this.event.startTime = data.startTime;
+        this.event.endTime = data.endTime;
+        this.event.description = data.description;
+
+        const modalDetail = new bootstrap.Modal(document.getElementById('event-detail'));
+        modalDetail.show();
+      },
+      error: error => {
+        this.notificationService.showError('Failed to load reservation details. Please try again later.');
+      }
+    });
+  }
+
+  nextPage() {
+    if (this.currentEventPage < Math.ceil(this.events?.length / this.itemsPerPage)) {
+      this.currentEventPage++;
+    }
+  }
+
+  previousPage() {
+    if (this.currentEventPage > 1) {
+      this.currentEventPage--;
+    }
   }
 
   ngOnDestroy() {
@@ -93,7 +159,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
     return {
       startTime: this.sharedStartTime,
       date: this.sharedDate,
-      areaId: 1,
+      areaId: this.selectedAreaId,
       idToExclude: -1
     };
   }
@@ -122,21 +188,19 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
   }
 
 
-  private fetchAllAreas() {
-    this.reservationService.getAllAreas().subscribe({
-      next: (data: AreaListDto) => {
-        this.areas = data.areas;
-        if (this.areas.length > 0) {
-          this.selectedAreaId = this.selectedAreaId || this.areas[0].id;
-          this.reservationLayoutCheckAvailabilityDto.areaId = this.selectedAreaId;
-          this.fetchLayoutAvailability();
-        }
-      },
-      error: () => {
-        this.notificationService.showError('Failed to fetch areas. Please try again later.');
-      },
-    });
+  private async fetchAllAreas() {
+    try {
+      const data: AreaListDto = await this.layoutService.getAllAreas().toPromise();
+      this.areas = data.areas;
+      if (this.areas.length > 0) {
+        this.selectedAreaId = this.areas[0].id;
+        this.reservationLayoutCheckAvailabilityDto.areaId = this.selectedAreaId;
+      }
+    } catch (error) {
+      this.notificationService.showError('Failed to fetch areas. Please try again later.');
+    }
   }
+
 
   onAreaChange(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
@@ -151,7 +215,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
   }
 
   private fetchLayoutAvailability() {
-    this.reservationService.getLayoutAvailability(this.reservationLayoutCheckAvailabilityDto).subscribe({
+    this.layoutService.getLayoutAvailability(this.reservationLayoutCheckAvailabilityDto).subscribe({
       next: (data: AreaLayoutDto) => {
         this.areaLayout = data;
         this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this), false);
@@ -165,7 +229,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
 
   private checkSelectedPlacesAvailability() {
     const unavailablePlaces = this.selectedPlaces.filter(selectedPlace => {
-      const place = this.areaLayout.placeVisuals.find(p => p.placeId === selectedPlace.placeId);
+      const place = this.areaLayout.placeVisuals.find(p => p.placeNumber === selectedPlace.placeId);
       return !place || place.reservation || !place.status;
     });
 
@@ -194,12 +258,12 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
     const paxInput = document.getElementById('reservationPax') as HTMLInputElement;
     if (paxInput) {
       paxInput.value = this.reservationCreateDto.pax.toString();
+      this.isPaxValid = true;
     }
   }
 
   private updateTotalSeats() {
     const totalSeats = this.selectedPlaces.reduce((sum, place) => sum + place.numberOfSeats, 0);
-    console.log(`Total available seats: ${totalSeats}`);
     this.reservationCreateDto.pax = totalSeats;
   }
 
@@ -228,7 +292,11 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
 
   onSubmit(form: NgForm) {
     this.updateReservationCreateDto();
-    this.updateCheckAvailabilityDto()
+    this.updateCheckAvailabilityDto();
+
+    this.reservationCreateDto.specialOffers = this.selectedOffers;
+    console.log(this.reservationCreateDto.specialOffers);
+    this.selectedOffers = [];
 
     if (this.authService.isLoggedIn()) {
       this.setCurrentUserDetails();
@@ -312,5 +380,85 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
     this.onFieldChange();
   }
 
+  fetchOffers() {
+    this.offerService.getAllSpecialOffersWithDetail().subscribe({
+      next: (data) => {
+        this.specialOffers = data;
+      },
+      error: () => {
+        this.notificationService.showError('Failed to get special offers. Please try again later.');
+      },
+    });
+  }
+
+  getImageUrl(image: Uint8Array): string {
+    return `data:image/jpeg;base64,${image}`
+  }
+
+  selectOffer(offer: SpecialOfferListDto) {
+    //check if the selected offer is already in the selected offer list. if it is, increase the amount by one. if it is not, add the offer to the list
+    let found = false;
+    for (let i = 0; i < this.selectedOffers.length; i++) {
+      if (this.selectedOffers[i].specialOffer.id === offer.id) {
+        this.selectedOffers[i].amount++;
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      let specialOfferAmountDto: SpecialOfferAmountDto = {
+        specialOffer: offer,
+        amount: 1
+      }
+      this.selectedOffers.push(specialOfferAmountDto);
+    }
+
+    this.calcTotal();
+  }
+
+  removeOffer(offer: SpecialOfferAmountDto) {
+    //decrease the amount in the selected offer list by one. if the amount gets to 0, remove the offer from the list
+    for (let i = 0; i < this.selectedOffers.length; i++) {
+      if (this.selectedOffers[i].specialOffer.id === offer.specialOffer.id) {
+        if (this.selectedOffers[i].amount > 1) {
+          this.selectedOffers[i].amount--;
+        } else {
+          this.selectedOffers.splice(i, 1);
+        }
+        break;
+      }
+    }
+    this.calcTotal();
+  }
+
+  addOffer(offer: SpecialOfferAmountDto) {
+    //increase the amount in the selected offer list by one
+    for (let i = 0; i < this.selectedOffers.length; i++) {
+      if (this.selectedOffers[i].specialOffer.id === offer.specialOffer.id) {
+        this.selectedOffers[i].amount++;
+        break;
+      }
+    }
+    this.calcTotal();
+  }
+
+  showOfferInfo():void {
+    const infoModal = new bootstrap.Modal(document.getElementById('infoModal'))
+    infoModal.show();
+  }
+
+  calcTotal() {
+    let total = 0;
+    for (let i = 0; i < this.selectedOffers.length; i++) {
+      total += this.selectedOffers[i].specialOffer.pricePerPax * this.selectedOffers[i].amount;
+    }
+    this.totalPrice = total;
+  }
+
   protected readonly SimpleViewReservationStatusEnum = SimpleViewReservationStatusEnum;
+  protected readonly formatDay = formatDay;
+  protected readonly formatDotDate = formatDotDate;
+  protected readonly Math = Math;
+  protected readonly formatIsoTime = formatIsoTime;
+  protected readonly Event = Event;
 }

@@ -1,11 +1,26 @@
 import {Component, OnInit} from '@angular/core';
+import * as bootstrap from 'bootstrap';
 import {AuthService} from '../../../services/auth.service';
 import {NgForm} from '@angular/forms';
-import {ReservationCheckAvailabilityDto, ReservationCreateDto} from '../../../dtos/reservation';
+import {
+  PermanentReservationDto,
+  RepetitionEnum,
+  ReservationCreateDto,
+  ReservationCheckAvailabilityDto,
+  ReservationModalDetailDto
+} from '../../../dtos/reservation';
 import {UserOverviewDto} from '../../../dtos/app-user';
 import {ReservationService} from '../../../services/reservation.service';
 import {NotificationService} from '../../../services/notification.service';
 import {SimpleViewReservationStatusEnum} from '../../../dtos/status-enum';
+import {EventDetailDto, EventListDto} from "../../../dtos/event";
+import {EventService} from "../../../services/event.service";
+import {formatDay, formatDotDate, formatDotDateShort, formatIsoTime, formatTime} from "../../../util/date-helper";
+import {ActivatedRoute} from "@angular/router";
+import {SpecialOfferAmountDto, SpecialOfferDetailDto, SpecialOfferListDto} from "../../../dtos/special-offer";
+import {SpecialOfferService} from "../../../services/special-offer.service";
+import {RestaurantDto, RestaurantOpeningHoursDto} from "../../../dtos/restaurant";
+import {RestaurantService} from "../../../services/restaurant.service";
 
 @Component({
   selector: 'app-reservation-simple',
@@ -15,26 +30,60 @@ import {SimpleViewReservationStatusEnum} from '../../../dtos/status-enum';
 export class ReservationSimpleComponent implements OnInit {
   unavailable: boolean = true;
   nextAvailableTables: ReservationCheckAvailabilityDto[] = [];
-
   reservationCreateDto: ReservationCreateDto;
   reservationCheckAvailabilityDto: ReservationCheckAvailabilityDto;
-
   currentUser: UserOverviewDto;
-
   sharedStartTime: string;
   sharedDate: string;
-
   timer: any;
   isTimeManuallyChanged: boolean = false;
   isBookButtonTimeout: boolean = false;
-
   reservationStatusText: string = 'Provide Time, Date and Pax';
   reservationStatusClass: string = 'reservation-table-incomplete';
+  events: EventListDto[] = undefined;
+  event: EventDetailDto = {
+    hashId: undefined,
+    name: undefined,
+    startTime: undefined,
+    endTime: undefined,
+    description: undefined
+  };
+  currentEventPage: number = 1;
+  itemsPerPage: number = 3;
+  upcomingEventsExist: boolean = false;
+  isRecurring: boolean = false;
+  repeatEvery: number; // Initialize appropriately based on your default or user's last input
+  repetitionType: RepetitionEnum = RepetitionEnum.DAYS; // Default to 'days', can also be 'weeks'
+  permanentReservation: PermanentReservationDto;
+  endDate: string;
+
+  specialOffers: SpecialOfferDetailDto[] = [];
+
+  openingHours: RestaurantOpeningHoursDto = {
+    monday: undefined,
+    tuesday: undefined,
+    wednesday: undefined,
+    thursday: undefined,
+    friday: undefined,
+    saturday: undefined,
+    sunday: undefined
+  };
+
+  restaurantInfo: RestaurantDto = {
+    name: undefined,
+    address: undefined
+  }
+
+  selectedOffers: SpecialOfferAmountDto[] = [];
+  totalPrice: number = 0;
 
   constructor(
     public authService: AuthService,
     private service: ReservationService,
+    private offerService: SpecialOfferService,
+    private eventService: EventService,
     private notificationService: NotificationService,
+    private restaurantService: RestaurantService
   ) {
     this.initializeSharedProperties();
     this.initializeDtos();
@@ -42,11 +91,79 @@ export class ReservationSimpleComponent implements OnInit {
 
   ngOnInit() {
     this.startTimer()
+
+    this.fetchOffers();
+
+    this.eventService.getUpcomingEvents().subscribe({
+      next: (data) => {
+        this.events = data;
+        if (this.events?.length > 0) {
+          this.upcomingEventsExist = true;
+        }
+      },
+      error: () => {
+        this.notificationService.showError('Failed to get events. Please try again later.');
+      },
+    });
+
+    this.restaurantService.getOpeningHours().subscribe( {
+      next: (data: RestaurantOpeningHoursDto) => {
+        this.openingHours.monday = data.monday;
+        this.openingHours.tuesday = data.tuesday;
+        this.openingHours.wednesday = data.wednesday;
+        this.openingHours.thursday = data.thursday;
+        this.openingHours.friday = data.friday;
+        this.openingHours.saturday = data.saturday;
+        this.openingHours.sunday = data.sunday;
+      },
+      error: error => {
+        this.notificationService.showError('Failed to load opening hours. Please try again later.');
+      }
+    });
+
+    this.restaurantService.getRestaurantInfo().subscribe( {
+      next: (data: RestaurantDto) => {
+        this.restaurantInfo.name = data.name;
+        this.restaurantInfo.address = data.address;
+      },
+      error: error => {
+        this.notificationService.showError('Failed to load restaurant info. Please try again later.');
+      }
+    });
+  }
+
+  showEventDetails(hashId: string): void {
+    this.eventService.getByHashId(hashId).subscribe({
+      next: (data: EventDetailDto) => {
+        this.event.name = data.name;
+        this.event.startTime = data.startTime;
+        this.event.endTime = data.endTime;
+        this.event.description = data.description;
+
+        const modalDetail = new bootstrap.Modal(document.getElementById('event-detail'));
+        modalDetail.show();
+      },
+      error: error => {
+        this.notificationService.showError('Failed to load event details. Please try again later.');
+      }
+    });
   }
 
   ngOnDestroy() {
     if (this.timer) {
       clearInterval(this.timer);
+    }
+  }
+
+  nextPage() {
+    if (this.currentEventPage < Math.ceil(this.events?.length / this.itemsPerPage)) {
+      this.currentEventPage++;
+    }
+  }
+
+  previousPage() {
+    if (this.currentEventPage > 1) {
+      this.currentEventPage--;
     }
   }
 
@@ -213,25 +330,53 @@ export class ReservationSimpleComponent implements OnInit {
     }
 
     if (form.valid) {
+      this.reservationCreateDto.specialOffers = this.selectedOffers;
+      this.selectedOffers = [];
       this.isBookButtonTimeout = true;
       setTimeout(() => {
         this.isBookButtonTimeout = false;
         this.isTimeManuallyChanged = false;
       }, 2000);
-      this.service.createReservation(this.reservationCreateDto).subscribe({
-        next: (data) => {
-          if (data == null) {
-            this.notificationService.showError('The table was booked in the meantime. Please try again.');
-          } else {
-            this.notificationService.showSuccess('Reservation created successfully.');
-            this.initializeSharedProperties();
-            this.initializeDtos();
+
+      if (this.isRecurring) {
+        this.permanentReservation = {
+          user: this.reservationCreateDto.user,
+          startDate: this.reservationCreateDto.date,
+          startTime: this.reservationCreateDto.startTime,
+          endTime: this.reservationCreateDto.endTime,
+          repetition: this.repetitionType,
+          period: this.repeatEvery,
+          confirmed: false, // Assuming it's automatically confirmed for simplicity
+          endDate: this.endDate ? new Date(this.endDate) : null, // Set endDate to null if not provided
+          pax: this.reservationCreateDto.pax,
+          hashedId: null
+        };
+        this.service.createPermanentReservation(this.permanentReservation).subscribe({
+          next: response => {
+            this.notificationService.showSuccess('Permanent reservation saved successfully. You will get an email once it gets confirmed by the restaurant');
+            this.resetForm(form);
+          },
+          error: error => {
+            this.notificationService.showError('Failed to save permanent reservation.');
           }
-        },
-        error: () => {
-          this.notificationService.showError('Location Closed');
-        },
-      });
+        });
+      } else {
+
+        this.service.createReservation(this.reservationCreateDto).subscribe({
+          next: (data) => {
+            if (data == null) {
+              this.notificationService.showError('The table was booked in the meantime. Please try again.');
+            } else {
+              this.notificationService.showSuccess('Reservation created successfully.');
+              this.initializeSharedProperties();
+              this.initializeDtos();
+            }
+          },
+          error: (error) => {
+            this.notificationService.handleError(error);
+          },
+        });
+      }
     } else {
       this.showFormErrors();
     }
@@ -280,4 +425,93 @@ export class ReservationSimpleComponent implements OnInit {
     this.sharedStartTime = (event.target as HTMLInputElement).value;
     this.onFieldChange();
   }
+
+  fetchOffers() {
+    this.offerService.getAllSpecialOffersWithDetail().subscribe({
+      next: (data) => {
+        this.specialOffers = data;
+      },
+      error: () => {
+        this.notificationService.showError('Failed to get special offers. Please try again later.');
+      },
+    });
+  }
+
+  getImageUrl(image: Uint8Array): string {
+    return `data:image/jpeg;base64,${image}`
+  }
+
+  selectOffer(offer: SpecialOfferListDto) {
+    //check if the selected offer is already in the selected offer list. if it is, increase the amount by one. if it is not, add the offer to the list
+    let found = false;
+    for (let i = 0; i < this.selectedOffers.length; i++) {
+      if (this.selectedOffers[i].specialOffer.id === offer.id) {
+        this.selectedOffers[i].amount++;
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      let specialOfferAmountDto: SpecialOfferAmountDto = {
+        specialOffer: offer,
+        amount: 1
+      }
+      this.selectedOffers.push(specialOfferAmountDto);
+    }
+
+    this.calcTotal();
+  }
+
+  removeOffer(offer: SpecialOfferAmountDto) {
+    //decrease the amount in the selected offer list by one. if the amount gets to 0, remove the offer from the list
+    for (let i = 0; i < this.selectedOffers.length; i++) {
+      if (this.selectedOffers[i].specialOffer.id === offer.specialOffer.id) {
+        if (this.selectedOffers[i].amount > 1) {
+          this.selectedOffers[i].amount--;
+        } else {
+          this.selectedOffers.splice(i, 1);
+        }
+        break;
+      }
+    }
+    this.calcTotal();
+  }
+
+  addOffer(offer: SpecialOfferAmountDto) {
+    //increase the amount in the selected offer list by one
+    for (let i = 0; i < this.selectedOffers.length; i++) {
+      if (this.selectedOffers[i].specialOffer.id === offer.specialOffer.id) {
+        this.selectedOffers[i].amount++;
+        break;
+      }
+    }
+    this.calcTotal();
+  }
+
+  showOfferInfo():void {
+    const infoModal = new bootstrap.Modal(document.getElementById('infoModal'))
+    infoModal.show();
+  }
+
+  calcTotal() {
+    let total = 0;
+    for (let i = 0; i < this.selectedOffers.length; i++) {
+      total += this.selectedOffers[i].specialOffer.pricePerPax * this.selectedOffers[i].amount;
+    }
+    this.totalPrice = total;
+  }
+
+  showExplanation() {
+    const infoModal = new bootstrap.Modal(document.getElementById('RecurringInfoModal'));
+    infoModal.show();
+  }
+
+  protected readonly formatTime = formatTime;
+  protected readonly formatDotDate = formatDotDate;
+  protected readonly formatDay = formatDay;
+  protected readonly formatDotDateShort = formatDotDateShort;
+  protected readonly formatIsoTime = formatIsoTime;
+  protected readonly Math = Math;
+  protected readonly RepetitionEnum = RepetitionEnum;
+  protected readonly AuthService = AuthService;
 }

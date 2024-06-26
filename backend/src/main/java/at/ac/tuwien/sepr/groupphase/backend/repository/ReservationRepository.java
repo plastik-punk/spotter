@@ -44,6 +44,21 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     List<Reservation> findAllByDate(LocalDate date);
 
+    @Query("SELECT r FROM Reservation r "
+        + "LEFT JOIN ReservationPlace rp ON r.id = rp.reservation.id "
+        + "LEFT JOIN AreaPlaceSegment aps ON rp.place.id = aps.place.id "
+        + "WHERE aps.area.id = :areaId "
+        + "AND r.date = :date "
+        + "AND r.applicationUser.id != 0")
+    List<Reservation> findAllReservationsByAreaIdAndDateWithoutWalkInUsers(@Param("areaId") Long areaId, @Param("date") LocalDate date);
+
+    @Query("SELECT r FROM Reservation r "
+        + "LEFT JOIN ReservationPlace rp ON r.id = rp.reservation.id "
+        + "LEFT JOIN AreaPlaceSegment aps ON rp.place.id = aps.place.id "
+        + "WHERE aps.area.id = :areaId "
+        + "AND r.date = :date "
+        + "AND r.applicationUser.id = 0")
+    List<Reservation> findAllWalkInReservationsByAreaIdAndDate(@Param("areaId") Long areaId, @Param("date") LocalDate date);
 
     @Query("SELECT r FROM Reservation r WHERE r.applicationUser.id = :applicationUserId")
     List<Reservation> findByApplicationUserId(@Param("applicationUserId") Long applicationUserId);
@@ -59,4 +74,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
         @Param("endDate") LocalDate endDate,
         @Param("startTime") LocalTime startTime,
         @Param("endTime") LocalTime endTime);
+
+    List<Reservation> findAllReservationsByDate(LocalDate localDate);
+
+    List<Reservation> findAllByIdIn(List<Long> reservationIds);
 }

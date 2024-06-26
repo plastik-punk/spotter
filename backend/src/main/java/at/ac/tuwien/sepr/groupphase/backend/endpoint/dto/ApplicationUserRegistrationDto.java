@@ -120,4 +120,72 @@ public class ApplicationUserRegistrationDto {
             + ", role=" + role
             + '}';
     }
+
+    public ApplicationUserRegistrationDto copy() {
+        return ApplicationUserRegistrationDtoBuilder.anApplicationUserRegistrationDto()
+            .withFirstName(firstName)
+            .withLastName(lastName)
+            .withEmail(email)
+            .withMobileNumber(mobileNumber)
+            .withPassword(password)
+            .withRole(role)
+            .build();
+    }
+
+    public static final class ApplicationUserRegistrationDtoBuilder {
+        private String firstName;
+        private String lastName;
+        private String email;
+        private String mobileNumber;
+        private String password;
+        private RoleEnum role;
+
+        private ApplicationUserRegistrationDtoBuilder() {
+        }
+
+        public static ApplicationUserRegistrationDtoBuilder anApplicationUserRegistrationDto() {
+            return new ApplicationUserRegistrationDtoBuilder();
+        }
+
+        public ApplicationUserRegistrationDtoBuilder withFirstName(String firstName) {
+            this.firstName = firstName;
+            return this;
+        }
+
+        public ApplicationUserRegistrationDtoBuilder withLastName(String lastName) {
+            this.lastName = lastName;
+            return this;
+        }
+
+        public ApplicationUserRegistrationDtoBuilder withEmail(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public ApplicationUserRegistrationDtoBuilder withMobileNumber(String mobileNumber) {
+            this.mobileNumber = mobileNumber;
+            return this;
+        }
+
+        public ApplicationUserRegistrationDtoBuilder withPassword(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public ApplicationUserRegistrationDtoBuilder withRole(RoleEnum role) {
+            this.role = role;
+            return this;
+        }
+
+        public ApplicationUserRegistrationDto build() {
+            ApplicationUserRegistrationDto applicationUserRegistrationDto = new ApplicationUserRegistrationDto();
+            applicationUserRegistrationDto.setFirstName(firstName);
+            applicationUserRegistrationDto.setLastName(lastName);
+            applicationUserRegistrationDto.setEmail(email);
+            applicationUserRegistrationDto.setMobileNumber(mobileNumber);
+            applicationUserRegistrationDto.setPassword(password);
+            applicationUserRegistrationDto.setRole(role);
+            return applicationUserRegistrationDto;
+        }
+    }
 }

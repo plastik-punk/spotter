@@ -33,3 +33,37 @@
     display: none; /* This hides the logo on screens with width 768px or less */
   }
 }
+
+.custom-order-card {
+  width: 100%;
+  background: white;
+  border: 2px solid #377eb8;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: black;
+  text-align: center;
+}
+
+.custom-order-button {
+  background-color: #377eb8;
+  border: 2px solid #377eb8;
+  border-radius: 10px;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+  width: 100%;
+  margin: 2px;
+}
+
+.custom-order-button:hover {
+  background-color: white;
+  color: #377eb8;
+}
+
+.custom-order-button:disabled {
+  background-color: lightgray;
+  color: white;
+}

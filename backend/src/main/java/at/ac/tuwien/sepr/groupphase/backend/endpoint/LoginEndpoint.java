@@ -5,6 +5,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ApplicationUserOverview
 import at.ac.tuwien.sepr.groupphase.backend.service.ApplicationUserService;
 import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ApplicationUserMapper;
 import jakarta.annotation.security.PermitAll;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +32,7 @@ public class LoginEndpoint {
 
     @PermitAll
     @PostMapping
-    public String login(@RequestBody ApplicationUserLoginDto applicationUserLoginDto) {
+    public String login(@Valid @RequestBody ApplicationUserLoginDto applicationUserLoginDto) {
         LOGGER.info("POST /api/v1/authentication body: {}", applicationUserLoginDto);
         return applicationUserService.login(applicationUserLoginDto);
     }
@@ -43,6 +44,4 @@ public class LoginEndpoint {
         ApplicationUserOverviewDto fetchedUser = applicationUserMapper.applicationUserToUserOverviewDto(applicationUserService.getCurrentApplicationUser());
         return fetchedUser;
     }
-
 }
-

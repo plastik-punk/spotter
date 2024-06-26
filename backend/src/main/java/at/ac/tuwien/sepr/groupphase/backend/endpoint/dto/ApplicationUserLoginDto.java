@@ -1,6 +1,7 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.dto;
 
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.Objects;
@@ -8,7 +9,8 @@ import java.util.Objects;
 public class ApplicationUserLoginDto {
 
     @NotNull(message = "Email must not be null")
-    @Email
+    @NotEmpty(message = "Email must not be empty")
+    @Email(message = "Email must be valid (e.g.: otter@spotter.com)")
     private String email;
 
     @NotNull(message = "Password must not be null")
