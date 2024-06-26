@@ -17,52 +17,42 @@
     <div class="card custom-card">
       <form #form="ngForm" (ngSubmit)="onSubmit(form)">
         <!-- Start row with Title, startTime and Date -->
-        <div class="row">
-          <div class="column">
-            <h1 class="font-heading">Edit</h1>
-          </div>
-          <div class="column">
-            <input
-              type="time"
-              id="reservationStartTime"
-              name="reservationStartTime"
-              placeholder="hh:mm"
-              class="form-control"
-              [(ngModel)]="reservationEditDto.startTime"
-              #reservationStartTimeModel="ngModel"
-              (ngModelChange)="onFieldChange()"
-              required
-            />
-          </div>
-          <div class="column">
-            <input
-              type="date"
-              id="reservationDate"
-              name="reservationDate"
-              pattern="\d{4}-\d{2}-\d{2}"
-              placeholder="dd-mm-yyyy"
-              class="form-control"
-              [(ngModel)]="reservationEditDto.date"
-              #reservationDateModel="ngModel"
-              (ngModelChange)="onFieldChange()"
-              required
-            />
-          </div>
-        </div>
-
-        <hr class="my-4">
-
-        <!-- Start row with notification -->
-        <div class="row">
-          <div class="column">
-            <div class="col-lg-12" [class]="reservationStatusClass">
-              {{ reservationStatusText }}
+        <div class="top-banner">
+          <div class="row">
+            <div class="column">
+              <h1 class="font-heading">Edit</h1>
+            </div>
+            <div class="column">
+              <input
+                type="time"
+                id="reservationStartTime"
+                name="reservationStartTime"
+                placeholder="hh:mm"
+                class="form-control"
+                [(ngModel)]="reservationEditDto.startTime"
+                #reservationStartTimeModel="ngModel"
+                (ngModelChange)="onFieldChange()"
+                required
+              />
+            </div>
+            <div class="column">
+              <input
+                type="date"
+                id="reservationDate"
+                name="reservationDate"
+                pattern="\d{4}-\d{2}-\d{2}"
+                placeholder="dd-mm-yyyy"
+                class="form-control"
+                [(ngModel)]="reservationEditDto.date"
+                #reservationDateModel="ngModel"
+                (ngModelChange)="onFieldChange()"
+                required
+              />
             </div>
           </div>
+          <hr class="my-4">
         </div>
-        <!-- End row with notification -->
-
-        <hr class="my-4">
+        <div class="card-padding">
 
         <!-- Start row with pax -->
         <div class="row">
@@ -158,6 +148,9 @@
           <div class="row" *ngIf="showSpecialOffers">
             <div class="custom-order-card m-2 p-2 column" *ngFor="let offer of allSpecialOffers">
               <div class="row">
+                <img [src]="getImageUrl(offer.image)" alt="Special Offer" class="custom-order-image">
+              </div>
+              <div class="row">
                 {{ offer.name }}
               </div>
               <div class="row">
@@ -221,6 +214,7 @@
               </tbody>
             </table>
           </div>
+        </div>
         </div>
 
         <div class="row">

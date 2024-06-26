@@ -25,36 +25,94 @@ import java.time.temporal.Temporal;
 import java.util.List;
 
 
+/**
+ * Mapper interface for converting between {@link Event} entities and their corresponding DTOs.
+ * This interface uses MapStruct for generating the implementation.
+ */
 @Mapper
 public interface EventMapper {
+
+    /**
+     * Converts an {@link EventCreateDto} to an {@link Event}.
+     * The {@code id} and {@code hashId} fields are ignored during mapping.
+     * The {@code startTime} and {@code endTime} fields are combined from {@code startDate} and {@code startTime}, and {@code endDate} and {@code endTime} respectively.
+     *
+     * @param eventCreateDto the DTO to convert
+     * @return the converted {@link Event}
+     */
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "hashId", ignore = true)
     @Mapping(target = "startTime", expression = "java(combineDateTime(eventCreateDto.getStartDate(), eventCreateDto.getStartTime()))")
     @Mapping(target = "endTime", expression = "java(combineDateTime(eventCreateDto.getEndDate(), eventCreateDto.getEndTime()))")
     Event eventCreateDtoToEvent(EventCreateDto eventCreateDto);
 
+
+    /**
+     * Converts an {@link Event} to an {@link EventCreateDto}.
+     * The {@code startDate}, {@code startTime}, {@code endDate}, and {@code endTime} fields are extracted from the {@code startTime} and {@code endTime} fields of the event.
+     *
+     * @param event the entity to convert
+     * @return the converted {@link EventCreateDto}
+     */
     @Mapping(target = "startDate", source = "startTime", qualifiedByName = "extractDate")
     @Mapping(target = "startTime", source = "startTime", qualifiedByName = "extractTime")
     @Mapping(target = "endDate", source = "endTime", qualifiedByName = "extractDate")
     @Mapping(target = "endTime", source = "endTime", qualifiedByName = "extractTime")
     EventCreateDto eventToEventCreateDto(Event event);
 
+
+    /**
+     * Combines a {@link LocalDate} and {@link LocalTime} into a {@link LocalDateTime}.
+     *
+     * @param date the date to combine
+     * @param time the time to combine
+     * @return the combined {@link LocalDateTime}
+     */
     default LocalDateTime combineDateTime(LocalDate date, LocalTime time) {
         return LocalDateTime.of(date, time);
     }
 
+
+    /**
+     * Extracts the {@link LocalDate} from a {@link LocalDateTime}.
+     *
+     * @param dateTime the date-time to extract from
+     * @return the extracted {@link LocalDate}
+     */
     @Named("extractDate")
     static LocalDate extractDate(LocalDateTime dateTime) {
         return dateTime.toLocalDate();
     }
 
+
+    /**
+     * Extracts the {@link LocalTime} from a {@link LocalDateTime}.
+     *
+     * @param dateTime the date-time to extract from
+     * @return the extracted {@link LocalTime}
+     */
     @Named("extractTime")
     static LocalTime extractTime(LocalDateTime dateTime) {
         return dateTime.toLocalTime();
     }
 
+
+    /**
+     * Converts an {@link Event} to an {@link EventDetailDto}.
+     *
+     * @param event the entity to convert
+     * @return the converted {@link EventDetailDto}
+     */
     EventDetailDto eventToEventDetailDto(Event event);
 
+
+    /**
+     * Converts an {@link Event} to an {@link EventListDto}.
+     * This method is qualified by the {@code eventList} name.
+     *
+     * @param event the entity to convert
+     * @return the converted {@link EventListDto}
+     */
     @Mapping(source = "startTime", target = "startTime")
     @Mapping(source = "endTime", target = "endTime")
     @Mapping(source = "name", target = "name")
@@ -62,9 +120,23 @@ public interface EventMapper {
     @Named("eventList")
     EventListDto eventToEventListDto(Event event);
 
+    /**
+     * Converts a list of {@link Event} entities to a list of {@link EventListDto}.
+     * This method uses the {@code eventList} qualified method for individual conversions.
+     *
+     * @param event the list of entities to convert
+     * @return the converted list of {@link EventListDto}
+     */
     @IterableMapping(qualifiedByName = "eventList")
     List<EventListDto> eventToEventListDto(List<Event> event);
 
+
+    /**
+     * Converts an {@link Event} to an {@link EventEditDto}.
+     *
+     * @param event the entity to convert
+     * @return the converted {@link EventEditDto}
+     */
     @Mapping(source = "startTime", target = "startTime")
     @Mapping(source = "endTime", target = "endTime")
     @Mapping(source = "name", target = "name")
@@ -73,6 +145,14 @@ public interface EventMapper {
     EventEditDto eventToEventEditDto(Event event);
 
 
+    /**
+     * Converts a {@link VEvent} to an {@link Event}.
+     * The {@code id} and {@code hashId} fields are ignored during mapping.
+     * The {@code startTime}, {@code endTime}, {@code name}, and {@code description} fields are mapped from the VEvent.
+     *
+     * @param vevent the VEvent to convert
+     * @return the converted {@link Event}
+     */
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "hashId", ignore = true)
     @Mapping(target = "startTime", source = "vevent", qualifiedByName = "mapStartTime")
@@ -81,6 +161,13 @@ public interface EventMapper {
     @Mapping(target = "description", source = "vevent", qualifiedByName = "mapDescription")
     Event vEventToEvent(VEvent vevent);
 
+
+    /**
+     * Maps the start time from a {@link VEvent} to a {@link LocalDateTime}.
+     *
+     * @param vevent the VEvent to map from
+     * @return the mapped {@link LocalDateTime}
+     */
     @Named("mapStartTime")
     default LocalDateTime mapStartTime(VEvent vevent) {
         try {
@@ -103,6 +190,12 @@ public interface EventMapper {
         }
     }
 
+    /**
+     * Maps the end time from a {@link VEvent} to a {@link LocalDateTime}.
+     *
+     * @param vevent the VEvent to map from
+     * @return the mapped {@link LocalDateTime}
+     */
     @Named("mapEndTime")
     default LocalDateTime mapEndTime(VEvent vevent) {
         try {
