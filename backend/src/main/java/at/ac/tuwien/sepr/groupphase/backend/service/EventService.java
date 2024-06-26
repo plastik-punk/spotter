@@ -1,11 +1,11 @@
 package at.ac.tuwien.sepr.groupphase.backend.service;
 
-
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventDetailDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventListDto;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventCreateDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventDetailDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventEditDto;
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventSearchDto;
+import at.ac.tuwien.sepr.groupphase.backend.exception.IllegalArgumentException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -68,7 +68,7 @@ public interface EventService {
      * Import an ICS file.
      *
      * @param file the ICS file
-     * @throws IllegalArgumentException if the file could not be imported
+     * @throws at.ac.tuwien.sepr.groupphase.backend.exception.IllegalArgumentException if the file could not be imported
      */
     void importIcsFile(MultipartFile file) throws IllegalArgumentException;
 }

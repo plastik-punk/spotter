@@ -147,6 +147,7 @@ public class LayoutServiceImpl implements LayoutService {
         List<AreaLayoutDto.PlaceVisualDto> placeVisuals = places.stream().map(place -> {
             AreaLayoutDto.PlaceVisualDto placeVisual = new AreaLayoutDto.PlaceVisualDto();
             placeVisual.setPlaceNumber(place.getNumber());
+            placeVisual.setPlaceId(place.getId());
 
             if (area.isOpen() && isOpen) {
                 placeVisual.setStatus(place.getStatus() == StatusEnum.AVAILABLE);
@@ -292,6 +293,8 @@ public class LayoutServiceImpl implements LayoutService {
         return places.stream().map(place -> {
             LayoutCreateDto.AreaCreateDto.PlaceVisualDto placeVisual = new LayoutCreateDto.AreaCreateDto.PlaceVisualDto();
             placeVisual.setPlaceNumber(place.getNumber());
+            placeVisual.setNumberOfSeats(place.getPax());
+            placeVisual.setStatus(place.getStatus() == StatusEnum.AVAILABLE);
             placeVisual.setNumberOfSeats(place.getPax());
             List<Segment> segments = areaPlaceSegments.stream()
                 .filter(aps -> aps.getPlace().getId().equals(place.getId()))

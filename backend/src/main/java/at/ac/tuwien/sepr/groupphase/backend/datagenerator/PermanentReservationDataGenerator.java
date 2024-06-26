@@ -13,6 +13,7 @@ import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.lang.invoke.MethodHandles;
@@ -21,6 +22,7 @@ import java.time.LocalTime;
 
 @Profile({"generateData", "test"})
 @Component
+@Order(4)
 public class PermanentReservationDataGenerator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -35,7 +37,8 @@ public class PermanentReservationDataGenerator {
                                              ReservationService reservationService,
                                              ReservationMapper reservationMapper,
                                              PermanentReservationRepository permanentReservationRepository,
-                                             HashService hashService) {
+                                             HashService hashService,
+                                             ReservationDataGenerator reservationDataGenerator) {
         this.applicationUserRepository = applicationUserRepository;
         this.reservationService = reservationService;
         this.reservationMapper = reservationMapper;
@@ -83,6 +86,11 @@ public class PermanentReservationDataGenerator {
         LOGGER.debug("Creating PermanentReservation: {}", createDto);
         PermanentReservationCreateDto savedDto = reservationService.createPermanent(createDto);
         PermanentReservation permanentReservation = permanentReservationRepository.findByHashedId(createDto.getHashedId());
+
+        if (permanentReservation == null) {
+            LOGGER.error("PermanentReservation with hashed ID {} not found", createDto.getHashedId());
+            return;
+        }
 
         if (confirm) {
             try {

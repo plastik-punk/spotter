@@ -5,7 +5,6 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventListDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Event;
 import at.ac.tuwien.sepr.groupphase.backend.repository.EventRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.EventService;
-import at.ac.tuwien.sepr.groupphase.backend.service.mapper.EventMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +13,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -31,9 +28,6 @@ public class EventServiceImplTest implements TestData {
 
     @Autowired
     private EventRepository repository;
-
-    @Autowired
-    private EventMapper mapper;
 
     @Test
     @Transactional

@@ -14,6 +14,8 @@ body {
   overflow: hidden;
 }
 
+
+
 .custom-card {
   position: relative;
   border-radius: 20px 20px 0 0;
@@ -21,7 +23,6 @@ body {
   margin-top: 2vh;
   height: 96vh; /* Adjust height to fill screen */
   width: 100%;
-  padding: 2vh;
   overflow-y: auto; /* Enable vertical scrolling */
 }
 
