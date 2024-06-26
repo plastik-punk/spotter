@@ -75,7 +75,8 @@ export class RegistrationComponent implements OnInit {
       this.registrationService.registerUser(userData).subscribe({
         next: () => {
           this.notificationService.showSuccess('Registration successful!');
-          if (this.isAdmin){ this.router.navigate(['/employees']);
+          if (this.isAdmin) {
+            this.router.navigate(['/employees']);
           } else {
             this.router.navigate(['/login']);
           }
