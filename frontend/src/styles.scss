@@ -164,6 +164,12 @@ h1, h2, h3, .font-heading {
 .legend-blue {
   background-color: #377eb8;
 }
+.legend-lightblue {
+  background-color: #0dcaf0;
+}
+.legend-yellow {
+  background-color: #ffc107;
+}
 .legend-section {
   position: absolute;
   margin-left: 1vw;
@@ -172,4 +178,7 @@ h1, h2, h3, .font-heading {
   transform: translateY(0) rotate(-90deg);
   transform-origin: left bottom;
   display: flex;
+}
+.legend-section-horizontal{
+
 }
