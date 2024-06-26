@@ -9,7 +9,7 @@ import { ActivatedRoute, Router } from "@angular/router";
 import { NotificationService } from "../../../services/notification.service";
 import { NgIf } from "@angular/common";
 import { NavigationStateService } from "../../../services/navigation-state.service";
-import { SpecialOfferAmountDto, SpecialOfferListDto } from "../../../dtos/special-offer";
+import {SpecialOfferAmountDto, SpecialOfferDetailDto, SpecialOfferListDto} from "../../../dtos/special-offer";
 import { SpecialOfferService } from "../../../services/special-offer.service";
 
 @Component({
@@ -20,7 +20,7 @@ import { SpecialOfferService } from "../../../services/special-offer.service";
 export class ReservationEditComponent implements OnInit {
   hashId: string;
   showSpecialOffers: boolean = false;
-  allSpecialOffers: SpecialOfferListDto[]
+  allSpecialOffers: SpecialOfferDetailDto[]
   totalPrice: number;
 
   reservationEditDto: ReservationEditDto = {
@@ -178,6 +178,10 @@ export class ReservationEditComponent implements OnInit {
     this.calcTotal();
   }
 
+  getImageUrl(image: Uint8Array): string {
+    return `data:image/jpeg;base64,${image}`
+  }
+
   selectOffer(offerId: number) {
     // if the offer is already in the list, increase the amount
     let found = false;
@@ -200,7 +204,7 @@ export class ReservationEditComponent implements OnInit {
   }
 
   private fetchAllOffers() {
-    this.specialOfferService.getSpecialOffers().subscribe({
+    this.specialOfferService.getAllSpecialOffersWithDetail().subscribe({
       next: (data) => {
         this.allSpecialOffers = data;
       },

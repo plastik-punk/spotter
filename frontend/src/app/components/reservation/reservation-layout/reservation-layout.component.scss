@@ -276,11 +276,13 @@ body {
   transition: background-color 0.3s ease;
   width: 100%;
   margin: 2px;
+  cursor: pointer;
 }
 
 .custom-order-button:hover {
   background-color: white;
   color: #377eb8;
+  cursor: pointer;
 }
 
 .custom-order-button:disabled {
