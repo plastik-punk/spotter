@@ -20,9 +20,15 @@
   <div class="col-12 col-lg-10 mx-auto">
     <div class="custom-card">
       <div class="top-banner">
+        <div class="row">
+          <div class="column">
         <h1 class="font-heading">Staff Accounts</h1>
+          </div>
+        </div>
         <hr class="my-4">
       </div>
+
+      <div class="card-padding">
 
       <!-- Table for Unconfirmed Admins -->
       <div *ngIf="unconfirmedAdmins.length > 0" class="mb-4">
@@ -173,6 +179,7 @@
           </tr>
           </tbody>
         </table>
+      </div>
       </div>
     </div>
   </div>

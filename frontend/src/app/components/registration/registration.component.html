@@ -17,7 +17,8 @@
     <div class="card-body">
       <div class="card-header bg-transparent border-bottom-0">
         <h3 class="mb-0 text-center font-heading">{{ title }}</h3>
-        <p class="text-center mb-0 font-text" style="margin-top: 1vh">Already have an account? <a routerLink="/login" class="text-danger">Login</a></p>
+        <hr class="my-4" *ngIf="isAdmin" style="background: transparent">
+        <p *ngIf="!isAdmin" class="text-center mb-0 font-text" style="margin-top: 1vh">Already have an account? <a routerLink="/login" class="text-danger">Login</a></p>
       </div>
       <form [formGroup]="registrationForm" (ngSubmit)="register()" novalidate>
         <div class="form-floating mb-3">
@@ -34,7 +35,7 @@
         </div>
         <div class="form-floating mb-3">
           <input type="text" id="mobileNumber" placeholder="Enter Mobile Number" class="form-control" formControlName="mobileNumber">
-          <label for="mobileNumber">Mobile Number</label>
+          <label for="mobileNumber">Mobile Number (optional)</label>
         </div>
         <div class="form-floating mb-3">
           <input type="password" id="password" placeholder="Enter Password" class="form-control" formControlName="password" required>
