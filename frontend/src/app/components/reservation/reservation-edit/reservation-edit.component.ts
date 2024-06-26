@@ -223,4 +223,11 @@ export class ReservationEditComponent implements OnInit {
     total = Math.round(total * 100) / 100;
     this.totalPrice = total;
   }
+
+  goBack(): void {
+    this.navigationStateService.setNavigationState({
+      showPermanentReservations: false,
+    });
+    this.router.navigate(['/reservation-overview']);
+  }
 }
