@@ -10,11 +10,31 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
+
+/**
+ * Repository for the entity PermanentReservation.
+ * Extends the JpaRepository interface to provide basic CRUD operations.
+ */
 @Repository
 public interface PermanentReservationRepository extends JpaRepository<PermanentReservation, Long> {
 
+    /**
+     * Finds a PermanentReservation by its hashed ID.
+     *
+     * @param hashedId the hashed ID of the permanent reservation
+     * @return the PermanentReservation entity
+     */
     PermanentReservation findByHashedId(String hashedId);
 
+    /**
+     * Finds permanent reservations without considering user ID, based on given date and time ranges.
+     *
+     * @param startDate the start date filter (nullable)
+     * @param endDate   the end date filter (nullable)
+     * @param startTime the start time filter (nullable)
+     * @param endTime   the end time filter (nullable)
+     * @return a list of PermanentReservation entities
+     */
     @Query("SELECT pr FROM PermanentReservation pr "
         + "WHERE (:startDate IS NULL OR pr.startDate >= :startDate) "
         + "AND (:endDate IS NULL OR pr.startDate <= :endDate) "
@@ -27,6 +47,16 @@ public interface PermanentReservationRepository extends JpaRepository<PermanentR
         @Param("startTime") LocalTime startTime,
         @Param("endTime") LocalTime endTime);
 
+    /**
+     * Finds permanent reservations by user ID, based on given date and time ranges.
+     *
+     * @param userId    the user ID filter (nullable)
+     * @param startDate the start date filter (nullable)
+     * @param endDate   the end date filter (nullable)
+     * @param startTime the start time filter (nullable)
+     * @param endTime   the end time filter (nullable)
+     * @return a list of PermanentReservation entities
+     */
     @Query("SELECT pr FROM PermanentReservation pr "
         + "WHERE (:userId IS NULL OR pr.applicationUser.id = :userId) "
         + "AND (:startDate IS NULL OR pr.startDate >= :startDate) "

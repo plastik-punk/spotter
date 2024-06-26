@@ -75,7 +75,11 @@ export class RegistrationComponent implements OnInit {
       this.registrationService.registerUser(userData).subscribe({
         next: () => {
           this.notificationService.showSuccess('Registration successful!');
-          this.router.navigate(['/login']);
+          if (this.isAdmin) {
+            this.router.navigate(['/employees']);
+          } else {
+            this.router.navigate(['/login']);
+          }
         },
         error: (error) => {
           const errorMessages = error.error.errors || [error.message || 'Registration failed'];

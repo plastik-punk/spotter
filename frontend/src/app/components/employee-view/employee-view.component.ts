@@ -34,7 +34,7 @@ export class EmployeeViewComponent {
 
   currentUser: UserOverviewDto;
   areaLayout: AreaLayoutDto;
-  selectedPlaces: { placeId: number, numberOfSeats: number }[] = [];
+  selectedPlaces: { placeId: number, placeNumber: number, numberOfSeats: number }[] = [];
   areas: AreaDto[] = [];
   selectedAreaId: number;
 
@@ -175,19 +175,19 @@ export class EmployeeViewComponent {
 
     if (unavailablePlaces.length > 0) {
       unavailablePlaces.forEach(unavailablePlace => {
-        this.selectedPlaces = this.selectedPlaces.filter(p => p.placeId !== unavailablePlace.placeId);
-        this.notificationService.showError(`Table ${unavailablePlace.placeId} is no longer available.`);
+        this.selectedPlaces = this.selectedPlaces.filter(p => p.placeNumber !== unavailablePlace.placeNumber);
+        this.notificationService.showError(`Table ${unavailablePlace.placeNumber} is no longer available.`);
       });
       this.d3DrawService.updateSeatingPlan(this.d3Container, this.areaLayout, this.selectedPlaces, this.onPlaceClick.bind(this), true);
     }
   }
 
-  private onPlaceClick(placeId: number, numberOfSeats: number) {
-    const index = this.selectedPlaces.findIndex(p => p.placeId === placeId);
+  private onPlaceClick(placeId: number, placeNumber: number, numberOfSeats: number) {
+    const index = this.selectedPlaces.findIndex(p => p.placeNumber === placeNumber);
     if (index !== -1) {
       this.selectedPlaces.splice(index, 1);
     } else {
-      this.selectedPlaces.push({placeId, numberOfSeats});
+      this.selectedPlaces.push({placeId, placeNumber, numberOfSeats});
     }
 
     this.reservationCreateDto.placeIds = this.selectedPlaces.map(p => p.placeId);

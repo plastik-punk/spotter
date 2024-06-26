@@ -85,6 +85,17 @@
               </div>
               <div id="chartReservedTable">
                 <h6> Number of reserved tables</h6>
+                <div class="legend-section-horizontal" >
+                  <div class="legend-item">
+                    <div class="legend-card legend-blue"></div>
+                    <span class="legend-text">Normal Activity</span>
+                  </div>
+                  <div style="padding-top: 1vh" class="legend-item">
+                    <div class="legend-card legend-yellow"></div>
+                    <span class="legend-text">Unusual Activity</span>
+                  </div>
+                </div>
+
                 <apx-chart
                   [series]="chartReservedTableOptions.series"
                   [chart]="chartReservedTableOptions.chart"
@@ -195,7 +206,7 @@
                    [(ngModel)]="specialOfferCreateDto.pricePerPax" required>
           </div>
           <div class="mb-3">
-            <label for="specialOfferImage" class="form-label">Image</label>
+            <label for="specialOfferImage" class="form-label">Image (optional)</label>
             <input type="file" class="form-control" id="specialOfferImage" name="specialOfferImage"
                    (change)="onFileChangeSpecialOffer($event)">
           </div>

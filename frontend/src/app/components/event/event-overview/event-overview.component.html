@@ -30,11 +30,11 @@
       </div>
       <div class="card-padding">
 
-      <div class="d-flex flex-row justify-content-around">
-        <form class="d-flex flex-row justify-content-around w-auto mb-3" (submit)="loadEvents()">
+        <form class="d-flex flex-row w-auto mb-3" (submit)="loadEvents()">
           <!-- this button is here, just so that simple submitting of this form
                to reload the reservations, is possible -->
 
+          <!-- name search -->
           <div class="ms-1">
             <label for="searchName" class="col-form-label">
               Name
@@ -46,7 +46,7 @@
                    (ngModelChange)="searchChanged()"
             >
           </div>
-
+          <!-- earliest event search -->
           <div class="ms-1">
             <label for="searchEarliestEvent" class="col-form-label">
               Earliest Date
@@ -62,7 +62,9 @@
                    (ngModelChange)="searchChanged()"
             >
           </div>
+          <!-- latest Event search -->
           <div class="ms-1">
+
             <label for="searchLatestEvent" class="col-form-label">
               Latest Date
             </label>
@@ -77,6 +79,7 @@
                    (ngModelChange)="searchChanged()"
             >
           </div>
+          <!-- earliestST search -->
           <div class="ms-1">
             <label for="searchEarliestStartTime" class="col-form-label">
               Earliest Start Time
@@ -91,6 +94,7 @@
                    [(ngModel)]="searchEarliestStartTime"
                    (ngModelChange)="searchChanged()">
           </div>
+          <!-- latestST search -->
           <div class="ms-1">
             <label for="searchLatestEndTime" class="col-form-label">
               Latest End Time
@@ -106,11 +110,14 @@
                    (ngModelChange)="searchChanged()">
           </div>
 
+          <div class="ms-1 align-self-end">
+            <button class="btn btn-success" [routerLink]="['/event-create']">
+            <i class="bi bi-plus"></i> Create Event
+            </button>
+          </div>
+
         </form>
-        <div class="align-content-center">
-          <button class="btn btn-primary" [routerLink]="['/event-create']">Create Event</button>
-        </div>
-      </div>
+
 
       <table class="table table-hover">
         <thead>
@@ -146,7 +153,7 @@
         </tr>
         <tr>
           <td colspan="7">
-            <button (click)="showMore()" *ngIf="displayedEvents.length < events.length">Show More</button>
+            <button class="btn btn-dark" (click)="showMore()" *ngIf="displayedEvents.length < events.length">Show More</button>
           </td>
         </tr>
 

@@ -1,11 +1,8 @@
 package at.ac.tuwien.sepr.groupphase.backend.integrationtest.endpoint;
 
 import at.ac.tuwien.sepr.groupphase.backend.basetest.TestData;
-import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.ApplicationUserOverviewDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ApplicationUser;
 import at.ac.tuwien.sepr.groupphase.backend.repository.ApplicationUserRepository;
-import at.ac.tuwien.sepr.groupphase.backend.service.ApplicationUserService;
-import at.ac.tuwien.sepr.groupphase.backend.service.mapper.ApplicationUserMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,13 +35,7 @@ public class LoginEndpointTest implements TestData {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private ApplicationUserService applicationUserService;
-
-    @Autowired
     private ApplicationUserRepository userRepository;
-
-    @Autowired
-    private ApplicationUserMapper applicationUserMapper;
 
     @Test
     @Transactional
