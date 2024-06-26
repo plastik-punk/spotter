@@ -69,12 +69,22 @@ public class AreaLayoutDto {
     public static class PlaceVisualDto {
 
         private int placeNumber;
+        private Long placeId;
         private Boolean status;
         private Boolean reservation;
         private Long numberOfSeats;
         private List<CoordinateDto> coordinates;
 
         // Getters and Setters
+
+
+        public Long getPlaceId() {
+            return placeId;
+        }
+
+        public void setPlaceId(Long placeId) {
+            this.placeId = placeId;
+        }
 
         public int getPlaceNumber() {
             return placeNumber;
