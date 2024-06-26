@@ -131,6 +131,10 @@ export class PermanentReservationDetailsComponent implements OnInit {
     });
   }
 
+  getPositivePlaceIds(placeIds: number[]): number[] {
+    return placeIds?.map(id => Math.abs(id)) || [];
+  }
+
   openPermanentDeleteConfirmDialog(detailDto: PermanentReservationDetailDto): void {
     this.permanentToDelete = true;
     this.deleteWhat = detailDto;
