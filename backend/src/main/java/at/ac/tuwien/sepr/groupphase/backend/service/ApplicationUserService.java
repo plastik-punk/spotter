@@ -62,7 +62,7 @@ public interface ApplicationUserService extends UserDetailsService {
      *
      * @param applicationUserLoginDto login credentials
      * @return the JWT, if successful
-     * @throws org.springframework.security.authentication.BadCredentialsException if credentials are bad
+     * @throws at.ac.tuwien.sepr.groupphase.backend.exception.BadCredentialsException if credentials are bad
      */
     String login(ApplicationUserLoginDto applicationUserLoginDto);
 

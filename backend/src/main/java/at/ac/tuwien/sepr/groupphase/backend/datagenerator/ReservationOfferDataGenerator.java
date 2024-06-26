@@ -112,7 +112,7 @@ public class ReservationOfferDataGenerator {
                             .withOffer(newSpecialOffer)
                             .withAmount(2)
                             .build();
-                        LOGGER.info("Saving reservation offer: {}", reservationOffer);
+                        LOGGER.debug("Saving reservation offer: {}", reservationOffer);
                         reservationOfferRepository.save(reservationOffer);
                     } else {
                         LOGGER.warn("SpecialOffer with id {} does not exist", specialOfferIds[offerId % specialOfferIds.length]);
