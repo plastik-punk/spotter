@@ -37,11 +37,6 @@ export class ReservationService {
    * @return an Observable for the created reservation
    */
   createReservation(reservationCreateDto: ReservationCreateDto) : Observable<Reservation> {
-    //TODO remove
-    reservationCreateDto.lastName ="";
-    reservationCreateDto.email ="nope";
-    reservationCreateDto.pax= -1;
-
     return this.httpClient.post<Reservation>(this.reservationBaseUri, reservationCreateDto);
   }
 
