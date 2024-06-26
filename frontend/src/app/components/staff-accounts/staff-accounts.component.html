@@ -176,6 +176,14 @@
       </div>
     </div>
   </div>
+  <app-confirm-dialog id="confirm-dialog"
+                      [confirmHeader]="confirmHeader"
+                      [changeWhatFirstName]="changeWhat?.firstName"
+                      [changeWhatLastName]="changeWhat?.lastName"
+                      [makeWhat]="doWhat"
+                      [whatRole]="whatRole"
+                      [yesWhat]="yesWhat"
+                      (confirm)="makeAction(doWhat,changeWhat)"></app-confirm-dialog>
 </div>
 </body>
 </html>
