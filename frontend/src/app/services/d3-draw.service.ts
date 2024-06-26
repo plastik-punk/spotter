@@ -1,6 +1,6 @@
 import { Injectable, ElementRef } from '@angular/core';
 import * as d3 from 'd3';
-import {AreaLayoutDto, CoordinateDto, PlaceVisualDto} from "../dtos/layout";
+import { AreaLayoutDto, CoordinateDto, PlaceVisualDto } from "../dtos/layout";
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +34,7 @@ export class D3DrawService {
       .attr('height', height);
   }
 
-  updateSeatingPlan(container: ElementRef, areaLayout: AreaLayoutDto, selectedPlaces: { placeId: number, placeNumber: number,  numberOfSeats: number }[], onPlaceClick: (placeId: number, placeNumber: number,  numberOfSeats: number) => void, employee: boolean) {
+  updateSeatingPlan(container: ElementRef, areaLayout: AreaLayoutDto, selectedPlaces: { placeId: number, placeNumber: number, numberOfSeats: number }[], onPlaceClick: (placeId: number, placeNumber: number, numberOfSeats: number) => void, employee: boolean) {
     const element = container.nativeElement;
     const svg = d3.select(element).select('svg');
     svg.selectAll('*').remove();
@@ -51,7 +51,9 @@ export class D3DrawService {
         }
       })
       .on('mouseover', (event, d) => this.showTooltip(event, d))
-      .on('mouseout', () => this.hideTooltip());
+      .on('mouseout', () => this.hideTooltip())
+      .on('touchstart', (event, d) => this.showTooltip(event, d))
+      .on('touchend', () => this.hideTooltip());
 
     group.each((d, i, nodes) => {
       const g = d3.select(nodes[i]);
@@ -155,11 +157,15 @@ export class D3DrawService {
     return !place.reservation ? '#4daf4a' : '#e41a1c';
   }
 
-  private showTooltip(event: MouseEvent, place: PlaceVisualDto) {
+  private showTooltip(event: MouseEvent | TouchEvent, place: PlaceVisualDto) {
     const tooltip = d3.select('#tooltip');
+    const touchEvent = event as TouchEvent;
+    const pageX = touchEvent.touches ? touchEvent.touches[0].pageX : (event as MouseEvent).pageX;
+    const pageY = touchEvent.touches ? touchEvent.touches[0].pageY : (event as MouseEvent).pageY;
+
     tooltip.style('display', 'block')
-      .style('left', `${event.pageX + 10}px`)
-      .style('top', `${event.pageY + 10}px`)
+      .style('left', `${pageX + 10}px`)
+      .style('top', `${pageY + 10}px`)
       .html(`ID: ${place.placeNumber}<br>Seats: ${place.numberOfSeats}<br>Status: ${place.status ? (!place.reservation ? 'Free' : 'Booked') : 'Unavailable'}`);
   }
 
