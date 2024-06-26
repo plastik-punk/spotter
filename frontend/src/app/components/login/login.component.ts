@@ -44,9 +44,9 @@ export class LoginComponent implements OnInit {
           this.notificationService.showSuccess('Login successful!');
           this.router.navigate(['/reservation-simple']);
         },
-        error: error => {
-          const errorMessage = typeof error.error === 'object' ? error.error.error : error.error;
-          this.notificationService.showError(errorMessage || 'Authentication error!');
+        error: (error) => {
+          console.log(error);
+          this.notificationService.handleError(error);
         }
       });
     } else {

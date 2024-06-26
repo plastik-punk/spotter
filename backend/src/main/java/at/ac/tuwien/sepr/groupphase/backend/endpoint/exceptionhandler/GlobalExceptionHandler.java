@@ -1,10 +1,12 @@
 package at.ac.tuwien.sepr.groupphase.backend.endpoint.exceptionhandler;
 
+import at.ac.tuwien.sepr.groupphase.backend.endpoint.resterrors.BadCredentialsErrorRestDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.resterrors.ConflictErrorRestDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.resterrors.IllegalArgumentErrorRestDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.resterrors.InternalServerErrorRestDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.resterrors.NotFoundErrorRestDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.resterrors.ValidationErrorRestDto;
+import at.ac.tuwien.sepr.groupphase.backend.exception.BadCredentialsException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.ConflictException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import jakarta.validation.ConstraintViolationException;
@@ -14,7 +16,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -100,6 +101,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
+     * Handles exceptions thrown when a resource is not found.
+     * Sends a customized HTTP response for a not found exception.
+     *
+     * @param e the exception
+     * @return the error response
+     */
+    @ExceptionHandler
+    public ResponseEntity<Object> handleBadCredentialException(BadCredentialsException e) {
+        LOGGER.warn("Terminating request processing with status 401 due to {}: {}", e.getClass().getSimpleName(), e.getMessage());
+
+        String defaultMessage = "Username or password not correct.";
+        // List<String> errors = List.of(e.getMessage());
+        BadCredentialsErrorRestDto errorResponse = new BadCredentialsErrorRestDto(defaultMessage, null);
+
+        return new ResponseEntity<>(errorResponse, new HttpHeaders(), HttpStatus.UNAUTHORIZED);
+    }
+
+    /**
      * Handles exceptions thrown when an unexpected error occurs.
      * Sends a customized HTTP response for an internal server error.
      *
@@ -150,23 +169,5 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ConflictErrorRestDto errorResponse = new ConflictErrorRestDto(defaultMessage, errors);
 
         return new ResponseEntity<>(errorResponse, new HttpHeaders(), HttpStatus.CONFLICT);
-    }
-
-    /**
-     * Handles exceptions thrown when a resource is not found.
-     * Sends a customized HTTP response for a not found exception.
-     *
-     * @param e the exception
-     * @return the error response
-     */
-    @ExceptionHandler
-    public ResponseEntity<Object> handleBadCredentialException(BadCredentialsException e) {
-        LOGGER.warn("Terminating request processing with status 401 due to {}: {}", e.getClass().getSimpleName(), e.getMessage());
-
-        String defaultMessage = "Username or password not correct.";
-        List<String> errors = List.of(e.getMessage());
-        ConflictErrorRestDto errorResponse = new ConflictErrorRestDto(defaultMessage, errors);
-
-        return new ResponseEntity<>(errorResponse, new HttpHeaders(), HttpStatus.UNAUTHORIZED);
     }
 }
