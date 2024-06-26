@@ -6,6 +6,7 @@ import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventEditDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventListDto;
 import at.ac.tuwien.sepr.groupphase.backend.endpoint.dto.EventSearchDto;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Event;
+import at.ac.tuwien.sepr.groupphase.backend.exception.IllegalArgumentException;
 import at.ac.tuwien.sepr.groupphase.backend.exception.NotFoundException;
 import at.ac.tuwien.sepr.groupphase.backend.repository.EventRepository;
 import at.ac.tuwien.sepr.groupphase.backend.service.EventService;
@@ -29,7 +30,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -160,7 +160,8 @@ public class EventServiceImpl implements EventService {
                 try {
                     Event event = mapper.vEventToEvent((VEvent) component);
                     event.setDescription(event.getDescription() != null ? event.getDescription().trim() : "");
-                    String hashId = hashService.hashSha256(event.getName() + event.getStartTime().toString() + event.getEndTime().toString() + event.getDescription());
+                    String hashId =
+                        hashService.hashSha256(event.getName() + event.getStartTime().toString() + event.getEndTime().toString() + event.getDescription());
                     event.setHashId(hashId);
                     LOGGER.debug("Saving event: {}", event);
                     eventRepository.save(event);

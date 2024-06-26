@@ -22,7 +22,6 @@ import java.lang.invoke.MethodHandles;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-// TODO: address should be plural
 @RestController
 @RequestMapping(value = "/api/v1/adminView")
 public class AdminViewEndpoint {
