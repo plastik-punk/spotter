@@ -293,6 +293,8 @@ public class LayoutServiceImpl implements LayoutService {
             LayoutCreateDto.AreaCreateDto.PlaceVisualDto placeVisual = new LayoutCreateDto.AreaCreateDto.PlaceVisualDto();
             placeVisual.setPlaceNumber(place.getNumber());
             placeVisual.setNumberOfSeats(place.getPax());
+            placeVisual.setStatus(place.getStatus() == StatusEnum.AVAILABLE);
+            placeVisual.setNumberOfSeats(place.getPax());
             List<Segment> segments = areaPlaceSegments.stream()
                 .filter(aps -> aps.getPlace().getId().equals(place.getId()))
                 .map(AreaPlaceSegment::getSegment)
