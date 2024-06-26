@@ -1,24 +1,22 @@
-import {Component, OnInit} from '@angular/core';
-import {FormsModule, NgForm} from "@angular/forms";
-import {ReservationCheckAvailabilityDto, ReservationEditDto} from "../../../dtos/reservation";
-import {ReservationService} from "../../../services/reservation.service";
-import {AuthService} from "../../../services/auth.service";
-import {Observable} from "rxjs";
-import {SimpleViewReservationStatusEnum} from "../../../dtos/status-enum";
-import {ActivatedRoute, Router} from "@angular/router";
-import {ToastrService} from "ngx-toastr";
-import {NotificationService} from "../../../services/notification.service";
-import {NgIf} from "@angular/common";
-import {NavigationStateService} from "../../../services/navigation-state.service";
-import {SpecialOfferAmountDto, SpecialOfferListDto} from "../../../dtos/special-offer";
-import {SpecialOfferService} from "../../../services/special-offer.service";
+import { Component, OnInit } from '@angular/core';
+import { FormsModule, NgForm } from "@angular/forms";
+import { ReservationCheckAvailabilityDto, ReservationEditDto } from "../../../dtos/reservation";
+import { ReservationService } from "../../../services/reservation.service";
+import { AuthService } from "../../../services/auth.service";
+import { Observable } from "rxjs";
+import { SimpleViewReservationStatusEnum } from "../../../dtos/status-enum";
+import { ActivatedRoute, Router } from "@angular/router";
+import { NotificationService } from "../../../services/notification.service";
+import { NgIf } from "@angular/common";
+import { NavigationStateService } from "../../../services/navigation-state.service";
+import { SpecialOfferAmountDto, SpecialOfferListDto } from "../../../dtos/special-offer";
+import { SpecialOfferService } from "../../../services/special-offer.service";
 
 @Component({
   selector: 'app-reservation-edit',
   templateUrl: './reservation-edit.component.html',
   styleUrls: ['./reservation-edit.component.scss']
 })
-
 export class ReservationEditComponent implements OnInit {
   hashId: string;
   showSpecialOffers: boolean = false;
@@ -61,18 +59,15 @@ export class ReservationEditComponent implements OnInit {
   reservationStatusText: string = 'Provide Time, Date and Pax';
   reservationStatusClass: string = 'reservation-table-incomplete';
 
-
   constructor(
     public authService: AuthService,
     private service: ReservationService,
     private specialOfferService: SpecialOfferService,
     private route: ActivatedRoute,
-    private notification: ToastrService,
     private notificationService: NotificationService,
     private router: Router,
     private navigationStateService: NavigationStateService
-  ) {
-  } // constructor
+  ) { }
 
   ngOnInit() {
     const state = this.navigationStateService.getNavigationState();
@@ -93,7 +88,7 @@ export class ReservationEditComponent implements OnInit {
           }
         },
         error: (error) => {
-          this.notificationService.handleError(error);
+          this.notificationService.showError('Failed to load reservation data.');
           this.router.navigate(['/reservation-overview']);
         },
       });
@@ -106,13 +101,13 @@ export class ReservationEditComponent implements OnInit {
       observable = this.service.update(this.reservationEditDto);
       observable.subscribe({
         next: (data) => {
-          this.notification.success("Reservation updated successfully");
+          this.notificationService.showSuccess("Reservation updated successfully");
           if (this.authService.isLoggedIn()) {
             this.router.navigate([this.returnUrl]);
           }
         },
         error: (error) => {
-          this.notificationService.handleError(error);
+          this.notificationService.showError('Failed to update reservation.');
         },
       });
     }
@@ -166,21 +161,21 @@ export class ReservationEditComponent implements OnInit {
   } // onFieldChange
 
   removeSpecialOffer(index: number) {
-    let SpecialOfferAmountDto = this.reservationEditDto.specialOffers[index];
-    if (SpecialOfferAmountDto.amount > 1) {
-      SpecialOfferAmountDto.amount--;
+    let specialOfferAmountDto = this.reservationEditDto.specialOffers[index];
+    if (specialOfferAmountDto.amount > 1) {
+      specialOfferAmountDto.amount--;
     } else {
       this.reservationEditDto.specialOffers.splice(index, 1);
     }
   }
 
   addSpecialOffer(index: number) {
-    let SpecialOfferAmountDto = this.reservationEditDto.specialOffers[index];
-    SpecialOfferAmountDto.amount++;
+    let specialOfferAmountDto = this.reservationEditDto.specialOffers[index];
+    specialOfferAmountDto.amount++;
   }
 
   selectOffer(offerId: number) {
-    //if the offer is already in the list, increase the amount
+    // if the offer is already in the list, increase the amount
     let found = false;
     for (let i = 0; i < this.reservationEditDto.specialOffers.length; i++) {
       if (this.reservationEditDto.specialOffers[i].specialOffer.id === offerId) {
@@ -189,7 +184,7 @@ export class ReservationEditComponent implements OnInit {
         break;
       }
     }
-    //if the offer is not in the list, add it
+    // if the offer is not in the list, add it
     if (!found) {
       let specialOfferAmountDto: SpecialOfferAmountDto = {
         specialOffer: this.allSpecialOffers.find(offer => offer.id === offerId),
@@ -205,7 +200,7 @@ export class ReservationEditComponent implements OnInit {
         this.allSpecialOffers = data;
       },
       error: (error) => {
-        this.notificationService.handleError(error);
+        this.notificationService.showError('Failed to load special offers.');
       },
     });
   }
