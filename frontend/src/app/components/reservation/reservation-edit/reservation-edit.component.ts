@@ -21,6 +21,7 @@ export class ReservationEditComponent implements OnInit {
   hashId: string;
   showSpecialOffers: boolean = false;
   allSpecialOffers: SpecialOfferListDto[]
+  totalPrice: number;
 
   reservationEditDto: ReservationEditDto = {
     date: undefined,
@@ -85,6 +86,7 @@ export class ReservationEditComponent implements OnInit {
         next: (data) => {
           if (data != null) {
             this.reservationEditDto = data;
+            this.calcTotal();
           }
         },
         error: (error) => {
@@ -167,11 +169,13 @@ export class ReservationEditComponent implements OnInit {
     } else {
       this.reservationEditDto.specialOffers.splice(index, 1);
     }
+    this.calcTotal();
   }
 
   addSpecialOffer(index: number) {
     let specialOfferAmountDto = this.reservationEditDto.specialOffers[index];
     specialOfferAmountDto.amount++;
+    this.calcTotal();
   }
 
   selectOffer(offerId: number) {
@@ -192,6 +196,7 @@ export class ReservationEditComponent implements OnInit {
       }
       this.reservationEditDto.specialOffers.push(specialOfferAmountDto);
     }
+    this.calcTotal();
   }
 
   private fetchAllOffers() {
@@ -203,5 +208,15 @@ export class ReservationEditComponent implements OnInit {
         this.notificationService.showError('Failed to load special offers.');
       },
     });
+  }
+
+  calcTotal() {
+    let total = 0;
+    for (let i = 0; i < this.reservationEditDto.specialOffers.length; i++) {
+      total += this.reservationEditDto.specialOffers[i].specialOffer.pricePerPax * this.reservationEditDto.specialOffers[i].amount;
+    }
+    //round total to two decimal places
+    total = Math.round(total * 100) / 100;
+    this.totalPrice = total;
   }
 }
