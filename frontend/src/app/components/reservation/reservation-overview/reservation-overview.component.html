@@ -246,8 +246,9 @@
 
           <!-- Customer View -->
           <div *ngIf="!isAdmin() && !isEmployee()">
-            <div>
+            <div class="text-center mb-5">
               <h3>Your Reservations</h3>
+              <hr class="my-4">
               <div *ngIf="reservations.length > 0; else noReservations">
                 <table class="table table-hover">
                   <thead>
