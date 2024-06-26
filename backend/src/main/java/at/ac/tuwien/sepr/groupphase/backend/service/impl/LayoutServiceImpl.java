@@ -147,6 +147,7 @@ public class LayoutServiceImpl implements LayoutService {
         List<AreaLayoutDto.PlaceVisualDto> placeVisuals = places.stream().map(place -> {
             AreaLayoutDto.PlaceVisualDto placeVisual = new AreaLayoutDto.PlaceVisualDto();
             placeVisual.setPlaceNumber(place.getNumber());
+            placeVisual.setPlaceId(place.getId());
 
             if (area.isOpen() && isOpen) {
                 placeVisual.setStatus(place.getStatus() == StatusEnum.AVAILABLE);

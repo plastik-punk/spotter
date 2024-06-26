@@ -34,7 +34,7 @@ export class D3DrawService {
       .attr('height', height);
   }
 
-  updateSeatingPlan(container: ElementRef, areaLayout: AreaLayoutDto, selectedPlaces: { placeId: number, numberOfSeats: number }[], onPlaceClick: (placeId: number, numberOfSeats: number) => void, employee: boolean) {
+  updateSeatingPlan(container: ElementRef, areaLayout: AreaLayoutDto, selectedPlaces: { placeId: number, placeNumber: number,  numberOfSeats: number }[], onPlaceClick: (placeId: number, placeNumber: number,  numberOfSeats: number) => void, employee: boolean) {
     const element = container.nativeElement;
     const svg = d3.select(element).select('svg');
     svg.selectAll('*').remove();
@@ -47,7 +47,7 @@ export class D3DrawService {
       .on('click', (event, d) => {
         event.stopPropagation();
         if (!d.reservation && d.status || employee) {
-          onPlaceClick(d.placeNumber, d.numberOfSeats);
+          onPlaceClick(d.placeId, d.placeNumber, d.numberOfSeats);
         }
       })
       .on('mouseover', (event, d) => this.showTooltip(event, d))
@@ -145,8 +145,8 @@ export class D3DrawService {
     return Math.atan2(deltaY, deltaX);
   }
 
-  private getPlaceColor(place: PlaceVisualDto, selectedPlaces: { placeId: number, numberOfSeats: number }[]): string {
-    if (selectedPlaces.some(p => p.placeId === place.placeNumber)) {
+  private getPlaceColor(place: PlaceVisualDto, selectedPlaces: { placeId: number, placeNumber: number, numberOfSeats: number }[]): string {
+    if (selectedPlaces.some(p => p.placeNumber === place.placeNumber)) {
       return '#377eb8';
     }
     if (!place.status) {
