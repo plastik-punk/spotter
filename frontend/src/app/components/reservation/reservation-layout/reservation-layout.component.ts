@@ -452,6 +452,7 @@ export class ReservationLayoutComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.selectedOffers.length; i++) {
       total += this.selectedOffers[i].specialOffer.pricePerPax * this.selectedOffers[i].amount;
     }
+    total = Math.round(total * 100) / 100;
     this.totalPrice = total;
   }
 

@@ -498,6 +498,8 @@ export class ReservationSimpleComponent implements OnInit {
     for (let i = 0; i < this.selectedOffers.length; i++) {
       total += this.selectedOffers[i].specialOffer.pricePerPax * this.selectedOffers[i].amount;
     }
+    //round total to two decimal places
+    total = Math.round(total * 100) / 100;
     this.totalPrice = total;
   }
 
