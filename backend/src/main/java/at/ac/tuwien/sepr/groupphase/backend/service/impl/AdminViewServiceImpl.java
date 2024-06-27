@@ -142,9 +142,6 @@ public class AdminViewServiceImpl implements AdminViewService {
             maxPaxAtSameTimeWalkIn = Collections.max(amountOfWalkInCustomersPerDayMapInThePast.values());
         }
 
-        //9. Calculate the amount of the Employees
-        List<ApplicationUser> employeeList = applicationUserRepository.findAllByRole(RoleEnum.EMPLOYEE);
-        long maxPaxAtSameTimeExpected = Collections.max(amountOfCustomersPerHourMap.values()); //+ Collections.max(amountOfWalkInCustomersPerHourMap.values());
 
         long averagePaxInThePast = amountOfCustomersPerDayMapInThePast.values().stream().mapToLong(Long::longValue).sum() / amountOfCustomersPerDayMapInThePast.size();
 
@@ -158,11 +155,19 @@ public class AdminViewServiceImpl implements AdminViewService {
         if (maxPaxAtSameTimeInThePast == 0) {
             percentageOfPax = 1.0f;
         }
-        float totalEmployeeCount = ((float) employeeList.size() * (clamp((float) (maxPaxAtSameTimeExpected / maxPaxAtSameTimeInThePast), 0.5f, 1.5f)));
 
         float offsetFromAverage = (float) maxPaxAtSameTimeCurrDay / (float) averagePaxInThePast;
-        percentageOfPax = clamp(percentageOfPax, 0.8f, 1.2f);
-        long employeePrediction = (long) (totalEmployeeCount * percentageOfPax * clamp(offsetFromAverage, 0.8f, 1.2f) * clamp(offsetFromWalkIn, 0.8f, 1.2f) * clamp(eventInfluence, 0.8f, 1.25f));
+        percentageOfPax = clamp(percentageOfPax, 0.7f, 1.4f);
+        offsetFromAverage = clamp(offsetFromAverage, 0.7f, 1.4f);
+        offsetFromWalkIn = clamp(offsetFromWalkIn, 0.7f, 1.4f);
+        eventInfluence = clamp(eventInfluence, 0.7f, 1.25f);
+        //9. Calculate the amount of the Employees
+        List<ApplicationUser> employeeList = applicationUserRepository.findAllByRole(RoleEnum.EMPLOYEE);
+        long maxPaxAtSameTimeExpected = Collections.max(amountOfCustomersPerHourMap.values()); //+ Collections.max(amountOfWalkInCustomersPerHourMap.values());
+
+        float totalEmployeeCount = ((float) employeeList.size() * (clamp((float) (maxPaxAtSameTimeExpected / maxPaxAtSameTimeInThePast), 0.5f, 1.5f)));
+
+        long employeePrediction = (long) (totalEmployeeCount * percentageOfPax * offsetFromAverage * offsetFromWalkIn * eventInfluence);
 
         predictedList.add(employeePrediction);
         return employeePrediction;
@@ -241,7 +246,7 @@ public class AdminViewServiceImpl implements AdminViewService {
         LOGGER.info("Calculating Forecast for given Area and Date: {}, {}", areaId, date);
         ForeCastDto foreCastDto = new ForeCastDto();
 
-        foreCastDto.setMaxPlace(placeRepository.findAll().size());
+        foreCastDto.setMaxPlace((int) (placeRepository.findAll().size() / 2.5));
         String[] days = new String[7];
         days[0] = "TODAY";
         days[1] = "TOMORROW";

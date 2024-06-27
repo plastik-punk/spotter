@@ -75,10 +75,10 @@ server:
 ---
 spring:
   mail:
-    host: smtp-mail.outlook.com
+    host: mail.howa.at
     port: 587
-    username: leon.stempfer@outlook.com
-    password: qgaqkidxqzwnstlz
+    username: spotter@howa.at
+    password: magical-spotter
     properties:
       mail:
         smtp:
