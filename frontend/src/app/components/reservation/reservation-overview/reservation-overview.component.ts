@@ -223,6 +223,13 @@ export class ReservationOverviewComponent implements OnInit {
       .subscribe({
         next: (reservations: ReservationListDto[]) => {
           this.reservations = reservations;
+          if (this.isAdminOrEmployee()) {
+            for (let i = 0; i < this.reservations.length; i++) {
+              if (this.reservations[i].userFirstName == 'WalkIn') {
+                this.reservations[i].confirmed = true;
+              }
+            }
+          }
           this.filterReservations();
         },
         error: error => {
