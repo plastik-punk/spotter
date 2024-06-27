@@ -50,10 +50,6 @@ export class D3DrawService {
           onPlaceClick(d.placeId, d.placeNumber, d.numberOfSeats);
         }
       })
-      .on('mouseover', (event, d) => this.showTooltip(event, d))
-      .on('mouseout', () => this.hideTooltip())
-      .on('touchstart', (event, d) => this.showTooltip(event, d))
-      .on('touchend', () => this.hideTooltip());
 
     group.each((d, i, nodes) => {
       const g = d3.select(nodes[i]);
@@ -79,7 +75,6 @@ export class D3DrawService {
     });
 
     d3.select('body').append('div')
-      .attr('id', 'tooltip')
       .style('position', 'absolute')
       .style('background', '#fff')
       .style('border', '1px solid #ccc')
