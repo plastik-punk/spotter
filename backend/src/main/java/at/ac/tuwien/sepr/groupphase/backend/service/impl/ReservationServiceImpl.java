@@ -21,8 +21,8 @@ import at.ac.tuwien.sepr.groupphase.backend.entity.Place;
 import at.ac.tuwien.sepr.groupphase.backend.entity.Reservation;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ReservationOffer;
 import at.ac.tuwien.sepr.groupphase.backend.entity.ReservationPlace;
-import at.ac.tuwien.sepr.groupphase.backend.enums.RepetitionEnum;
 import at.ac.tuwien.sepr.groupphase.backend.entity.SpecialOffer;
+import at.ac.tuwien.sepr.groupphase.backend.enums.RepetitionEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.ReservationResponseEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.RoleEnum;
 import at.ac.tuwien.sepr.groupphase.backend.enums.StatusEnum;
@@ -128,24 +128,26 @@ public class ReservationServiceImpl implements ReservationService {
         // 2. Check if all specified tables are available
         if (reservationCreateDto.getPlaceIds() != null && !reservationCreateDto.getPlaceIds().isEmpty()) {
             for (Long placeId : reservationCreateDto.getPlaceIds()) {
-                ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
-                    .withDate(reservationCreateDto.getDate())
-                    .withStartTime(reservationCreateDto.getStartTime())
-                    .withEndTime(reservationCreateDto.getEndTime())
-                    .withPax(reservationCreateDto.getPax()).withIdToExclude(null) // Assuming we're not excluding any reservations
-                    .build();
+                ReservationCheckAvailabilityDto reservationCheckAvailabilityDto =
+                    ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+                        .withDate(reservationCreateDto.getDate())
+                        .withStartTime(reservationCreateDto.getStartTime())
+                        .withEndTime(reservationCreateDto.getEndTime())
+                        .withPax(reservationCreateDto.getPax()).withIdToExclude(null) // Assuming we're not excluding any reservations
+                        .build();
                 if (!isPlaceAvailable(placeId)) {
                     return null; // frontend checks and notifies
                 }
             }
         } else {
             // If no place IDs are provided, perform the default availability check
-            ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
-                .withDate(reservationCreateDto.getDate())
-                .withStartTime(reservationCreateDto.getStartTime())
-                .withEndTime(reservationCreateDto.getEndTime())
-                .withPax(reservationCreateDto.getPax()).withIdToExclude(null) // Assuming we're not excluding any reservations
-                .build();
+            ReservationCheckAvailabilityDto reservationCheckAvailabilityDto =
+                ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+                    .withDate(reservationCreateDto.getDate())
+                    .withStartTime(reservationCreateDto.getStartTime())
+                    .withEndTime(reservationCreateDto.getEndTime())
+                    .withPax(reservationCreateDto.getPax()).withIdToExclude(null) // Assuming we're not excluding any reservations
+                    .build();
             ReservationResponseEnum tableStatus = getAvailability(reservationCheckAvailabilityDto);
             if (tableStatus != ReservationResponseEnum.AVAILABLE) {
                 return null; // frontend should check for null and show notification accordingly
@@ -154,12 +156,14 @@ public class ReservationServiceImpl implements ReservationService {
 
         // 3. Create guest if this is a guest-reservation, otherwise set known customer data
         ApplicationUser currentUser = applicationUserService.getCurrentApplicationUser();
-        if (currentUser == null || (!Objects.equals(currentUser.getEmail(), reservationCreateDto.getEmail()) && (currentUser.getRole().equals(RoleEnum.ADMIN) || currentUser.getRole().equals(RoleEnum.EMPLOYEE)))) {
+        if (currentUser == null || (!Objects.equals(currentUser.getEmail(), reservationCreateDto.getEmail())
+            && (currentUser.getRole().equals(RoleEnum.ADMIN) || currentUser.getRole().equals(RoleEnum.EMPLOYEE)))) {
             ApplicationUser guestUser = ApplicationUser.ApplicationUserBuilder.anApplicationUser()
                 .withFirstName(reservationCreateDto.getFirstName().trim())
                 .withLastName(reservationCreateDto.getLastName().trim())
                 .withEmail(reservationCreateDto.getEmail().trim())
-                .withMobileNumber(reservationCreateDto.getMobileNumber() != null ? reservationCreateDto.getMobileNumber().trim() : reservationCreateDto.getMobileNumber())
+                .withMobileNumber(
+                    reservationCreateDto.getMobileNumber() != null ? reservationCreateDto.getMobileNumber().trim() : reservationCreateDto.getMobileNumber())
                 .withoutPassword().withRole(RoleEnum.GUEST).build();
             ApplicationUser savedGuestUser = applicationUserRepository.save(guestUser);
             reservationCreateDto.setUser(savedGuestUser);
@@ -233,12 +237,13 @@ public class ReservationServiceImpl implements ReservationService {
 
         // 7. Send confirmation Mail
         Map<String, Object> templateModel = constructMailTemplateModel(savedReservation, reservationCreateDto.getUser());
-        emailService.sendMessageUsingThymeleafTemplate(reservationCreateDto.getUser().getEmail(), "Reservation Confirmation",
-            templateModel);
+        // emailService.sendMessageUsingThymeleafTemplate(reservationCreateDto.getUser().getEmail(), "Reservation Confirmation",
+        // templateModel);
 
         // 8. Save ReservationPlace for all selected places in the database
         for (Place place : selectedPlaces) {
-            ReservationPlace reservationPlace = ReservationPlace.ReservationPlaceBuilder.aReservationPlace().withReservation(savedReservation).withPlace(place).build();
+            ReservationPlace reservationPlace =
+                ReservationPlace.ReservationPlaceBuilder.aReservationPlace().withReservation(savedReservation).withPlace(place).build();
             reservationPlaceRepository.save(reservationPlace);
         }
 
@@ -552,11 +557,11 @@ public class ReservationServiceImpl implements ReservationService {
 
         // 6. send confirmation mail
         Map<String, Object> templateModel = constructMailTemplateModel(updatedReservation, currentUser);
-        try {
-            emailService.sendUpdateMessageUsingThymeleafTemplate(currentUser.getEmail(), "Reservation Update Confirmation", templateModel);
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        }
+        // try {
+        //     emailService.sendUpdateMessageUsingThymeleafTemplate(currentUser.getEmail(), "Reservation Update Confirmation", templateModel);
+        // } catch (MessagingException e) {
+        //     throw new RuntimeException(e);
+        // }
 
 
         // 7. map updated reservation to DTO and return it
@@ -576,7 +581,8 @@ public class ReservationServiceImpl implements ReservationService {
 
         List<ReservationListDto> reservationListDtos = new ArrayList<>();
 
-        if (applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.ADMIN) || applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.EMPLOYEE)) {
+        if (applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.ADMIN)
+            || applicationUserService.getCurrentApplicationUser().getRole().equals(RoleEnum.EMPLOYEE)) {
             List<Reservation> reservations = reservationRepository.findReservationsWithoutUserId(reservationSearchDto.getEarliestDate(),
                 reservationSearchDto.getLatestDate(), reservationSearchDto.getEarliestStartTime(), reservationSearchDto.getLatestEndTime());
             for (Reservation reservation : reservations) {
@@ -587,8 +593,9 @@ public class ReservationServiceImpl implements ReservationService {
             return reservationListDtos;
         }
         String email = applicationUserService.getCurrentUserAuthentication().getName();
-        List<Reservation> reservations = reservationRepository.findReservationsByDate(email, reservationSearchDto.getEarliestDate(), reservationSearchDto.getLatestDate(),
-            reservationSearchDto.getEarliestStartTime(), reservationSearchDto.getLatestEndTime());
+        List<Reservation> reservations =
+            reservationRepository.findReservationsByDate(email, reservationSearchDto.getEarliestDate(), reservationSearchDto.getLatestDate(),
+                reservationSearchDto.getEarliestStartTime(), reservationSearchDto.getLatestEndTime());
         LOGGER.debug("Found {} reservations for the given params", reservations.size());
         for (Reservation reservation : reservations) {
             List<Long> placeIds = reservationPlaceRepository.findPlaceIdsByReservationIds(Collections.singletonList(reservation.getId()));
@@ -627,11 +634,11 @@ public class ReservationServiceImpl implements ReservationService {
 
         //send confirmation mail
         Map<String, Object> templateModel = constructMailTemplateModel(reservation, currentUser);
-        try {
-            emailService.sendCancellationMessageUsingThymeleafTemplate(currentUser.getEmail(), "Cancellation Confirmation", templateModel);
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        }
+        // try {
+        //     emailService.sendCancellationMessageUsingThymeleafTemplate(currentUser.getEmail(), "Cancellation Confirmation", templateModel);
+        // } catch (MessagingException e) {
+        //     throw new RuntimeException(e);
+        // }
 
         LOGGER.debug("Canceled reservation: {}", id);
     }
@@ -664,7 +671,8 @@ public class ReservationServiceImpl implements ReservationService {
             .withEmail(walkInUser.getEmail()).withApplicationUser(walkInUser).build();
         LOGGER.debug("Created reservationCreateDto: {}", reservationCreateDto);
         Reservation reservation = mapper.reservationCreateDtoToReservation(reservationCreateDto);
-        reservation.setHashValue(hashService.hashSha256(reservation.getDate().toString() + reservation.getStartTime().toString() + reservation.getEndTime().toString() + reservation.getPax().toString()));
+        reservation.setHashValue(hashService.hashSha256(
+            reservation.getDate().toString() + reservation.getStartTime().toString() + reservation.getEndTime().toString() + reservation.getPax().toString()));
         Reservation createdReservation = reservationRepository.save(reservation);
         LOGGER.debug("Created reservation: {}", createdReservation);
         List<Place> selectedPlaces = new ArrayList<>();
@@ -697,11 +705,14 @@ public class ReservationServiceImpl implements ReservationService {
         createDto.setEndDate(createDto.getEndDate() == null ? createDto.getStartDate().plusYears(1) : createDto.getEndDate());
         createDto.setEndTime(createDto.getStartTime().plusHours(2));
 
-        String hashedValue = hashService.hashSha256(createDto.getStartDate().toString() + createDto.getStartTime().toString() + createDto.getEndTime().toString() + createDto.getPax().toString() + createDto.getEndDate());
+        String hashedValue = hashService.hashSha256(
+            createDto.getStartDate().toString() + createDto.getStartTime().toString() + createDto.getEndTime().toString() + createDto.getPax().toString()
+                + createDto.getEndDate());
         createDto.setHashedId(hashedValue);
 
         LOGGER.debug("MAPPED Perma: {}", mapper.permanentReservationCreateDtoToPermanentReservation(createDto));
-        PermanentReservation savedPermanentReservation = permanentReservationRepository.save(mapper.permanentReservationCreateDtoToPermanentReservation(createDto));
+        PermanentReservation savedPermanentReservation =
+            permanentReservationRepository.save(mapper.permanentReservationCreateDtoToPermanentReservation(createDto));
         return mapper.permanentReservationToPermanentReservationCreateDto(savedPermanentReservation);
     }
 
@@ -764,12 +775,13 @@ public class ReservationServiceImpl implements ReservationService {
         RepetitionEnum repetition = permanentReservation.getRepetition();
 
         while (currentDate.isBefore(endDate) || currentDate.isEqual(endDate)) {
-            ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
-                .withDate(currentDate)
-                .withStartTime(permanentReservation.getStartTime())
-                .withEndTime(permanentReservation.getEndTime())
-                .withPax(permanentReservation.getPax())
-                .build();
+            ReservationCheckAvailabilityDto reservationCheckAvailabilityDto =
+                ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+                    .withDate(currentDate)
+                    .withStartTime(permanentReservation.getStartTime())
+                    .withEndTime(permanentReservation.getEndTime())
+                    .withPax(permanentReservation.getPax())
+                    .build();
 
             ReservationResponseEnum tableStatus = getAvailability(reservationCheckAvailabilityDto);
 
@@ -806,16 +818,19 @@ public class ReservationServiceImpl implements ReservationService {
             List<PermanentReservation> reservations = permanentReservationRepository.findPermanentReservationsWithoutUserId(searchParams.getEarliestDate(),
                 searchParams.getLatestDate(), searchParams.getEarliestStartTime(), searchParams.getLatestEndTime());
 
-            List<PermanentReservationListDto> dtos = reservations.stream().map(mapper::permanentReservationToPermanentReservationListDto).collect(Collectors.toList());
+            List<PermanentReservationListDto> dtos =
+                reservations.stream().map(mapper::permanentReservationToPermanentReservationListDto).collect(Collectors.toList());
 
             LOGGER.debug("Found {} reservations for admin/employee without a specific user", dtos.size());
             return dtos;
         }
 
-        List<PermanentReservation> reservations = permanentReservationRepository.findPermanentReservationsByUserId(searchParams.getUserId(), searchParams.getEarliestDate(),
-            searchParams.getLatestDate(), searchParams.getEarliestStartTime(), searchParams.getLatestEndTime());
+        List<PermanentReservation> reservations =
+            permanentReservationRepository.findPermanentReservationsByUserId(searchParams.getUserId(), searchParams.getEarliestDate(),
+                searchParams.getLatestDate(), searchParams.getEarliestStartTime(), searchParams.getLatestEndTime());
 
-        List<PermanentReservationListDto> dtos = reservations.stream().map(mapper::permanentReservationToPermanentReservationListDto).collect(Collectors.toList());
+        List<PermanentReservationListDto> dtos =
+            reservations.stream().map(mapper::permanentReservationToPermanentReservationListDto).collect(Collectors.toList());
 
         LOGGER.debug("Found {} reservations for user id {}", dtos.size(), searchParams.getUserId());
         return dtos;
@@ -865,26 +880,28 @@ public class ReservationServiceImpl implements ReservationService {
         // Check if all specified tables are available
         if (reservationCreateDto.getPlaceIds() != null && !reservationCreateDto.getPlaceIds().isEmpty()) {
             for (Long placeId : reservationCreateDto.getPlaceIds()) {
-                ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
-                    .withDate(reservationCreateDto.getDate())
-                    .withStartTime(reservationCreateDto.getStartTime())
-                    .withEndTime(reservationCreateDto.getEndTime())
-                    .withPax(reservationCreateDto.getPax())
-                    .withIdToExclude(null) // Assuming we're not excluding any reservations
-                    .build();
+                ReservationCheckAvailabilityDto reservationCheckAvailabilityDto =
+                    ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+                        .withDate(reservationCreateDto.getDate())
+                        .withStartTime(reservationCreateDto.getStartTime())
+                        .withEndTime(reservationCreateDto.getEndTime())
+                        .withPax(reservationCreateDto.getPax())
+                        .withIdToExclude(null) // Assuming we're not excluding any reservations
+                        .build();
                 if (!isPlaceAvailable(placeId)) {
                     return null; // frontend checks and notifies
                 }
             }
         } else {
             // If no place IDs are provided, perform the default availability check
-            ReservationCheckAvailabilityDto reservationCheckAvailabilityDto = ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
-                .withDate(reservationCreateDto.getDate())
-                .withStartTime(reservationCreateDto.getStartTime())
-                .withEndTime(reservationCreateDto.getEndTime())
-                .withPax(reservationCreateDto.getPax())
-                .withIdToExclude(null) // Assuming we're not excluding any reservations
-                .build();
+            ReservationCheckAvailabilityDto reservationCheckAvailabilityDto =
+                ReservationCheckAvailabilityDto.ReservationCheckAvailabilityDtoBuilder.aReservationCheckAvailabilityDto()
+                    .withDate(reservationCreateDto.getDate())
+                    .withStartTime(reservationCreateDto.getStartTime())
+                    .withEndTime(reservationCreateDto.getEndTime())
+                    .withPax(reservationCreateDto.getPax())
+                    .withIdToExclude(null) // Assuming we're not excluding any reservations
+                    .build();
             ReservationResponseEnum tableStatus = getAvailability(reservationCheckAvailabilityDto);
             if (tableStatus != ReservationResponseEnum.AVAILABLE) {
                 return null; // frontend should check for null and show notification accordingly
@@ -936,7 +953,8 @@ public class ReservationServiceImpl implements ReservationService {
 
         // Save ReservationPlace for all selected places in the database
         for (Place place : selectedPlaces) {
-            ReservationPlace reservationPlace = ReservationPlace.ReservationPlaceBuilder.aReservationPlace().withReservation(savedReservation).withPlace(place).build();
+            ReservationPlace reservationPlace =
+                ReservationPlace.ReservationPlaceBuilder.aReservationPlace().withReservation(savedReservation).withPlace(place).build();
             reservationPlaceRepository.save(reservationPlace);
         }
 
@@ -947,7 +965,7 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public void deletePermanentReservation(String permanentReservationHashId) throws MessagingException {
         LOGGER.trace("deletePermanentReservation ({})", permanentReservationHashId);
-        
+
         PermanentReservation permanentReservation = permanentReservationRepository.findByHashedId(permanentReservationHashId);
 
         if (permanentReservation == null) {
@@ -988,7 +1006,8 @@ public class ReservationServiceImpl implements ReservationService {
     private void sendPermanentMail(PermanentReservation permanentReservation, List<LocalDate> deletedReservationDates, int mode) throws MessagingException {
         LOGGER.trace("sendPermanentDeletionEmail");
         Map<String, Object> templateModel = new HashMap<>();
-        templateModel.put("recipientName", permanentReservation.getApplicationUser().getFirstName() + " " + permanentReservation.getApplicationUser().getLastName());
+        templateModel.put("recipientName",
+            permanentReservation.getApplicationUser().getFirstName() + " " + permanentReservation.getApplicationUser().getLastName());
         templateModel.put("persons", permanentReservation.getPax());
         templateModel.put("restaurantName", "The Wet otter");
         templateModel.put("deletedReservationDates", deletedReservationDates);
@@ -1001,9 +1020,9 @@ public class ReservationServiceImpl implements ReservationService {
         String repetition;
         templateModel.put("repetition", repetition = (permanentReservation.getRepetition() == RepetitionEnum.DAYS ? "days" : "weeks"));
         if (mode == 0) { //confirm
-            emailService.sendPermanentConfirmationMessageUsingThymeleafTemplate(permanentReservation, deletedReservationDates, templateModel);
+            // emailService.sendPermanentConfirmationMessageUsingThymeleafTemplate(permanentReservation, deletedReservationDates, templateModel);
         } else if (mode == 1) { //delete
-            emailService.sendPermanentDeletionMessageUsingThymeleafTemplate(permanentReservation, deletedReservationDates, templateModel);
+            // emailService.sendPermanentDeletionMessageUsingThymeleafTemplate(permanentReservation, deletedReservationDates, templateModel);
         } else { //update
             return;
         }

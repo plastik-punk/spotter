@@ -79,7 +79,7 @@
             <button type="button" class="btn btn-primary" (click)="resetSearchParams()"><i
               class="bi bi-arrow-clockwise"></i></button>
           </div>
-          <div class="ms-1 align-self-end" *ngIf="isAdminOrEmployee()">
+          <div class="ms-1 align-self-end">
             <button class="btn btn-toggle btn-dark" (click)="toggleView()">
               {{ isPermanentView ? 'Show Normal Reservations' : 'Show Permanent Reservations' }}
             </button>
